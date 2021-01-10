@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class player_controller : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     public int speed;
@@ -17,9 +17,9 @@ public class player_controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float move_x = Input.GetAxis("Horizontal");
-        float move_y = Input.GetAxis("Vertical");
+        float moveX = Input.GetAxis("Horizontal");
+        float moveY = Input.GetAxis("Vertical");
 
-        transform.Translate(move_x * speed * Time.deltaTime, move_y * speed * Time.deltaTime, 0);
+        transform.Translate(moveX * speed * Time.deltaTime, moveY * speed * Time.deltaTime, 0);
     }
 }
