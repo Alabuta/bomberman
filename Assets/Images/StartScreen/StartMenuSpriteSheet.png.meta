@@ -1,28 +1,31 @@
 fileFormatVersion: 2
-guid: 85326f4eabeac5c43bafc83c67b0c1c8
+guid: bbeb56fbb065cfd48870de1a8a0b56cf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7042847911465117151
-    second: menu_0
+      213: -5410341642635393678
+    second: StartMenuSpriteSheet_0
   - first:
-      213: 6984307464289580096
-    second: menu_1
+      213: -2553299441498173708
+    second: StartMenuSpriteSheet_1
   - first:
-      213: -1438552683215292887
-    second: menu_2
+      213: -6155810664273989291
+    second: StartMenuSpriteSheet_2
   - first:
-      213: 7903818253674975445
-    second: menu_3
+      213: 1596743552865695898
+    second: StartMenuSpriteSheet_3
   - first:
-      213: 2167916245709258091
-    second: menu_4
+      213: -5213413592423967787
+    second: StartMenuSpriteSheet_4
   - first:
-      213: 8621727979372404038
-    second: menu_5
+      213: 5880581005482113524
+    second: StartMenuSpriteSheet_5
   - first:
-      213: 4084048905539402606
-    second: menu_6
+      213: -4996967475516253140
+    second: StartMenuSpriteSheet_6
+  - first:
+      213: -2204353424232750420
+    second: StartMenuSpriteSheet_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -67,7 +70,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 45
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -86,7 +89,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -98,7 +101,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -112,148 +115,106 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: menu_0
+      name: StartMenuSpriteSheet_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 279
+        y: 847
         width: 448
         height: 233
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd5eaf16cd83db160800000000000000
-      internalID: 7042847911465117151
+      spriteID: 275c635f0fa9ae4b0800000000000000
+      internalID: -5410341642635393678
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: menu_1
+      name: StartMenuSpriteSheet_1
       rect:
         serializedVersion: 2
-        x: 512
-        y: 387
+        x: 466
+        y: 955
         width: 512
         height: 125
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 044f61362ae3de060800000000000000
-      internalID: 6984307464289580096
+      spriteID: 4fe4c489fabd09cd0800000000000000
+      internalID: -2553299441498173708
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: menu_2
+      name: StartMenuSpriteSheet_2
       rect:
         serializedVersion: 2
-        x: 478
-        y: 369
-        width: 4
-        height: 4
+        x: 994
+        y: 1043
+        width: 37
+        height: 37
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9267446d4fb390ce0800000000000000
-      internalID: -1438552683215292887
+      spriteID: 5513363d0da229aa0800000000000000
+      internalID: -6155810664273989291
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: menu_3
+      name: StartMenuSpriteSheet_3
       rect:
         serializedVersion: 2
-        x: 474
-        y: 358
-        width: 4
-        height: 6
+        x: 1061
+        y: 942
+        width: 120
+        height: 138
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5d09b8353d000bd60800000000000000
-      internalID: 7903818253674975445
+      spriteID: a9874f92dc5c82610800000000000000
+      internalID: 1596743552865695898
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: menu_4
-      rect:
-        serializedVersion: 2
-        x: 457
-        y: 314
-        width: 8
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b6d7c40e65cf51e10800000000000000
-      internalID: 2167916245709258091
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: menu_5
+      name: StartMenuSpriteSheet_4
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 37
-        height: 37
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        width: 1920
+        height: 694
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 64dd988dae786a770800000000000000
-      internalID: 8621727979372404038
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: menu_6
-      rect:
-        serializedVersion: 2
-        x: 904
-        y: 0
-        width: 120
-        height: 138
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e6bbff367d47da830800000000000000
-      internalID: 4084048905539402606
+      spriteID: 5d35064a5fb36a7b0800000000000000
+      internalID: -5213413592423967787
       vertices: []
       indices: 
       edges: []

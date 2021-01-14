@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 206187866}
   - component: {fileID: 206187865}
   m_Layer: 5
-  m_Name: Bomb Left
+  m_Name: BombLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -174,13 +174,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4084048905539402606, guid: 85326f4eabeac5c43bafc83c67b0c1c8, type: 3}
+  m_Sprite: {fileID: 1596743552865695898, guid: bbeb56fbb065cfd48870de1a8a0b56cf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -207,7 +207,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6310887937077254214, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
       propertyPath: m_Name
-      value: Menu Entry 1
+      value: MenuEntry1
       objectReference: {fileID: 0}
     - target: {fileID: 6310887937077254215, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
       propertyPath: m_Pivot.x
@@ -336,11 +336,11 @@ RectTransform:
   m_Father: {fileID: 1931118232}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 1080}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 1920, y: 694}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &437625928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,15 +355,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6485612619a135c45952e1dfa0dd7fe1, type: 3}
+  m_Sprite: {fileID: -5213413592423967787, guid: bbeb56fbb065cfd48870de1a8a0b56cf, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 509400162}
   - component: {fileID: 509400161}
   m_Layer: 5
-  m_Name: Copyright Text
+  m_Name: CopyrightText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -467,7 +467,7 @@ MonoBehaviour:
     m_LineSpacing: 1.6
   m_Text: 'COPYRIGHT 2021
 
-    2ANAL GAMES'
+    THE TRIPLE A GAMES'
 --- !u!222 &509400163
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -488,7 +488,7 @@ GameObject:
   - component: {fileID: 603033287}
   - component: {fileID: 603033286}
   m_Layer: 5
-  m_Name: Blaster Text
+  m_Name: BlasterText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -527,13 +527,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6984307464289580096, guid: 85326f4eabeac5c43bafc83c67b0c1c8, type: 3}
+  m_Sprite: {fileID: -2553299441498173708, guid: bbeb56fbb065cfd48870de1a8a0b56cf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -563,7 +563,7 @@ GameObject:
   - component: {fileID: 804332337}
   - component: {fileID: 804332336}
   m_Layer: 5
-  m_Name: Bomb Right
+  m_Name: BombRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -602,13 +602,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4084048905539402606, guid: 85326f4eabeac5c43bafc83c67b0c1c8, type: 3}
+  m_Sprite: {fileID: 1596743552865695898, guid: bbeb56fbb065cfd48870de1a8a0b56cf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -635,7 +635,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6310887937077254214, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
       propertyPath: m_Name
-      value: Menu Entry 2
+      value: MenuEntry2
       objectReference: {fileID: 0}
     - target: {fileID: 6310887937077254215, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
       propertyPath: m_Pivot.x
@@ -741,7 +741,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6310887937077254214, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
       propertyPath: m_Name
-      value: Menu Entry 3
+      value: MenuEntry3
       objectReference: {fileID: 0}
     - target: {fileID: 6310887937077254215, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
       propertyPath: m_Pivot.x
@@ -850,7 +850,7 @@ GameObject:
   - component: {fileID: 1054718412}
   - component: {fileID: 1054718411}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -888,7 +888,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 500
   field of view: 60
   orthographic: 1
   orthographic size: 5
@@ -1058,7 +1058,7 @@ GameObject:
   - component: {fileID: 1670986814}
   - component: {fileID: 1670986816}
   m_Layer: 5
-  m_Name: Start Text
+  m_Name: PushFireButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1152,7 +1152,7 @@ GameObject:
   - component: {fileID: 1777054193}
   - component: {fileID: 1777054192}
   m_Layer: 5
-  m_Name: Dyna Text
+  m_Name: DynaText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1191,13 +1191,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7042847911465117151, guid: 85326f4eabeac5c43bafc83c67b0c1c8, type: 3}
+  m_Sprite: {fileID: -5410341642635393678, guid: bbeb56fbb065cfd48870de1a8a0b56cf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1348,7 +1348,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6310887937077254214, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
       propertyPath: m_Name
-      value: Menu Entry 0
+      value: MenuEntry0
       objectReference: {fileID: 0}
     - target: {fileID: 6310887937077254215, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
       propertyPath: m_Pivot.x
