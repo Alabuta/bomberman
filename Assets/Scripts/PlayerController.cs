@@ -1,62 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
-using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public float Speed;
 
-    public int speed;
-    public Transform PlayerPosition;
-    // Start is called before the first frame update
-    void Start()
+    private float2 _movementVector = float2.zero;
+
+    private void Update()
     {
-        
+        _movementVector.x = Input.GetAxis("Horizontal");
+        _movementVector.y = Input.GetAxis("Vertical");
+
+        _movementVector = math.round(_movementVector) * Speed;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
+        if (_movementVector.y != 0)
+            transform.Translate(0, _movementVector.y * Time.fixedDeltaTime, 0);
 
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            transform.Translate(-speed, 0, 0);
-
-        }
-
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            transform.Translate(speed, 0, 0);
-
-        }
-
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            transform.Translate(0, speed, 0);
-
-        }
-
-        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            transform.Translate(0, -speed, 0);
-
-        }
-
-
-
-
-
-
-
-
-        /*
-        var moveX = Input.GetAxis("Horizontal");
-        var moveY = Input.GetAxis("Vertical");
-
-        gameObject.SetActive(false);
-
-        transform.Translate(moveX * speed * Time.deltaTime, moveY * speed * Time.deltaTime, 0);
-        */
-
+        else if (_movementVector.x != 0)
+            transform.Translate(_movementVector.x * Time.fixedDeltaTime, 0, 0);
     }
 }
