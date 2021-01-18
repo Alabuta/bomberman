@@ -9,14 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4316beb68f24a08851cb51870a5d31a, type: 3}
-  m_Name: LevelRuins
+  m_Script: {fileID: 11500000, guid: 82ee71d5fae344129108f547d4b05471, type: 3}
+  m_Name: RuinsLevelConfig
   m_EditorClassIdentifier: 
-  Width: 10.2
-  Height: 2.2
+  Name: The Old Ruins
   CellsNumberInRows: 13
-  CellsNumberInColumns: 10
-  WallCellPrefab: {fileID: 0}
-  FloorCellPrefab: {fileID: 0}
-  ConcreteWallCellPrefab: {fileID: 0}
+  CellsNumberInColumns: 11
+  Enemies: []
   LevelBackgroundPrefab: {fileID: 0}
+  FordableTile: {fileID: 0}
+  UnfordableTile: {fileID: 0}
+  PortalTile: {fileID: 0}
+  LevelTiles: []
