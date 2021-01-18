@@ -108,8 +108,9 @@ GameObject:
   - component: {fileID: 6310887937077254264}
   - component: {fileID: 9072115223144549180}
   - component: {fileID: 4554787413820478787}
+  - component: {fileID: 912049054771639515}
   m_Layer: 5
-  m_Name: Menu Entry
+  m_Name: StartMenuEntry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -211,8 +212,8 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 1988928d6de1c1c46982012cbc0af135, type: 3}
     m_FontSize: 40
     m_FontStyle: 1
-    m_BestFit: 1
-    m_MinSize: 36
+    m_BestFit: 0
+    m_MinSize: 3
     m_MaxSize: 40
     m_Alignment: 3
     m_AlignByGeometry: 1
@@ -236,3 +237,23 @@ MonoBehaviour:
   m_EffectColor: {r: 0.1882353, g: 0.1882353, b: 0.1882353, a: 1}
   m_EffectDistance: {x: 4, y: -4}
   m_UseGraphicAlpha: 1
+--- !u!114 &912049054771639515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6310887937077254214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 375
+  m_MinHeight: 48
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
