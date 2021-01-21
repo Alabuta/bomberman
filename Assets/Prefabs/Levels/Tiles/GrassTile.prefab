@@ -12,12 +12,28 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -1774339243809857097, guid: 2cb4234e504af064ea4749df32a5b89c, type: 3}
     - target: {fileID: 510107397426707603, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 510107397426707603, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_SortingOrder
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 510107397426707603, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1841138979
       objectReference: {fileID: 0}
     - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_Name
       value: GrassTile
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
+      propertyPath: m_TagString
+      value: Tile
       objectReference: {fileID: 0}
     - target: {fileID: 7033162139016997559, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_RootOrder

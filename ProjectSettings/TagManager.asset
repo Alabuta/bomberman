@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Tile
+  - Enemy
+  - Collectable
+  - Explosive
+  - Effect
   layers:
   - Default
   - TransparentFX
@@ -11,12 +16,12 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Floor
+  - Enemies
+  - Collectables
+  - Walls
+  - Explosives
+  - Effects
   - 
   - 
   - 
@@ -40,4 +45,31 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 1772521551
+    locked: 0
+  - name: Floor
+    uniqueID: 2453828317
+    locked: 0
+  - name: Collectable
+    uniqueID: 372375065
+    locked: 0
+  - name: Wall
+    uniqueID: 1350269783
+    locked: 0
+  - name: Explosive
+    uniqueID: 3014520589
+    locked: 0
+  - name: Effect
+    uniqueID: 2390526125
+    locked: 0
+  - name: Enemy
+    uniqueID: 1425963347
+    locked: 0
+  - name: Player
+    uniqueID: 27102433
+    locked: 0
+  - name: Foreground
+    uniqueID: 1615881635
     locked: 0

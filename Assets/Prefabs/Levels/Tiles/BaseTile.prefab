@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7033162139016997559}
   - component: {fileID: 510107397426707603}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: BaseTile
   m_TagString: Tile
   m_Icon: {fileID: 0}
@@ -68,8 +68,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 176840471
-  m_SortingLayer: 1
+  m_SortingLayerID: 1615881635
+  m_SortingLayer: 9
   m_SortingOrder: 0
   m_Sprite: {fileID: 5765430338808058601, guid: 2cb4234e504af064ea4749df32a5b89c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

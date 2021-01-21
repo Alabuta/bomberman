@@ -12,16 +12,32 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5192583145821725066, guid: 2cb4234e504af064ea4749df32a5b89c, type: 3}
     - target: {fileID: 510107397426707603, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
+      propertyPath: m_SortingLayer
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 510107397426707603, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_SortingOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 510107397426707603, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1350269783
       objectReference: {fileID: 0}
     - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_Name
       value: PillarTile
       objectReference: {fileID: 0}
     - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
+      propertyPath: m_TagString
+      value: Tile
       objectReference: {fileID: 0}
     - target: {fileID: 7033162139016997559, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_RootOrder
