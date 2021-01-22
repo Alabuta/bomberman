@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace Configs
 {
-    [CreateAssetMenu(fileName = "HeroConfig", menuName = "Configs/Hero Config", order = 1)]
+    [CreateAssetMenu(fileName = "HeroConfig", menuName = "Configs/Hero Config", order = 3)]
     public sealed class HeroConfig : ScriptableObject
     {
-        [Header("Hero Movement Configs"), Range(0f, 10f)]
+        [Header("Movement Configs"), Range(0f, 10f)]
         public float SpeedValue;
 
         [Range(1f, 3f)]
