@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93829bed80f74ab7bb88d3e5c32dfbc1, type: 3}
+  m_Name: BrickTileConfig
+  m_EditorClassIdentifier: 
+  MovementSpeedMultiplier: 0
+  Strengh: 10
+  Prefab: {fileID: 2686772009947331371, guid: d384aea5437a0404aa7ff03cb67369bb, type: 3}
