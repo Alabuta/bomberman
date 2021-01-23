@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace Configs.Level
+namespace Configs.Level.Tile
 {
     [CreateAssetMenu(fileName = "TileConfig", menuName = "Configs/Level/Tile Config", order = 2)]
-    public sealed class TileConfig : ScriptableObject
+    public class TileConfig : ScriptableObject
     {
         public float MovementSpeedMultiplier;
         public float Strengh;
