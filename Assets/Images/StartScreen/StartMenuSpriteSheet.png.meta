@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bbeb56fbb065cfd48870de1a8a0b56cf
+guid: c53955dac825460439559cb369c99a7b
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -17,15 +17,6 @@ TextureImporter:
   - first:
       213: -5213413592423967787
     second: StartMenuSpriteSheet_4
-  - first:
-      213: 5880581005482113524
-    second: StartMenuSpriteSheet_5
-  - first:
-      213: -4996967475516253140
-    second: StartMenuSpriteSheet_6
-  - first:
-      213: -2204353424232750420
-    second: StartMenuSpriteSheet_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -59,9 +50,9 @@ TextureImporter:
     filterMode: 0
     aniso: -1
     mipBias: -100
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    wrapU: 2
+    wrapV: 2
+    wrapW: 2
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -70,9 +61,9 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -89,7 +80,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -101,7 +92,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -118,12 +109,12 @@ TextureImporter:
       name: StartMenuSpriteSheet_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 847
-        width: 448
-        height: 233
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 1
+        y: 341
+        width: 186
+        height: 122
+      alignment: 8
+      pivot: {x: 1, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -139,12 +130,12 @@ TextureImporter:
       name: StartMenuSpriteSheet_1
       rect:
         serializedVersion: 2
-        x: 466
-        y: 955
-        width: 512
-        height: 125
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 198
+        y: 409
+        width: 224
+        height: 54
+      alignment: 6
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -160,12 +151,12 @@ TextureImporter:
       name: StartMenuSpriteSheet_2
       rect:
         serializedVersion: 2
-        x: 994
-        y: 1043
-        width: 37
-        height: 37
+        x: 434
+        y: 447
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -181,12 +172,12 @@ TextureImporter:
       name: StartMenuSpriteSheet_3
       rect:
         serializedVersion: 2
-        x: 1061
-        y: 942
-        width: 120
-        height: 138
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 459
+        y: 404
+        width: 52
+        height: 59
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -204,8 +195,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1920
-        height: 694
+        width: 512
+        height: 298
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
