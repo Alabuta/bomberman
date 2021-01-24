@@ -1,4 +1,10 @@
-﻿namespace App.Level
+﻿using System.Linq;
+using Configs.Level;
+using Unity.Mathematics;
+using UnityEngine;
+using Random = System.Random;
+
+namespace App.Level
 {
     public sealed class LevelGrid
     {

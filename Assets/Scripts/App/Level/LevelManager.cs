@@ -1,8 +1,6 @@
 ﻿using Configs.Level;
-using App;
-using App.Level;
 
-namespace Level
+namespace App.Level
 {
     public interface ILevelManager
     {

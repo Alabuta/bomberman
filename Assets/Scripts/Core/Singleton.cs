@@ -8,9 +8,9 @@ namespace Core
 
         public static T Instance => _instance ??= new T();
 
-        public static bool Tyr(Action<T> callback)
+        public static bool Try(Action<T> callback)
         {
-            if ( _instance == null )
+            if (_instance == null)
                 return false;
 
             callback(_instance);
@@ -20,7 +20,7 @@ namespace Core
 
         public static void Release()
         {
-            if ( _instance != null )
+            if (_instance != null)
                 _instance.DoRelease();
 
             _instance = null;
