@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecfe405814964097b21cfa047fa39dbb, type: 3}
-  m_Name: GrassTileConfig
+  m_Script: {fileID: 11500000, guid: 93829bed80f74ab7bb88d3e5c32dfbc1, type: 3}
+  m_Name: SoftBlock.Brick
   m_EditorClassIdentifier: 
+  Prefab: {fileID: 1089567522068187189, guid: d0fd97865f63d25439c18be72b152fd4, type: 3}
   MovementSpeedMultiplier: 1
-  Strengh: -1
-  Prefab: {fileID: 4786847653991349795, guid: fe5e85c5207ec9440a8ee68439263c71, type: 3}
+  Strengh: 1

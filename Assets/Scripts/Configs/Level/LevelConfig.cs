@@ -1,5 +1,7 @@
-﻿using Configs.Enemy;
+﻿using System.Collections.Generic;
+using Configs.Enemy;
 using Configs.Level.Tile;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Configs.Level
@@ -10,21 +12,29 @@ namespace Configs.Level
         [Header("General Configs")]
         public string Name;
 
-        public int CellsNumberInRows;
-        public int CellsNumberInColumns;
+        public int ColumnsNumber;
+        public int RowsNumber;
+
+        [Range(10, 50)]
+        public int SoftBlocksCoverage = 30;
+
+        public float3 CameraPosition = float3.zero;
+
+        public int2[] PlayersSpawnCells = {int2.zero};
+
+        [Header("General Prefabs")]
+        public GameObject Walls;
 
         [Header("Enemy Configs")]
         public EnemyConfig[] Enemies;
 
-        [Header("Tile Configs")]
-        public GameObject LevelBackgroundPrefab;
+        [Header("Block Configs")]
+        public GameObject FloorTile;
 
-        public TileConfig PillarTile;
-        public TileConfig FloorTile;
+        public PortalBlock PortalBlock;
 
-        public TileConfig PortalTile;
-
-        public BreakableTileConfig[] BreakableTiles;
+        public HardBlock HardBlock;
+        public SoftBlock SoftBlock;
 
         /*
          * [Header("PowerUp Configs")]
