@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ee71d5fae344129108f547d4b05471, type: 3}
   m_Name: RuinsLevelConfig
   m_EditorClassIdentifier: 
-  Name: The Old Ruins
+  Name: Old Ruins
   CellsNumberInRows: 13
   CellsNumberInColumns: 11
   Enemies: []
   LevelBackgroundPrefab: {fileID: 0}
-  FordableTile: {fileID: 0}
-  UnfordableTile: {fileID: 0}
+  PillarTile: {fileID: 11400000, guid: 5b75eb4ce80bb9e4caabe69625064d1c, type: 2}
+  FloorTile: {fileID: 11400000, guid: 41540f2a56ddf21448d7a7619246eed3, type: 2}
   PortalTile: {fileID: 0}
-  LevelTiles: []
+  BreakableTiles:
+  - {fileID: 11400000, guid: 0ff75891f641b10458402381b806ba48, type: 2}
