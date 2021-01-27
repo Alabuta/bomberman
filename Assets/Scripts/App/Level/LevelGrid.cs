@@ -32,7 +32,7 @@ namespace App.Level
             var spawnCells = _levelConfig.PlayersSpawnCells;
             var playersNumber = spawnCells.Length;
 
-            var playersReservedCellsNumber = playersNumber * 3; // Players are spawned in the grid corners
+            var playersReservedCellsNumber = playersNumber * 3 * 0; // Players are spawned in the grid corners
 
             var totalCellsNumber = _levelConfig.ColumnsNumber * _levelConfig.RowsNumber;
             var hardBlocksNumber = (_levelConfig.ColumnsNumber - 1) * (_levelConfig.RowsNumber - 1) / 4;
@@ -41,6 +41,12 @@ namespace App.Level
             var softBlocksNumber = emptyCellsNumber * _levelConfig.SoftBlocksCoverage / 100;
 
             var rg = new Random();
+
+            /*int[] reps = {emptyCellsNumber, hardBlocksNumber};
+
+            _grid = Enumerable.Range(0, 2)
+                .SelectMany(i => Enumerable.Repeat(i, reps[i]))
+                .OrderBy(t => rg.Next()).ToArray();*/
 
             for (var rowIndex = 0; rowIndex < RowsNumber; ++rowIndex)
             {
