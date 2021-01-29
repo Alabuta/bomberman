@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Configs.Level;
 using Unity.Mathematics;
 using UnityEngine;
@@ -36,33 +37,32 @@ namespace App.Level
 
             var totalCellsNumber = _levelConfig.ColumnsNumber * _levelConfig.RowsNumber;
             var hardBlocksNumber = (_levelConfig.ColumnsNumber - 1) * (_levelConfig.RowsNumber - 1) / 4;
-            var emptyCellsNumber = totalCellsNumber - hardBlocksNumber - playersReservedCellsNumber;
+            // var emptyCellsNumber = totalCellsNumber - hardBlocksNumber - playersReservedCellsNumber;
 
-            var softBlocksNumber = emptyCellsNumber * _levelConfig.SoftBlocksCoverage / 100;
+            var softBlocksNumber = (totalCellsNumber - hardBlocksNumber) * _levelConfig.SoftBlocksCoverage / 100;
+            var emptyCellsNumber = totalCellsNumber - softBlocksNumber - hardBlocksNumber;
 
             var rg = new Random();
 
-            int[] reps = {emptyCellsNumber, softBlocksNumber};
+            var numbers = math.int2(emptyCellsNumber, softBlocksNumber);
 
-            _grid = Enumerable.Range(0, 2)
-                .SelectMany(i => Enumerable.Repeat(i, reps[i]))
-                .OrderBy(t => rg.Next()).ToArray();
-
-            for (var rowIndex = 0; rowIndex < RowsNumber; ++rowIndex)
-            {
-                for (var columnIndex = 0; columnIndex < ColumnsNumber; ++columnIndex)
+            _grid = Enumerable.Repeat(1, totalCellsNumber)
+                .Select((type, i) =>
                 {
-                    var index = rowIndex * ColumnsNumber + columnIndex;
+                    var (columnIndex, rowIndex) = (i % ColumnsNumber, i / ColumnsNumber);
 
-                    if (columnIndex % 2 == 1 && rowIndex % 2 == 1) {
-                        _grid[index] = 1;
-                    }
+                    if (columnIndex % 2 == 1 && rowIndex % 2 == 1)
+                        return type;
 
-                    else {
-                        _grid[index] = rg.Next(0, 3) == 2 ? 2 : 0;
-                    }
-                }
-            }
+                    var range = (int2)(numbers == int2.zero);
+                    var index = rg.Next(range.x, 2 - range.y);
+
+                    --numbers[index];
+
+                    return index * 2;
+
+                })
+                .ToArray();
         }
     }
 }

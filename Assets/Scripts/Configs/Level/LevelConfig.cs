@@ -15,7 +15,7 @@ namespace Configs.Level
         public int ColumnsNumber;
         public int RowsNumber;
 
-        [Range(10, 50)]
+        [Range(0, 100)]
         public int SoftBlocksCoverage = 30;
 
         public float3 CameraPosition = float3.zero;
