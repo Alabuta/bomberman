@@ -1,4 +1,4 @@
-﻿using Configs.Level;
+﻿using Configs.Level.Tile;
 using UnityEngine;
 
 namespace Configs.Enemy

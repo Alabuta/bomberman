@@ -1,4 +1,5 @@
 ﻿using Configs.Enemy;
+using Configs.Level.Tile;
 using UnityEngine;
 
 namespace Configs.Level
@@ -18,12 +19,12 @@ namespace Configs.Level
         [Header("Tile Configs")]
         public GameObject LevelBackgroundPrefab;
 
-        public TileConfig FordableTile;
-        public TileConfig UnfordableTile;
+        public TileConfig PillarTile;
+        public TileConfig FloorTile;
 
         public TileConfig PortalTile;
 
-        public TileConfig[] LevelTiles;
+        public BreakableTileConfig[] BreakableTiles;
 
         /*
          * [Header("PowerUp Configs")]
