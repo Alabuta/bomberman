@@ -20,7 +20,7 @@ namespace Configs.Level
 
         public float3 CameraPosition = float3.zero;
 
-        public int2[] PlayersSpawnCells = {int2.zero};
+        public int2[] PlayersSpawnCorners = {int2.zero};
 
         [Header("General Prefabs")]
         public GameObject Walls;

@@ -23,11 +23,11 @@ namespace App.Level
             var softBlocksGroup = GameObject.Find("SoftBlocks");
 
             // :TODO: refactor
-            var tuples = new Dictionary<int, (Transform, GameObject)>
+            var tuples = new Dictionary<GridTileType, (Transform, GameObject)>
             {
-                {0, (floorTilesGroup.transform, LevelConfig.FloorTile)},
-                {1, (hardBlocksGroup.transform, LevelConfig.HardBlock.Prefab)},
-                {2, (softBlocksGroup.transform, LevelConfig.SoftBlock.Prefab)}
+                {GridTileType.FloorTile, (floorTilesGroup.transform, LevelConfig.FloorTile)},
+                {GridTileType.HardBlock, (hardBlocksGroup.transform, LevelConfig.HardBlock.Prefab)},
+                {GridTileType.SoftBlock, (softBlocksGroup.transform, LevelConfig.SoftBlock.Prefab)}
             };
 
             var startPosition = (Vector3.one - new Vector3(columnsNumber, rowsNumber)) / 2;

@@ -1,141 +1,93 @@
 ﻿using System;
 using System.Linq;
 using Configs.Level;
+using JetBrains.Annotations;
 using Unity.Mathematics;
-using UnityEngine;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 
 namespace App.Level
 {
+    public enum GridTileType
+    {
+        FloorTile,
+        SoftBlock,
+        HardBlock
+    }
+
     public sealed class LevelGrid
     {
-        private readonly LevelConfig _levelConfig;
+        [NotNull]
+        private readonly GridTileType[] _grid;
 
-        public int ColumnsNumber => _levelConfig.ColumnsNumber;
-        public int RowsNumber => _levelConfig.RowsNumber;
+        private readonly int2 _size;
 
-        public int this[int2 position] => _grid[position.x + position.y * ColumnsNumber];
-        public int this[int index] => _grid[index];
+        public int ColumnsNumber => _size.x;
+        public int RowsNumber => _size.y;
 
-        private /*readonly*/ int[] _grid;
+        public GridTileType this[int index] => _grid[index];
+        public GridTileType this[int2 coordinate] => _grid[GetFlattenCellCoordinate(coordinate)];
 
         public LevelGrid(LevelConfig levelConfig)
         {
-            _levelConfig = levelConfig;
+            _size = math.int2(levelConfig.ColumnsNumber, levelConfig.RowsNumber);
 
-            // _grid = Enumerable.Repeat(0, RowsNumber * ColumnsNumber).ToArray();
+            var playersSpawnCorners = levelConfig.PlayersSpawnCorners;
+            var softBlocksCoverage = levelConfig.SoftBlocksCoverage;
 
-            Generate();
-        }
+            var reservedCellsIndices = playersSpawnCorners
+                .SelectMany(corner =>
+                {
+                    var coordinate = corner * (_size - 1);
+                    var offset = math.select(math.int2(-1), math.int2(1), corner == int2.zero);
 
-        private void Generate()
-        {
-            var spawnCells = _levelConfig.PlayersSpawnCells;
-            var playersNumber = spawnCells.Length;
+                    return new[]
+                    {
+                        GetFlattenCellCoordinate(coordinate),
+                        GetFlattenCellCoordinate(math.mad(math.int2(1, 0), offset, coordinate)),
+                        GetFlattenCellCoordinate(math.mad(math.int2(0, 1), offset, coordinate))
+                    };
+                })
+                .ToArray();
 
-            var playersReservedCellsNumber = playersNumber * 3 * 0; // Players are spawned in the grid corners
+            var reservedCellsNumber = reservedCellsIndices.Length;
 
-            var totalCellsNumber = _levelConfig.ColumnsNumber * _levelConfig.RowsNumber;
-            var hardBlocksNumber = (_levelConfig.ColumnsNumber - 1) * (_levelConfig.RowsNumber - 1) / 4;
-            // var emptyCellsNumber = totalCellsNumber - hardBlocksNumber - playersReservedCellsNumber;
+            var totalCellsNumber = _size.x * _size.y - reservedCellsNumber;
 
-            var softBlocksNumber = (totalCellsNumber - hardBlocksNumber) * _levelConfig.SoftBlocksCoverage / 100;
-            var emptyCellsNumber = totalCellsNumber - softBlocksNumber - hardBlocksNumber;
+            var hardBlocksNumber = (_size.x - 1) * (_size.y - 1) / 4;
+            var softBlocksNumber = (int) math.round((totalCellsNumber - hardBlocksNumber) * softBlocksCoverage / 100.0f);
+            var floorCellsNumber = totalCellsNumber - softBlocksNumber - hardBlocksNumber;
 
-            var rg = new Random();
+            var cellTypeNumbers = math.int2(floorCellsNumber, softBlocksNumber);
 
-            var numbers = math.int2(emptyCellsNumber, softBlocksNumber);
-
-            _grid = Enumerable.Repeat(1, totalCellsNumber)
+            _grid = Enumerable
+                .Repeat(GridTileType.HardBlock, totalCellsNumber + reservedCellsNumber)
                 .Select((type, i) =>
                 {
-                    var (columnIndex, rowIndex) = (i % ColumnsNumber, i / ColumnsNumber);
+                    if (reservedCellsIndices.Contains(i))
+                        return GridTileType.FloorTile;
 
-                    if (columnIndex % 2 == 1 && rowIndex % 2 == 1)
+                    var coordinate = math.int2(i % _size.x, i / _size.x);
+                    if (math.all(coordinate % 2 == 1))
                         return type;
 
-                    var range = (int2)(numbers == int2.zero);
-                    var index = rg.Next(range.x, 2 - range.y);
+                    var range = (int2) (cellTypeNumbers == int2.zero);
 
-                    --numbers[index];
+                    var softBlockOdds = (int) (cellTypeNumbers.y * 100.0f / (cellTypeNumbers.x + cellTypeNumbers.y));
 
-                    return index * 2;
+                    var typeIndex = Convert.ToInt32(Random.Range(0, 100) < softBlockOdds);
+                    typeIndex = math.clamp(typeIndex, range.x, 2 - range.y);
 
+                    --cellTypeNumbers[typeIndex];
+
+                    return typeIndex == 0 ? GridTileType.FloorTile : GridTileType.SoftBlock;
                 })
                 .ToArray();
         }
+
+        private int GetFlattenCellCoordinate(int2 coordinate)
+        {
+            var c = math.select(int2.zero, _size, coordinate < int2.zero) + coordinate;
+            return math.mad(c.y, _size.x, c.x);
+        }
     }
 }
-
-/*
- * var random = new Random();
-var (ColumnsNumber, RowsNumber) = (7, 5);
-
-var playersNumber = 1;
-
-var totalCellsNumber = ColumnsNumber * RowsNumber;
-var hardBlocksNumber = (ColumnsNumber - 1) * (RowsNumber - 1) / 4;
-// var emptyCellsNumber = totalCellsNumber - hardBlocksNumber;
-
-var softBlocksNumber = (totalCellsNumber - hardBlocksNumber) * 0 / 100;
-var emptyCellsNumber = totalCellsNumber - softBlocksNumber - hardBlocksNumber;
-
-int[] ocpd = {0, 1, 7, 8, 10, 12};
-int[] reps = {emptyCellsNumber, hardBlocksNumber, softBlocksNumber};
-Console.Write($"{emptyCellsNumber}, {hardBlocksNumber}, {softBlocksNumber}");
-var k = -1;
-// var edge = -1;
-var sidx = 0;
-int[] tttt = {0, 0, 0};
-var numbers = Enumerable.Range(0, 3)
-       .SelectMany(i => Enumerable.Repeat(i, reps[i]))
-       .OrderBy(t => random.Next())
-       .Select((e, i) => {
-            var (columnIndex, rowIndex) = (i % ColumnsNumber, i / ColumnsNumber);
-            if (columnIndex % 2 == 1 && rowIndex % 2 == 1) {
-                if (e != 1) {
-                    ++tttt[e];
-                }
-
-                return 1;
-            }
-
-            else {
-                if (e == 1) {
-                    var d = tttt.Select((value, index) => new {value, index})
-                                .OrderByDescending(vi => vi.value)
-                                .First();
-
-                    --tttt[d.index];
-                    return d.index;
-                }
-            }
-
-            return e;
-       })
-       .ToArray();
-
-// var rep2 = {emptyCellsNumber, softBlocksNumber};
-// var number = Enumerable.Range(0, totalCellsNumber)
-//     .
-
-var j = 0;
-foreach (var num in numbers)
-{
-    Console.Write($"{(j % 7 == 0 ? '\n' : ' ')}{num}");
-    ++j;
-}
-
-Console.Write("\n");
-
-Console.WriteLine("\n================================");
-
-j = 0;
-foreach (var num in numbers)
-{
-    Console.Write($"{(j % 7 == 0 ? '\n' : ' ')}{num}");
-    ++j;
-}
-
-
- */
