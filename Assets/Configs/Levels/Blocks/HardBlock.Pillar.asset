@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93829bed80f74ab7bb88d3e5c32dfbc1, type: 3}
-  m_Name: BrickTileConfig
+  m_Script: {fileID: 11500000, guid: eeacdf84ca5f4d6e95557c5a5f0aa020, type: 3}
+  m_Name: HardBlock.Pillar
   m_EditorClassIdentifier: 
-  MovementSpeedMultiplier: 0
-  Strengh: 10
-  Prefab: {fileID: 2686772009947331371, guid: d384aea5437a0404aa7ff03cb67369bb, type: 3}
+  Prefab: {fileID: 8666759617963854964, guid: 9ad4f47c6f37d944b8881ac32603b2dd, type: 3}

@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Configs.Level;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace App.Level
 {
@@ -11,47 +11,39 @@ namespace App.Level
     {
         public LevelConfig LevelConfig;
 
-        public GameObject Tile;
-
-        private int _vertical;
-        private int _horizontal;
-
         public void Start()
         {
-            if (Camera.main)
+            var columnsNumber = LevelConfig.ColumnsNumber;
+            var rowsNumber = LevelConfig.RowsNumber;
+
+            var levelGrid = new LevelGrid(LevelConfig);
+
+            var floorTilesGroup = GameObject.Find("FloorTiles");
+            var hardBlocksGroup = GameObject.Find("HardBlocks");
+            var softBlocksGroup = GameObject.Find("SoftBlocks");
+
+            // :TODO: refactor
+            var tuples = new Dictionary<GridTileType, (Transform, GameObject)>
             {
-                _vertical = (int)Camera.main.orthographicSize;
-                _horizontal = _vertical * (Screen.width / Screen.height);
+                {GridTileType.FloorTile, (floorTilesGroup.transform, LevelConfig.FloorTile)},
+                {GridTileType.HardBlock, (hardBlocksGroup.transform, LevelConfig.HardBlock.Prefab)},
+                {GridTileType.SoftBlock, (softBlocksGroup.transform, LevelConfig.SoftBlock.Prefab)}
+            };
+
+            var startPosition = (Vector3.one - new Vector3(columnsNumber, rowsNumber)) / 2;
+
+            for (var index = 0; index < columnsNumber * rowsNumber; ++index)
+            {
+                // ReSharper disable once PossibleLossOfFraction
+                var position = startPosition + new Vector3(index % columnsNumber, index / columnsNumber);
+
+                var (parent, prefab) = tuples[levelGrid[index]];
+                Instantiate(prefab, position, Quaternion.identity, parent);
             }
 
-            var level = new Level(10, 10);
-
-            /*var rand = new System.Random();
-        var ids = Enumerable.Range(0, 50).
-            .Select(i => new Tuple<int, int>(rand.Next(50), i))
-            .OrderBy(i => i.Item1)
-            .Select(i => i.Item2);*/
-            var ids = new[] {1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 3, 3, 3, 3};
-
-
-            level.Populate(ids);
-
-            for (var i = 0; i < level.Grid.GetLength(0); i ++) {
-                for (var j = 0; j < level.Grid.GetLength(1); j++) {
-                    if ( level.Grid[i, j] != 0 )
-                    {
-                        SpawnObject(i, j, level.Grid[i, j]);
-                    }
-                }
-            }
-        }
-
-        private void SpawnObject(int x, int y, int id)
-        {
-            var tilePrefab = LevelConfig.BreakableTiles[0].Prefab;
-
-            var tile = Instantiate(tilePrefab, new Vector3(x - _horizontal, y - _vertical), Quaternion.identity);
-            tile.GetComponent<SpriteRenderer>().color = id == 1 ? Color.cyan : Color.yellow;
+            var walls = Instantiate(LevelConfig.Walls, Vector3.zero, Quaternion.identity);
+            var sprite = walls.GetComponent<SpriteRenderer>();
+            sprite.size += new Vector2(columnsNumber, rowsNumber);
         }
     }
 }
