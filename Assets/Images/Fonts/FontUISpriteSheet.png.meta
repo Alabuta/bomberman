@@ -3,125 +3,137 @@ guid: 3b0ce8ceac2cffb429d5a302e85258b6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1401874176895988017
-    second: font_0
+      213: 6375293918063554970
+    second: FontUISpriteSheet_0
   - first:
-      213: -6787896269430008760
-    second: font_1
+      213: 1923260324823717947
+    second: FontUISpriteSheet_1
   - first:
-      213: -6630971469653654122
-    second: font_2
+      213: -8767168600190909866
+    second: FontUISpriteSheet_2
   - first:
-      213: 3155708254655358991
-    second: font_3
+      213: -8590092983118913426
+    second: FontUISpriteSheet_3
   - first:
-      213: -1809877987737587854
-    second: font_4
+      213: 3930565326075066227
+    second: FontUISpriteSheet_4
   - first:
-      213: -8478194216507768359
-    second: font_5
+      213: -4666652167332878993
+    second: FontUISpriteSheet_5
   - first:
-      213: -239845697509426971
-    second: font_6
+      213: 1100286117302614000
+    second: FontUISpriteSheet_6
   - first:
-      213: -2432296197583570664
-    second: font_7
+      213: 7047919197841032626
+    second: FontUISpriteSheet_7
   - first:
-      213: 8988950123309387204
-    second: font_8
+      213: -5397589749332702572
+    second: FontUISpriteSheet_8
   - first:
-      213: -5733437377142980995
-    second: font_9
+      213: -1598497902952012330
+    second: FontUISpriteSheet_9
   - first:
-      213: 6348170711374592664
-    second: font_10
+      213: -4631520047453174082
+    second: FontUISpriteSheet_10
   - first:
-      213: 1538424140462886368
-    second: font_11
+      213: 9131514799382623014
+    second: FontUISpriteSheet_11
   - first:
-      213: -7624602737638586889
-    second: font_12
+      213: -2389839683800893753
+    second: FontUISpriteSheet_12
   - first:
-      213: 6660220790318646868
-    second: font_13
+      213: 4994158290282747993
+    second: FontUISpriteSheet_13
   - first:
-      213: -7318864361395112647
-    second: font_14
+      213: 461413338612276153
+    second: FontUISpriteSheet_14
   - first:
-      213: 3830642159544845040
-    second: font_15
+      213: 2969168373566345749
+    second: FontUISpriteSheet_15
   - first:
-      213: 3772937518185825702
-    second: font_16
+      213: 5834530900525666997
+    second: FontUISpriteSheet_16
   - first:
-      213: -75143286191810230
-    second: font_17
+      213: 6674535802995655154
+    second: FontUISpriteSheet_17
   - first:
-      213: -5962198388926122564
-    second: font_18
+      213: -3032178296795619689
+    second: FontUISpriteSheet_18
   - first:
-      213: -5357453441090490021
-    second: font_19
+      213: -863966116541890961
+    second: FontUISpriteSheet_19
   - first:
-      213: -2743576862614557664
-    second: font_20
+      213: -5059386583819814753
+    second: FontUISpriteSheet_20
   - first:
-      213: -5423386022696304102
-    second: font_21
+      213: -7305969474176485532
+    second: FontUISpriteSheet_21
   - first:
-      213: 8156438877833951428
-    second: font_22
+      213: 987517070085166895
+    second: FontUISpriteSheet_22
   - first:
-      213: 7814087314376559365
-    second: font_23
+      213: 1929139009907381055
+    second: FontUISpriteSheet_23
   - first:
-      213: -7269697945286533571
-    second: font_24
+      213: -7444445944298989589
+    second: FontUISpriteSheet_24
   - first:
-      213: 7303193327651535916
-    second: font_25
+      213: -3508987299920809185
+    second: FontUISpriteSheet_25
   - first:
-      213: -8722637314202152839
-    second: font_26
+      213: -1048637244484847902
+    second: FontUISpriteSheet_26
   - first:
-      213: -1020516230262658627
-    second: font_27
+      213: -6947438010650785563
+    second: FontUISpriteSheet_27
   - first:
-      213: -8972199240296285320
-    second: font_28
+      213: -3660788862341610402
+    second: FontUISpriteSheet_28
   - first:
-      213: -1796777426575798969
-    second: font_29
+      213: -2626957613640756746
+    second: FontUISpriteSheet_29
   - first:
-      213: -4836960121619903016
-    second: font_30
+      213: -5599338864938664179
+    second: FontUISpriteSheet_30
   - first:
-      213: 7650269062071469143
-    second: font_31
+      213: -1550912713305563826
+    second: FontUISpriteSheet_31
   - first:
-      213: -1011159927129189223
-    second: font_32
+      213: 6240402902298981205
+    second: FontUISpriteSheet_32
   - first:
-      213: 5757750352503347483
-    second: font_33
+      213: -3092107378022542235
+    second: FontUISpriteSheet_33
   - first:
-      213: 3538517688748631324
-    second: font_34
+      213: 7661296833534992148
+    second: FontUISpriteSheet_34
   - first:
-      213: -8399110205408421858
-    second: font_35
+      213: -2659195183973297468
+    second: FontUISpriteSheet_35
   - first:
-      213: 8319599630124454179
-    second: font_36
+      213: -856946529947349102
+    second: FontUISpriteSheet_36
   - first:
-      213: 513192918839877092
-    second: font_37
+      213: 4727808394075152732
+    second: FontUISpriteSheet_37
   - first:
-      213: 3460629101215251287
-    second: font_38
+      213: 6358754416738211967
+    second: FontUISpriteSheet_38
   - first:
-      213: -8743923282464806245
-    second: font_39
+      213: 3138141524107870423
+    second: FontUISpriteSheet_39
+  - first:
+      213: -4297694384688251476
+    second: FontUISpriteSheet_40
+  - first:
+      213: -8764077527891134697
+    second: FontUISpriteSheet_41
+  - first:
+      213: 4946793790670186823
+    second: FontUISpriteSheet_42
+  - first:
+      213: -6600591118710047675
+    second: FontUISpriteSheet_43
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -163,12 +175,12 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -185,7 +197,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 128
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -197,7 +209,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 128
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -211,11 +223,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: font_0
+      name: FontUISpriteSheet_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 113
+        x: 0
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -225,18 +237,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fce42521dda8b8ce0800000000000000
-      internalID: -1401874176895988017
+      spriteID: a91f2ec6a08997850800000000000000
+      internalID: 6375293918063554970
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_1
+      name: FontUISpriteSheet_1
       rect:
         serializedVersion: 2
-        x: 16
-        y: 113
+        x: 15
+        y: 50
         width: 12
         height: 14
       alignment: 0
@@ -246,18 +258,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 844dc688e4c8cc1a0800000000000000
-      internalID: -6787896269430008760
+      spriteID: b3858b7531bc0ba10800000000000000
+      internalID: 1923260324823717947
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_2
+      name: FontUISpriteSheet_2
       rect:
         serializedVersion: 2
-        x: 29
-        y: 113
+        x: 28
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -267,18 +279,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6954b8ba49e0af3a0800000000000000
-      internalID: -6630971469653654122
+      spriteID: 65289abcb92c45680800000000000000
+      internalID: -8767168600190909866
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_3
+      name: FontUISpriteSheet_3
       rect:
         serializedVersion: 2
-        x: 44
-        y: 113
+        x: 43
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -288,18 +300,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f08208d10f35bcb20800000000000000
-      internalID: 3155708254655358991
+      spriteID: e602f91b1fbd9c880800000000000000
+      internalID: -8590092983118913426
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_4
+      name: FontUISpriteSheet_4
       rect:
         serializedVersion: 2
-        x: 59
-        y: 113
+        x: 58
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -309,18 +321,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 27f2a1e2f8502e6e0800000000000000
-      internalID: -1809877987737587854
+      spriteID: 377fb2bc65c2c8630800000000000000
+      internalID: 3930565326075066227
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_5
+      name: FontUISpriteSheet_5
       rect:
         serializedVersion: 2
-        x: 74
-        y: 113
+        x: 73
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -330,18 +342,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9d1884c8747675a80800000000000000
-      internalID: -8478194216507768359
+      spriteID: f6521db2498bc3fb0800000000000000
+      internalID: -4666652167332878993
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_6
+      name: FontUISpriteSheet_6
       rect:
         serializedVersion: 2
-        x: 89
-        y: 113
+        x: 88
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -351,18 +363,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e87b0fdb95ebacf0800000000000000
-      internalID: -239845697509426971
+      spriteID: 0f7bd15e460054f00800000000000000
+      internalID: 1100286117302614000
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_7
+      name: FontUISpriteSheet_7
       rect:
         serializedVersion: 2
-        x: 104
-        y: 113
+        x: 103
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -372,18 +384,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8197f72ce7fbe3ed0800000000000000
-      internalID: -2432296197583570664
+      spriteID: 2b588f04b2d3fc160800000000000000
+      internalID: 7047919197841032626
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_8
+      name: FontUISpriteSheet_8
       rect:
         serializedVersion: 2
-        x: 2
-        y: 98
+        x: 118
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -393,18 +405,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4cd4f8bf28a2fbc70800000000000000
-      internalID: 8988950123309387204
+      spriteID: 49a0cbb78b8e715b0800000000000000
+      internalID: -5397589749332702572
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_9
+      name: FontUISpriteSheet_9
       rect:
         serializedVersion: 2
-        x: 17
-        y: 98
+        x: 133
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -414,18 +426,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d7ef171251dbe60b0800000000000000
-      internalID: -5733437377142980995
+      spriteID: 6d5a65060aef0d9e0800000000000000
+      internalID: -1598497902952012330
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_10
+      name: FontUISpriteSheet_10
       rect:
         serializedVersion: 2
-        x: 32
-        y: 98
+        x: 148
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -435,18 +447,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 89a7501c0ab391850800000000000000
-      internalID: 6348170711374592664
+      spriteID: eb604714e0989bfb0800000000000000
+      internalID: -4631520047453174082
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_11
+      name: FontUISpriteSheet_11
       rect:
         serializedVersion: 2
-        x: 47
-        y: 98
+        x: 163
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -456,18 +468,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0ed0d26da94995510800000000000000
-      internalID: 1538424140462886368
+      spriteID: 6237c664458a9be70800000000000000
+      internalID: 9131514799382623014
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_12
+      name: FontUISpriteSheet_12
       rect:
         serializedVersion: 2
-        x: 62
-        y: 98
+        x: 178
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -477,18 +489,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7f5c49df438ff2690800000000000000
-      internalID: -7624602737638586889
+      spriteID: 7c67ae0387595ded0800000000000000
+      internalID: -2389839683800893753
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_13
+      name: FontUISpriteSheet_13
       rect:
         serializedVersion: 2
-        x: 78
-        y: 98
+        x: 194
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -498,18 +510,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4564d9c758bdd6c50800000000000000
-      internalID: 6660220790318646868
+      spriteID: 958106c3180de4540800000000000000
+      internalID: 4994158290282747993
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_14
+      name: FontUISpriteSheet_14
       rect:
         serializedVersion: 2
-        x: 93
-        y: 98
+        x: 209
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -519,18 +531,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 93537cbe3ab2e6a90800000000000000
-      internalID: -7318864361395112647
+      spriteID: 9bb9c9e9cf4476600800000000000000
+      internalID: 461413338612276153
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_15
+      name: FontUISpriteSheet_15
       rect:
         serializedVersion: 2
-        x: 108
-        y: 98
+        x: 224
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -540,18 +552,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0f24e4d9fbc292530800000000000000
-      internalID: 3830642159544845040
+      spriteID: 5121fb887ea943920800000000000000
+      internalID: 2969168373566345749
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_16
+      name: FontUISpriteSheet_16
       rect:
         serializedVersion: 2
-        x: 1
-        y: 83
+        x: 239
+        y: 50
         width: 14
         height: 14
       alignment: 0
@@ -561,18 +573,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6a5c533deaa2c5430800000000000000
-      internalID: 3772937518185825702
+      spriteID: 5b25fdcf0fa68f050800000000000000
+      internalID: 5834530900525666997
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_17
+      name: FontUISpriteSheet_17
       rect:
         serializedVersion: 2
-        x: 16
-        y: 83
+        x: 0
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -582,18 +594,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a49184f449905fef0800000000000000
-      internalID: -75143286191810230
+      spriteID: 2f1ce2a13f6b0ac50800000000000000
+      internalID: 6674535802995655154
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_18
+      name: FontUISpriteSheet_18
       rect:
         serializedVersion: 2
-        x: 31
-        y: 83
+        x: 15
+        y: 35
         width: 12
         height: 14
       alignment: 0
@@ -603,18 +615,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb5f6a38724024da0800000000000000
-      internalID: -5962198388926122564
+      spriteID: 79e19db77e98be5d0800000000000000
+      internalID: -3032178296795619689
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_19
+      name: FontUISpriteSheet_19
       rect:
         serializedVersion: 2
-        x: 44
-        y: 83
+        x: 28
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -624,18 +636,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b517b17fa7086a5b0800000000000000
-      internalID: -5357453441090490021
+      spriteID: f6efb8df4639204f0800000000000000
+      internalID: -863966116541890961
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_20
+      name: FontUISpriteSheet_20
       rect:
         serializedVersion: 2
-        x: 59
-        y: 83
+        x: 43
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -645,18 +657,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 02ce0e9216bdce9d0800000000000000
-      internalID: -2743576862614557664
+      spriteID: f98fa0235b279c9b0800000000000000
+      internalID: -5059386583819814753
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_21
+      name: FontUISpriteSheet_21
       rect:
         serializedVersion: 2
-        x: 74
-        y: 83
+        x: 58
+        y: 35
         width: 12
         height: 14
       alignment: 0
@@ -666,18 +678,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a124e5d85234cb4b0800000000000000
-      internalID: -5423386022696304102
+      spriteID: 467fcdfc87bfb9a90800000000000000
+      internalID: -7305969474176485532
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_22
+      name: FontUISpriteSheet_22
       rect:
         serializedVersion: 2
-        x: 87
-        y: 83
+        x: 71
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -687,18 +699,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4c87a79d1fd713170800000000000000
-      internalID: 8156438877833951428
+      spriteID: f279f0c0b8d54bd00800000000000000
+      internalID: 987517070085166895
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_23
+      name: FontUISpriteSheet_23
       rect:
         serializedVersion: 2
-        x: 102
-        y: 83
+        x: 86
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -708,18 +720,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 50b0d49f207317c60800000000000000
-      internalID: 7814087314376559365
+      spriteID: f33d0ef55bda5ca10800000000000000
+      internalID: 1929139009907381055
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_24
+      name: FontUISpriteSheet_24
       rect:
         serializedVersion: 2
-        x: 1
-        y: 68
+        x: 101
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -729,18 +741,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d3e1fca3c38dc1b90800000000000000
-      internalID: -7269697945286533571
+      spriteID: be716742bd300b890800000000000000
+      internalID: -7444445944298989589
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_25
+      name: FontUISpriteSheet_25
       rect:
         serializedVersion: 2
-        x: 16
-        y: 68
+        x: 116
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -750,18 +762,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2c3ca433a72a5560800000000000000
-      internalID: 7303193327651535916
+      spriteID: f13fcd264a29d4fc0800000000000000
+      internalID: -3508987299920809185
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_26
+      name: FontUISpriteSheet_26
       rect:
         serializedVersion: 2
-        x: 31
-        y: 68
+        x: 131
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -771,18 +783,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 970d966c397f2f680800000000000000
-      internalID: -8722637314202152839
+      spriteID: 2e67c386bfd7271f0800000000000000
+      internalID: -1048637244484847902
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_27
+      name: FontUISpriteSheet_27
       rect:
         serializedVersion: 2
-        x: 46
-        y: 68
+        x: 146
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -792,18 +804,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db96caf35e566d1f0800000000000000
-      internalID: -1020516230262658627
+      spriteID: 5e80d1c30fdb59f90800000000000000
+      internalID: -6947438010650785563
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_28
+      name: FontUISpriteSheet_28
       rect:
         serializedVersion: 2
-        x: 61
-        y: 68
+        x: 161
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -813,18 +825,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 87b3c14e3585c7380800000000000000
-      internalID: -8972199240296285320
+      spriteID: e540c66ece3423dc0800000000000000
+      internalID: -3660788862341610402
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_29
+      name: FontUISpriteSheet_29
       rect:
         serializedVersion: 2
-        x: 76
-        y: 68
+        x: 176
+        y: 35
         width: 12
         height: 14
       alignment: 0
@@ -834,18 +846,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74d428443709017e0800000000000000
-      internalID: -1796777426575798969
+      spriteID: 6f15fe6f7fb2b8bd0800000000000000
+      internalID: -2626957613640756746
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_30
+      name: FontUISpriteSheet_30
       rect:
         serializedVersion: 2
-        x: 89
-        y: 68
+        x: 189
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -855,18 +867,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8dd8d1e856aafdcb0800000000000000
-      internalID: -4836960121619903016
+      spriteID: d0fba4a08f62b42b0800000000000000
+      internalID: -5599338864938664179
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_31
+      name: FontUISpriteSheet_31
       rect:
         serializedVersion: 2
-        x: 104
-        y: 68
+        x: 204
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -876,18 +888,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7544ee8dd273b2a60800000000000000
-      internalID: 7650269062071469143
+      spriteID: e4dd8c5ba1d0a7ae0800000000000000
+      internalID: -1550912713305563826
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_32
+      name: FontUISpriteSheet_32
       rect:
         serializedVersion: 2
-        x: 2
-        y: 53
+        x: 219
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -897,18 +909,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 994da545763a7f1f0800000000000000
-      internalID: -1011159927129189223
+      spriteID: 553f8d6606d5a9650800000000000000
+      internalID: 6240402902298981205
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_33
+      name: FontUISpriteSheet_33
       rect:
         serializedVersion: 2
-        x: 17
-        y: 53
+        x: 234
+        y: 35
         width: 14
         height: 14
       alignment: 0
@@ -918,18 +930,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b1997529073a7ef40800000000000000
-      internalID: 5757750352503347483
+      spriteID: 5641a9de8b0a615d0800000000000000
+      internalID: -3092107378022542235
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_34
+      name: FontUISpriteSheet_34
       rect:
         serializedVersion: 2
-        x: 32
-        y: 53
+        x: 0
+        y: 20
         width: 12
         height: 14
       alignment: 0
@@ -939,19 +951,61 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c156c4d07175b1130800000000000000
-      internalID: 3538517688748631324
+      spriteID: 41f9da9f0e4625a60800000000000000
+      internalID: 7661296833534992148
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_35
+      name: FontUISpriteSheet_35
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 20
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c297d6b114a81bd0800000000000000
+      internalID: -2659195183973297468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FontUISpriteSheet_36
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 20
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29f0cfadba38b14f0800000000000000
+      internalID: -856946529947349102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FontUISpriteSheet_37
       rect:
         serializedVersion: 2
         x: 45
-        y: 53
-        width: 14
+        y: 20
+        width: 8
         height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -960,18 +1014,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e18d541c4cd507b80800000000000000
-      internalID: -8399110205408421858
+      spriteID: c51a5f67fac8c9140800000000000000
+      internalID: 4727808394075152732
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_36
+      name: FontUISpriteSheet_38
       rect:
         serializedVersion: 2
-        x: 63
-        y: 53
+        x: 54
+        y: 20
         width: 16
         height: 14
       alignment: 0
@@ -981,18 +1035,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3211a03d8c7257370800000000000000
-      internalID: 8319599630124454179
+      spriteID: f7890afa375de3850800000000000000
+      internalID: 6358754416738211967
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_37
+      name: FontUISpriteSheet_39
       rect:
         serializedVersion: 2
-        x: 80
-        y: 53
+        x: 71
+        y: 20
         width: 16
         height: 14
       alignment: 0
@@ -1002,41 +1056,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4ed52bc9d3a3f1700800000000000000
-      internalID: 513192918839877092
+      spriteID: 7d04a5fe61bec8b20800000000000000
+      internalID: 3138141524107870423
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: font_38
+      name: FontUISpriteSheet_40
       rect:
         serializedVersion: 2
-        x: 97
-        y: 55
-        width: 28
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 75b705515df960030800000000000000
-      internalID: 3460629101215251287
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: font_39
-      rect:
-        serializedVersion: 2
-        x: 60
-        y: 56
+        x: 89
+        y: 20
         width: 2
-        height: 8
+        height: 14
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1044,8 +1077,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b9aea651a1857a680800000000000000
-      internalID: -8743923282464806245
+      spriteID: cad377f2ab58b54c0800000000000000
+      internalID: -4297694384688251476
       vertices: []
       indices: 
       edges: []
