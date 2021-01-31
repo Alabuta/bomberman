@@ -283,7 +283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0.1882353, g: 0.1882353, b: 0.1882353, a: 1}
-  m_EffectDistance: {x: 1, y: -1}
+  m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
 --- !u!114 &310155270
 MonoBehaviour:
@@ -318,9 +318,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.6
-  m_Text: '!0-0 0123456789
+  m_Text: 'GAME START
 
-    ABCDEFGHIJKLMNOPQRSTUVWX'
+    1991-1992 0123456789
+
+    ABCDEFGHIJKLMNOPQRSTUVWXYZ-!<>:'
 --- !u!222 &310155271
 CanvasRenderer:
   m_ObjectHideFlags: 0
