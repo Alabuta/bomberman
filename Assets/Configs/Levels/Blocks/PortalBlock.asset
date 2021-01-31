@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecfe405814964097b21cfa047fa39dbb, type: 3}
-  m_Name: PillarTileConfig
+  m_Script: {fileID: 11500000, guid: be36176d17db48e0b01eadd8cac74f7a, type: 3}
+  m_Name: PortalBlock
   m_EditorClassIdentifier: 
-  MovementSpeedMultiplier: 0
-  Strengh: -1
-  Prefab: {fileID: 8666759617963854964, guid: 9ad4f47c6f37d944b8881ac32603b2dd, type: 3}
+  Prefab: {fileID: 2551957320819531834, guid: 9e0eeed35f429114a96eed3463274292, type: 3}
+  Enemies: []

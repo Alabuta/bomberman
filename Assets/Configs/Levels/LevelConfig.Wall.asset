@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82ee71d5fae344129108f547d4b05471, type: 3}
+  m_Name: LevelConfig.Wall
+  m_EditorClassIdentifier: 
+  Name: Wall
+  ColumnsNumber: 13
+  RowsNumber: 11
+  SoftBlocksCoverage: 30
+  CameraPosition:
+    x: 0
+    y: 0
+    z: 0
+  PlayersSpawnCells:
+  - x: 0
+    y: 0
+  Walls: {fileID: 162705767822815630, guid: 8c634c1303dbe3342b70fc802f196125, type: 3}
+  Enemies: []
+  FloorTile: {fileID: 9165388945864088778, guid: bd514496213c7fe47bac249509ad5c27, type: 3}
+  PortalBlock: {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
+  HardBlock: {fileID: 11400000, guid: bb2ce871e59ad11419e61453ebbe4e59, type: 2}
+  SoftBlock: {fileID: 11400000, guid: d6724458eb0d190478eecb58b2049449, type: 2}
