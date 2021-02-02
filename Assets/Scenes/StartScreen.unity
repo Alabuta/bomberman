@@ -218,7 +218,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &310155266
 RectTransform:
   m_ObjectHideFlags: 0
@@ -233,10 +233,10 @@ RectTransform:
   m_Father: {fileID: 2055410357}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 5, y: -605.16895}
+  m_SizeDelta: {x: 1024, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &310155267
 CanvasGroup:
@@ -306,8 +306,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: e47fc89a65164b24ab5e806d0ce87111, type: 2}
-    m_FontSize: 0
+    m_Font: {fileID: 12800000, guid: 76b9e8af5504f1e4d87a27f22439c603, type: 3}
+    m_FontSize: 16
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 0
@@ -649,7 +649,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &509400160
 RectTransform:
   m_ObjectHideFlags: 0
@@ -664,10 +664,10 @@ RectTransform:
   m_Father: {fileID: 2055410357}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 5, y: -478.79312}
+  m_SizeDelta: {x: 1024, y: 88.44828}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &509400161
 MonoBehaviour:
@@ -1119,7 +1119,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1345047269
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1129,15 +1129,15 @@ RectTransform:
   m_GameObject: {fileID: 1345047268}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1000001, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2055410357}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 5, y: -464.57397}
-  m_SizeDelta: {x: 1024, y: 60.01}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1345047270
 MonoBehaviour:
@@ -1155,23 +1155,23 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'COPYRIGHT 2021
+  m_text: 'COPYRIGHT 1991-1992
 
-    THE TRIPLE A GAMES'
+    HUDSON SOFTE'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9fe26138c30e1e641b999a8a67d6ea5a, type: 2}
-  m_sharedMaterial: {fileID: -6263737099439866273, guid: 9fe26138c30e1e641b999a8a67d6ea5a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 57c5d1542ca4bd542b7996260c2fa63f, type: 2}
+  m_sharedMaterial: {fileID: 2894117516357685976, guid: 57c5d1542ca4bd542b7996260c2fa63f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4283560947
-  m_fontColor: {r: 0.9529412, g: 0.9529412, b: 0.31764707, a: 1}
+  m_fontColor: {r: 0.95294124, g: 0.95294124, b: 0.31764707, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1188,8 +1188,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 36
+  m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1198,9 +1198,9 @@ MonoBehaviour:
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_characterSpacing: 4
+  m_wordSpacing: 50
+  m_lineSpacing: 16
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -1210,9 +1210,9 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_enableExtraPadding: 0
+  m_enableExtraPadding: 1
   checkPaddingRequired: 0
-  m_isRichText: 1
+  m_isRichText: 0
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
@@ -1935,7 +1935,7 @@ Canvas:
   m_GameObject: {fileID: 1931118228}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_Camera: {fileID: 1912681169}
   m_PlaneDistance: 1
   m_PixelPerfect: 1

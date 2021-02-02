@@ -11,7 +11,7 @@ TrueTypeFontImporter:
   fontNames:
   - FontUI
   fallbackFontReferences: []
-  customCharacters: ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!-:<>
+  customCharacters: '!-.0123456789:<>ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   fontRenderingMode: 1
   ascentCalculationMode: 1
   useLegacyBoundsCalculation: 0
