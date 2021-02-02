@@ -1380,6 +1380,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9072115223144549180, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
+      propertyPath: m_Text
+      value: GAME START
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
 --- !u!224 &1392455886 stripped
@@ -1548,10 +1552,10 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 35
+    m_Top: 34
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 16
+  m_Spacing: 13
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -1578,7 +1582,7 @@ MonoBehaviour:
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
-  m_LayoutPriority: 1
+  m_LayoutPriority: 2
 --- !u!114 &1613350304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1712,11 +1716,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 1988928d6de1c1c46982012cbc0af135, type: 3}
-    m_FontSize: 40
+    m_Font: {fileID: 12800000, guid: 76b9e8af5504f1e4d87a27f22439c603, type: 3}
+    m_FontSize: 32
     m_FontStyle: 1
     m_BestFit: 0
-    m_MinSize: 36
+    m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 1
@@ -1724,7 +1728,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: PUSH FIRE BUTTON!
+  m_Text: PUSH    FIRE   BUTTON!
 --- !u!222 &1670986815
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1935,7 +1939,7 @@ Canvas:
   m_GameObject: {fileID: 1931118228}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1912681169}
   m_PlaneDistance: 1
   m_PixelPerfect: 1
@@ -2008,7 +2012,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -515.4492}
+  m_AnchoredPosition: {x: 0, y: -502}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &2055410358
@@ -2029,7 +2033,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 60
+  m_Spacing: 88
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1

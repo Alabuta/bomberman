@@ -204,13 +204,13 @@ MonoBehaviour:
   m_Color: {r: 0.9529412, g: 0.9529412, b: 0.9529412, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: -8, z: 0, w: -8}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 1988928d6de1c1c46982012cbc0af135, type: 3}
-    m_FontSize: 40
+    m_Font: {fileID: 12800000, guid: 76b9e8af5504f1e4d87a27f22439c603, type: 3}
+    m_FontSize: 32
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 3
