@@ -9,14 +9,17 @@ namespace App.Level
 {
     public class LevelRenderer : MonoBehaviour
     {
-        public LevelConfig LevelConfig;
+        [SerializeField]
+        private LevelConfig LevelConfig;
+
+        public LevelGrid LevelGrid { get; private set; }
 
         public void Start()
         {
             var columnsNumber = LevelConfig.ColumnsNumber;
             var rowsNumber = LevelConfig.RowsNumber;
 
-            var levelGrid = new LevelGrid(LevelConfig);
+            LevelGrid = new LevelGrid(LevelConfig);
 
             var floorTilesGroup = GameObject.Find("FloorTiles");
             var hardBlocksGroup = GameObject.Find("HardBlocks");
@@ -37,7 +40,7 @@ namespace App.Level
                 // ReSharper disable once PossibleLossOfFraction
                 var position = startPosition + new Vector3(index % columnsNumber, index / columnsNumber);
 
-                var (parent, prefab) = tuples[levelGrid[index]];
+                var (parent, prefab) = tuples[LevelGrid[index]];
                 Instantiate(prefab, position, Quaternion.identity, parent);
             }
 

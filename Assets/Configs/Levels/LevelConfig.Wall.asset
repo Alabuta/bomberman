@@ -20,11 +20,12 @@ MonoBehaviour:
     x: 0
     y: 0
     z: 0
-  PlayersSpawnCells:
+  PlayersSpawnCorners:
   - x: 0
-    y: 0
+    y: 1
   Walls: {fileID: 162705767822815630, guid: 8c634c1303dbe3342b70fc802f196125, type: 3}
   Enemies: []
+  PortalEnemies: []
   FloorTile: {fileID: 9165388945864088778, guid: bd514496213c7fe47bac249509ad5c27, type: 3}
   PortalBlock: {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
   HardBlock: {fileID: 11400000, guid: bb2ce871e59ad11419e61453ebbe4e59, type: 2}

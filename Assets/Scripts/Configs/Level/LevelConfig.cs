@@ -27,6 +27,7 @@ namespace Configs.Level
 
         [Header("Enemy Configs")]
         public EnemyConfig[] Enemies;
+        public EnemyConfig[] PortalEnemies;
 
         [Header("Block Configs")]
         public GameObject FloorTile;
