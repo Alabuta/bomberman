@@ -60,15 +60,15 @@ namespace App.Level
             var cellTypeNumbers = math.int2(floorCellsNumber, softBlocksNumber);
 
             _grid = Enumerable
-                .Repeat(GridTileType.HardBlock, totalCellsNumber + reservedCellsNumber)
-                .Select((type, i) =>
+                .Range(0, totalCellsNumber + reservedCellsNumber)
+                .Select(i =>
                 {
                     if (reservedCellsIndices.Contains(i))
                         return GridTileType.FloorTile;
 
                     var coordinate = math.int2(i % _size.x, i / _size.x);
                     if (math.all(coordinate % 2 == 1))
-                        return type;
+                        return GridTileType.HardBlock;
 
                     var range = (int2) (cellTypeNumbers == int2.zero);
 

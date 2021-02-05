@@ -21,14 +21,12 @@ namespace App.Level
 
             LevelGrid = new LevelGrid(LevelConfig);
 
-            var floorTilesGroup = GameObject.Find("FloorTiles");
             var hardBlocksGroup = GameObject.Find("HardBlocks");
             var softBlocksGroup = GameObject.Find("SoftBlocks");
 
             // :TODO: refactor
-            var tuples = new Dictionary<GridTileType, (Transform, GameObject)>
+            var blocks = new Dictionary<GridTileType, (Transform, GameObject)>
             {
-                {GridTileType.FloorTile, (floorTilesGroup.transform, LevelConfig.FloorTile)},
                 {GridTileType.HardBlock, (hardBlocksGroup.transform, LevelConfig.HardBlock.Prefab)},
                 {GridTileType.SoftBlock, (softBlocksGroup.transform, LevelConfig.SoftBlock.Prefab)}
             };
@@ -37,10 +35,15 @@ namespace App.Level
 
             for (var index = 0; index < columnsNumber * rowsNumber; ++index)
             {
+                var blockType = LevelGrid[index];
+
+                if (blockType == GridTileType.FloorTile)
+                    continue;
+
                 // ReSharper disable once PossibleLossOfFraction
                 var position = startPosition + new Vector3(index % columnsNumber, index / columnsNumber);
 
-                var (parent, prefab) = tuples[LevelGrid[index]];
+                var (parent, prefab) = blocks[blockType];
                 Instantiate(prefab, position, Quaternion.identity, parent);
             }
 

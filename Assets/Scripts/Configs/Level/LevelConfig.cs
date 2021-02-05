@@ -30,8 +30,6 @@ namespace Configs.Level
         public EnemyConfig[] PortalEnemies;
 
         [Header("Block Configs")]
-        public GameObject FloorTile;
-
         public PortalBlock PortalBlock;
 
         public HardBlock HardBlock;
