@@ -9,6 +9,7 @@ TagManager:
   - Collectable
   - Explosive
   - Effect
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -22,7 +23,7 @@ TagManager:
   - Walls
   - Explosives
   - Effects
-  - 
+  - Blocks
   - 
   - 
   - 
@@ -55,7 +56,7 @@ TagManager:
   - name: Collectable
     uniqueID: 372375065
     locked: 0
-  - name: Wall
+  - name: Block
     uniqueID: 1350269783
     locked: 0
   - name: Explosive
@@ -69,6 +70,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 27102433
+    locked: 0
+  - name: Wall
+    uniqueID: 3477028067
     locked: 0
   - name: Foreground
     uniqueID: 1615881635
