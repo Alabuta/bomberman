@@ -16,13 +16,16 @@ MonoBehaviour:
   ColumnsNumber: 13
   RowsNumber: 11
   SoftBlocksCoverage: 30
-  CameraPosition:
-    x: 0
-    y: 0
-    z: 0
+  WallsSize:
+    x: 4
+    y: 2
+  CameraPositionOffset:
+    x: 2
+    y: 1
+    z: -1
   PlayersSpawnCorners:
   - x: 0
-    y: 1
+    y: 0
   Walls: {fileID: 162705767822815630, guid: 8c634c1303dbe3342b70fc802f196125, type: 3}
   Enemies: []
   PortalEnemies: []

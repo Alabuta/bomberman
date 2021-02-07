@@ -8,6 +8,8 @@ namespace App.Level
 {
     public class LevelRenderer : MonoBehaviour
     {
+        private float4 _cameraBounds;
+
         [SerializeField]
         private LevelConfig LevelConfig;
 
@@ -19,6 +21,30 @@ namespace App.Level
 
             var columnsNumber = LevelGrid.ColumnsNumber;
             var rowsNumber = LevelGrid.RowsNumber;
+
+            if (Camera.main)
+            {
+                var orthographicSize = Camera.main.orthographicSize;
+                var cameraSize = math.float2(
+                    orthographicSize * Screen.width / Screen.height,
+                    orthographicSize
+                );
+
+                // _cameraBounds.xz = (LevelGrid.Size.x + LevelConfig.WallsSize) / 2.0f;
+                _cameraBounds.xz = math.float2(-1, 1) * (LevelGrid.Size.x + LevelConfig.WallsSize) / 2.0f;
+
+                var levelGridSize = math.float2(LevelGrid.Size) / 2.0f;
+
+                var firstPlayerCorner = LevelConfig.PlayersSpawnCorners.FirstOrDefault();
+                var direction = math.select(1, -1, firstPlayerCorner == int2.zero);
+
+                var cameraPosition = math.float3(LevelGrid.Size + LevelConfig.WallsSize, 0);
+
+                var cameraTransform = Camera.main.transform;
+                // cameraTransform.position = (cameraPosition + LevelConfig.CameraPositionOffset) * math.float3(direction, 1);
+
+                Debug.LogWarning($"{cameraSize} {levelGridSize} {cameraPosition}");
+            }
 
             var hardBlocksGroup = new GameObject("HardBlocks");
             var softBlocksGroup = new GameObject("SoftBlocks");

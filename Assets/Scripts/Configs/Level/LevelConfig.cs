@@ -17,7 +17,8 @@ namespace Configs.Level
         [Range(0, 100)]
         public int SoftBlocksCoverage = 30;
 
-        public float3 CameraPosition = float3.zero;
+        public int2 WallsSize = int2.zero;
+        public float3 CameraPositionOffset = float3.zero;
 
         public int2[] PlayersSpawnCorners = {int2.zero};
 
