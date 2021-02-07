@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Configs.Enemy;
+﻿using Configs.Enemy;
 using Configs.Level.Tile;
 using Unity.Mathematics;
 using UnityEngine;
@@ -28,6 +27,9 @@ namespace Configs.Level
         [Header("Enemy Configs")]
         public EnemyConfig[] Enemies;
         public EnemyConfig[] PortalEnemies;
+
+        public uint TimeIsUpEnemiesNumber = 20;
+        public EnemyConfig TimeIsUpEnemyConfig;
 
         [Header("Block Configs")]
         public PortalBlock PortalBlock;
