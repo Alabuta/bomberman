@@ -21,6 +21,8 @@ namespace App.Level
 
         private readonly int2 _size;
 
+        public int2 Size => _size;
+
         public int ColumnsNumber => _size.x;
         public int RowsNumber => _size.y;
 
@@ -38,7 +40,7 @@ namespace App.Level
                 .SelectMany(corner =>
                 {
                     var coordinate = corner * (_size - 1);
-                    var offset = math.select(math.int2(-1), math.int2(1), corner == int2.zero);
+                    var offset = math.select(-1, 1, corner == int2.zero);
 
                     return new[]
                     {

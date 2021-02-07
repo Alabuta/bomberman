@@ -1,9 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Configs.Level;
+using Unity.Mathematics;
 using UnityEngine;
-using Quaternion = UnityEngine.Quaternion;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
 
 namespace App.Level
 {
@@ -12,17 +11,17 @@ namespace App.Level
         [SerializeField]
         private LevelConfig LevelConfig;
 
-        public LevelGrid LevelGrid { get; private set; }
+        private LevelGrid LevelGrid { get; set; }
 
         public void Start()
         {
-            var columnsNumber = LevelConfig.ColumnsNumber;
-            var rowsNumber = LevelConfig.RowsNumber;
-
             LevelGrid = new LevelGrid(LevelConfig);
 
-            var hardBlocksGroup = GameObject.Find("HardBlocks");
-            var softBlocksGroup = GameObject.Find("SoftBlocks");
+            var columnsNumber = LevelGrid.ColumnsNumber;
+            var rowsNumber = LevelGrid.RowsNumber;
+
+            var hardBlocksGroup = new GameObject("HardBlocks");
+            var softBlocksGroup = new GameObject("SoftBlocks");
 
             // :TODO: refactor
             var blocks = new Dictionary<GridTileType, (Transform, GameObject)>
@@ -31,7 +30,7 @@ namespace App.Level
                 {GridTileType.SoftBlock, (softBlocksGroup.transform, LevelConfig.SoftBlock.Prefab)}
             };
 
-            var startPosition = (Vector3.one - new Vector3(columnsNumber, rowsNumber)) / 2;
+            var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
 
             for (var index = 0; index < columnsNumber * rowsNumber; ++index)
             {
@@ -41,7 +40,7 @@ namespace App.Level
                     continue;
 
                 // ReSharper disable once PossibleLossOfFraction
-                var position = startPosition + new Vector3(index % columnsNumber, index / columnsNumber);
+                var position = startPosition + math.float3(index % columnsNumber, index / columnsNumber, 0);
 
                 var (parent, prefab) = blocks[blockType];
                 Instantiate(prefab, position, Quaternion.identity, parent);
