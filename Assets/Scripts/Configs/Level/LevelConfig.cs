@@ -19,6 +19,7 @@ namespace Configs.Level
 
         public int2 WallsSize = int2.zero;
         public float3 CameraPositionOffset = float3.zero;
+        public float2 CameraViewportPadding = float2.zero;
 
         public int2[] PlayersSpawnCorners = {int2.zero};
 

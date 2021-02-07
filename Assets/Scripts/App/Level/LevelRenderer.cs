@@ -24,36 +24,28 @@ namespace App.Level
 
             if (Camera.main)
             {
-                var orthographicSize = Camera.main.orthographicSize;
-                var cameraSize = math.float2(
-                    orthographicSize * Screen.width / Screen.height,
-                    orthographicSize
-                );
-
-                // _cameraBounds.xz = (LevelGrid.Size.x + LevelConfig.WallsSize) / 2.0f;
-                _cameraBounds.xz = math.float2(-1, 1) * (LevelGrid.Size.x + LevelConfig.WallsSize) / 2.0f;
-
-                var levelGridSize = math.float2(LevelGrid.Size) / 2.0f;
+                var cameraRect = math.float2((float) Screen.width / Screen.height, 1) * Camera.main.orthographicSize;
+                cameraRect += LevelConfig.CameraViewportPadding;
 
                 var firstPlayerCorner = LevelConfig.PlayersSpawnCorners.FirstOrDefault();
-                var direction = math.select(1, -1, firstPlayerCorner == int2.zero);
+                var offsetDirection = math.select(1, -1, firstPlayerCorner == int2.zero);
 
-                var cameraPosition = math.float3(LevelGrid.Size + LevelConfig.WallsSize, 0);
+                var cameraPosition = math.max(math.float2(LevelGrid.Size) / 2.0f - cameraRect, 0) * offsetDirection;
 
                 var cameraTransform = Camera.main.transform;
-                // cameraTransform.position = (cameraPosition + LevelConfig.CameraPositionOffset) * math.float3(direction, 1);
+                cameraTransform.position = math.float3(cameraPosition, -1);
 
-                Debug.LogWarning($"{cameraSize} {levelGridSize} {cameraPosition}");
+                Debug.LogWarning($"cameraRect {cameraRect} cameraPosition {cameraPosition} offsetDirection {offsetDirection}");
             }
 
             var hardBlocksGroup = new GameObject("HardBlocks");
             var softBlocksGroup = new GameObject("SoftBlocks");
 
             // :TODO: refactor
-            var blocks = new Dictionary<GridTileType, (Transform, GameObject)>
+            var blocks = new Dictionary<GridTileType, (GameObject, GameObject)>
             {
-                {GridTileType.HardBlock, (hardBlocksGroup.transform, LevelConfig.HardBlock.Prefab)},
-                {GridTileType.SoftBlock, (softBlocksGroup.transform, LevelConfig.SoftBlock.Prefab)}
+                {GridTileType.HardBlock, (hardBlocksGroup, LevelConfig.HardBlock.Prefab)},
+                {GridTileType.SoftBlock, (softBlocksGroup, LevelConfig.SoftBlock.Prefab)}
             };
 
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
@@ -69,7 +61,7 @@ namespace App.Level
                 var position = startPosition + math.float3(index % columnsNumber, index / columnsNumber, 0);
 
                 var (parent, prefab) = blocks[blockType];
-                Instantiate(prefab, position, Quaternion.identity, parent);
+                Instantiate(prefab, position, Quaternion.identity, parent.transform);
             }
 
             var walls = Instantiate(LevelConfig.Walls, Vector3.zero, Quaternion.identity);

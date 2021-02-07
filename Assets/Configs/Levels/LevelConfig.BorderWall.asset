@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LevelConfig.BorderWall
   m_EditorClassIdentifier: 
   Name: Border Wall
-  ColumnsNumber: 13
+  ColumnsNumber: 27
   RowsNumber: 11
   SoftBlocksCoverage: 30
   WallsSize:
@@ -23,9 +23,12 @@ MonoBehaviour:
     x: 2
     y: 1
     z: -1
+  CameraViewportPadding:
+    x: -1.5
+    y: -1
   PlayersSpawnCorners:
   - x: 0
-    y: 0
+    y: 1
   Walls: {fileID: 162705767822815630, guid: 8c634c1303dbe3342b70fc802f196125, type: 3}
   Enemies: []
   PortalEnemies: []
