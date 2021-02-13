@@ -22,20 +22,38 @@ namespace App.Level
             var columnsNumber = LevelGrid.ColumnsNumber;
             var rowsNumber = LevelGrid.RowsNumber;
 
-            if (Camera.main)
+            var walls = Instantiate(LevelConfig.Walls, Vector3.zero, Quaternion.identity);
+            var sprite = walls.GetComponent<SpriteRenderer>();
+            sprite.size += new Vector2(columnsNumber, rowsNumber);
+
+            var mainCamera = Camera.main;
+            if (mainCamera)
             {
-                var cameraRect = math.float2((float) Screen.width / Screen.height, 1) * Camera.main.orthographicSize;
-                cameraRect += LevelConfig.CameraViewportPadding;
+                var cameraPlayerFocusArea = math.float2(0);
+
+                var cameraRect = math.float2(Screen.width * 2.0f / Screen.height, 1) * mainCamera.orthographicSize;
+                var ppu = mainCamera.pixelHeight / mainCamera.orthographicSize * 0.5f;
+                var viewportPadding = (float4) LevelConfig.CameraViewportPadding / ppu;
+
+                // cameraRect += math.float2(viewportPadding);
+
+                var area = (LevelGrid.Size + math.float2(3, -2) - cameraRect) / 2.0f;
 
                 var firstPlayerCorner = LevelConfig.PlayersSpawnCorners.FirstOrDefault();
-                var offsetDirection = math.select(1, -1, firstPlayerCorner == int2.zero);
+                var position = (firstPlayerCorner - math.float2(0.5f)) * LevelGrid.Size;
+                // var offsetDirection = math.select(1, -1, firstPlayerCorner == int2.zero);
+                position = math.clamp(position, -area - math.float2(0, -1.625f), area - math.float2(0, 0.125f));
 
-                var cameraPosition = math.max(math.float2(LevelGrid.Size) / 2.0f - cameraRect, 0) * offsetDirection;
+                /*var cameraPosition = math.max(math.float2(LevelGrid.Size) / 2.0f - cameraRect, 0) * offsetDirection;
 
-                var cameraTransform = Camera.main.transform;
-                cameraTransform.position = math.float3(cameraPosition, -1);
+                Debug.LogWarning(
+                    $"ppu {ppu} cameraRect {cameraRect} pixelRect {math.float2(mainCamera.pixelWidth, mainCamera.pixelHeight)} viewportPadding {viewportPadding}");*/
 
-                Debug.LogWarning($"cameraRect {cameraRect} cameraPosition {cameraPosition} offsetDirection {offsetDirection}");
+                var cameraTransform = mainCamera.transform;
+                cameraTransform.position = math.float3(position, -1);
+
+                Debug.LogWarning(
+                    $"ppu {ppu} cameraRect {cameraRect} position {position}");
             }
 
             var hardBlocksGroup = new GameObject("HardBlocks");
@@ -63,10 +81,6 @@ namespace App.Level
                 var (parent, prefab) = blocks[blockType];
                 Instantiate(prefab, position, Quaternion.identity, parent.transform);
             }
-
-            var walls = Instantiate(LevelConfig.Walls, Vector3.zero, Quaternion.identity);
-            var sprite = walls.GetComponent<SpriteRenderer>();
-            sprite.size += new Vector2(columnsNumber, rowsNumber);
         }
     }
 }
