@@ -16,10 +16,12 @@ namespace Configs.Level
         [Range(11, 63)]
         public int RowsNumber;
 
+        public int OriginalPixelsPerUnits = 16;
+
         [Range(0, 100)]
         public int SoftBlocksCoverage = 30;
 
-        public int4 CameraViewportPadding = int4.zero;
+        public int4 ViewportPadding = int4.zero;
 
         public int2[] PlayersSpawnCorners = {int2.zero};
 
