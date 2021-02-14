@@ -11,13 +11,17 @@ namespace Configs.Level
         [Header("General Configs")]
         public string Name;
 
+        [Range(13, 65)]
         public int ColumnsNumber;
+        [Range(11, 63)]
         public int RowsNumber;
+
+        public int OriginalPixelsPerUnits = 16;
 
         [Range(0, 100)]
         public int SoftBlocksCoverage = 30;
 
-        public float3 CameraPosition = float3.zero;
+        public int4 ViewportPadding = int4.zero;
 
         public int2[] PlayersSpawnCorners = {int2.zero};
 

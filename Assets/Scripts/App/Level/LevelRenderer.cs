@@ -20,14 +20,30 @@ namespace App.Level
             var columnsNumber = LevelGrid.ColumnsNumber;
             var rowsNumber = LevelGrid.RowsNumber;
 
+            var mainCamera = Camera.main;
+            if (mainCamera)
+            {
+                var cameraRect = math.float2(Screen.width * 2.0f / Screen.height, 1) * mainCamera.orthographicSize;
+
+                var fieldRect = (LevelGrid.Size - cameraRect) / 2.0f;
+                var fieldMargins = (float4) LevelConfig.ViewportPadding / LevelConfig.OriginalPixelsPerUnits;
+
+                var firstPlayerCorner = LevelConfig.PlayersSpawnCorners.FirstOrDefault();
+
+                var camePosition = (firstPlayerCorner - (float2) 0.5f) * LevelGrid.Size;
+                camePosition = math.clamp(camePosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
+
+                mainCamera.transform.position = math.float3(camePosition, -1);
+            }
+
             var hardBlocksGroup = new GameObject("HardBlocks");
             var softBlocksGroup = new GameObject("SoftBlocks");
 
             // :TODO: refactor
-            var blocks = new Dictionary<GridTileType, (Transform, GameObject)>
+            var blocks = new Dictionary<GridTileType, (GameObject, GameObject)>
             {
-                {GridTileType.HardBlock, (hardBlocksGroup.transform, LevelConfig.HardBlock.Prefab)},
-                {GridTileType.SoftBlock, (softBlocksGroup.transform, LevelConfig.SoftBlock.Prefab)}
+                {GridTileType.HardBlock, (hardBlocksGroup, LevelConfig.HardBlock.Prefab)},
+                {GridTileType.SoftBlock, (softBlocksGroup, LevelConfig.SoftBlock.Prefab)}
             };
 
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
@@ -43,7 +59,7 @@ namespace App.Level
                 var position = startPosition + math.float3(index % columnsNumber, index / columnsNumber, 0);
 
                 var (parent, prefab) = blocks[blockType];
-                Instantiate(prefab, position, Quaternion.identity, parent);
+                Instantiate(prefab, position, Quaternion.identity, parent.transform);
             }
 
             var walls = Instantiate(LevelConfig.Walls, Vector3.zero, Quaternion.identity);
