@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LevelConfig.BorderWall
   m_EditorClassIdentifier: 
   Name: Border Wall
-  ColumnsNumber: 17
-  RowsNumber: 15
+  ColumnsNumber: 13
+  RowsNumber: 11
   OriginalPixelsPerUnits: 16
   SoftBlocksCoverage: 30
   ViewportPadding:

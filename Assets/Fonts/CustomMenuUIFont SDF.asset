@@ -241,9 +241,9 @@ MonoBehaviour:
     m_Metrics:
       m_Width: 13
       m_Height: 49
-      m_HorizontalBearingX: 36
+      m_HorizontalBearingX: 40
       m_HorizontalBearingY: 67
-      m_HorizontalAdvance: 55
+      m_HorizontalAdvance: 95
     m_GlyphRect:
       m_X: 32
       m_Y: 926
@@ -1103,7 +1103,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: CustomMenuUIFont SDF Material
   m_Shader: {fileID: 4800000, guid: c8d12adcee749c344b8117cf7c7eb912, type: 3}
-  m_ShaderKeywords: UNDERLAY_ON
+  m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
