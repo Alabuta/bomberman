@@ -8,9 +8,12 @@ public class PlayerController : MonoBehaviour
     private static readonly int VerticalSpeed = Animator.StringToHash("VerticalSpeed");
     private static readonly int HorizontalSpeed = Animator.StringToHash("HorizontalSpeed");
 
+    private static readonly float2 HorizontalMovementMask = new float2(1, 0);
+    private static readonly float2 VerticalMovementMask = new float2(0, 1);
+
     public float Speed;
 
-    private float2 _movementVector = float2.zero;
+    private float3 _movementVector = float3.zero;
     private Animator _animator;
 
     private void Start()
@@ -23,6 +26,8 @@ public class PlayerController : MonoBehaviour
         _movementVector.x = Input.GetAxis("Horizontal");
         _movementVector.y = Input.GetAxis("Vertical");
 
+        _movementVector.xy *= math.select(HorizontalMovementMask, VerticalMovementMask, _movementVector.y != 0);
+
         _animator.SetFloat(HorizontalSpeed, _movementVector.x);
         _animator.SetFloat(VerticalSpeed, _movementVector.y);
 
@@ -31,10 +36,6 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_movementVector.y != 0)
-            transform.Translate(0, _movementVector.y * Time.fixedDeltaTime, 0);
-
-        else if (_movementVector.x != 0)
-            transform.Translate(_movementVector.x * Time.fixedDeltaTime, 0, 0);
+        transform.Translate(_movementVector * Time.fixedDeltaTime);
     }
 }
