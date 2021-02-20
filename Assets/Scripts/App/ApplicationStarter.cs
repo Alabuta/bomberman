@@ -1,4 +1,7 @@
-﻿using UnityEngine.Assertions;
+﻿using Configs;
+using Configs.Singletons;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace App
 {
@@ -6,7 +9,10 @@ namespace App
     {
         public ApplicationStarter()
         {
-            ;
+            var applicationConfig = ApplicationConfig.Instance;
+
+            QualitySettings.vSyncCount = applicationConfig.EnableVSync ? 1 : 0;
+            Application.targetFrameRate = applicationConfig.TargetFrameRate;
         }
 
         public void StartGame()

@@ -1,9 +1,8 @@
-using System;
 using Unity.Mathematics;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class PlayerController : MonoBehaviour
+public class CharacterController : MonoBehaviour
 {
     private static readonly int VerticalSpeed = Animator.StringToHash("VerticalSpeed");
     private static readonly int HorizontalSpeed = Animator.StringToHash("HorizontalSpeed");
