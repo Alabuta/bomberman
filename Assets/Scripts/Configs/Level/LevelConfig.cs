@@ -1,5 +1,6 @@
 ﻿using Configs.Enemy;
 using Configs.Level.Tile;
+using Configs.PowerUp;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -25,6 +26,8 @@ namespace Configs.Level
 
         public int2[] PlayersSpawnCorners = {int2.zero};
 
+        public PowerUpEffectConfig[] PowerUps;
+
         [Header("General Prefabs")]
         public GameObject Walls;
 
@@ -32,21 +35,12 @@ namespace Configs.Level
         public EnemyConfig[] Enemies;
         public EnemyConfig[] PortalEnemies;
 
-        public uint TimeIsUpEnemiesNumber = 20;
-        public EnemyConfig TimeIsUpEnemyConfig;
+        public EnemyConfig[] TimeIsUpEnemyConfigs;
 
         [Header("Block Configs")]
         public PortalBlock PortalBlock;
 
         public HardBlock HardBlock;
         public SoftBlock SoftBlock;
-
-        /*
-         * [Header("PowerUp Configs")]
-         * public PowerUpConfig[] PowerUps;
-         *
-         * [Header("Pit and Hazard Configs")]
-         * ...
-         */
     }
 }

@@ -16,7 +16,7 @@ MonoBehaviour:
   ColumnsNumber: 13
   RowsNumber: 11
   OriginalPixelsPerUnits: 16
-  SoftBlocksCoverage: 30
+  SoftBlocksCoverage: 0
   ViewportPadding:
     x: -24
     y: 42
