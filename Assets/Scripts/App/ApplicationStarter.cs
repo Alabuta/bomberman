@@ -1,5 +1,4 @@
-﻿using Configs;
-using Configs.Singletons;
+﻿using Configs.Singletons;
 using UnityEngine;
 using UnityEngine.Assertions;
 
