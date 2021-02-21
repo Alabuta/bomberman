@@ -10,6 +10,7 @@ TagManager:
   - Explosive
   - Effect
   - Wall
+  - PowerItem
   layers:
   - Default
   - TransparentFX
@@ -25,7 +26,7 @@ TagManager:
   - Effects
   - Blocks
   - Player
-  - 
+  - PowerItems
   - 
   - 
   - 
@@ -55,6 +56,9 @@ TagManager:
     locked: 0
   - name: Collectable
     uniqueID: 372375065
+    locked: 0
+  - name: PowerItem
+    uniqueID: 1083287439
     locked: 0
   - name: Block
     uniqueID: 1350269783
