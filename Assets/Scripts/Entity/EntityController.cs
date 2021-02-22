@@ -15,7 +15,7 @@ namespace Entity
 
         protected Animator Animator;
 
-        protected float3 MovementVector = float3.zero;
+        protected float3 SpeedVector = float3.zero;
 
         public EntityConfig EntityConfig;
 
@@ -26,7 +26,7 @@ namespace Entity
 
         private void FixedUpdate()
         {
-            transform.Translate(MovementVector * Time.fixedDeltaTime);
+            transform.Translate(SpeedVector * Time.fixedDeltaTime);
         }
 
         protected abstract void Update();

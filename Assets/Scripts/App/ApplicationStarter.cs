@@ -18,6 +18,8 @@ namespace App
         {
             var applicationHolder = ApplicationHolder.Instance;
             Assert.IsNotNull(applicationHolder, "failed to initialize app holder");
+
+            var applicationConfig = ApplicationConfig.Instance;
         }
     }
 }

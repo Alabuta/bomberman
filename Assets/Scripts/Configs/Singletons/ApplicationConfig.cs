@@ -1,9 +1,11 @@
+using Configs.Game;
 using Core;
+using UnityEditor;
 using UnityEngine;
 
 namespace Configs.Singletons
 {
-    [CreateAssetMenu(menuName = "Configs/Singletons/Application")]
+    [CreateAssetMenu(fileName = "ApplicationConfig", menuName = "Configs/Singletons/Application")]
     public sealed class ApplicationConfig : ScriptableObjectSingleton<ApplicationConfig>
     {
         [Header("General Parameters"), Range(-1, 300)]
