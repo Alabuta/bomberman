@@ -6,20 +6,18 @@ namespace App
 {
     public class ApplicationStarter
     {
-        public ApplicationStarter()
+        public void StartGame()
         {
             var applicationConfig = ApplicationConfig.Instance;
 
             QualitySettings.vSyncCount = applicationConfig.EnableVSync ? 1 : 0;
             Application.targetFrameRate = applicationConfig.TargetFrameRate;
-        }
 
-        public void StartGame()
-        {
             var applicationHolder = ApplicationHolder.Instance;
             Assert.IsNotNull(applicationHolder, "failed to initialize app holder");
 
-            var applicationConfig = ApplicationConfig.Instance;
+            // load start screen
+            // create and load game
         }
     }
 }

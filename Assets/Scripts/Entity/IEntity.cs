@@ -5,9 +5,9 @@ namespace Entity
         bool IsAlive { get; }
 
         int Health { get; set; }
-        int MaxHealth { get; set; }
+        int MaxHealth { get; }
 
         float Speed { get; set; }
-        float MaxSpeed { get; set; }
+        float MaxSpeed { get; }
     }
 }

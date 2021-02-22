@@ -5,7 +5,8 @@ using UnityEngine;
 namespace Entity
 {
     [RequireComponent(typeof(Animator))]
-    public abstract class EntityController : MonoBehaviour
+    [RequireComponent(typeof(Collider2D))]
+    public abstract class EntityController : MonoBehaviour, IEntity
     {
         protected static readonly int VerticalSpeed = Animator.StringToHash("VerticalSpeed");
         protected static readonly int HorizontalSpeed = Animator.StringToHash("HorizontalSpeed");
@@ -17,11 +18,14 @@ namespace Entity
 
         protected float3 SpeedVector = float3.zero;
 
-        public EntityConfig EntityConfig;
+        [SerializeField]
+        protected EntityConfig EntityConfig;
 
         protected void Start()
         {
             Animator = gameObject.GetComponent<Animator>();
+
+            Speed = EntityConfig.Speed;
         }
 
         private void FixedUpdate()
@@ -31,6 +35,14 @@ namespace Entity
 
         protected abstract void Update();
 
-        protected abstract void OnTriggerEnter(Collider otherCollider);
+        protected abstract void OnTriggerEnter2D(Collider2D otherCollider);
+
+        public bool IsAlive => Health > 0;
+
+        public abstract int Health { get; set; }
+        public int MaxHealth => EntityConfig.Health;
+
+        public abstract float Speed { get; set; }
+        public float MaxSpeed => EntityConfig.Speed;
     }
 }
