@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Entity
 {
-    public sealed class PlayerController : EntityController
+    public sealed class PlayerController : EntityController, IPlayer
     {
         private float _speed;
 
@@ -64,5 +64,8 @@ namespace Entity
                 Animator.speed = _speed / MaxSpeed;
             }
         }
+
+        public int BlastRadius { get; set; }
+        public int BombCapacity { get; set; }
     }
 }
