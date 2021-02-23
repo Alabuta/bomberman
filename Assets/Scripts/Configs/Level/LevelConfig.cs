@@ -9,7 +9,7 @@ namespace Configs.Level
     [CreateAssetMenu(menuName = "Configs/Level/Level Config")]
     public sealed class LevelConfig : ScriptableObject
     {
-        [Header("General Configs")]
+        [Header("General Parameters")]
         public string Name;
 
         [Range(13, 65)]
@@ -26,21 +26,24 @@ namespace Configs.Level
 
         public int2[] PlayersSpawnCorners = {int2.zero};
 
-        public PowerUpConfigBase[] PowerUps;
-
         [Header("General Prefabs")]
         public GameObject Walls;
 
-        [Header("Enemy Configs")]
+        [Header("Enemy Parameters")]
         public EnemyConfig[] Enemies;
         public EnemyConfig[] PortalEnemies;
 
         public EnemyConfig[] TimeIsUpEnemyConfigs;
 
-        [Header("Block Configs")]
+        [Header("Block Parameters")]
         public PortalBlock PortalBlock;
 
         public HardBlock HardBlock;
         public SoftBlock SoftBlock;
+
+        [Space(24)]
+        public PowerUpConfigBase[] PowerUps;
+
+        // public ItemsConfigBase[] Items;
     }
 }

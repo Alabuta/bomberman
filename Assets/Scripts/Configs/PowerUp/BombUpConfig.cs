@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Configs.PowerUp
 {
-    [CreateAssetMenu(fileName = "BombUpConfig", menuName = "Configs/Power Up Items/Bomb Up Config")]
+    [CreateAssetMenu(fileName = "BombUpConfig", menuName = "Configs/Power Up Items/Bomb Up")]
     public class BombUpConfig : PowerUpConfigBase
     {
         [SerializeField]
