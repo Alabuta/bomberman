@@ -3,8 +3,12 @@ using UnityEngine;
 
 namespace Configs.PowerUp
 {
-    public abstract class PowerUpEffectConfig : ScriptableObject
+    public abstract class PowerUpConfigBase : ScriptableObject
     {
+        public string EntityTag;
+
+        public GameObject Prefab;
+
         public abstract void ApplyTo(IPlayer player);
     }
 }

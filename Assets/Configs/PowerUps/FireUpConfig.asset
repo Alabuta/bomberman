@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc3acbbd7ed44e64975d9906f8f738c8, type: 3}
-  m_Name: SpeedUpConfig
+  m_Script: {fileID: 11500000, guid: c2b8413c22594175b734b553afa7a36d, type: 3}
+  m_Name: FireUpConfig
   m_EditorClassIdentifier: 
   EntityTag: Player
-  Prefab: {fileID: 1798542183822249269, guid: 9e5727c3930d392488dcceb6e05444ff, type: 3}
-  Speed: 5
+  Prefab: {fileID: 4783022635340475195, guid: 347addfae4a53ec419ab1ee1495c52fe, type: 3}
+  BlastRadiusIncreaseValue: 1

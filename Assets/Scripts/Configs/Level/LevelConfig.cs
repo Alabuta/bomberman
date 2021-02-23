@@ -26,7 +26,7 @@ namespace Configs.Level
 
         public int2[] PlayersSpawnCorners = {int2.zero};
 
-        public PowerUpEffectConfig[] PowerUps;
+        public PowerUpConfigBase[] PowerUps;
 
         [Header("General Prefabs")]
         public GameObject Walls;
