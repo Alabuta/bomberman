@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d77cf4390f154efa9076cbc69365d9f0, type: 3}
-  m_Name: HeroConfig
+  m_Script: {fileID: 11500000, guid: 7b025183af614e5f990963dc5134706b, type: 3}
+  m_Name: ApplicationConfig
   m_EditorClassIdentifier: 
-  Name: Player.0
-  Speed: 2.4
-  Health: 3
+  TargetFrameRate: 30
+  EnableVSync: 0
