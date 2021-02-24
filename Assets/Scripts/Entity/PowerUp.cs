@@ -3,16 +3,19 @@ using UnityEngine;
 
 namespace Entity
 {
-    public class PowerUp : MonoBehaviour
+    [RequireComponent(typeof(Collider2D))]
+    public sealed class PowerUp : MonoBehaviour
     {
-        public PowerUpEffectConfig[] effects;
+        [SerializeField]
+        private PowerUpConfigBase Effect;
 
-        private void OnTriggerEnter(Collider other)
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.gameObject.CompareTag("Player"))
-            {
-                // effect.ApplyTo(other.gameObject);
-            }
+            if (!other.CompareTag(Effect.EntityTag))
+                return;
+
+            var playerController = other.gameObject.GetComponent<PlayerController>();
+            Effect.ApplyTo(playerController);
         }
     }
 }
