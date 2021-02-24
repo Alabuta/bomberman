@@ -12,5 +12,11 @@ namespace Configs.Singletons
         public int TargetFrameRate = 30;
 
         public bool EnableVSync;
+
+        public SceneAsset StartScene;
+
+        [Header("Game Modes")]
+        [InspectorName("Game Mode PvE")]
+        public GameModePvE GameModePvE;
     }
 }

@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core;
+using JetBrains.Annotations;
 
 namespace App
 {
     public class ApplicationHolder : Singleton<ApplicationHolder>
     {
-        // Dependency Injection Container
-
-        public int x = 0;
+        private readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
 
         public ApplicationHolder()
         {
@@ -19,12 +19,17 @@ namespace App
         // AfterSceneLoad
         // OnAfterSceneLoad
 
-        /*
-         * Add instance
-         * Create instance
-         * Get/Try get instance
-         *
-         */
+        public T Add<T>(T instance)
+        {
+            _instances.Add(typeof(T), instance);
+
+            return instance;
+        }
+
+        public bool TryGet<T>(out object instance)
+        {
+            return _instances.TryGetValue(typeof(T), out instance);
+        }
 
         protected override void DoRelease()
         {

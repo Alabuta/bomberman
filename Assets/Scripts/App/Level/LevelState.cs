@@ -7,11 +7,11 @@
          * hero HP, alive mobs number, etc...
          */
 
-        public readonly LevelGrid LevelGrid;
+        public readonly LevelGridModel LevelGridModel;
 
-        public LevelState(LevelGrid levelGrid)
+        public LevelState(LevelGridModel levelGridModel)
         {
-            LevelGrid = levelGrid;
+            LevelGridModel = levelGridModel;
         }
     }
 }

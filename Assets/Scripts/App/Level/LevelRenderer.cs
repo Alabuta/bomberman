@@ -11,26 +11,26 @@ namespace App.Level
         [SerializeField]
         private LevelConfig LevelConfig;
 
-        private LevelGrid LevelGrid { get; set; }
+        private LevelGridModel LevelGridModel { get; set; }
 
-        public void Start()
+        public void Start2()
         {
-            LevelGrid = new LevelGrid(LevelConfig);
+            LevelGridModel = new LevelGridModel(LevelConfig);
 
-            var columnsNumber = LevelGrid.ColumnsNumber;
-            var rowsNumber = LevelGrid.RowsNumber;
+            var columnsNumber = LevelGridModel.ColumnsNumber;
+            var rowsNumber = LevelGridModel.RowsNumber;
 
             var mainCamera = Camera.main;
             if (mainCamera)
             {
                 var cameraRect = math.float2(Screen.width * 2.0f / Screen.height, 1) * mainCamera.orthographicSize;
 
-                var fieldRect = (LevelGrid.Size - cameraRect) / 2.0f;
+                var fieldRect = (LevelGridModel.Size - cameraRect) / 2.0f;
                 var fieldMargins = (float4) LevelConfig.ViewportPadding / LevelConfig.OriginalPixelsPerUnits;
 
                 var firstPlayerCorner = LevelConfig.PlayersSpawnCorners.FirstOrDefault();
 
-                var camePosition = (firstPlayerCorner - (float2) 0.5f) * LevelGrid.Size;
+                var camePosition = (firstPlayerCorner - (float2) 0.5f) * LevelGridModel.Size;
                 camePosition = math.clamp(camePosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
 
                 mainCamera.transform.position = math.float3(camePosition, -1);
@@ -50,7 +50,7 @@ namespace App.Level
 
             for (var index = 0; index < columnsNumber * rowsNumber; ++index)
             {
-                var blockType = LevelGrid[index];
+                var blockType = LevelGridModel[index];
 
                 if (blockType == GridTileType.FloorTile)
                     continue;
