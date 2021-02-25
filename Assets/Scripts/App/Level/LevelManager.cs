@@ -49,7 +49,7 @@ namespace App.Level
             var scene = SceneManager.GetActiveScene();
 
             var rootGameObjects = scene.GetRootGameObjects();
-            // Assert.IsTrue(rootGameObjects.Any(), "Scene doesn't have game objects");
+            Assert.IsTrue(rootGameObjects.Any(), "Scene doesn't have game objects");
 
             var sceneRoot = rootGameObjects.First().transform.parent;
 
