@@ -2,7 +2,6 @@
 using System.Linq;
 using Configs.Level;
 using Unity.Mathematics;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -20,10 +19,9 @@ namespace App.Level
 
         public LevelState CurrentLevelState { get; }
 
-
         public void GenerateLevel(LevelConfig levelConfig)
         {
-            /*var levelMode = */GenerateLevelModel(levelConfig);
+            _levelGridModel = new LevelGridModel(levelConfig);
 
             InstantiateGameObjects(levelConfig, _levelGridModel);
             SetupCamera(levelConfig, _levelGridModel);
@@ -39,19 +37,12 @@ namespace App.Level
             someManager.Xdsdasd*/
         }
 
-        private void GenerateLevelModel(LevelConfig levelConfig)
-        {
-            _levelGridModel = new LevelGridModel(levelConfig);
-        }
-
-        private void InstantiateGameObjects(LevelConfig levelConfig, LevelGridModel levelGridModel)
+        private static void InstantiateGameObjects(LevelConfig levelConfig, LevelGridModel levelGridModel)
         {
             var scene = SceneManager.GetActiveScene();
 
             var rootGameObjects = scene.GetRootGameObjects();
             Assert.IsTrue(rootGameObjects.Any(), "Scene doesn't have game objects");
-
-            var sceneRoot = rootGameObjects.First().transform.parent;
 
             var columnsNumber = levelConfig.ColumnsNumber;
             var rowsNumber = levelConfig.RowsNumber;
@@ -87,7 +78,7 @@ namespace App.Level
             sprite.size += new Vector2(columnsNumber, rowsNumber);
         }
 
-        private void SetupCamera(LevelConfig levelConfig, LevelGridModel levelGridModel)
+        private static void SetupCamera(LevelConfig levelConfig, LevelGridModel levelGridModel)
         {
             var mainCamera = Camera.main;
             if (mainCamera)

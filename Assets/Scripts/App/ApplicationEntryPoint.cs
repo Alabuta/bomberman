@@ -8,7 +8,7 @@ namespace App
         private static void OnBeforeLoadScene()
         {
             var appStarter = new ApplicationStarter();
-            appStarter.StartGame();
+            ApplicationStarter.StartGame();
         }
     }
 }

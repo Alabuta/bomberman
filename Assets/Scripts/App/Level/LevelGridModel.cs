@@ -7,7 +7,6 @@ using Random = UnityEngine.Random;
 
 namespace App.Level
 {
-    [Flags]
     public enum GridTileType
     {
         FloorTile,
