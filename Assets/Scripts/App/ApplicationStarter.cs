@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace App
 {
-    public class ApplicationStarter
+    public static class ApplicationStarter
     {
         public static void StartGame()
         {
@@ -25,8 +25,10 @@ namespace App
 
             StartCorotutine.Start(LoadScene("EmptyScene", () =>
             {
+                Debug.LogWarning($"EmptyScene callback active scene path {SceneManager.GetActiveScene().path} name {SceneManager.GetActiveScene().name}");
                 StartCorotutine.Start(LoadScene(applicationConfig.StartSceneName, () =>
                 {
+                    Debug.LogWarning($"callback active scene path {SceneManager.GetActiveScene().path} name {SceneManager.GetActiveScene().name}");
                     var levelConfig = applicationConfig.GameModePvE.LevelConfigs.First();
 
                     var levelManager = applicationHolder.Add<ILevelManager>(new LevelManager());
@@ -52,6 +54,7 @@ namespace App
         {
             return (scene, mode) =>
             {
+                Debug.LogWarning($"OnSceneLoaded active scene path {SceneManager.GetActiveScene().path} name {SceneManager.GetActiveScene().name} sceneName {sceneName}");
                 if (sceneName != scene.name)
                     return;
 

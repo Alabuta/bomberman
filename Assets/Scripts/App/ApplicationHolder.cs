@@ -1,23 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core;
-using JetBrains.Annotations;
 
 namespace App
 {
     public class ApplicationHolder : Singleton<ApplicationHolder>
     {
         private readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
-
-        public ApplicationHolder()
-        {
-            /*
-             *
-             */
-        }
-
-        // AfterSceneLoad
-        // OnAfterSceneLoad
 
         public T Add<T>(T instance)
         {
