@@ -1,4 +1,4 @@
-﻿using Configs.PowerUp;
+﻿using Configs.Items;
 using UnityEngine;
 
 namespace Entity
@@ -7,7 +7,7 @@ namespace Entity
     public sealed class PowerUp : MonoBehaviour
     {
         [SerializeField]
-        private PowerUpConfigBase Effect;
+        private PowerUpItemConfigBase Effect;
 
         private void OnTriggerEnter2D(Collider2D other)
         {

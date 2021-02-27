@@ -21,31 +21,45 @@ namespace App.Level
 
         public void GenerateLevel(LevelConfig levelConfig)
         {
-            _levelGridModel = new LevelGridModel(levelConfig);
+            _levelGridModel = new LevelGridModel(levelConfig.LevelStages.First());
+
+            var levelStageConfig = levelConfig.LevelStages.First();
+            SetupCamera(levelConfig, levelStageConfig, _levelGridModel);
 
             InstantiateGameObjects(levelConfig, _levelGridModel);
-            SetupCamera(levelConfig, _levelGridModel);
 
-            /*if (!(ApplicationHolder.Instance.Container.Get<ISomeInterface>(out var someManager)))
-                throw System.NotSupportedException;
+            SetupWalls();
 
-            PrefabsManager.Instantiate();
+            /*PrefabsManager.Instantiate();
 
             EnemiesManager.PopulateLevel(levelConfig, levelMode);
-            PlayersManager.PopulateLevel(levelConfig, levelMode);
+            PlayersManager.PopulateLevel(levelConfig, levelMode);*/
+        }
 
-            someManager.Xdsdasd*/
+        private static void SetupWalls()
+        {
+            var offsetsAndSize = new[]
+            {
+                (math.float2(+7.5f, 0), math.float2(2, 11)),
+                (math.float2(-7.5f, 0), math.float2(2, 11)),
+                (math.float2(0, +6), math.float2(13, 1)),
+                (math.float2(0, -6), math.float2(13, 1))
+            };
+
+            var gameObject = new GameObject("Temp");
+
+            foreach (var (offset, size) in offsetsAndSize)
+            {
+                var collider = gameObject.AddComponent<BoxCollider2D>();
+                collider.offset = offset;
+                collider.size = size;
+            }
         }
 
         private static void InstantiateGameObjects(LevelConfig levelConfig, LevelGridModel levelGridModel)
         {
-            var scene = SceneManager.GetActiveScene();
-
-            var rootGameObjects = scene.GetRootGameObjects();
-            Assert.IsTrue(rootGameObjects.Any(), "Scene doesn't have game objects");
-
-            var columnsNumber = levelConfig.ColumnsNumber;
-            var rowsNumber = levelConfig.RowsNumber;
+            var columnsNumber = levelGridModel.ColumnsNumber;
+            var rowsNumber = levelGridModel.RowsNumber;
 
             var hardBlocksGroup = new GameObject("HardBlocks");
             var softBlocksGroup = new GameObject("SoftBlocks");
@@ -78,23 +92,23 @@ namespace App.Level
             sprite.size += new Vector2(columnsNumber, rowsNumber);
         }
 
-        private static void SetupCamera(LevelConfig levelConfig, LevelGridModel levelGridModel)
+        private static void SetupCamera(LevelConfig levelConfig, LevelStageConfig levelStageConfig, LevelGridModel levelGridModel)
         {
             var mainCamera = Camera.main;
-            if (mainCamera)
-            {
-                var cameraRect = math.float2(Screen.width * 2.0f / Screen.height, 1) * mainCamera.orthographicSize;
+            if (!mainCamera)
+                return;
 
-                var fieldRect = (levelGridModel.Size - cameraRect) / 2.0f;
-                var fieldMargins = (float4) levelConfig.ViewportPadding / levelConfig.OriginalPixelsPerUnits;
+            var cameraRect = math.float2(Screen.width * 2.0f / Screen.height, 1) * mainCamera.orthographicSize;
 
-                var firstPlayerCorner = levelConfig.PlayersSpawnCorners.FirstOrDefault();
+            var fieldRect = (levelGridModel.Size - cameraRect) / 2.0f;
+            var fieldMargins = (float4) levelConfig.ViewportPadding / levelConfig.OriginalPixelsPerUnits;
 
-                var camePosition = (firstPlayerCorner - (float2) 0.5f) * levelGridModel.Size;
-                camePosition = math.clamp(camePosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
+            var firstPlayerCorner = levelStageConfig.PlayersSpawnCorners.FirstOrDefault();
 
-                mainCamera.transform.position = math.float3(camePosition, -1);
-            }
+            var camePosition = (firstPlayerCorner - (float2) 0.5f) * levelGridModel.Size;
+            camePosition = math.clamp(camePosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
+
+            mainCamera.transform.position = math.float3(camePosition, -1);
         }
     }
 }

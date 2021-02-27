@@ -10,27 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82ee71d5fae344129108f547d4b05471, type: 3}
-  m_Name: LevelConfig.BorderWall
+  m_Name: BorderWall
   m_EditorClassIdentifier: 
+  Index: 0
   Name: Border Wall
-  ColumnsNumber: 13
-  RowsNumber: 11
   OriginalPixelsPerUnits: 16
-  SoftBlocksCoverage: 30
   ViewportPadding:
     x: -24
     y: 42
     z: 24
     w: -18
-  PlayersSpawnCorners:
-  - x: 0
-    y: 1
   Walls: {fileID: 162705767822815630, guid: 8c634c1303dbe3342b70fc802f196125, type: 3}
-  Enemies: []
-  PortalEnemies: []
-  TimeIsUpEnemyConfigs: []
-  PortalBlock: {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
   HardBlock: {fileID: 11400000, guid: bb2ce871e59ad11419e61453ebbe4e59, type: 2}
   SoftBlock: {fileID: 11400000, guid: d6724458eb0d190478eecb58b2049449, type: 2}
-  PowerUps:
-  - {fileID: 11400000, guid: 542ddf502422bc843b6a851489f0e72e, type: 2}
+  PortalBlock: {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
+  LevelStages:
+  - {fileID: 11400000, guid: 97aa1d71627f6a9469640e2867508bee, type: 2}

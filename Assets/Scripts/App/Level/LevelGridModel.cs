@@ -29,7 +29,7 @@ namespace App.Level
         public GridTileType this[int index] => _grid[index];
         public GridTileType this[int2 coordinate] => _grid[GetFlattenCellCoordinate(coordinate)];
 
-        public LevelGridModel(LevelConfig levelConfig)
+        public LevelGridModel(LevelStageConfig levelConfig)
         {
             _size = math.int2(levelConfig.ColumnsNumber, levelConfig.RowsNumber);
 

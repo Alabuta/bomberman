@@ -13,9 +13,6 @@ namespace Configs.Singletons
 
         public bool EnableVSync;
 
-        // public SceneAsset StartScene;
-        public string StartSceneName = "GameLevel";
-
         [Header("Game Modes")]
         [InspectorName("Game Mode PvE")]
         public GameModePvE GameModePvE;

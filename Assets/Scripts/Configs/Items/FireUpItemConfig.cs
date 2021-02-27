@@ -1,10 +1,10 @@
 ﻿using Entity;
 using UnityEngine;
 
-namespace Configs.PowerUp
+namespace Configs.Items
 {
-    [CreateAssetMenu(fileName = "FireUpConfig", menuName = "Configs/Power Up Items/Fire Up")]
-    public class FireUpConfig : PowerUpConfigBase
+    [CreateAssetMenu(fileName = "FireUpItemConfig", menuName = "Configs/Items/Fire Up")]
+    public class FireUpItemConfig : PowerUpItemConfigBase
     {
         [SerializeField]
         private int BlastRadiusIncreaseValue = 1;

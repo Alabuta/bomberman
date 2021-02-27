@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b201956ae3d34e1fbcf9666665ed220e, type: 3}
+  m_Name: BorderWall.1
+  m_EditorClassIdentifier: 
+  Index: 1
+  ColumnsNumber: 13
+  RowsNumber: 11
+  SoftBlocksCoverage: 30
+  PlayersSpawnCorners:
+  - x: 0
+    y: 1
+  Enemies: []
+  PortalEnemies: []
+  TimeIsUpEnemyConfigs: []
+  PowerUps:
+  - {fileID: 11400000, guid: 542ddf502422bc843b6a851489f0e72e, type: 2}

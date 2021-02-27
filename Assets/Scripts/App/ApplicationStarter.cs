@@ -11,6 +11,15 @@ using UnityEngine.SceneManagement;
 
 namespace App
 {
+    internal enum SceneBuildIndex
+    {
+        Empty,
+        StartScreen,
+        // RoundNumberScreen,
+        // StageScreen,
+        GameLevel
+    }
+
     public static class ApplicationStarter
     {
         public static void StartGame()
@@ -23,26 +32,28 @@ namespace App
             var applicationHolder = ApplicationHolder.Instance;
             Assert.IsNotNull(applicationHolder, "failed to initialize app holder");
 
-            StartCorotutine.Start(LoadScene("EmptyScene", () =>
+#if UNITY_EDITOR
+            StartCorotutine.Start(LoadScene(SceneBuildIndex.Empty, () =>
             {
-                Debug.LogWarning($"EmptyScene callback active scene path {SceneManager.GetActiveScene().path} name {SceneManager.GetActiveScene().name}");
-                StartCorotutine.Start(LoadScene(applicationConfig.StartSceneName, () =>
+#endif
+                StartCorotutine.Start(LoadScene(SceneBuildIndex.GameLevel, () =>
                 {
-                    Debug.LogWarning($"callback active scene path {SceneManager.GetActiveScene().path} name {SceneManager.GetActiveScene().name}");
                     var levelConfig = applicationConfig.GameModePvE.LevelConfigs.First();
 
                     var levelManager = applicationHolder.Add<ILevelManager>(new LevelManager());
                     levelManager.GenerateLevel(levelConfig);
                 }));
+#if UNITY_EDITOR
             }));
+#endif
         }
 
-        private static IEnumerator LoadScene(string sceneName, Action action)
+        private static IEnumerator LoadScene(SceneBuildIndex sceneBuildIndex, Action action)
         {
-            var onSceneLoadCallback = OnSceneLoaded(sceneName, action);
+            var onSceneLoadCallback = OnSceneLoaded(sceneBuildIndex, action);
             SceneManager.sceneLoaded += onSceneLoadCallback;
 
-            var asyncOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            var asyncOperation = SceneManager.LoadSceneAsync((int) sceneBuildIndex, LoadSceneMode.Single);
 
             while (!asyncOperation.isDone)
                 yield return null;
@@ -50,12 +61,11 @@ namespace App
             SceneManager.sceneLoaded -= onSceneLoadCallback;
         }
 
-        private static UnityAction<Scene, LoadSceneMode> OnSceneLoaded(string sceneName, Action action)
+        private static UnityAction<Scene, LoadSceneMode> OnSceneLoaded(SceneBuildIndex sceneBuildIndex, Action action)
         {
             return (scene, mode) =>
             {
-                Debug.LogWarning($"OnSceneLoaded active scene path {SceneManager.GetActiveScene().path} name {SceneManager.GetActiveScene().name} sceneName {sceneName}");
-                if (sceneName != scene.name)
+                if ((int) sceneBuildIndex != scene.buildIndex)
                     return;
 
                 action?.Invoke();
