@@ -1,4 +1,5 @@
-﻿using Configs.Level;
+﻿using Configs.Entity;
+using Configs.Level;
 using UnityEngine;
 
 namespace Configs.Game
@@ -7,5 +8,7 @@ namespace Configs.Game
     public sealed class GameModePvE : ScriptableObject
     {
         public LevelConfig[] LevelConfigs;
+
+        public BombermanConfig BombermanConfig;
     }
 }

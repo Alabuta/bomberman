@@ -1,34 +1,40 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Configs.Game;
 using Configs.Level;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
 
 namespace App.Level
 {
     public interface ILevelManager
     {
-        void GenerateLevel(LevelConfig levelConfig);
+        void GenerateLevel(GameModePvE applicationConfigGameModePvE, LevelConfig levelConfig);
     }
 
     public class LevelManager : ILevelManager
     {
-        private LevelGridModel _levelGridModel;
-
         public LevelState CurrentLevelState { get; }
 
-        public void GenerateLevel(LevelConfig levelConfig)
+        public void GenerateLevel(GameModePvE gameModePvE, LevelConfig levelConfig)
         {
-            _levelGridModel = new LevelGridModel(levelConfig.LevelStages.First());
+            Assert.IsTrue(ApplicationHolder.Instance.TryGet<ISceneManager>(out var sceneManager));
+
+            var levelGridModel = new LevelGridModel(levelConfig.LevelStages.First());
 
             var levelStageConfig = levelConfig.LevelStages.First();
-            SetupCamera(levelConfig, levelStageConfig, _levelGridModel);
+            SetupCamera(levelConfig, levelStageConfig, levelGridModel);
 
-            InstantiateGameObjects(levelConfig, _levelGridModel);
+            InstantiateGameObjects(levelConfig, levelGridModel);
 
-            SetupWalls();
+            SetupWalls(levelConfig, levelGridModel);
+
+            foreach (var spawnCorner in levelStageConfig.PlayersSpawnCorners)
+            {
+                var position = (math.mad(spawnCorner, 2, - 1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy * math.float3(1, 1, 0);
+                Object.Instantiate(gameModePvE.BombermanConfig.Prefab, position, Quaternion.identity);
+            }
 
             /*PrefabsManager.Instantiate();
 
@@ -36,21 +42,26 @@ namespace App.Level
             PlayersManager.PopulateLevel(levelConfig, levelMode);*/
         }
 
-        private static void SetupWalls()
+        private static void SetupWalls(LevelConfig levelConfig, LevelGridModel levelGridModel)
         {
+            var columnsNumber = levelGridModel.ColumnsNumber;
+            var rowsNumber = levelGridModel.RowsNumber;
+
+            var walls = Object.Instantiate(levelConfig.Walls, Vector3.zero, Quaternion.identity);
+            var sprite = walls.GetComponent<SpriteRenderer>();
+            sprite.size += new Vector2(columnsNumber, rowsNumber);
+
             var offsetsAndSize = new[]
             {
-                (math.float2(+7.5f, 0), math.float2(2, 11)),
-                (math.float2(-7.5f, 0), math.float2(2, 11)),
-                (math.float2(0, +6), math.float2(13, 1)),
-                (math.float2(0, -6), math.float2(13, 1))
+                (math.float2(+columnsNumber / 2.0f + 1, 0), math.float2(2, rowsNumber)),
+                (math.float2(-columnsNumber / 2.0f - 1, 0), math.float2(2, rowsNumber)),
+                (math.float2(0, +rowsNumber / 2.0f + 1), math.float2(columnsNumber, 2)),
+                (math.float2(0, -rowsNumber / 2.0f - 1), math.float2(columnsNumber, 2))
             };
-
-            var gameObject = new GameObject("Temp");
 
             foreach (var (offset, size) in offsetsAndSize)
             {
-                var collider = gameObject.AddComponent<BoxCollider2D>();
+                var collider = walls.AddComponent<BoxCollider2D>();
                 collider.offset = offset;
                 collider.size = size;
             }
@@ -86,13 +97,10 @@ namespace App.Level
                 var (parent, prefab) = blocks[blockType];
                 Object.Instantiate(prefab, position, Quaternion.identity, parent.transform);
             }
-
-            var walls = Object.Instantiate(levelConfig.Walls, Vector3.zero, Quaternion.identity);
-            var sprite = walls.GetComponent<SpriteRenderer>();
-            sprite.size += new Vector2(columnsNumber, rowsNumber);
         }
 
-        private static void SetupCamera(LevelConfig levelConfig, LevelStageConfig levelStageConfig, LevelGridModel levelGridModel)
+        private static void SetupCamera(LevelConfig levelConfig, LevelStageConfig levelStageConfig,
+            LevelGridModel levelGridModel)
         {
             var mainCamera = Camera.main;
             if (!mainCamera)

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelConfigs:
   - {fileID: 11400000, guid: beb94d2d5caf9a247aed01603e5b6b25, type: 2}
+  BombermanConfig: {fileID: 11400000, guid: 8ff7542800dc0444ab7a4f432a73f471, type: 2}

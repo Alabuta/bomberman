@@ -22,5 +22,6 @@ MonoBehaviour:
   Enemies: []
   PortalEnemies: []
   TimeIsUpEnemyConfigs: []
-  PowerUps:
+  PowerUpItems:
   - {fileID: 11400000, guid: 542ddf502422bc843b6a851489f0e72e, type: 2}
+  - {fileID: 11400000, guid: d85a43981a0fbb944ad654f5fa28c274, type: 2}

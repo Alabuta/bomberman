@@ -15,9 +15,13 @@ namespace App
             return instance;
         }
 
-        public bool TryGet<T>(out object instance)
+        public bool TryGet<T>(out T instance) where T : class
         {
-            return _instances.TryGetValue(typeof(T), out instance);
+            var isContains = _instances.TryGetValue(typeof(T), out var o);
+
+            instance = isContains ? (T) o : default;
+
+            return isContains;
         }
 
         protected override void DoRelease()

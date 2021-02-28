@@ -7,11 +7,13 @@ using Random = UnityEngine.Random;
 
 namespace App.Level
 {
+    [Flags]
     public enum GridTileType
     {
-        FloorTile,
-        HardBlock,
-        SoftBlock
+        FloorTile = 0,
+        HardBlock = 1,
+        SoftBlock = 2,
+        PowerUpItem = 4
     }
 
     public sealed class LevelGridModel
@@ -29,12 +31,12 @@ namespace App.Level
         public GridTileType this[int index] => _grid[index];
         public GridTileType this[int2 coordinate] => _grid[GetFlattenCellCoordinate(coordinate)];
 
-        public LevelGridModel(LevelStageConfig levelConfig)
+        public LevelGridModel(LevelStageConfig levelStageConfig)
         {
-            _size = math.int2(levelConfig.ColumnsNumber, levelConfig.RowsNumber);
+            _size = math.int2(levelStageConfig.ColumnsNumber, levelStageConfig.RowsNumber);
 
-            var playersSpawnCorners = levelConfig.PlayersSpawnCorners;
-            var softBlocksCoverage = levelConfig.SoftBlocksCoverage;
+            var playersSpawnCorners = levelStageConfig.PlayersSpawnCorners;
+            var softBlocksCoverage = levelStageConfig.SoftBlocksCoverage;
 
             var reservedCellsIndices = playersSpawnCorners
                 .SelectMany(corner =>
@@ -51,8 +53,6 @@ namespace App.Level
                 })
                 .ToArray();
 
-            var powerUps = levelConfig.PowerUps;
-
             var reservedCellsNumber = reservedCellsIndices.Length;
 
             var totalCellsNumber = _size.x * _size.y - reservedCellsNumber;
@@ -60,6 +60,9 @@ namespace App.Level
             var hardBlocksNumber = (_size.x - 1) * (_size.y - 1) / 4;
             var softBlocksNumber = (int) math.round((totalCellsNumber - hardBlocksNumber) * softBlocksCoverage / 100.0f);
             var floorCellsNumber = totalCellsNumber - softBlocksNumber - hardBlocksNumber;
+
+            var powerUpItems = levelStageConfig.PowerUpItems.ToList(); // 2
+            var softBlocksPerPowerUpItem = softBlocksNumber / powerUpItems.Count; // 5
 
             var cellTypeNumbers = math.int2(floorCellsNumber, softBlocksNumber);
 
@@ -80,6 +83,11 @@ namespace App.Level
 
                     var typeIndex = Convert.ToInt32(Random.Range(0, 100) < softBlockOdds);
                     typeIndex = math.clamp(typeIndex, range.x, 2 - range.y);
+
+                    if (powerUpItems.Count > 0 && true)
+                    {
+                        powerUpItems.RemoveAt(0);
+                    }
 
                     --cellTypeNumbers[typeIndex];
 
