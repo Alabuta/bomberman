@@ -134,6 +134,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FireUpItem
       objectReference: {fileID: 0}
+    - target: {fileID: 4783022635340475195, guid: 347addfae4a53ec419ab1ee1495c52fe, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4783022635340475199, guid: 347addfae4a53ec419ab1ee1495c52fe, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -190,6 +194,10 @@ PrefabInstance:
     - target: {fileID: 1545694682774121090, guid: 98b41440dbbc4c444b214971565944d1, type: 3}
       propertyPath: m_Name
       value: BombUpItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 1545694682774121090, guid: 98b41440dbbc4c444b214971565944d1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1545694682774121094, guid: 98b41440dbbc4c444b214971565944d1, type: 3}
       propertyPath: m_RootOrder
@@ -291,6 +299,10 @@ PrefabInstance:
     - target: {fileID: 1798542183822249269, guid: 9e5727c3930d392488dcceb6e05444ff, type: 3}
       propertyPath: m_Name
       value: SpeedUpItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 1798542183822249269, guid: 9e5727c3930d392488dcceb6e05444ff, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9e5727c3930d392488dcceb6e05444ff, type: 3}

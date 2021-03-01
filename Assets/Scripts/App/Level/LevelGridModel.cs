@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Configs.Level;
 using JetBrains.Annotations;
 using Unity.Mathematics;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 namespace App.Level
@@ -61,10 +64,17 @@ namespace App.Level
             var softBlocksNumber = (int) math.round((totalCellsNumber - hardBlocksNumber) * softBlocksCoverage / 100.0f);
             var floorCellsNumber = totalCellsNumber - softBlocksNumber - hardBlocksNumber;
 
-            var powerUpItems = levelStageConfig.PowerUpItems.ToList(); // 2
+            var powerUpItems = levelStageConfig.PowerUpItems.ToList(); // 3
             var softBlocksPerPowerUpItem = softBlocksNumber / powerUpItems.Count; // 5
 
             var cellTypeNumbers = math.int2(floorCellsNumber, softBlocksNumber);
+
+            var items = Enumerable
+                .Range(0, powerUpItems.Count)
+                .Select(i => Random.Range(i * softBlocksPerPowerUpItem, (i + 1) * softBlocksPerPowerUpItem))
+                .ToList();
+
+            Debug.LogWarning($"count {items.Count}");
 
             _grid = Enumerable
                 .Range(0, totalCellsNumber + reservedCellsNumber)
@@ -84,14 +94,17 @@ namespace App.Level
                     var typeIndex = Convert.ToInt32(Random.Range(0, 100) < softBlockOdds);
                     typeIndex = math.clamp(typeIndex, range.x, 2 - range.y);
 
-                    if (powerUpItems.Count > 0 && true)
-                    {
-                        powerUpItems.RemoveAt(0);
-                    }
+                    var tileType = typeIndex == 0 ? GridTileType.FloorTile : GridTileType.SoftBlock;
+
+                    if (tileType == GridTileType.SoftBlock && items.Contains(i))
+                        Debug.LogWarning($"contains {i}");
+
+                    if (tileType == GridTileType.SoftBlock && items.Contains(i))
+                        tileType |= GridTileType.PowerUpItem;
 
                     --cellTypeNumbers[typeIndex];
 
-                    return typeIndex == 0 ? GridTileType.FloorTile : GridTileType.SoftBlock;
+                    return tileType;
                 })
                 .ToArray();
         }

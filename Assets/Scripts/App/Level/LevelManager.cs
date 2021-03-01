@@ -79,7 +79,8 @@ namespace App.Level
             var blocks = new Dictionary<GridTileType, (GameObject, GameObject)>
             {
                 {GridTileType.HardBlock, (hardBlocksGroup, levelConfig.HardBlock.Prefab)},
-                {GridTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlock.Prefab)}
+                {GridTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlock.Prefab)},
+                {GridTileType.SoftBlock | GridTileType.PowerUpItem, (hardBlocksGroup, levelConfig.PortalBlock.Prefab)}
             };
 
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
