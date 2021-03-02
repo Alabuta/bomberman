@@ -1,9 +1,9 @@
 ﻿using Entity;
 using UnityEngine;
 
-namespace Configs.PowerUp
+namespace Configs.Items
 {
-    public abstract class PowerUpConfigBase : ScriptableObject
+    public abstract class PowerUpItemConfigBase : ScriptableObject
     {
         public string EntityTag;
 

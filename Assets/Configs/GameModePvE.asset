@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d77cf4390f154efa9076cbc69365d9f0, type: 3}
-  m_Name: HeroConfig
+  m_Script: {fileID: 11500000, guid: b4b7602b52d946308322b11823b18255, type: 3}
+  m_Name: GameModePvE
   m_EditorClassIdentifier: 
-  Name: Player.0
-  Speed: 2.4
-  Health: 3
+  LevelConfigs:
+  - {fileID: 11400000, guid: beb94d2d5caf9a247aed01603e5b6b25, type: 2}
+  BombermanConfig: {fileID: 11400000, guid: 8ff7542800dc0444ab7a4f432a73f471, type: 2}

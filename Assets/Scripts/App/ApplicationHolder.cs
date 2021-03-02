@@ -1,30 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core;
 
 namespace App
 {
     public class ApplicationHolder : Singleton<ApplicationHolder>
     {
-        // Dependency Injection Container
+        private readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
 
-        public int x = 0;
-
-        public ApplicationHolder()
+        public T Add<T>(T instance)
         {
-            /*
-             *
-             */
+            _instances.Add(typeof(T), instance);
+
+            return instance;
         }
 
-        // AfterSceneLoad
-        // OnAfterSceneLoad
+        public bool TryGet<T>(out T instance) where T : class
+        {
+            var isContains = _instances.TryGetValue(typeof(T), out var o);
 
-        /*
-         * Add instance
-         * Create instance
-         * Get/Try get instance
-         *
-         */
+            instance = isContains ? (T) o : default;
+
+            return isContains;
+        }
 
         protected override void DoRelease()
         {

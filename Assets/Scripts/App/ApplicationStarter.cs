@@ -1,12 +1,14 @@
-﻿using Configs.Singletons;
+﻿using System.Linq;
+using App.Level;
+using Configs.Singletons;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace App
 {
-    public class ApplicationStarter
+    public static class ApplicationStarter
     {
-        public void StartGame()
+        public static void StartGame()
         {
             var applicationConfig = ApplicationConfig.Instance;
 
@@ -16,8 +18,14 @@ namespace App
             var applicationHolder = ApplicationHolder.Instance;
             Assert.IsNotNull(applicationHolder, "failed to initialize app holder");
 
-            // load start screen
-            // create and load game
+            var sceneManager = applicationHolder.Add<ISceneManager>(new SceneManager());
+            sceneManager.LoadScene(SceneBuildIndex.GameLevel, () =>
+            {
+                var levelConfig = applicationConfig.GameModePvE.LevelConfigs.First();
+
+                var levelManager = applicationHolder.Add<ILevelManager>(new LevelManager());
+                levelManager.GenerateLevel(applicationConfig.GameModePvE, levelConfig);
+            });
         }
     }
 }

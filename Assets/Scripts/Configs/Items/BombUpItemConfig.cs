@@ -1,10 +1,10 @@
 ﻿using Entity;
 using UnityEngine;
 
-namespace Configs.PowerUp
+namespace Configs.Items
 {
-    [CreateAssetMenu(fileName = "BombUpConfig", menuName = "Configs/Power Up Items/Bomb Up")]
-    public class BombUpConfig : PowerUpConfigBase
+    [CreateAssetMenu(fileName = "BombUpItemConfig", menuName = "Configs/Items/Bomb Up")]
+    public class BombUpItemConfig : PowerUpItemConfigBase
     {
         [SerializeField]
         private int BombCapacityIncreaseValue = 1;
