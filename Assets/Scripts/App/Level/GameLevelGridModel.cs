@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using Configs.Level;
 using JetBrains.Annotations;
 using Unity.Mathematics;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 namespace App.Level
@@ -19,7 +16,7 @@ namespace App.Level
         PowerUpItem = 4
     }
 
-    public sealed class LevelGridModel
+    public sealed class GameLevelGridModel
     {
         [NotNull]
         private readonly GridTileType[] _grid;
@@ -34,7 +31,7 @@ namespace App.Level
         public GridTileType this[int index] => _grid[index];
         public GridTileType this[int2 coordinate] => _grid[GetFlattenCellCoordinate(coordinate)];
 
-        public LevelGridModel(LevelStageConfig levelStageConfig)
+        public GameLevelGridModel(LevelStageConfig levelStageConfig)
         {
             _size = math.int2(levelStageConfig.ColumnsNumber, levelStageConfig.RowsNumber);
 
@@ -64,17 +61,15 @@ namespace App.Level
             var softBlocksNumber = (int) math.round((totalCellsNumber - hardBlocksNumber) * softBlocksCoverage / 100.0f);
             var floorCellsNumber = totalCellsNumber - softBlocksNumber - hardBlocksNumber;
 
-            var powerUpItems = levelStageConfig.PowerUpItems.ToList(); // 3
-            var softBlocksPerPowerUpItem = softBlocksNumber / powerUpItems.Count; // 5
-
             var cellTypeNumbers = math.int2(floorCellsNumber, softBlocksNumber);
 
-            var items = Enumerable
-                .Range(0, powerUpItems.Count)
+            var powerUpItems = levelStageConfig.PowerUpItems;
+            var softBlocksPerPowerUpItem = softBlocksNumber / powerUpItems.Length;
+
+            var powerItemsIndices = Enumerable
+                .Range(0, powerUpItems.Length)
                 .Select(i => Random.Range(i * softBlocksPerPowerUpItem, (i + 1) * softBlocksPerPowerUpItem))
                 .ToList();
-
-            Debug.LogWarning($"count {items.Count}");
 
             _grid = Enumerable
                 .Range(0, totalCellsNumber + reservedCellsNumber)
@@ -96,10 +91,7 @@ namespace App.Level
 
                     var tileType = typeIndex == 0 ? GridTileType.FloorTile : GridTileType.SoftBlock;
 
-                    if (tileType == GridTileType.SoftBlock && items.Contains(i))
-                        Debug.LogWarning($"contains {i}");
-
-                    if (tileType == GridTileType.SoftBlock && items.Contains(i))
+                    if (tileType == GridTileType.SoftBlock && powerItemsIndices.Contains(cellTypeNumbers[typeIndex]))
                         tileType |= GridTileType.PowerUpItem;
 
                     --cellTypeNumbers[typeIndex];

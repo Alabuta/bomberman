@@ -23,7 +23,7 @@ namespace App
             {
                 var levelConfig = applicationConfig.GameModePvE.LevelConfigs.First();
 
-                var levelManager = applicationHolder.Add<ILevelManager>(new LevelManager());
+                var levelManager = applicationHolder.Add<ILevelManager>(new GameLevelManager());
                 levelManager.GenerateLevel(applicationConfig.GameModePvE, levelConfig);
             });
         }

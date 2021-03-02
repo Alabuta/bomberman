@@ -28,7 +28,7 @@ namespace Configs.Level
         public EnemyConfig[] TimeIsUpEnemyConfigs;
 
         [Space(16)]
-        public PowerUpItemConfigBase[] PowerUpItems;
+        public ItemConfigBase[] PowerUpItems;
 
         // public ItemsConfigBase[] Items;
     }

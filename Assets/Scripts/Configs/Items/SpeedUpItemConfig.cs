@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Configs.Items
 {
     [CreateAssetMenu(fileName = "SpeedUpItemConfig", menuName = "Configs/Items/Speed Up")]
-    public sealed class SpeedUpItemConfig : PowerUpItemConfigBase
+    public sealed class SpeedUpItemConfig : ItemConfigBase
     {
         [SerializeField]
         private float SpeedIncreaseValue = 1;
