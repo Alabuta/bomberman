@@ -1,4 +1,4 @@
-﻿namespace Entity
+﻿namespace GameEntities
 {
     public interface IPlayer : IEntity
     {

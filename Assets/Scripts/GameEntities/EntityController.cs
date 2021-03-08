@@ -1,25 +1,23 @@
-﻿using Configs.Entity;
+﻿using System;
+using Configs.Entity;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Entity
+namespace GameEntities
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Collider2D))]
-    public abstract class EntityController : MonoBehaviour, IEntity
+    public abstract class EntityController<T> : MonoBehaviour, IEntity where T : EntityConfig
     {
-        protected static readonly int VerticalSpeed = Animator.StringToHash("VerticalSpeed");
-        protected static readonly int HorizontalSpeed = Animator.StringToHash("HorizontalSpeed");
-
-        protected static readonly float2 HorizontalMovementMask = new float2(1, 0);
-        protected static readonly float2 VerticalMovementMask = new float2(0, 1);
+        private readonly int _verticalSpeedId = Animator.StringToHash("VerticalSpeed");
+        private readonly int _horizontalSpeedId = Animator.StringToHash("HorizontalSpeed");
 
         protected Animator Animator;
 
         protected float3 SpeedVector = float3.zero;
 
         [SerializeField]
-        protected EntityConfig EntityConfig;
+        protected T EntityConfig;
 
         protected void Start()
         {
@@ -33,11 +31,17 @@ namespace Entity
             transform.Translate(SpeedVector * Time.fixedDeltaTime);
         }
 
-        protected abstract void Update();
+        protected void Update()
+        {
+            Animator.SetFloat(_horizontalSpeedId, SpeedVector.x);
+            Animator.SetFloat(_verticalSpeedId, SpeedVector.y);
+        }
 
         protected abstract void OnTriggerEnter2D(Collider2D otherCollider);
 
         public bool IsAlive => Health > 0;
+
+        public IObservable<int> HealthPoints { get; set; }
 
         public abstract int Health { get; set; }
         public int MaxHealth => EntityConfig.Health;
