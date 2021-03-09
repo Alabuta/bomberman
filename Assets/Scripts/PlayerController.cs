@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
         _movementVector.x = Input.GetAxis("Horizontal");
         _movementVector.y = Input.GetAxis("Vertical");
 
-        _movementVector = math.round(_movementVector) * Speed;
+        
     }
 
     private void FixedUpdate()
