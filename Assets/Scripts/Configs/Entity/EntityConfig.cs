@@ -7,6 +7,8 @@ namespace Configs.Entity
         [Header("General Parameters")]
         public string Name;
 
+        public GameObject Prefab;
+
         [Header("Movement Parameters"), Range(0f, 10f)]
         public float Speed;
 

@@ -6,8 +6,6 @@ namespace GameEntities
     {
         bool IsAlive { get; }
 
-        IObservable<int> HealthPoints { get; set; }
-
         int Health { get; set; }
         int MaxHealth { get; }
 

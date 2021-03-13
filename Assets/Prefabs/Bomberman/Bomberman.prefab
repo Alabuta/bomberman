@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 3476347086192181436}
   - component: {fileID: 3476347086192181435}
   - component: {fileID: 2140323813679979870}
-  - component: {fileID: -8477801725184749118}
   - component: {fileID: -3700267638121402746}
   m_Layer: 13
   m_Name: Bomberman
@@ -167,18 +166,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntityConfig: {fileID: 11400000, guid: 8ff7542800dc0444ab7a4f432a73f471, type: 2}
---- !u!114 &-8477801725184749118
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3476347086192181414}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cd616f7ec4747129912bf0322314525, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &-3700267638121402746
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace GameEntities
 {
+    [Obsolete]
     public sealed class LocalPlayerInput : MonoBehaviour
     {
         private static readonly float2 HorizontalMovementMask = new float2(1, 0);

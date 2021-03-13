@@ -37,8 +37,6 @@ namespace GameEntities
             Animator.SetFloat(_verticalSpeedId, SpeedVector.y);
         }
 
-        protected abstract void OnTriggerEnter2D(Collider2D otherCollider);
-
         public bool IsAlive => Health > 0;
 
         public IObservable<int> HealthPoints { get; set; }
