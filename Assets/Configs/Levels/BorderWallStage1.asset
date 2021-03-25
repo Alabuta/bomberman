@@ -21,6 +21,7 @@ MonoBehaviour:
     y: 1
   Enemies:
   - {fileID: 11400000, guid: 0f62e5b375077ae4dbddddfd979c623a, type: 2}
+  EnemiesNumber: 4
   PortalEnemies: []
   TimeIsUpEnemyConfigs: []
   PowerUpItems:

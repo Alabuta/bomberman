@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Configs.Level;
 using JetBrains.Annotations;
@@ -16,7 +18,7 @@ namespace App.Level
         PowerUpItem = 4
     }
 
-    public sealed class GameLevelGridModel
+    public sealed class GameLevelGridModel : IEnumerable<GridTileType>
     {
         [NotNull]
         private readonly GridTileType[] _grid;
@@ -105,6 +107,16 @@ namespace App.Level
         {
             var c = math.select(int2.zero, _size, coordinate < int2.zero) + coordinate;
             return math.mad(c.y, _size.x, c.x);
+        }
+
+        public IEnumerator<GridTileType> GetEnumerator()
+        {
+            return _grid.AsEnumerable().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

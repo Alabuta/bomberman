@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648fa72ef5894a899f07cd54efbcc50a, type: 3}
   m_Name: Dahl
   m_EditorClassIdentifier: 
-  Name: 
-  MaxHealth: 0
-  MovementSpeed: 0
-  AILevel: 0
-  FordableTiles: []
+  Name: Dahl
   Prefab: {fileID: 0}
+  Speed: 0
+  Health: 0
+  FordableTiles: []

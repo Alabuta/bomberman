@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: BombermanConfig
   m_EditorClassIdentifier: 
   Name: Player.0
+  Prefab: {fileID: 3476347086192181414, guid: ddac8d5521b1f4d478d8b4e7b1ad3c4b, type: 3}
   Speed: 2.4
   Health: 3
-  Prefab: {fileID: 3476347086192181414, guid: ddac8d5521b1f4d478d8b4e7b1ad3c4b, type: 3}
+  BlastRadius: 4
+  BombCapacity: 2
+  BombConfig: {fileID: 11400000, guid: cd27d438adfefc142a47e3e6fc845479, type: 2}

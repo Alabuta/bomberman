@@ -3,9 +3,11 @@
 namespace Configs.Entity
 {
     [CreateAssetMenu(fileName = "BombermanConfig", menuName = "Configs/Entity/Bomberman Config")]
-    public class BombermanConfig : EntityConfig
+    public sealed class BombermanConfig : EntityConfig
     {
+        public int BlastRadius = 1;
         public int BombCapacity = 1;
-        public int BlastRadius = 2;
+
+        public BombConfig BombConfig;
     }
 }

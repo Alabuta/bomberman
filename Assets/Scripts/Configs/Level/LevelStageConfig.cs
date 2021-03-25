@@ -24,6 +24,8 @@ namespace Configs.Level
 
         [Space(16)]
         public EnemyConfig[] Enemies;
+        public int EnemiesNumber;
+
         public EnemyConfig[] PortalEnemies;
         public EnemyConfig[] TimeIsUpEnemyConfigs;
 

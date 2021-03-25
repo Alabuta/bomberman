@@ -1,20 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Configs.Game;
 using Configs.Level;
+using Entity;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
 
 namespace App.Level
 {
     public interface ILevelManager
     {
+        event Action<IEntity> EntitySpawnedEvent;
+
         void GenerateLevel(GameModePvE applicationConfigGameModePvE, LevelConfig levelConfig);
     }
 
     public class GameLevelManager : ILevelManager
     {
+        public event Action<IEntity> EntitySpawnedEvent;
+
+        private int[] _hiddenItemsIndices;
+
+        private IPlayer[] _players;
+
         public GameLevelState CurrentGameLevelState { get; }
 
         public void GenerateLevel(GameModePvE gameModePvE, LevelConfig levelConfig)
@@ -24,6 +35,11 @@ namespace App.Level
             var levelStageConfig = levelConfig.LevelStages.First();
 
             var levelGridModel = new GameLevelGridModel(levelStageConfig);
+
+            _hiddenItemsIndices = levelGridModel
+                .Select((_, i) => i)
+                .Where(i => (levelGridModel[i] & GridTileType.PowerUpItem) != 0)
+                .ToArray();
 
             SetupCamera(levelConfig, levelStageConfig, levelGridModel);
 
@@ -39,14 +55,33 @@ namespace App.Level
             PlayersManager.PopulateLevel(levelConfig, levelMode);*/
         }
 
-        private static void SpawnPlayers(GameModePvE gameModePvE, LevelStageConfig levelStageConfig,
-            GameLevelGridModel levelGridModel)
+        private void SpawnPlayers(GameModePvE gameModePvE, LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel)
         {
-            foreach (var spawnCorner in levelStageConfig.PlayersSpawnCorners)
+            _players = levelStageConfig.PlayersSpawnCorners
+                .Select(spawnCorner =>
+                {
+                    var position = ((spawnCorner * 2 - 1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy * math.float3(1, 1, 0);
+
+                    var playerGameObject = Object.Instantiate(gameModePvE.BombermanConfig.Prefab, position, Quaternion.identity);
+                    var playerController = playerGameObject.GetComponent<PlayerController>();
+                    Assert.IsNotNull(playerController, "'PlayerController' component is null");
+
+                    playerController.BombPlantedEvent += BombPlantEventHandler;
+
+                    EntitySpawnedEvent?.Invoke(playerController);
+
+                    return (IPlayer) playerController;
+                })
+                .ToArray();
+        }
+
+        private void BombPlantEventHandler(object sender, BombPlantEventData data)
+        {
+            if (sender is IPlayer player)
             {
-                var position = (math.mad(spawnCorner, 2, -1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy *
-                               math.float3(1, 1, 0);
-                Object.Instantiate(gameModePvE.BombermanConfig.Prefab, position, Quaternion.identity);
+                var playerController = (PlayerController) player;
+                Debug.LogWarning(
+                    $"BombCapacity {player.BombCapacity} blastRadius {data.BlastRadius}, bombCoordinate {data.WorldPosition}");
             }
         }
 
