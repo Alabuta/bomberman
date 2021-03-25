@@ -3,7 +3,7 @@ using App.Level;
 using Configs.Items;
 using UnityEngine;
 
-namespace GameEntities
+namespace Entity
 {
     public interface IItem
     {
@@ -26,7 +26,7 @@ namespace GameEntities
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (!other.CompareTag(_itemConfigBase.EntityTag))
+            if (!other.CompareTag(_itemConfigBase.ApplyObjectTag))
                 return;
 
             var playerController = other.gameObject.GetComponent<PlayerController>();

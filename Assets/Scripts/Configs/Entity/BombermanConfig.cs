@@ -6,5 +6,6 @@ namespace Configs.Entity
     public class BombermanConfig : EntityConfig
     {
         public int BombCapacity = 1;
+        public int BlastRadius = 2;
     }
 }

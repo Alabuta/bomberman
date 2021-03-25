@@ -1,5 +1,5 @@
 ﻿using System;
-using GameEntities;
+using Entity;
 using UnityEngine;
 
 namespace App.Level
