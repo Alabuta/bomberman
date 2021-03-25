@@ -1,4 +1,4 @@
-﻿using Configs.Enemy;
+﻿using Configs.Entity;
 using Configs.Items;
 using Unity.Mathematics;
 using UnityEngine;

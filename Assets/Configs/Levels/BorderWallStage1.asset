@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b201956ae3d34e1fbcf9666665ed220e, type: 3}
-  m_Name: BorderWall.1
+  m_Name: BorderWallStage1
   m_EditorClassIdentifier: 
-  Index: 1
+  Index: 0
   ColumnsNumber: 13
   RowsNumber: 11
   SoftBlocksCoverage: 30
   PlayersSpawnCorners:
   - x: 0
     y: 1
-  Enemies: []
+  Enemies:
+  - {fileID: 11400000, guid: 0f62e5b375077ae4dbddddfd979c623a, type: 2}
   PortalEnemies: []
   TimeIsUpEnemyConfigs: []
   PowerUpItems:

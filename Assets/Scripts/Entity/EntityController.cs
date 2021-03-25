@@ -1,5 +1,4 @@
-﻿using System;
-using Configs.Entity;
+﻿using Configs.Entity;
 using Unity.Mathematics;
 using UnityEngine;
 
