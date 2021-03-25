@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648fa72ef5894a899f07cd54efbcc50a, type: 3}
   m_Name: Ballom
   m_EditorClassIdentifier: 
-  Name: 
-  MaxHealth: 0
-  MovementSpeed: 0
-  AILevel: 0
-  FordableTiles: []
-  Prefab: {fileID: 0}
+  Name: Ballom
+  Prefab: {fileID: 8022701317914093698, guid: 05808de62001e784dae2b41d43471351, type: 3}
+  Speed: 1
+  Health: 1
+  FordableTiles:
+  - {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
