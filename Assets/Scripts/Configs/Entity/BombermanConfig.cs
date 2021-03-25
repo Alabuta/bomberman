@@ -5,6 +5,6 @@ namespace Configs.Entity
     [CreateAssetMenu(fileName = "BombermanConfig", menuName = "Configs/Entity/Bomberman Config")]
     public class BombermanConfig : EntityConfig
     {
-        public GameObject Prefab;
+        public int BombCapacity = 1;
     }
 }

@@ -1,6 +1,6 @@
-using Unity.Mathematics;
+using System;
 
-namespace Entity
+namespace GameEntities
 {
     public interface IEntity
     {
@@ -11,7 +11,5 @@ namespace Entity
 
         float Speed { get; set; }
         float MaxSpeed { get; }
-
-        float3 WorldPosition { get; }
     }
 }

@@ -1,17 +1,35 @@
-﻿namespace App.Level
+﻿using System;
+using GameEntities;
+using UnityEngine;
+
+namespace App.Level
 {
-    public struct GameLevelState
+    public interface IGameLevelState
+    {
+        event Action<Item> ItemEffectAppliedEvent;
+    }
+
+    public class GameLevelState : IGameLevelState
     {
         /*
          * In-Game current state data
          * hero HP, alive mobs number, etc...
          */
 
-        public readonly GameLevelGridModel GameLevelGridModel;
+        public event Action<Item> ItemEffectAppliedEvent;
+
+        private readonly GameLevelGridModel _gameLevelGridModel;
 
         public GameLevelState(GameLevelGridModel gameLevelGridModel)
         {
-            GameLevelGridModel = gameLevelGridModel;
+            _gameLevelGridModel = gameLevelGridModel;
+
+            ItemEffectAppliedEvent = OnItemEffectApplied;
+        }
+
+        private void OnItemEffectApplied(Item item)
+        {
+            Debug.LogWarning(item);
         }
     }
 }

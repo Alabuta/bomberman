@@ -1,4 +1,4 @@
-﻿using Entity;
+﻿using GameEntities;
 using UnityEngine;
 
 namespace Configs.Items

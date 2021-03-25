@@ -1,39 +1,23 @@
-﻿using System;
-using Configs.Entity;
+﻿using Configs.Entity;
 using JetBrains.Annotations;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Entity
+namespace GameEntities
 {
-    public class BombPlantEventData : EventArgs
-    {
-        public readonly int BlastRadius;
-        public readonly float2 WorldPosition;
-
-        public BombPlantEventData(int blastRadius, float2 worldPosition)
-        {
-            BlastRadius = blastRadius;
-            WorldPosition = worldPosition;
-        }
-    }
-
     [RequireComponent(typeof(PlayerInput))]
     public sealed class PlayerController : EntityController<BombermanConfig>, IPlayer
     {
-        public event Action<int> BombCapacityChangedEvent;
-
-        public event EventHandler<BombPlantEventData> BombPlantedEvent;
+        private static readonly float2 HorizontalMovementMask = new float2(1, 0);
+        private static readonly float2 VerticalMovementMask = new float2(0, 1);
 
         private float _speed;
-        private int _bombCapacity;
 
         private new void Start()
         {
             base.Start();
 
-            BlastRadius = EntityConfig.BlastRadius;
             BombCapacity = EntityConfig.BombCapacity;
         }
 
@@ -52,8 +36,6 @@ namespace Entity
                 return;
 
             --BombCapacity;
-
-            BombPlantedEvent?.Invoke(this, new BombPlantEventData(BlastRadius, WorldPosition.xy));
         }
 
         public override int Health { get; set; }
@@ -64,20 +46,12 @@ namespace Entity
             set
             {
                 _speed = value;
+
                 Animator.speed = _speed / MaxSpeed;
             }
         }
 
         public int BlastRadius { get; set; }
-
-        public int BombCapacity
-        {
-            get => _bombCapacity;
-            set
-            {
-                _bombCapacity = value;
-                BombCapacityChangedEvent?.Invoke(_bombCapacity);
-            }
-        }
+        public int BombCapacity { get; set; }
     }
 }

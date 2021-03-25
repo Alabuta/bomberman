@@ -3,29 +3,24 @@ using Configs.Entity;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Entity
+namespace GameEntities
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Collider2D))]
     public abstract class EntityController<T> : MonoBehaviour, IEntity where T : EntityConfig
     {
-        protected static readonly float2 HorizontalMovementMask = new float2(1, 0);
-        protected static readonly float2 VerticalMovementMask = new float2(0, 1);
-
         private readonly int _verticalSpeedId = Animator.StringToHash("VerticalSpeed");
         private readonly int _horizontalSpeedId = Animator.StringToHash("HorizontalSpeed");
 
-        [SerializeField]
-        protected T EntityConfig;
-
-        protected Transform Transform;
         protected Animator Animator;
 
         protected float3 SpeedVector = float3.zero;
 
+        [SerializeField]
+        protected T EntityConfig;
+
         protected void Start()
         {
-            Transform = gameObject.GetComponent<Transform>();
             Animator = gameObject.GetComponent<Animator>();
 
             Speed = EntityConfig.Speed;
@@ -33,7 +28,7 @@ namespace Entity
 
         private void FixedUpdate()
         {
-            Transform.Translate(SpeedVector * Time.fixedDeltaTime);
+            transform.Translate(SpeedVector * Time.fixedDeltaTime);
         }
 
         protected void Update()
@@ -44,12 +39,12 @@ namespace Entity
 
         public bool IsAlive => Health > 0;
 
+        public IObservable<int> HealthPoints { get; set; }
+
         public abstract int Health { get; set; }
         public int MaxHealth => EntityConfig.Health;
 
         public abstract float Speed { get; set; }
         public float MaxSpeed => EntityConfig.Speed;
-
-        public float3 WorldPosition => Transform.position;
     }
 }
