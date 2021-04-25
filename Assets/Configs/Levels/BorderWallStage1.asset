@@ -28,3 +28,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 542ddf502422bc843b6a851489f0e72e, type: 2}
   - {fileID: 11400000, guid: d85a43981a0fbb944ad654f5fa28c274, type: 2}
   - {fileID: 11400000, guid: 4241eb552cc3a9644ba862bde41f4cd7, type: 2}
+  BombConfig: {fileID: 11400000, guid: cd27d438adfefc142a47e3e6fc845479, type: 2}

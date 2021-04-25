@@ -32,6 +32,7 @@ namespace Configs.Level
         [Space(16)]
         public ItemConfigBase[] PowerUpItems;
 
+        public BombConfig BombConfig;
         // public ItemsConfigBase[] Items;
     }
 }

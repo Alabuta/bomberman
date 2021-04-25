@@ -1,24 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!95 &9060627441854209082
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1798542183822249269}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a8df65bb07abc9a4c8b09ac8856e2e73, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &3697801359380262584
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -74,6 +55,14 @@ PrefabInstance:
       propertyPath: Effect
       value: 
       objectReference: {fileID: 11400000, guid: d85a43981a0fbb944ad654f5fa28c274, type: 2}
+    - target: {fileID: 3144794745878274956, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
+      propertyPath: ItemConfigBase
+      value: 
+      objectReference: {fileID: 11400000, guid: d85a43981a0fbb944ad654f5fa28c274, type: 2}
+    - target: {fileID: 3144794745878274956, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
+      propertyPath: _itemConfigBase
+      value: 
+      objectReference: {fileID: 11400000, guid: d85a43981a0fbb944ad654f5fa28c274, type: 2}
     - target: {fileID: 3144794745878274957, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
       propertyPath: m_Name
       value: SpeedUpItem
@@ -94,10 +83,9 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 1083287439
       objectReference: {fileID: 0}
+    - target: {fileID: 4850848486602983871, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: a8df65bb07abc9a4c8b09ac8856e2e73, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
---- !u!1 &1798542183822249269 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3144794745878274957, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
-  m_PrefabInstance: {fileID: 3697801359380262584}
-  m_PrefabAsset: {fileID: 0}

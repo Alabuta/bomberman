@@ -1,24 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!95 &8322706724900204363
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1545694682774121090}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6defac2436dee334cac6f2afc33a7b70, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &4528342174665853199
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -70,6 +51,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3144794745878274956, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
+      propertyPath: ItemConfigBase
+      value: 
+      objectReference: {fileID: 11400000, guid: 4241eb552cc3a9644ba862bde41f4cd7, type: 2}
+    - target: {fileID: 3144794745878274956, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
+      propertyPath: _itemConfigBase
+      value: 
+      objectReference: {fileID: 11400000, guid: 4241eb552cc3a9644ba862bde41f4cd7, type: 2}
     - target: {fileID: 3144794745878274957, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
       propertyPath: m_Name
       value: BombUpItem
@@ -86,10 +75,9 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.newSize.x
       value: 1.0625
       objectReference: {fileID: 0}
+    - target: {fileID: 4850848486602983871, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 6defac2436dee334cac6f2afc33a7b70, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
---- !u!1 &1545694682774121090 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3144794745878274957, guid: ae844e4513b6ebf4dbfd2f96faaff8da, type: 3}
-  m_PrefabInstance: {fileID: 4528342174665853199}
-  m_PrefabAsset: {fileID: 0}

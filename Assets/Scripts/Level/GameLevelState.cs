@@ -2,7 +2,7 @@
 using Entity;
 using UnityEngine;
 
-namespace App.Level
+namespace Level
 {
     public interface IGameLevelState
     {

@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using Object = UnityEngine.Object;
 
-namespace App.Level
+namespace Level
 {
     public interface ILevelManager
     {
@@ -28,26 +28,29 @@ namespace App.Level
 
         public GameLevelState CurrentGameLevelState { get; }
 
+        private LevelStageConfig _levelStageConfig;
+        private GameLevelGridModel _gameLevelGridModel;
+
         public void GenerateLevel(GameModePvE gameModePvE, LevelConfig levelConfig)
         {
             // Assert.IsTrue(ApplicationHolder.Instance.TryGet<ISceneManager>(out var sceneManager));
 
-            var levelStageConfig = levelConfig.LevelStages.First();
+            _levelStageConfig = levelConfig.LevelStages.First();
 
-            var levelGridModel = new GameLevelGridModel(levelStageConfig);
+            _gameLevelGridModel = new GameLevelGridModel(_levelStageConfig);
 
-            _hiddenItemsIndices = levelGridModel
+            _hiddenItemsIndices = _gameLevelGridModel
                 .Select((_, i) => i)
-                .Where(i => (levelGridModel[i] & GridTileType.PowerUpItem) != 0)
+                .Where(i => (_gameLevelGridModel[i] & GridTileType.PowerUpItem) != 0)
                 .ToArray();
 
-            SetupCamera(levelConfig, levelStageConfig, levelGridModel);
+            SetupCamera(levelConfig, _levelStageConfig, _gameLevelGridModel);
 
-            SpawnGameObjects(levelConfig, levelGridModel);
+            SpawnGameObjects(levelConfig, _gameLevelGridModel);
 
-            SetupWalls(levelConfig, levelGridModel);
+            SetupWalls(levelConfig, _gameLevelGridModel);
 
-            SpawnPlayers(gameModePvE, levelStageConfig, levelGridModel);
+            SpawnPlayers(gameModePvE, _levelStageConfig, _gameLevelGridModel);
 
             /*PrefabsManager.Instantiate();
 
@@ -77,12 +80,23 @@ namespace App.Level
 
         private void BombPlantEventHandler(object sender, BombPlantEventData data)
         {
-            if (sender is IPlayer player)
-            {
-                var playerController = (PlayerController) player;
-                Debug.LogWarning(
-                    $"BombCapacity {player.BombCapacity} blastRadius {data.BlastRadius}, bombCoordinate {data.WorldPosition}");
-            }
+            if (!(sender is IPlayer player))
+                return;
+
+            var playerController = (PlayerController) player;
+            Debug.LogWarning(
+                $"BombCapacity {player.BombCapacity} blastRadius {data.BlastRadius}, bombCoordinate {data.WorldPosition}"
+            );
+
+            // var cell = math.floor((data.WorldPosition / _gameLevelGridModel.Size + 1) / 2.0f * _gameLevelGridModel.Size);
+            var cell = math.round(data.WorldPosition / _gameLevelGridModel.Size) * _gameLevelGridModel.Size;
+            Debug.LogWarning(
+                $"{data.WorldPosition / _gameLevelGridModel.Size} {(data.WorldPosition / _gameLevelGridModel.Size + 1) / 2.0f} {math.floor((data.WorldPosition / _gameLevelGridModel.Size + 1) / 2.0f)} cell {cell}"
+            );
+
+            var position = math.float3(cell.xy, 0);
+            var prefab = _levelStageConfig.BombConfig.Prefab;
+            Object.Instantiate(prefab, position, Quaternion.identity);
         }
 
         private static void SetupWalls(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)
