@@ -9,5 +9,7 @@ namespace Configs.Entity
         public string Name;
 
         public GameObject Prefab;
+
+        public int LifetimeSec = 3;
     }
 }

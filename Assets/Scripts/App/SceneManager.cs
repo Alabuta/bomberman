@@ -19,12 +19,16 @@ namespace App
         public void LoadScene(SceneBuildIndex sceneBuildIndex, Action action)
         {
 #if UNITY_EDITOR
-            StartCorotutine.Start(LoadSceneAsync(SceneBuildIndex.Empty, () =>
-            {
+            StartCorotutine.Start(
+                LoadSceneAsync(
+                    SceneBuildIndex.Empty, () =>
+                    {
 #endif
-                StartCorotutine.Start(LoadSceneAsync(sceneBuildIndex, action));
+                        StartCorotutine.Start(LoadSceneAsync(sceneBuildIndex, action));
 #if UNITY_EDITOR
-            }));
+                    }
+                )
+            );
 #endif
         }
 
@@ -33,7 +37,9 @@ namespace App
             var onSceneLoadCallback = OnSceneLoaded(sceneBuildIndex, action);
             UnitySceneManagement.SceneManager.sceneLoaded += onSceneLoadCallback;
 
-            var loadOperation = UnitySceneManagement.SceneManager.LoadSceneAsync((int) sceneBuildIndex, UnitySceneManagement.LoadSceneMode.Single);
+            var loadOperation = UnitySceneManagement.SceneManager.LoadSceneAsync(
+                (int) sceneBuildIndex, UnitySceneManagement.LoadSceneMode.Single
+            );
 
             while (!loadOperation.isDone)
                 yield return null;
@@ -41,7 +47,8 @@ namespace App
             UnitySceneManagement.SceneManager.sceneLoaded -= onSceneLoadCallback;
         }
 
-        private UnityAction<UnitySceneManagement.Scene, UnitySceneManagement.LoadSceneMode> OnSceneLoaded(SceneBuildIndex sceneBuildIndex, Action action)
+        private UnityAction<UnitySceneManagement.Scene, UnitySceneManagement.LoadSceneMode> OnSceneLoaded(
+            SceneBuildIndex sceneBuildIndex, Action action)
         {
             return (scene, mode) =>
             {

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Configs.Game;
 using Configs.Level;
+using Core;
 using Entity;
 using Unity.Mathematics;
 using UnityEngine;
@@ -84,19 +86,15 @@ namespace Level
                 return;
 
             var playerController = (PlayerController) player;
-            Debug.LogWarning(
-                $"BombCapacity {player.BombCapacity} blastRadius {data.BlastRadius}, bombCoordinate {data.WorldPosition}"
-            );
 
-            // var cell = math.floor((data.WorldPosition / _gameLevelGridModel.Size + 1) / 2.0f * _gameLevelGridModel.Size);
-            var cell = math.round(data.WorldPosition / _gameLevelGridModel.Size) * _gameLevelGridModel.Size;
-            Debug.LogWarning(
-                $"{data.WorldPosition / _gameLevelGridModel.Size} {(data.WorldPosition / _gameLevelGridModel.Size + 1) / 2.0f} {math.floor((data.WorldPosition / _gameLevelGridModel.Size + 1) / 2.0f)} cell {cell}"
-            );
-
-            var position = math.float3(cell.xy, 0);
+            var position = math.float3(math.round(data.WorldPosition).xy, 0);
             var prefab = _levelStageConfig.BombConfig.Prefab;
-            Object.Instantiate(prefab, position, Quaternion.identity);
+            var bomb = Object.Instantiate(prefab, position, Quaternion.identity);
+
+            StartCorotutine.Start(ExecuteAfterTime(_levelStageConfig.BombConfig.LifetimeSec, () =>
+            {
+                bomb.SetActive(false);
+            }));
         }
 
         private static void SetupWalls(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)
@@ -174,6 +172,13 @@ namespace Level
             camePosition = math.clamp(camePosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
 
             mainCamera.transform.position = math.float3(camePosition, -1);
+        }
+
+        private static IEnumerator ExecuteAfterTime(float time, Action callback)
+        {
+            yield return new WaitForSeconds(time);
+
+            callback?.Invoke();
         }
     }
 }

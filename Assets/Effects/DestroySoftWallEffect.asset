@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03206db190e43f1b03abef305a76c3a, type: 3}
-  m_Name: BombConfig
+  m_Script: {fileID: 11500000, guid: ee3e43f5ef7c4570977376193c7f3928, type: 3}
+  m_Name: DestroySoftWallEffect
   m_EditorClassIdentifier: 
-  Name: Bomb
-  Prefab: {fileID: 8352911379006920328, guid: 5c7d74c54735db849b3dfdc11f3e1ec4, type: 3}
-  LifetimeSec: 3
+  Config: {fileID: 11400000, guid: 291ff7a0e02897e4293d428a5fdf19a0, type: 2}
+  AudioMixerGroup: {fileID: 0}
