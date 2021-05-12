@@ -7,27 +7,30 @@ namespace Editor.Attributes
     [CustomPropertyDrawer(typeof(RangeFloat))]
     public class RangeFloatDrawer : PropertyDrawer
     {
+        private readonly GUIContent[] _subLabels = {new GUIContent("Min"), new GUIContent("Max")};
+        private readonly float[] _range = {0f, 1f};
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
 
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
-            // var indent = EditorGUI.indentLevel;
-            // EditorGUI.indentLevel = 0;
+            var minValueProperty = property.FindPropertyRelative("Min");
+            var maxValueProperty = property.FindPropertyRelative("Max");
 
-            // var range = attribute as RangeAttribute;
+            _range[0] = minValueProperty.floatValue;
+            _range[1] = maxValueProperty.floatValue;
 
-            var minValue = property.FindPropertyRelative("Min").floatValue;
-            var maxValue = property.FindPropertyRelative("Max").floatValue;
+            EditorGUI.BeginChangeCheck();
 
-            EditorGUI.MinMaxSlider(
-                position,
-                // new Rect(position.x, position.y, position.width, position.height),
-                // label,
-                ref minValue, ref maxValue,
-                0f, 100f
-            );
+            EditorGUI.MultiFloatField(position, _subLabels, _range);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                minValueProperty.floatValue = _range[0];
+                maxValueProperty.floatValue = _range[1];
+            }
 
             property.serializedObject.ApplyModifiedProperties();
 

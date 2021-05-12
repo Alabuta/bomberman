@@ -5,16 +5,10 @@ using Random = UnityEngine.Random;
 namespace Core.Attributes
 {
     [Serializable]
-    public class RangeFloat
+    public struct RangeFloat
     {
         public float Min;
         public float Max;
-
-        public RangeFloat()
-        {
-            Min = 5;
-            Max = 10;
-        }
 
         public RangeFloat(float min, float max)
         {

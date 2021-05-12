@@ -12,10 +12,12 @@ namespace Audio
         private AudioClip[] AudioClips;
 
         [SerializeField]
-        private RangeFloat Volume = new RangeFloat(0, 10);
+        [RangeFloatAttribute(0, 1)]
+        private RangeFloat Volume = new RangeFloat(0.05f, 0.2f);
 
         [SerializeField]
-        private RangeFloat Pitch = new RangeFloat(0, 10);
+        [RangeFloatAttribute(0, 1)]
+        private RangeFloat Pitch = new RangeFloat(0.15f, 0.3f);
 
         public override void Play(AudioSource source)
         {

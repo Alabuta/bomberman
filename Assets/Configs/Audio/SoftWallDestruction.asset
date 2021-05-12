@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: SoftWallDestruction
   m_EditorClassIdentifier: 
   AudioClips: []
+  Volume:
+    Min: 0
+    Max: 0.15
+  Pitch:
+    Min: 0.020856656
+    Max: 0.026078327
