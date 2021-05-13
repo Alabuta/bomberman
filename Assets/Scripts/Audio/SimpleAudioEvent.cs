@@ -13,11 +13,11 @@ namespace Audio
 
         [SerializeField]
         [RangeFloatAttribute(0, 1)]
-        private RangeFloat Volume = new RangeFloat(0.05f, 0.2f);
+        private RangeFloat Volume = new RangeFloat(0.5f, 0.75f);
 
         [SerializeField]
         [RangeFloatAttribute(0, 1)]
-        private RangeFloat Pitch = new RangeFloat(0.15f, 0.3f);
+        private RangeFloat Pitch = new RangeFloat(0.5f, 0.75f);
 
         public override void Play(AudioSource source)
         {

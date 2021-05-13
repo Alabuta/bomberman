@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AudioClips: []
   Volume:
-    Min: 0
-    Max: 0.15
+    Min: 0.47108734
+    Max: 0.752883
   Pitch:
-    Min: 0.020856656
-    Max: 0.026078327
+    Min: 0.30285084
+    Max: 0.51812196
