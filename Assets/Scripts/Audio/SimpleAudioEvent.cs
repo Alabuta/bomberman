@@ -16,11 +16,13 @@ namespace Audio
         private RangeFloat Volume = new RangeFloat(0.5f, 0.75f);
 
         [SerializeField]
-        [RangeFloatAttribute(0, 1)]
-        private RangeFloat Pitch = new RangeFloat(0.5f, 0.75f);
+        [RangeFloatAttribute(0, 2)]
+        private RangeFloat Pitch = new RangeFloat(0.5f, 1f);
 
         public override void Play(AudioSource source)
         {
+            source.Stop();
+
             if (!AudioClips.Any())
                 return;
 

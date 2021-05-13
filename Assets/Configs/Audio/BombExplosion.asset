@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: BombExplosion
   m_EditorClassIdentifier: 
   AudioClips:
-  - {fileID: 8300000, guid: f9eb44b85c96be5429737d4dcadbfa3b, type: 3}
-  - {fileID: 8300000, guid: 958408b32ccf3714ea02821877b0870c, type: 3}
-  - {fileID: 8300000, guid: a764377339b869e459f5e53fb9258f73, type: 3}
   - {fileID: 8300000, guid: 5ff823f546b52574a931e1d9b44290a6, type: 3}
+  - {fileID: 8300000, guid: a764377339b869e459f5e53fb9258f73, type: 3}
+  - {fileID: 8300000, guid: 958408b32ccf3714ea02821877b0870c, type: 3}
+  - {fileID: 8300000, guid: f9eb44b85c96be5429737d4dcadbfa3b, type: 3}
   Volume:
-    Min: 0.24711701
-    Max: 0.60461277
+    Min: 0.50174665
+    Max: 1
   Pitch:
-    Min: 0.36943305
-    Max: 0.6663921
+    Min: 0.49674788
+    Max: 1.0031369
