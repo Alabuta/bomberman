@@ -16,8 +16,22 @@ namespace App
 
         public GameObject ActiveSceneRoot { get; private set; }
 
+        public void StartNewGame()
+        {
+            LoadScene(SceneBuildIndex.GameLevel, () =>
+            {
+                /*var levelConfig = applicationConfig.GameModePvE.LevelConfigs.First();
+
+                var levelManager = applicationHolder.Add<ILevelManager>(new GameLevelManager());
+                levelManager.GenerateLevel(applicationConfig.GameModePvE, levelConfig);*/
+            });
+        }
+
         public void LoadScene(SceneBuildIndex sceneBuildIndex, Action action)
         {
+            // Play FadeIn effect animation
+            // Load scene while playing FadeOut effect animation
+
 #if UNITY_EDITOR
             StartCorotutine.Start(
                 LoadSceneAsync(

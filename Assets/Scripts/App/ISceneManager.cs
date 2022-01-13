@@ -21,6 +21,8 @@ namespace App
 
         GameObject ActiveSceneRoot { get; }
 
+        void StartNewGame();
+
         void LoadScene(SceneBuildIndex sceneBuildIndex, Action action);
     }
 }
