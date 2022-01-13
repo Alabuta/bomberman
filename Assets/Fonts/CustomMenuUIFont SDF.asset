@@ -21,6 +21,7 @@ MonoBehaviour:
   m_SourceFontFile: {fileID: 0}
   m_AtlasPopulationMode: 0
   m_FaceInfo:
+    m_FaceIndex: 0
     m_FamilyName: FontUI
     m_StyleName: Regular
     m_PointSize: 85
@@ -1103,7 +1104,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: CustomMenuUIFont SDF Material
   m_Shader: {fileID: 4800000, guid: c8d12adcee749c344b8117cf7c7eb912, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: UNDERLAY_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -1203,7 +1204,7 @@ Material:
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _UnderlayColor: {r: 0.1882353, g: 0.1882353, b: 0.1882353, a: 1}
+    - _UnderlayColor: {r: 0.11764706, g: 0.11764706, b: 0.11764706, a: 1}
   m_BuildTextureStacks: []
 --- !u!28 &8466646194612875992
 Texture2D:
