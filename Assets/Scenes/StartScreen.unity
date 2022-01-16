@@ -631,6 +631,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
+--- !u!114 &501415189 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 525124075959687338, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
+  m_PrefabInstance: {fileID: 501415188}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1667adc73c9e46c483cc618f1819131e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &603033284
 GameObject:
   m_ObjectHideFlags: 0
@@ -863,6 +874,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
+--- !u!114 &634994217 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 525124075959687338, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
+  m_PrefabInstance: {fileID: 634994216}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1667adc73c9e46c483cc618f1819131e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &804332334
 GameObject:
   m_ObjectHideFlags: 0
@@ -1106,6 +1128,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6310887937077254215, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
   m_PrefabInstance: {fileID: 970184127}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &970184129 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 525124075959687338, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
+  m_PrefabInstance: {fileID: 970184127}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 224193693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1667adc73c9e46c483cc618f1819131e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1035971895
 GameObject:
   m_ObjectHideFlags: 0
@@ -1374,6 +1407,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c20b5708f2442d9bacf422acd68e9a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _menuEntries:
+  - {fileID: 970184129}
+  - {fileID: 501415189}
+  - {fileID: 634994217}
+  - {fileID: 1602285762}
 --- !u!114 &1307193948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1613,7 +1651,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'COPYRIGHT 2022
+  m_text: 'COPYRIGHT 2020-2022
 
     THE TRIPLE-A GAMES'
   m_isRightToLeft: 0
@@ -1881,6 +1919,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
+--- !u!114 &1602285762 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 525124075959687338, guid: a82fde8b66317c549b41eabffbfa74c9, type: 3}
+  m_PrefabInstance: {fileID: 1602285761}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1667adc73c9e46c483cc618f1819131e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1613350300
 GameObject:
   m_ObjectHideFlags: 0

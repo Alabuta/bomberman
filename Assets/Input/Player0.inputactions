@@ -15,7 +15,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "PlantBomb",
+                    "name": "BombPlant",
                     "type": "Button",
                     "id": "d1e132ec-0a46-4b42-97d2-cf269995deaa",
                     "expectedControlType": "Button",
@@ -87,7 +87,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
-                    "action": "PlantBomb",
+                    "action": "BombPlant",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
