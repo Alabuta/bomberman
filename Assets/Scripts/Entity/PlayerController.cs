@@ -38,17 +38,17 @@ namespace Entity
         }
 
         [UsedImplicitly]
-        public void OnMove(InputAction.CallbackContext context)
+        public void OnMove(InputValue value)
         {
-            SpeedVector.xy = context.ReadValue<Vector2>();
+            SpeedVector.xy = value.Get<Vector2>();
             SpeedVector.xy *= math.select(HorizontalMovementMask, VerticalMovementMask, SpeedVector.y != 0);
             SpeedVector = math.round(SpeedVector) * Speed;
         }
 
         [UsedImplicitly]
-        public void OnBombPlant(InputAction.CallbackContext context)
+        public void OnBombPlant(InputValue value)
         {
-            if (!context.action.triggered || BombCapacity <= 0)
+            if (BombCapacity <= 0)
                 return;
 
             --BombCapacity;

@@ -8,8 +8,13 @@ namespace Entity
     [RequireComponent(typeof(Collider2D))]
     public abstract class EntityController<T> : MonoBehaviour, IEntity where T : EntityConfig
     {
-        protected static readonly float2 HorizontalMovementMask = new float2(1, 0);
-        protected static readonly float2 VerticalMovementMask = new float2(0, 1);
+        [SerializeField]
+        [HideInInspector]
+        protected float2 HorizontalMovementMask = new float2(1, 0);
+
+        [SerializeField]
+        [HideInInspector]
+        protected float2 VerticalMovementMask = new float2(0, 1);
 
         private readonly int _verticalSpeedId = Animator.StringToHash("VerticalSpeed");
         private readonly int _horizontalSpeedId = Animator.StringToHash("HorizontalSpeed");
@@ -17,16 +22,16 @@ namespace Entity
         [SerializeField]
         protected T EntityConfig;
 
+        [SerializeField]
         protected Transform Transform;
+
+        [SerializeField]
         protected Animator Animator;
 
         protected float3 SpeedVector = float3.zero;
 
         protected void Start()
         {
-            Transform = gameObject.GetComponent<Transform>();
-            Animator = gameObject.GetComponent<Animator>();
-
             Speed = EntityConfig.Speed;
         }
 

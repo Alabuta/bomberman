@@ -164,4 +164,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1372fb1ecee4f678a5d44a9ee292145, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HorizontalMovementMask:
+    x: 1
+    y: 0
+  VerticalMovementMask:
+    x: 0
+    y: 1
   EntityConfig: {fileID: 0}
+  Transform: {fileID: 3321701531713127331}
+  Animator: {fileID: 3321701531713127332}
