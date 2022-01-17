@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
+using Configs.Singletons;
 using Core;
+using Level;
+using ModestTree;
 using UnityEngine;
 using UnityEngine.Events;
 using UnitySceneManagement = UnityEngine.SceneManagement;
@@ -20,10 +24,14 @@ namespace App
         {
             LoadScene(SceneBuildIndex.GameLevel, () =>
             {
-                /*var levelConfig = applicationConfig.GameModePvE.LevelConfigs.First();
+                var applicationConfig = ApplicationConfig.Instance;
+                var applicationHolder = ApplicationHolder.Instance;
+                Assert.IsNotNull(applicationHolder, "failed to initialize app holder");
+
+                var levelConfig = applicationConfig.GameModePvE.LevelConfigs.First();
 
                 var levelManager = applicationHolder.Add<ILevelManager>(new GameLevelManager());
-                levelManager.GenerateLevel(applicationConfig.GameModePvE, levelConfig);*/
+                levelManager.GenerateLevel(applicationConfig.GameModePvE, levelConfig);
             });
         }
 
@@ -32,18 +40,7 @@ namespace App
             // Play FadeIn effect animation
             // Load scene while playing FadeOut effect animation
 
-#if UNITY_EDITOR
-            StartCorotutine.Start(
-                LoadSceneAsync(
-                    SceneBuildIndex.Empty, () =>
-                    {
-#endif
-                        StartCorotutine.Start(LoadSceneAsync(sceneBuildIndex, action));
-#if UNITY_EDITOR
-                    }
-                )
-            );
-#endif
+            StartCorotutine.Start(LoadSceneAsync(sceneBuildIndex, action));
         }
 
         private IEnumerator LoadSceneAsync(SceneBuildIndex sceneBuildIndex, Action action)

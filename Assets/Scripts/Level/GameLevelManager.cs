@@ -65,9 +65,11 @@ namespace Level
             _players = levelStageConfig.PlayersSpawnCorners
                 .Select(spawnCorner =>
                 {
-                    var position = ((spawnCorner * 2 - 1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy * math.float3(1, 1, 0);
+                    var position = ((spawnCorner * 2 - 1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy *
+                                   math.float3(1, 1, 0);
 
-                    var playerGameObject = Object.Instantiate(gameModePvE.BombermanConfig.Prefab, position, Quaternion.identity);
+                    var playerGameObject =
+                        Object.Instantiate(gameModePvE.BombermanConfig.Prefab, position, Quaternion.identity);
                     var playerController = playerGameObject.GetComponent<PlayerController>();
                     Assert.IsNotNull(playerController, "'PlayerController' component is null");
 
@@ -82,19 +84,13 @@ namespace Level
 
         private void BombPlantEventHandler(object sender, BombPlantEventData data)
         {
-            if (!(sender is IPlayer player))
-                return;
-
-            var playerController = (PlayerController) player;
+            Assert.IsTrue(sender is IPlayer, $"expected {typeof(IPlayer)} sender type instead of {sender.GetType()}");
 
             var position = math.float3(math.round(data.WorldPosition).xy, 0);
             var prefab = _levelStageConfig.BombConfig.Prefab;
             var bomb = Object.Instantiate(prefab, position, Quaternion.identity);
 
-            StartCorotutine.Start(ExecuteAfterTime(_levelStageConfig.BombConfig.LifetimeSec, () =>
-            {
-                bomb.SetActive(false);
-            }));
+            StartCorotutine.Start(ExecuteAfterTime(_levelStageConfig.BombConfig.LifetimeSec, () => { bomb.SetActive(false); }));
         }
 
         private static void SetupWalls(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)
