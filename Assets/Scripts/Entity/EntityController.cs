@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Entity
 {
-    [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(Collider2D))]
     public abstract class EntityController<T> : MonoBehaviour, IEntity where T : EntityConfig
     {
@@ -16,8 +15,9 @@ namespace Entity
         [HideInInspector]
         protected float2 VerticalMovementMask = new float2(0, 1);
 
-        private readonly int _verticalSpeedId = Animator.StringToHash("VerticalSpeed");
-        private readonly int _horizontalSpeedId = Animator.StringToHash("HorizontalSpeed");
+        [SerializeField]
+        [HideInInspector]
+        private float3 MovementConvertMask = new float3(1, 1, 0);
 
         [SerializeField]
         protected T EntityConfig;
@@ -25,10 +25,7 @@ namespace Entity
         [SerializeField]
         protected Transform Transform;
 
-        [SerializeField]
-        protected Animator Animator;
-
-        protected float3 SpeedVector = float3.zero;
+        public float2 MovementVector { get; set; }
 
         protected void Start()
         {
@@ -37,13 +34,7 @@ namespace Entity
 
         private void FixedUpdate()
         {
-            Transform.Translate(SpeedVector * Time.fixedDeltaTime);
-        }
-
-        protected void Update()
-        {
-            Animator.SetFloat(_horizontalSpeedId, SpeedVector.x);
-            Animator.SetFloat(_verticalSpeedId, SpeedVector.y);
+            Transform.Translate(MovementVector.xyy * MovementConvertMask * Time.fixedDeltaTime);
         }
 
         public bool IsAlive => Health > 0;

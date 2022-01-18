@@ -9,6 +9,6 @@ namespace Configs.Items
         [SerializeField]
         private int BombCapacityIncreaseValue = 1;
 
-        public override void ApplyTo(IPlayer player) => player.BombCapacity += BombCapacityIncreaseValue;
+        public override void ApplyTo(IHero hero) => hero.BombCapacity += BombCapacityIncreaseValue;
     }
 }

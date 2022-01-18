@@ -9,6 +9,6 @@ namespace Configs.Items
 
         public GameObject Prefab;
 
-        public abstract void ApplyTo(IPlayer player);
+        public abstract void ApplyTo(IHero hero);
     }
 }

@@ -36,12 +36,12 @@ namespace Entity
             if (!other.CompareTag(ItemConfigBase.ApplyObjectTag))
                 return;
 
-            var playerController = other.gameObject.GetComponent<PlayerController>();
+            var playerController = other.gameObject.GetComponent<HeroController>();
             if (playerController != null)
                 ItemConfigBase.ApplyTo(playerController);
 
             ItemEffectAppliedEvent?.Invoke(this);
-            Destroy(gameObject); // :TODO: refactor - use OnDestroy event
+            Destroy(gameObject);// :TODO: refactor - use OnDestroy event
         }
     }
 }

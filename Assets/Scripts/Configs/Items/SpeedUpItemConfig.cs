@@ -9,6 +9,6 @@ namespace Configs.Items
         [SerializeField]
         private float SpeedIncreaseValue = 1;
 
-        public override void ApplyTo(IPlayer player) => player.Speed += SpeedIncreaseValue;
+        public override void ApplyTo(IHero hero) => hero.Speed += SpeedIncreaseValue;
     }
 }

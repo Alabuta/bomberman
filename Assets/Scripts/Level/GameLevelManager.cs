@@ -26,7 +26,7 @@ namespace Level
 
         private int[] _hiddenItemsIndices;
 
-        private IPlayer[] _players;
+        private IHero[] _players;
 
         public GameLevelState CurrentGameLevelState { get; }
 
@@ -70,21 +70,21 @@ namespace Level
 
                     var playerGameObject =
                         Object.Instantiate(gameModePvE.BombermanConfig.Prefab, position, Quaternion.identity);
-                    var playerController = playerGameObject.GetComponent<PlayerController>();
+                    var playerController = playerGameObject.GetComponent<HeroController>();
                     Assert.IsNotNull(playerController, "'PlayerController' component is null");
 
                     playerController.BombPlantedEvent += BombPlantEventHandler;
 
                     EntitySpawnedEvent?.Invoke(playerController);
 
-                    return (IPlayer) playerController;
+                    return (IHero) playerController;
                 })
                 .ToArray();
         }
 
         private void BombPlantEventHandler(object sender, BombPlantEventData data)
         {
-            Assert.IsTrue(sender is IPlayer, $"expected {typeof(IPlayer)} sender type instead of {sender.GetType()}");
+            Assert.IsTrue(sender is IHero, $"expected {typeof(IHero)} sender type instead of {sender.GetType()}");
 
             var position = math.float3(math.round(data.WorldPosition).xy, 0);
             var prefab = _levelStageConfig.BombConfig.Prefab;

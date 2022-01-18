@@ -20,8 +20,11 @@ namespace Entity
     }
 
     [RequireComponent(typeof(PlayerInput))]
-    public sealed class PlayerController : EntityController<BombermanConfig>, IPlayer
+    public sealed class HeroController : EntityController<BombermanConfig>, IHero
     {
+        [SerializeField]
+        private HeroAnimator Animator;
+
         public event Action<int> BombCapacityChangedEvent;
 
         public event EventHandler<BombPlantEventData> BombPlantedEvent;
@@ -40,9 +43,9 @@ namespace Entity
         [UsedImplicitly]
         public void OnMove(InputValue value)
         {
-            SpeedVector.xy = value.Get<Vector2>();
-            SpeedVector.xy *= math.select(HorizontalMovementMask, VerticalMovementMask, SpeedVector.y != 0);
-            SpeedVector = math.round(SpeedVector) * Speed;
+            MovementVector = value.Get<Vector2>();
+            MovementVector *= math.select(HorizontalMovementMask, VerticalMovementMask, MovementVector.y != 0);
+            MovementVector = math.round(MovementVector) * Speed;
         }
 
         [UsedImplicitly]
@@ -64,7 +67,8 @@ namespace Entity
             set
             {
                 _speed = value;
-                Animator.speed = _speed / MaxSpeed;
+
+                Animator.PlaybackSpeed = _speed / MaxSpeed;
             }
         }
 
@@ -76,6 +80,7 @@ namespace Entity
             set
             {
                 _bombCapacity = value;
+
                 BombCapacityChangedEvent?.Invoke(_bombCapacity);
             }
         }

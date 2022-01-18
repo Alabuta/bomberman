@@ -9,6 +9,6 @@ namespace Configs.Items
         [SerializeField]
         private int BlastRadiusIncreaseValue = 1;
 
-        public override void ApplyTo(IPlayer player) => player.BlastRadius += BlastRadiusIncreaseValue;
+        public override void ApplyTo(IHero hero) => hero.BlastRadius += BlastRadiusIncreaseValue;
     }
 }

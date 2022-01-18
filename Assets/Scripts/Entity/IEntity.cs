@@ -13,5 +13,6 @@ namespace Entity
         float MaxSpeed { get; }
 
         float3 WorldPosition { get; }
+        float2 MovementVector { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Entity
 {
-    public interface IPlayer : IEntity
+    public interface IHero : IEntity
     {
         event EventHandler<BombPlantEventData> BombPlantedEvent;
 
