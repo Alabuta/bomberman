@@ -2,7 +2,6 @@
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 namespace UI
@@ -10,9 +9,12 @@ namespace UI
     [RequireComponent(typeof(PlayerInput))]
     public class MenuUIController : MonoBehaviour
     {
+        [SerializeField]
+        private MenuEntryController[] MenuEntryAnimators;
+
         private ISceneManager _sceneManager;
 
-        private GameObject _currentSelected;
+        private int _currentSelectedIndex;
 
         /*[Inject]
         public void Construct(ISceneManager sceneManager)
@@ -28,23 +30,32 @@ namespace UI
 
         private void Start()
         {
-            _currentSelected = EventSystem.current.firstSelectedGameObject;
+            var menuStartEntry = MenuEntryAnimators[0];
+            menuStartEntry.SetPointed(true);
         }
 
         [UsedImplicitly]
         public void OnSubmit(InputValue value)
         {
-            // Debug.LogWarning("OnSubmit");
-            _sceneManager.StartNewGame();
-            // _animationFinished = () => _sceneManager.StartNewGame();
+            var menuEntryAnimator = MenuEntryAnimators[_currentSelectedIndex];
+            menuEntryAnimator.SubmitAndPlayAnimation(() => _sceneManager.StartNewGame());
         }
 
         [UsedImplicitly]
         public void OnNavigate(InputValue value)
         {
-            /*var direction = value.Get<Vector2>();
+            var direction = value.Get<Vector2>();
 
-            Debug.LogWarning($"OnNavigate {direction}");*/
+            _currentSelectedIndex = (int) (_currentSelectedIndex - direction.y) % MenuEntryAnimators.Length;
+
+            if (_currentSelectedIndex < 0)
+                _currentSelectedIndex = MenuEntryAnimators.Length + _currentSelectedIndex;
+
+            for (var i = 0; i < MenuEntryAnimators.Length; i++)
+            {
+                var entry = MenuEntryAnimators[i];
+                entry.SetPointed(i == _currentSelectedIndex);
+            }
         }
     }
 }

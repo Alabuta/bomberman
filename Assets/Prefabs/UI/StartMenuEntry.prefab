@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6310887936839109054
 RectTransform:
   m_ObjectHideFlags: 0
@@ -88,6 +88,8 @@ GameObject:
   - component: {fileID: 912049054771639515}
   - component: {fileID: 6310887937077254264}
   - component: {fileID: 3266688867660185029}
+  - component: {fileID: 5935156265801456520}
+  - component: {fileID: 3390609101135768629}
   m_Layer: 5
   m_Name: StartMenuEntry
   m_TagString: Untagged
@@ -163,7 +165,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 0}
@@ -187,19 +189,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6310887936839109040}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3266688867660185029}
-        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Pressed State
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!95 &3266688867660185029
 Animator:
   serializedVersion: 3
@@ -219,6 +209,34 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5935156265801456520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6310887937077254214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33df1f95a60c41e0b08c2e99564b431b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animator: {fileID: 3266688867660185029}
+  AnimationClip: {fileID: 7400000, guid: af11f42b2cd671e49a95ca708e9a3877, type: 2}
+--- !u!114 &3390609101135768629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6310887937077254214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1667adc73c9e46c483cc618f1819131e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PointerImage: {fileID: 6310887936839109040}
+  MenuEntryAnimator: {fileID: 5935156265801456520}
 --- !u!1 &8074731141403919278
 GameObject:
   m_ObjectHideFlags: 0
