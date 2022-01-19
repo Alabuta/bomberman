@@ -1,4 +1,5 @@
-﻿using Configs.Entity;
+﻿using System;
+using Configs.Entity;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -37,14 +38,25 @@ namespace Entity
             Transform.Translate(MovementVector.xyy * MovementConvertMask * Time.fixedDeltaTime);
         }
 
+        public event Action OnKillEvent;
+
         public bool IsAlive => Health > 0;
 
         public abstract int Health { get; set; }
         public int MaxHealth => EntityConfig.Health;
 
         public abstract float Speed { get; set; }
-        public float MaxSpeed => EntityConfig.Speed;
+        public float InitialSpeed => EntityConfig.Speed;
 
         public float3 WorldPosition => Transform.position;
+
+        public void Kill()
+        {
+            Health = 0;
+            Speed = InitialSpeed;
+            MovementVector = float2.zero;
+
+            OnKillEvent?.Invoke();
+        }
     }
 }

@@ -6,8 +6,14 @@ namespace Entity
     [RequireComponent(typeof(Animator))]
     public class EntityAnimator<T> : MonoBehaviour where T : EntityConfig
     {
-        private readonly int _verticalSpeedId = Animator.StringToHash("VerticalSpeed");
-        private readonly int _horizontalSpeedId = Animator.StringToHash("HorizontalSpeed");
+        [SerializeField, HideInInspector]
+        private int VerticalSpeedId = Animator.StringToHash("VerticalSpeed");
+
+        [SerializeField, HideInInspector]
+        private int HorizontalSpeedId = Animator.StringToHash("HorizontalSpeed");
+
+        [SerializeField, HideInInspector]
+        private int IsAlive = Animator.StringToHash("IsAlive");
 
         [SerializeField]
         private Animator Animator;
@@ -15,16 +21,26 @@ namespace Entity
         [SerializeField]
         public EntityController<T> Entity;
 
-        public float PlaybackSpeed
+        protected void Start()
         {
-            get => Animator.speed;
-            set => Animator.speed = value;
+            Animator.SetBool(IsAlive, Entity.IsAlive);
+
+            Entity.OnKillEvent += OnEntityKill;
         }
 
         protected void Update()
         {
-            Animator.SetFloat(_horizontalSpeedId, Entity.MovementVector.x);
-            Animator.SetFloat(_verticalSpeedId, Entity.MovementVector.y);
+            Animator.SetFloat(HorizontalSpeedId, Entity.MovementVector.x);
+            Animator.SetFloat(VerticalSpeedId, Entity.MovementVector.y);
+
+            Animator.speed = Entity.Speed / Entity.InitialSpeed;
+        }
+
+        private void OnEntityKill()
+        {
+            Animator.SetBool(IsAlive, Entity.IsAlive);
+
+            Animator.speed = Entity.InitialSpeed;
         }
     }
 }

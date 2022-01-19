@@ -29,7 +29,6 @@ namespace Entity
 
         public event EventHandler<BombPlantEventData> BombPlantedEvent;
 
-        private float _speed;
         private int _bombCapacity;
 
         private new void Start()
@@ -38,6 +37,7 @@ namespace Entity
 
             BlastRadius = EntityConfig.BlastRadius;
             BombCapacity = EntityConfig.BombCapacity;
+            Health = EntityConfig.Health;
         }
 
         [UsedImplicitly]
@@ -61,16 +61,7 @@ namespace Entity
 
         public override int Health { get; set; }
 
-        public override float Speed
-        {
-            get => _speed;
-            set
-            {
-                _speed = value;
-
-                Animator.PlaybackSpeed = _speed / MaxSpeed;
-            }
-        }
+        public override float Speed { get; set; }
 
         public int BlastRadius { get; set; }
 
