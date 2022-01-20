@@ -1,0 +1,552 @@
+fileFormatVersion: 2
+guid: b8ee1229367a7064a94b275f178f1989
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -54584782126590318
+    second: hero_green_right_1
+  - first:
+      213: 4851729730391830114
+    second: hero_green_right_0
+  - first:
+      213: -5576693916486694811
+    second: hero_green_right_2
+  - first:
+      213: -446078865650958178
+    second: hero_green_die_0
+  - first:
+      213: 2026318224494067603
+    second: hero_green_die_1
+  - first:
+      213: -867529877265485618
+    second: hero_green_die_2
+  - first:
+      213: -7541921364307087872
+    second: hero_green_up_1
+  - first:
+      213: -3451985353402802373
+    second: hero_green_up_0
+  - first:
+      213: 7931664236777181325
+    second: hero_green_up_2
+  - first:
+      213: -5816185461334590079
+    second: hero_green_die_3
+  - first:
+      213: 6877423418818437325
+    second: hero_green_die_4
+  - first:
+      213: 175649371615627432
+    second: hero_green_die_5
+  - first:
+      213: -5091356601053562703
+    second: hero_green_down_1
+  - first:
+      213: 862315571626163721
+    second: hero_green_down_0
+  - first:
+      213: 733546964298745471
+    second: hero_green_down_2
+  - first:
+      213: 8666095005260131018
+    second: hero_green_die_6
+  - first:
+      213: 158536243991751388
+    second: hero_green_die_7
+  - first:
+      213: 6557374637736590982
+    second: hero_green_die_8
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 256
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 256
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 256
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: hero_green_right_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 210
+        width: 36
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5277778, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 296d33b0e631e3ff0800000000000000
+      internalID: -54584782126590318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_right_0
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 210
+        width: 36
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5833333, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26ee436fb7ec45340800000000000000
+      internalID: 4851729730391830114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_right_2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 210
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5688ab6fd6a9b92b0800000000000000
+      internalID: -5576693916486694811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_0
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 210
+        width: 42
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e90c01792a53fc9f0800000000000000
+      internalID: -446078865650958178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_1
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 210
+        width: 38
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39f7ed470bdee1c10800000000000000
+      internalID: 2026318224494067603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 210
+        width: 44
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec07d894c2ae5f3f0800000000000000
+      internalID: -867529877265485618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_up_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 164
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.44117647, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00eeb8c5a76b55790800000000000000
+      internalID: -7541921364307087872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_up_0
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 164
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3f13984c951810d0800000000000000
+      internalID: -3451985353402802373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_up_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 164
+        width: 33
+        height: 44
+      alignment: 9
+      pivot: {x: 0.57575756, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8016ce799ee21e60800000000000000
+      internalID: 7931664236777181325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_3
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 164
+        width: 44
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18d3c5d6322c84fa0800000000000000
+      internalID: -5816185461334590079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_4
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 165
+        width: 40
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.47619048}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc020a84924817f50800000000000000
+      internalID: 6877423418818437325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_5
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 166
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a88b204c28007200800000000000000
+      internalID: 175649371615627432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_down_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.44117647, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b8bc51852ed759b0800000000000000
+      internalID: -5091356601053562703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_down_0
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90eb013917f87fb00800000000000000
+      internalID: 862315571626163721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_down_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5588235, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f76c719d3151e2a00800000000000000
+      internalID: 733546964298745471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_6
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 121
+        width: 44
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.47368422}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aca215a0e77244870800000000000000
+      internalID: 8666095005260131018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_7
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 119
+        width: 44
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45238096}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cda272bbfdb333200800000000000000
+      internalID: 158536243991751388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_green_die_8
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 119
+        width: 44
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45238096}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68ef1759d79700b50800000000000000
+      internalID: 6557374637736590982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

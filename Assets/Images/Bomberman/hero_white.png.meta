@@ -1,0 +1,552 @@
+fileFormatVersion: 2
+guid: 75b6cc865aa29614d9aa691f07428d46
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -257760086348800069
+    second: hero_white_right_1
+  - first:
+      213: -8625371329298913337
+    second: hero_white_right_0
+  - first:
+      213: -495439157162718789
+    second: hero_white_right_2
+  - first:
+      213: 8502436122128325658
+    second: hero_white_die_0
+  - first:
+      213: 602174374044874034
+    second: hero_white_die_1
+  - first:
+      213: -7565072906226192088
+    second: hero_white_die_2
+  - first:
+      213: 7523337388877413470
+    second: hero_white_up_1
+  - first:
+      213: 3871899048301674620
+    second: hero_white_up_0
+  - first:
+      213: 1786588511432173546
+    second: hero_white_up_2
+  - first:
+      213: 4331949162178425716
+    second: hero_white_die_3
+  - first:
+      213: -3818379334653528297
+    second: hero_white_die_4
+  - first:
+      213: -4108487879694969822
+    second: hero_white_die_5
+  - first:
+      213: 4773892178952424503
+    second: hero_white_down_1
+  - first:
+      213: -5650923121182500696
+    second: hero_white_down_0
+  - first:
+      213: 5444086452886408986
+    second: hero_white_down_2
+  - first:
+      213: 7138317337429422357
+    second: hero_white_die_6
+  - first:
+      213: -4020983021202058936
+    second: hero_white_16
+  - first:
+      213: 254437594356709370
+    second: hero_white_die_8
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 256
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 256
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 256
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: hero_white_right_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 210
+        width: 36
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5277778, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbfd7ef21904c6cf0800000000000000
+      internalID: -257760086348800069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_right_0
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 210
+        width: 36
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5833333, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c7ac45a9768c4880800000000000000
+      internalID: -8625371329298913337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_right_2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 210
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb94f7526b8df19f0800000000000000
+      internalID: -495439157162718789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_die_0
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 210
+        width: 42
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1c98e0fa98bef570800000000000000
+      internalID: 8502436122128325658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_die_1
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 210
+        width: 38
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 235b9c9176a5b5800800000000000000
+      internalID: 602174374044874034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_die_2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 210
+        width: 44
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 821b474f546730790800000000000000
+      internalID: -7565072906226192088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_up_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 164
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.44117647, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5cf37dae73486860800000000000000
+      internalID: 7523337388877413470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_up_0
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 164
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c70c1349bafbbb530800000000000000
+      internalID: 3871899048301674620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_up_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 164
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5588235, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae765bf09cc3bc810800000000000000
+      internalID: 1786588511432173546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_die_3
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 164
+        width: 44
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47332b4bfcc2e1c30800000000000000
+      internalID: 4331949162178425716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_die_4
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 165
+        width: 40
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.47619048}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 717b84cc934620bc0800000000000000
+      internalID: -3818379334653528297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_die_5
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 166
+        width: 40
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22498c68a08bbf6c0800000000000000
+      internalID: -4108487879694969822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_down_1
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.44117647, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73c8972c4a5404240800000000000000
+      internalID: 4773892178952424503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_down_0
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a810e47c53e391b0800000000000000
+      internalID: -5650923121182500696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_down_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5588235, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1f8fcee8c74d8b40800000000000000
+      internalID: 5444086452886408986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_die_6
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 121
+        width: 44
+        height: 38
+      alignment: 9
+      pivot: {x: 0.5, y: 0.47368422}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5113e774cc5601360800000000000000
+      internalID: 7138317337429422357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_16
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 119
+        width: 44
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45238096}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 841df5d0f399238c0800000000000000
+      internalID: -4020983021202058936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hero_white_die_8
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 119
+        width: 44
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45238096}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af7f22dd4a1f78300800000000000000
+      internalID: 254437594356709370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

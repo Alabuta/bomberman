@@ -1,0 +1,1893 @@
+fileFormatVersion: 2
+guid: 0bbf762666f39544798cdff9dd71c164
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2846348362509050103
+    second: bombermans_0
+  - first:
+      213: 4295295058688239554
+    second: bombermans_1
+  - first:
+      213: -4176717934106366240
+    second: bombermans_2
+  - first:
+      213: -6863956329106479508
+    second: bombermans_3
+  - first:
+      213: -6571810541948431875
+    second: bombermans_4
+  - first:
+      213: -5647396429023951989
+    second: bombermans_5
+  - first:
+      213: 7028549003479119801
+    second: bombermans_6
+  - first:
+      213: 496902900788643026
+    second: bombermans_7
+  - first:
+      213: 19351067526864813
+    second: bombermans_8
+  - first:
+      213: 8249473230292542060
+    second: bombermans_9
+  - first:
+      213: -7715798402808842359
+    second: bombermans_10
+  - first:
+      213: 3319617250858289323
+    second: bombermans_11
+  - first:
+      213: 8852961873579063110
+    second: bombermans_12
+  - first:
+      213: -7896027031488229784
+    second: bombermans_13
+  - first:
+      213: 6547048888715032078
+    second: bombermans_14
+  - first:
+      213: 8509233527560810342
+    second: bombermans_15
+  - first:
+      213: 4369297501958223860
+    second: bombermans_16
+  - first:
+      213: -6520755809363333140
+    second: bombermans_17
+  - first:
+      213: -619899149480791694
+    second: bombermans_18
+  - first:
+      213: 2627280714824839051
+    second: bombermans_19
+  - first:
+      213: 7366854782551869031
+    second: bombermans_20
+  - first:
+      213: -4911335284367993390
+    second: bombermans_21
+  - first:
+      213: -4649600483699881555
+    second: bombermans_22
+  - first:
+      213: -1938901085578366991
+    second: bombermans_23
+  - first:
+      213: 4380994292056769250
+    second: bombermans_24
+  - first:
+      213: 6450290862742954446
+    second: bombermans_25
+  - first:
+      213: -8147722328995427344
+    second: bombermans_26
+  - first:
+      213: -5503169144431712535
+    second: bombermans_27
+  - first:
+      213: -3547355174950331486
+    second: bombermans_28
+  - first:
+      213: -4914721490390070081
+    second: bombermans_29
+  - first:
+      213: -3168864305846557385
+    second: bombermans_30
+  - first:
+      213: 3107497765194473213
+    second: bombermans_31
+  - first:
+      213: -1631093537271651133
+    second: bombermans_32
+  - first:
+      213: 8395226734943688137
+    second: bombermans_33
+  - first:
+      213: 7999045048293714677
+    second: bombermans_34
+  - first:
+      213: -689391734542498977
+    second: bombermans_35
+  - first:
+      213: -4203841235917123030
+    second: bombermans_36
+  - first:
+      213: 585069313699212043
+    second: bombermans_37
+  - first:
+      213: -8998660965244186602
+    second: bombermans_38
+  - first:
+      213: 2734674154543724953
+    second: bombermans_39
+  - first:
+      213: 2805564310328833333
+    second: bombermans_40
+  - first:
+      213: 4880323770094983605
+    second: bombermans_41
+  - first:
+      213: -6627809576415883197
+    second: bombermans_42
+  - first:
+      213: -6508613642102591643
+    second: bombermans_43
+  - first:
+      213: 5820509159102222349
+    second: bombermans_44
+  - first:
+      213: -5848720725456308295
+    second: bombermans_45
+  - first:
+      213: -2739633071628630579
+    second: bombermans_46
+  - first:
+      213: -7856484141182993982
+    second: bombermans_47
+  - first:
+      213: -4709025157034297153
+    second: bombermans_48
+  - first:
+      213: -7883682594947350726
+    second: bombermans_49
+  - first:
+      213: -7987277749594062650
+    second: bombermans_50
+  - first:
+      213: 232700295370776398
+    second: bombermans_51
+  - first:
+      213: 3859142849101133823
+    second: bombermans_52
+  - first:
+      213: 8115070988684412373
+    second: bombermans_56
+  - first:
+      213: 7023116217595729451
+    second: bombermans_57
+  - first:
+      213: 8457965404645564598
+    second: bombermans_58
+  - first:
+      213: 6455105801398705738
+    second: bombermans_59
+  - first:
+      213: 5908180359726785756
+    second: bombermans_60
+  - first:
+      213: -4849982759419501122
+    second: bombermans_64
+  - first:
+      213: -9160593230637987342
+    second: bombermans_65
+  - first:
+      213: 5296688696885062771
+    second: bombermans_66
+  - first:
+      213: 7731674275093214088
+    second: bombermans_67
+  - first:
+      213: 6326643887483893674
+    second: bombermans_68
+  - first:
+      213: 5433805000798316076
+    second: bombermans_69
+  - first:
+      213: 1751548966385971221
+    second: bombermans_70
+  - first:
+      213: 5087320669703060022
+    second: bombermans_71
+  - first:
+      213: 7841721237584903457
+    second: bombermans_72
+  - first:
+      213: 3917035589546694395
+    second: bombermans_73
+  - first:
+      213: -3410907017214290436
+    second: bombermans_74
+  - first:
+      213: 4781592370509808816
+    second: bombermans_75
+  - first:
+      213: 2516963974948008169
+    second: bombermans_76
+  - first:
+      213: 8904496549301178672
+    second: bombermans_77
+  - first:
+      213: -2846608212344578545
+    second: bombermans_78
+  - first:
+      213: -6309231854199561332
+    second: bombermans_79
+  - first:
+      213: -2014406384725789380
+    second: bombermans_53
+  - first:
+      213: 3316342620670292172
+    second: bombermans_61
+  - first:
+      213: 6307054830722918334
+    second: bombermans_69
+  - first:
+      213: -8597704659171084465
+    second: bombermans_87
+  - first:
+      213: -7857630464280552698
+    second: bombermans_88
+  - first:
+      213: -3104991105909827190
+    second: bombermans_77
+  - first:
+      213: 4226210014588785160
+    second: bombermans_90
+  - first:
+      213: -5496404340262895013
+    second: bombermans_91
+  - first:
+      213: -6162696341803225477
+    second: bombermans_92
+  - first:
+      213: 2335630567418597323
+    second: bombermans_93
+  - first:
+      213: -3009303124013310828
+    second: bombermans_94
+  - first:
+      213: 5051360795396511900
+    second: bombermans_95
+  - first:
+      213: 2893608277974365508
+    second: bombermans_96
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: bombermans_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 210
+        width: 36
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5277778, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90f12a1be3dbf78d0800000000000000
+      internalID: -2846348362509050103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 210
+        width: 36
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5833333, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c76a923914fb9b30800000000000000
+      internalID: 4295295058688239554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 210
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ee269a0b215906c0800000000000000
+      internalID: -4176717934106366240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_3
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 210
+        width: 42
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6660d1e5145eb0a0800000000000000
+      internalID: -6863956329106479508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_4
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 210
+        width: 38
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df11ffb812d3cc4a0800000000000000
+      internalID: -6571810541948431875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_5
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 210
+        width: 44
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b83c7367eda60a1b0800000000000000
+      internalID: -5647396429023951989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_6
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 210
+        width: 36
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b77cce641c6a8160800000000000000
+      internalID: 7028549003479119801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_7
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 210
+        width: 36
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d44e593e8a55e600800000000000000
+      internalID: 496902900788643026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_8
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 210
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: daf96f181bfb44000800000000000000
+      internalID: 19351067526864813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_9
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 210
+        width: 42
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c626ea302340c7270800000000000000
+      internalID: 8249473230292542060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_10
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 210
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9877d029b3afbe490800000000000000
+      internalID: -7715798402808842359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_11
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 210
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba8caa33d46a11e20800000000000000
+      internalID: 3319617250858289323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_12
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 210
+        width: 36
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 647b1c44be90cda70800000000000000
+      internalID: 8852961873579063110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_13
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 210
+        width: 36
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86e0343ff3dab6290800000000000000
+      internalID: -7896027031488229784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_14
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 210
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e06b9fac64acbda50800000000000000
+      internalID: 6547048888715032078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_15
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 210
+        width: 42
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66f2b193fced61670800000000000000
+      internalID: 8509233527560810342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_16
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 210
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f7b832bdecd2ac30800000000000000
+      internalID: 4369297501958223860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_17
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 210
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cef65dbc32f9185a0800000000000000
+      internalID: -6520755809363333140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_18
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 210
+        width: 36
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27171a6020da567f0800000000000000
+      internalID: -619899149480791694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_19
+      rect:
+        serializedVersion: 2
+        x: 790
+        y: 210
+        width: 36
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8f6e54e3e9f57420800000000000000
+      internalID: 2627280714824839051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_20
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 210
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76644e9b4635c3660800000000000000
+      internalID: 7366854782551869031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_21
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 210
+        width: 42
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d5576a849e67dbb0800000000000000
+      internalID: -4911335284367993390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_22
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 210
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da98595aefc497fb0800000000000000
+      internalID: -4649600483699881555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_23
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 210
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ff6b734cb3a715e0800000000000000
+      internalID: -1938901085578366991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_24
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 164
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.44117647, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e2ce0dd81b6ccc30800000000000000
+      internalID: 4380994292056769250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_25
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 164
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec1edb35d59048950800000000000000
+      internalID: 6450290862742954446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_26
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 164
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5588235, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fb85b3d5b97dee80800000000000000
+      internalID: -8147722328995427344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_27
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 164
+        width: 44
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e6e147f1d0d0a3b0800000000000000
+      internalID: -5503169144431712535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_28
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 164
+        width: 40
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ab11f8534345cec0800000000000000
+      internalID: -3547355174950331486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_29
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 164
+        width: 40
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbc425308d66bcbb0800000000000000
+      internalID: -4914721490390070081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_30
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 164
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 735e99404bee504d0800000000000000
+      internalID: -3168864305846557385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_31
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 164
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfe9cb2d0cc002b20800000000000000
+      internalID: 3107497765194473213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_32
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 164
+        width: 33
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c4ec7bd1113d59e0800000000000000
+      internalID: -1631093537271651133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_33
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 164
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c55e215c36d18470800000000000000
+      internalID: 8395226734943688137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_34
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 164
+        width: 40
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fae4e53711520f60800000000000000
+      internalID: 7999045048293714677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_35
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 164
+        width: 40
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f530187bed9ce66f0800000000000000
+      internalID: -689391734542498977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_36
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 164
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2255093ba4f8a5c0800000000000000
+      internalID: -4203841235917123030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_37
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 164
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0be504e0759e1800800000000000000
+      internalID: 585069313699212043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_38
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 164
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 610527077855e1380800000000000000
+      internalID: -8998660965244186602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_39
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 164
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 999350697a383f520800000000000000
+      internalID: 2734674154543724953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_40
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 165
+        width: 40
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 535f9af20ed5fe620800000000000000
+      internalID: 2805564310328833333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_41
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 166
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b91861ac946ab340800000000000000
+      internalID: 4880323770094983605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_42
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 164
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3409cce4e4a4504a0800000000000000
+      internalID: -6627809576415883197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_43
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 164
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56fa63a6062cca5a0800000000000000
+      internalID: -6508613642102591643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_44
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 164
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d001238ed3a96c050800000000000000
+      internalID: 5820509159102222349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_45
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 164
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b736b0fc7b25dea0800000000000000
+      internalID: -5848720725456308295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_46
+      rect:
+        serializedVersion: 2
+        x: 910
+        y: 165
+        width: 40
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc5c9ae8c3edaf9d0800000000000000
+      internalID: -2739633071628630579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_47
+      rect:
+        serializedVersion: 2
+        x: 952
+        y: 166
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c93c4d8c4928f290800000000000000
+      internalID: -7856484141182993982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_48
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.44117647, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb8b794b19e26aeb0800000000000000
+      internalID: -4709025157034297153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_49
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3fbb3e0378879290800000000000000
+      internalID: -7883682594947350726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_50
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 118
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5588235, y: 0.45454547}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c08015843d772190800000000000000
+      internalID: -7987277749594062650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_51
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 121
+        width: 44
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4f14bc8fa7ba3300800000000000000
+      internalID: 232700295370776398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_52
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 119
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff7792289fd6e8530800000000000000
+      internalID: 3859142849101133823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_56
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d5cc9791168e9070800000000000000
+      internalID: 8115070988684412373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_57
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2614166dfe177160800000000000000
+      internalID: 7023116217595729451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_58
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b0217a29bab06570800000000000000
+      internalID: 8457965404645564598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_59
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 121
+        width: 44
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4edee79684259950800000000000000
+      internalID: 6455105801398705738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_60
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 119
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd4647afbb21ef150800000000000000
+      internalID: 5908180359726785756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_64
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb5280a606661bcb0800000000000000
+      internalID: -4849982759419501122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_65
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f989fbddf80fd080800000000000000
+      internalID: -9160593230637987342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_66
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37c29a78e4e918940800000000000000
+      internalID: 5296688696885062771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_67
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 121
+        width: 44
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 883f4fdf9cc6c4b60800000000000000
+      internalID: 7731674275093214088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_68
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 119
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa7bfdd7811ccc750800000000000000
+      internalID: 6326643887483893674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_72
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12d72e91be363dc60800000000000000
+      internalID: 7841721237584903457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_73
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf65e778d1b1c5630800000000000000
+      internalID: 3917035589546694395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_74
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 118
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf51e0db3260aa0d0800000000000000
+      internalID: -3410907017214290436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_75
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 121
+        width: 44
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b484f05de0ab5240800000000000000
+      internalID: 4781592370509808816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_76
+      rect:
+        serializedVersion: 2
+        x: 910
+        y: 119
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e03b37566d0ee220800000000000000
+      internalID: 2516963974948008169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_53
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 119
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c35f32dd0146b04e0800000000000000
+      internalID: -2014406384725789380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_61
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 119
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc07a82fa04060e20800000000000000
+      internalID: 3316342620670292172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_69
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 119
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb7a62cc3f8278750800000000000000
+      internalID: 6307054830722918334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bombermans_77
+      rect:
+        serializedVersion: 2
+        x: 956
+        y: 119
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a895f754a0bd8e4d0800000000000000
+      internalID: -3104991105909827190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
