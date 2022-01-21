@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d77cf4390f154efa9076cbc69365d9f0, type: 3}
-  m_Name: Bomberman
+  m_Name: HeroGreen
   m_EditorClassIdentifier: 
-  Name: Player.0
-  Prefab: {fileID: 3476347086192181414, guid: ddac8d5521b1f4d478d8b4e7b1ad3c4b, type: 3}
+  Name: Player.1
+  Prefab: {fileID: 3476347086192181414, guid: c806b5242b322664091b8d96dfa5a3cc, type: 3}
   Speed: 2.4
   Health: 3
   BlastRadius: 4

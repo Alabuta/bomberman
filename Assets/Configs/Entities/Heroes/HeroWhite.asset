@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d77cf4390f154efa9076cbc69365d9f0, type: 3}
+  m_Name: HeroWhite
+  m_EditorClassIdentifier: 
+  Name: Player.0
+  Prefab: {fileID: 3476347086192181414, guid: ddac8d5521b1f4d478d8b4e7b1ad3c4b, type: 3}
+  Speed: 2.4
+  Health: 3
+  BlastRadius: 4
+  BombCapacity: 2
+  BombConfig: {fileID: 11400000, guid: cd27d438adfefc142a47e3e6fc845479, type: 2}

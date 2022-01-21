@@ -13,7 +13,7 @@ TextureImporter:
     second: hero_white_right_2
   - first:
       213: 8502436122128325658
-    second: hero_white_die_0
+    second: hero_white_die_1
   - first:
       213: 602174374044874034
     second: hero_white_die_1
@@ -52,7 +52,7 @@ TextureImporter:
     second: hero_white_die_6
   - first:
       213: -4020983021202058936
-    second: hero_white_16
+    second: hero_white_die_7
   - first:
       213: 254437594356709370
     second: hero_white_die_8
@@ -493,7 +493,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hero_white_16
+      name: hero_white_die_7
       rect:
         serializedVersion: 2
         x: 160
@@ -517,7 +517,7 @@ TextureImporter:
       name: hero_white_die_8
       rect:
         serializedVersion: 2
-        x: 206
+        x: 205
         y: 119
         width: 44
         height: 42
