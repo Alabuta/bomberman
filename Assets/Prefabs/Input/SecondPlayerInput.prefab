@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7818862637414925784
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 165800034243630178, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
+      propertyPath: m_Actions
+      value: 
+      objectReference: {fileID: -944628639613478452, guid: f991fda07afdb3c4bb13b04ae1fc3516, type: 3}
+    - target: {fileID: 165800034243630178, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
+      propertyPath: m_DefaultActionMap
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 165800034243630178, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
+      propertyPath: m_NeverAutoSwitchControlSchemes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 165800034243630179, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 165800034243630179, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 165800034243630179, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 165800034243630179, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 165800034243630204, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
+      propertyPath: m_Name
+      value: SecondPlayerInput
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}

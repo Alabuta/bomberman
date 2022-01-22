@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 090b76ff46f24563bf1ce9cb038e564c, type: 3}
+  m_Name: DefaultPlayer
+  m_EditorClassIdentifier: 
+  HeroConfig: {fileID: 11400000, guid: 8ff7542800dc0444ab7a4f432a73f471, type: 2}
+  PlayerInputHolder: {fileID: 165800034243630204, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}

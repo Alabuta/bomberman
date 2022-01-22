@@ -1,4 +1,4 @@
-namespace Entity
+namespace Effects
 {
     public interface IBombCapacityChangerItem
     {
