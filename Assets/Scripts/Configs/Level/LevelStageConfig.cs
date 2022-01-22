@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Configs.Level
 {
     [CreateAssetMenu(fileName = "LevelStageConfig", menuName = "Configs/Level/Level Stage Config")]
-    public sealed class LevelStageConfig : ScriptableObject
+    public sealed class LevelStageConfig : ConfigBase
     {
         [Header("General Parameters")]
         public int Index;
@@ -20,7 +20,7 @@ namespace Configs.Level
         public int SoftBlocksCoverage = 30;
 
         [Space(16)]
-        public int2[] PlayersSpawnCorners = {int2.zero};
+        public int2[] PlayersSpawnCorners = { int2.zero };
 
         [Space(16)]
         public EnemyConfig[] Enemies;

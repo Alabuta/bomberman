@@ -1,4 +1,5 @@
-﻿using Entity;
+﻿using Effects;
+using Entity;
 using UnityEngine;
 
 namespace Configs.Items

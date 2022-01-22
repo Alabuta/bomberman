@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Configs.Level
 {
     [CreateAssetMenu(fileName = "LevelConfig", menuName = "Configs/Level/Level Config")]
-    public sealed class LevelConfig : ScriptableObject
+    public sealed class LevelConfig : ConfigBase
     {
         [Header("General Parameters")]
         public int Index;

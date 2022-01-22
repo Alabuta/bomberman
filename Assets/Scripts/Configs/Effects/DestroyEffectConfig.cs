@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Configs.Effects
 {
     [CreateAssetMenu(menuName = "Configs/Effects/Destroy Behind Effect Config")]
-    public class DestroyEffectConfig : ScriptableObject
+    public class DestroyEffectConfig : ConfigBase
     {
         public GameObject Effect;
 

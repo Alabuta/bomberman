@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Configs.Items
 {
-    public abstract class ItemConfigBase : ScriptableObject
+    public abstract class ItemConfigBase : ConfigBase
     {
         public string ApplyObjectTag;
 

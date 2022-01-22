@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Configs.Entity
 {
-    public abstract class EntityConfig : ScriptableObject
+    public abstract class EntityConfig : ConfigBase
     {
         [Header("General Parameters")]
         public string Name;
