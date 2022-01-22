@@ -28,10 +28,11 @@ namespace App
                 var applicationHolder = ApplicationHolder.Instance;
                 Assert.IsNotNull(applicationHolder, "failed to initialize app holder");
 
-                var levelConfig = applicationConfig.GameModePvE.LevelConfigs.First();
+                var gameMode = applicationConfig.GameModePvE;
+                var levelConfig = gameMode.Levels.First();
 
                 var levelManager = applicationHolder.Add<ILevelManager>(new GameLevelManager());
-                levelManager.GenerateLevel(applicationConfig.GameModePvE, levelConfig);
+                levelManager.GenerateLevel(gameMode, levelConfig);
             });
         }
 

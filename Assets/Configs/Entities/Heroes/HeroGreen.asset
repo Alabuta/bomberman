@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HeroGreen
   m_EditorClassIdentifier: 
   Name: Player.1
-  Prefab: {fileID: 3476347086192181414, guid: c806b5242b322664091b8d96dfa5a3cc, type: 3}
+  Prefab: {fileID: 1343022026916402644, guid: df1298ec1fe507441a0029313f301aa1, type: 3}
   Speed: 2.4
   Health: 3
   BlastRadius: 4

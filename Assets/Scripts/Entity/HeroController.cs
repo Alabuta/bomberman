@@ -1,9 +1,8 @@
 ﻿using System;
 using Configs.Entity;
-using JetBrains.Annotations;
+using Configs.Game;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Entity
 {
@@ -19,17 +18,22 @@ namespace Entity
         }
     }
 
-    [RequireComponent(typeof(PlayerInput))]
     public sealed class HeroController : EntityController<BombermanConfig>, IHero
     {
         [SerializeField]
-        private HeroAnimator Animator;
+        private PlayerTag PlayerTag;
 
-        public event Action<int> BombCapacityChangedEvent;
+        [SerializeField]
+        private GameObject Forwarder;
+
+        [SerializeField]
+        private int PlayerIndex;
+
+        private int _bombCapacity;
 
         public event EventHandler<BombPlantEventData> BombPlantedEvent;
 
-        private int _bombCapacity;
+        public event Action<int> BombCapacityChangedEvent;
 
         private new void Start()
         {
@@ -38,18 +42,21 @@ namespace Entity
             BlastRadius = EntityConfig.BlastRadius;
             BombCapacity = EntityConfig.BombCapacity;
             Health = EntityConfig.Health;
+
+            var inputService = Infrastructure.Game.InputService;
+            // var playerInput = inputService.GetPlayerInputService(PlayerTag);
+            var playerInput = inputService.RegisterPlayerInput(PlayerTag, PlayerIndex, Forwarder.gameObject);
+
+            playerInput.OnMoveEvent += OnMoveEvent;
+            playerInput.OnBombPlantEvent += OnBombPlant;
         }
 
-        [UsedImplicitly]
-        public void OnMove(InputValue value)
+        private void OnMoveEvent(float2 value)
         {
-            MovementVector = value.Get<Vector2>();
-            MovementVector *= math.select(HorizontalMovementMask, VerticalMovementMask, MovementVector.y != 0);
-            MovementVector = math.round(MovementVector) * Speed;
+            MovementVector = math.round(value) * Speed;
         }
 
-        [UsedImplicitly]
-        public void OnBombPlant(InputValue value)
+        private void OnBombPlant()
         {
             if (BombCapacity <= 0)
                 return;

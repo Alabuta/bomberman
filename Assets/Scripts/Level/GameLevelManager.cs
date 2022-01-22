@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Configs;
 using Configs.Game;
 using Configs.Level;
 using Core;
@@ -52,7 +53,7 @@ namespace Level
 
             SetupWalls(levelConfig, _gameLevelGridModel);
 
-            SpawnPlayers(gameModePvE, _levelStageConfig, _gameLevelGridModel);
+            SpawnPlayers(gameModePvE.Players, _levelStageConfig, _gameLevelGridModel);
 
             /*PrefabsManager.Instantiate();
 
@@ -60,16 +61,20 @@ namespace Level
             PlayersManager.PopulateLevel(levelConfig, levelMode);*/
         }
 
-        private void SpawnPlayers(GameModePvE gameModePvE, LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel)
+        private void SpawnPlayers(IReadOnlyCollection<PlayerConfig> playerConfigs, LevelStageConfig levelStageConfig,
+            GameLevelGridModel levelGridModel)
         {
-            _players = levelStageConfig.PlayersSpawnCorners
-                .Select(spawnCorner =>
+            var spawnCorners = levelStageConfig.PlayersSpawnCorners;
+
+            Assert.IsTrue(playerConfigs.Count <= spawnCorners.Length, "players count greater than spawn corners");
+
+            _players = spawnCorners.Zip(playerConfigs, (spawnCorner, playerConfig) =>
                 {
                     var position = ((spawnCorner * 2 - 1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy *
                                    math.float3(1, 1, 0);
 
-                    var playerGameObject =
-                        Object.Instantiate(gameModePvE.BombermanConfig.Prefab, position, Quaternion.identity);
+                    var playerGameObject = Object.Instantiate(playerConfig.HeroConfig.Prefab, position, Quaternion.identity);
+
                     var playerController = playerGameObject.GetComponent<HeroController>();
                     Assert.IsNotNull(playerController, "'PlayerController' component is null");
 
@@ -80,6 +85,25 @@ namespace Level
                     return (IHero) playerController;
                 })
                 .ToArray();
+
+            /*_players = spawnCorners
+                .Select(spawnCorner =>
+                {
+                    var position = ((spawnCorner * 2 - 1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy *
+                                   math.float3(1, 1, 0);
+
+                    var playerGameObject =
+                        Object.Instantiate(playerConfigs.BombermanConfig.Prefab, position, Quaternion.identity);
+                    var playerController = playerGameObject.GetComponent<HeroController>();
+                    Assert.IsNotNull(playerController, "'PlayerController' component is null");
+
+                    playerController.BombPlantedEvent += BombPlantEventHandler;
+
+                    EntitySpawnedEvent?.Invoke(playerController);
+
+                    return (IHero) playerController;
+                })
+                .ToArray();*/
         }
 
         private void BombPlantEventHandler(object sender, BombPlantEventData data)
@@ -129,8 +153,8 @@ namespace Level
             // :TODO: refactor
             var blocks = new Dictionary<GridTileType, (GameObject, GameObject)>
             {
-                {GridTileType.HardBlock, (hardBlocksGroup, levelConfig.HardBlock.Prefab)},
-                {GridTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlock.Prefab)}
+                { GridTileType.HardBlock, (hardBlocksGroup, levelConfig.HardBlock.Prefab) },
+                { GridTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlock.Prefab) }
             };
 
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
