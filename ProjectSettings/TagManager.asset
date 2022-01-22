@@ -11,6 +11,7 @@ TagManager:
   - Effect
   - Wall
   - PowerUpItem
+  - PlayerInput
   layers:
   - Default
   - TransparentFX
