@@ -51,9 +51,14 @@ namespace Entity
             playerInput.OnBombPlantEvent += OnBombPlant;
         }
 
+        private void Update()
+        {
+            MovementVector = math.round(_directionVector) * Speed;
+        }
+
         private void OnMoveEvent(float2 value)
         {
-            MovementVector = math.round(value) * Speed;
+            _directionVector = value;
         }
 
         private void OnBombPlant()
