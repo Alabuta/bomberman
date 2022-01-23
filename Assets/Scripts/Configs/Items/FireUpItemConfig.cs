@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Configs.Items
 {
-    [CreateAssetMenu(fileName = "FireUpItemConfig", menuName = "Configs/Items/Fire Up")]
+    [CreateAssetMenu(fileName = "FireUpItem", menuName = "Configs/Items/Fire Up Item")]
     public class FireUpItemConfig : ItemConfigBase
     {
         [SerializeField]

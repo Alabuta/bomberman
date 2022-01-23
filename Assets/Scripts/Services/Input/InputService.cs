@@ -12,10 +12,10 @@ namespace Services.Input
         /*public event Action<float2> OnMoveEvent;
         public event Action OnBombPlantEvent;*/
 
-        private readonly Dictionary<PlayerTag, IPlayerInputForwarder> _playerInputServices =
-            new Dictionary<PlayerTag, IPlayerInputForwarder>();
+        private readonly Dictionary<PlayerTagConfig, IPlayerInputForwarder> _playerInputServices =
+            new Dictionary<PlayerTagConfig, IPlayerInputForwarder>();
 
-        public IPlayerInputForwarder RegisterPlayerInput(PlayerTag playerTag, int playerIndex, GameObject playerPrefab)
+        public IPlayerInputForwarder RegisterPlayerInput(PlayerTagConfig playerTag, int playerIndex, GameObject playerPrefab)
         {
             var controlScheme = "Keyboard";
             var playerInput = PlayerInput.Instantiate(playerPrefab, playerIndex, controlScheme, -1,
@@ -28,7 +28,7 @@ namespace Services.Input
             return component;
         }
 
-        public IPlayerInputForwarder GetPlayerInputService(PlayerTag playerTag)
+        public IPlayerInputForwarder GetPlayerInputService(PlayerTagConfig playerTag)
         {
             return _playerInputServices.TryGetValue(playerTag, out var inputService) ? inputService : null;
         }

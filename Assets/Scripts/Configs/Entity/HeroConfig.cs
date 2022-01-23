@@ -2,8 +2,8 @@
 
 namespace Configs.Entity
 {
-    [CreateAssetMenu(fileName = "BombermanConfig", menuName = "Configs/Entity/Bomberman Config")]
-    public sealed class BombermanConfig : EntityConfig
+    [CreateAssetMenu(fileName = "Hero", menuName = "Configs/Entity/Hero")]
+    public sealed class HeroConfig : EntityConfig
     {
         public int BlastRadius = 1;
         public int BombCapacity = 1;

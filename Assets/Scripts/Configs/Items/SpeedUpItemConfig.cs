@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Configs.Items
 {
-    [CreateAssetMenu(fileName = "SpeedUpItemConfig", menuName = "Configs/Items/Speed Up")]
+    [CreateAssetMenu(fileName = "SpeedUpItemConfig", menuName = "Configs/Items/Speed Up Item")]
     public sealed class SpeedUpItemConfig : ItemConfigBase
     {
         [SerializeField]

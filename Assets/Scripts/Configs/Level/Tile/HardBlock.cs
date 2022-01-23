@@ -2,7 +2,7 @@
 
 namespace Configs.Level.Tile
 {
-    [CreateAssetMenu(fileName = "HardBlockConfig", menuName = "Configs/Level/Hard Block Config")]
+    [CreateAssetMenu(fileName = "HardBlock", menuName = "Configs/Level/Hard Block")]
     public sealed class HardBlock : BlockConfig
     {
     }

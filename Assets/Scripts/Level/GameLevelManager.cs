@@ -18,7 +18,7 @@ namespace Level
     {
         event Action<IEntity> EntitySpawnedEvent;
 
-        void GenerateLevel(GameModePvE applicationConfigGameModePvE, LevelConfig levelConfig);
+        void GenerateLevel(GameModePvEConfig applicationConfigGameModePvE, LevelConfig levelConfig);
     }
 
     public class GameLevelManager : ILevelManager
@@ -34,7 +34,7 @@ namespace Level
         private LevelStageConfig _levelStageConfig;
         private GameLevelGridModel _gameLevelGridModel;
 
-        public void GenerateLevel(GameModePvE gameModePvE, LevelConfig levelConfig)
+        public void GenerateLevel(GameModePvEConfig gameModePvE, LevelConfig levelConfig)
         {
             // Assert.IsTrue(ApplicationHolder.Instance.TryGet<ISceneManager>(out var sceneManager));
 

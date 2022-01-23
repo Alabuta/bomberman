@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Configs.Entity
 {
-    [CreateAssetMenu(fileName = "EnemyConfig", menuName = "Configs/Entity/Enemy Config")]
+    [CreateAssetMenu(fileName = "Enemy", menuName = "Configs/Entity/Enemy")]
     public sealed class EnemyConfig : EntityConfig
     {
         public BlockConfig[] FordableTiles;

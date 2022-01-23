@@ -6,7 +6,7 @@ namespace Game
 {
     public interface IPlayer
     {
-        PlayerTag PlayerTag { get; }
+        PlayerTagConfig PlayerTagConfig { get; }
         HeroController HeroController { get; }
         IPlayerInputForwarder PlayerInputForwarder { get; }
     }

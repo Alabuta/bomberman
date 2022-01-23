@@ -2,7 +2,7 @@
 
 namespace Configs.Level.Tile
 {
-    [CreateAssetMenu(fileName = "PortalBlockConfig", menuName = "Configs/Level/Portal Block Config")]
+    [CreateAssetMenu(fileName = "PortalBlock", menuName = "Configs/Level/Portal Block")]
     public sealed class PortalBlock : BlockConfig
     {
     }

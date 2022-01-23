@@ -1,8 +1,11 @@
 ﻿using System;
 using Configs.Entity;
 using Configs.Game;
+using Input;
+using Services.Input;
 using Unity.Mathematics;
 using UnityEngine;
+using Zenject;
 
 namespace Entity
 {
@@ -18,10 +21,10 @@ namespace Entity
         }
     }
 
-    public sealed class HeroController : EntityController<BombermanConfig>, IHero
+    public sealed class HeroController : EntityController<HeroConfig>, IHero
     {
         [SerializeField]
-        private PlayerTag PlayerTag;
+        private PlayerTagConfig PlayerTagConfig;
 
         [SerializeField]
         private GameObject Forwarder;

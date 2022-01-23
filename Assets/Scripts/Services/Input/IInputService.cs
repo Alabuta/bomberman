@@ -12,8 +12,8 @@ namespace Services.Input
         /*event Action<float2> OnMoveEvent;
         event Action OnBombPlantEvent;*/
 
-        IPlayerInputForwarder RegisterPlayerInput(PlayerTag playerTag, int playerIndex, GameObject playerPrefab);
+        IPlayerInputForwarder RegisterPlayerInput(PlayerTagConfig playerTag, int playerIndex, GameObject playerPrefab);
 
-        IPlayerInputForwarder GetPlayerInputService(PlayerTag playerTag);
+        IPlayerInputForwarder GetPlayerInputService(PlayerTagConfig playerTag);
     }
 }

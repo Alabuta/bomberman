@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Configs.Level
 {
-    [CreateAssetMenu(fileName = "LevelStageConfig", menuName = "Configs/Level/Level Stage Config")]
+    [CreateAssetMenu(fileName = "LevelStage", menuName = "Configs/Level/Level Stage")]
     public sealed class LevelStageConfig : ConfigBase
     {
         [Header("General Parameters")]

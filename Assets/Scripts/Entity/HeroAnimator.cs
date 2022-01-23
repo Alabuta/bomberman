@@ -2,7 +2,7 @@
 
 namespace Entity
 {
-    public class HeroAnimator : EntityAnimator<BombermanConfig>
+    public class HeroAnimator : EntityAnimator<HeroConfig>
     {
     }
 }

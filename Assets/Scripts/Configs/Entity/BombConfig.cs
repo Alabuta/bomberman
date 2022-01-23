@@ -2,7 +2,7 @@
 
 namespace Configs.Entity
 {
-    [CreateAssetMenu(fileName = "BombConfig", menuName = "Configs/Entity/Bomb Config")]
+    [CreateAssetMenu(fileName = "Bomb", menuName = "Configs/Entity/Bomb")]
     public sealed class BombConfig : ConfigBase
     {
         [Header("General Parameters")]

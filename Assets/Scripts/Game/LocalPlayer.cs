@@ -6,7 +6,7 @@ namespace Game
 {
     public class LocalPlayer : IPlayer
     {
-        public PlayerTag PlayerTag { get; }
+        public PlayerTagConfig PlayerTagConfig { get; }
         public HeroController HeroController { get; }
         public IPlayerInputForwarder PlayerInputForwarder { get; }
     }

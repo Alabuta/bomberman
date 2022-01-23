@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Configs.Items
 {
-    [CreateAssetMenu(fileName = "BombUpItemConfig", menuName = "Configs/Items/Bomb Up")]
+    [CreateAssetMenu(fileName = "BombUpItem", menuName = "Configs/Items/Bomb Up Item")]
     public class BombUpItemConfig : WeaponItemConfig, IBombCapacityChangerItem
     {
         [SerializeField]
