@@ -114,7 +114,7 @@ namespace Level
             var prefab = _levelStageConfig.BombConfig.Prefab;
             var bomb = Object.Instantiate(prefab, position, Quaternion.identity);
 
-            StartCorotutine.Start(ExecuteAfterTime(_levelStageConfig.BombConfig.LifetimeSec, () => { bomb.SetActive(false); }));
+            StartCoroutine.Start(ExecuteAfterTime(_levelStageConfig.BombConfig.LifetimeSec, () => { bomb.SetActive(false); }));
         }
 
         private static void SetupWalls(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)

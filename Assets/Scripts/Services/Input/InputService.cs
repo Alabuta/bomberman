@@ -18,8 +18,9 @@ namespace Services.Input
         public IPlayerInputForwarder RegisterPlayerInput(PlayerTagConfig playerTag, int playerIndex, GameObject playerPrefab)
         {
             var controlScheme = "Keyboard";
-            var playerInput = PlayerInput.Instantiate(playerPrefab, playerIndex, controlScheme, -1,
-                new InputDevice[] { Keyboard.current });
+            var devices = new InputDevice[] { Keyboard.current };
+
+            var playerInput = PlayerInput.Instantiate(playerPrefab, playerIndex, controlScheme, -1, devices);
             var component = playerInput.GetComponent<IPlayerInputForwarder>();
             Assert.IsNotNull(component);
 

@@ -28,6 +28,11 @@ namespace Entity
             Entity.OnKillEvent += OnEntityKill;
         }
 
+        private void OnDestroy()
+        {
+            Entity.OnKillEvent -= OnEntityKill;
+        }
+
         protected void Update()
         {
             Animator.SetFloat(HorizontalSpeedId, Entity.MovementVector.x);

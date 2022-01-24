@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Core
 {
-    public static class StartCorotutine {
+    public static class StartCoroutine
+    {
         public static void Start(IEnumerator routine)
         {
             if (_holder == null)

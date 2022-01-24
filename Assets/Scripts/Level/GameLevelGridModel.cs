@@ -5,6 +5,7 @@ using System.Linq;
 using Configs.Level;
 using JetBrains.Annotations;
 using Unity.Mathematics;
+using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 
 namespace Level
@@ -37,6 +38,7 @@ namespace Level
         public GameLevelGridModel(LevelStageConfig levelStageConfig)
         {
             _size = math.int2(levelStageConfig.ColumnsNumber, levelStageConfig.RowsNumber);
+            Assert.IsTrue(math.all(_size % 2 != int2.zero));
 
             var playersSpawnCorners = levelStageConfig.PlayersSpawnCorners;
             var softBlocksCoverage = levelStageConfig.SoftBlocksCoverage;
