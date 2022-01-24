@@ -1,5 +1,4 @@
-﻿using Configs.Entity;
-using Configs.Level;
+﻿using Configs.Level;
 using UnityEngine;
 
 namespace Configs.Game
@@ -10,7 +9,5 @@ namespace Configs.Game
         public LevelConfig[] Levels;
 
         public PlayerConfig[] Players;
-
-        public HeroConfig Hero;
     }
 }

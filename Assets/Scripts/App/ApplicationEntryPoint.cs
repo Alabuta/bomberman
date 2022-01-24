@@ -7,7 +7,7 @@ namespace App
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void OnBeforeLoadScene()
         {
-            ApplicationStarter.StartGame();
+            // ApplicationStarter.StartGame();
         }
     }
 }

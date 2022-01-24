@@ -1,3 +1,4 @@
+using App;
 using Services.Input;
 
 namespace Infrastructure
@@ -5,11 +6,11 @@ namespace Infrastructure
     public class Game
     {
         public static IInputService InputService;
+        public readonly GameStateMachine GameStateMachine;
 
-        public Game()
+        public Game(ICoroutineRunner coroutineRunner)
         {
-            // Register InputService
-            InputService = new InputService();
+            GameStateMachine = new GameStateMachine(new SceneLoader(coroutineRunner));
         }
     }
 }

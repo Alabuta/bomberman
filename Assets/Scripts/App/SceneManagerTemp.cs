@@ -11,7 +11,7 @@ using UnitySceneManagement = UnityEngine.SceneManagement;
 
 namespace App
 {
-    public sealed class SceneManager : ISceneManager
+    public sealed class SceneManagerTemp : ISceneManager
     {
         public UnitySceneManagement.Scene ActiveScene => UnitySceneManagement.SceneManager.GetActiveScene();
 
@@ -41,7 +41,7 @@ namespace App
             // Play FadeIn effect animation
             // Load scene while playing FadeOut effect animation
 
-            StartCorotutine.Start(LoadSceneAsync(sceneBuildIndex, action));
+            StartCoroutine.Start(LoadSceneAsync(sceneBuildIndex, action));
         }
 
         private IEnumerator LoadSceneAsync(SceneBuildIndex sceneBuildIndex, Action action)
