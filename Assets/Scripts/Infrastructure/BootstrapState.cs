@@ -1,4 +1,7 @@
+using System.Linq;
 using App;
+using Configs.Level;
+using Configs.Singletons;
 using Services.Input;
 
 namespace Infrastructure
@@ -18,7 +21,13 @@ namespace Infrastructure
         public void Enter()
         {
             RegisterServices();
-            _sceneLoader.Load(InitialSceneName, EnterLoadLevel);
+
+            var applicationConfig = ApplicationConfig.Instance;
+
+            var gameMode = applicationConfig.GameModePvE;
+            var levelConfig = gameMode.Levels.First();
+
+            _sceneLoader.Load(InitialSceneName, () => OnLoadLevel(levelConfig));
         }
 
         public void Exit()
@@ -35,9 +44,9 @@ namespace Infrastructure
             return new InputService();
         }
 
-        private void EnterLoadLevel()
+        private void OnLoadLevel(LevelConfig levelConfig)
         {
-            _gameStateMachine.Enter<LoadLevelState, string>("GameLevel");
+            _gameStateMachine.Enter<LoadLevelState, LevelConfig>(levelConfig);
         }
     }
 }

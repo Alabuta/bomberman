@@ -11,6 +11,8 @@ namespace Configs.Level
         public int Index;
         public string Name;
 
+        public string SceneName;
+
         public int OriginalPixelsPerUnits = 16;
 
         public int4 ViewportPadding = int4.zero;

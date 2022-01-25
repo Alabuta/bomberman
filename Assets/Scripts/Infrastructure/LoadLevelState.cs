@@ -1,9 +1,10 @@
 using App;
+using Configs.Level;
 using UnityEngine;
 
 namespace Infrastructure
 {
-    public class LoadLevelState : IPayloadedState<string>
+    public class LoadLevelState : IPayloadedState<LevelConfig>
     {
         private readonly GameStateMachine _gameStateMachine;
         private readonly SceneLoader _sceneLoader;
@@ -14,9 +15,9 @@ namespace Infrastructure
             _sceneLoader = sceneLoader;
         }
 
-        public void Enter(string sceneName)
+        public void Enter(LevelConfig levelConfig)
         {
-            _sceneLoader.Load(sceneName, OnSceneLoaded);
+            _sceneLoader.Load(levelConfig.SceneName, OnSceneLoaded);
         }
 
         public void Exit()
