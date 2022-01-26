@@ -3,6 +3,7 @@ using App;
 using Configs.Level;
 using Configs.Singletons;
 using Services.Input;
+using UnityEngine;
 
 namespace Infrastructure
 {
@@ -23,6 +24,9 @@ namespace Infrastructure
             RegisterServices();
 
             var applicationConfig = ApplicationConfig.Instance;
+
+            QualitySettings.vSyncCount = applicationConfig.EnableVSync ? 1 : 0;
+            Application.targetFrameRate = applicationConfig.TargetFrameRate;
 
             var gameMode = applicationConfig.GameModePvE;
             var levelConfig = gameMode.Levels.First();

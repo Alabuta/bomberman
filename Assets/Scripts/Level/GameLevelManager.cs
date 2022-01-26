@@ -76,7 +76,7 @@ namespace Level
                     var playerGameObject = Object.Instantiate(playerConfig.HeroConfig.Prefab, position, Quaternion.identity);
 
                     var playerController = playerGameObject.GetComponent<HeroController>();
-                    Assert.IsNotNull(playerController, "'PlayerController' component is null");
+                    Assert.IsNotNull(playerController, "'HeroController' component is null");
 
                     playerController.BombPlantedEvent += BombPlantEventHandler;
 
