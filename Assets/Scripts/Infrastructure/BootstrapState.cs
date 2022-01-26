@@ -2,6 +2,7 @@ using System.Linq;
 using App;
 using Configs.Level;
 using Configs.Singletons;
+using Level;
 using Services.Input;
 using UnityEngine;
 
@@ -41,6 +42,7 @@ namespace Infrastructure
         private void RegisterServices()
         {
             Game.InputService = RegisterInputService();
+            Game.LevelManager = new GameLevelManager();
         }
 
         private static IInputService RegisterInputService()

@@ -1,4 +1,5 @@
 using App;
+using Level;
 using Services.Input;
 
 namespace Infrastructure
@@ -6,6 +7,8 @@ namespace Infrastructure
     public class Game
     {
         public static IInputService InputService;
+        public static ILevelManager LevelManager;
+
         public readonly GameStateMachine GameStateMachine;
 
         public Game(ICoroutineRunner coroutineRunner)

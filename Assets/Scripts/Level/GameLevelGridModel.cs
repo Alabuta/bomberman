@@ -118,6 +118,23 @@ namespace Level
             return math.mad(c.y, _size.x, c.x);
         }
 
+        public float3 GetCellWorldPosition(int2 coordinate)
+        {
+            var idx = ClampCoordinate(coordinate);
+
+            var gridPosition = (float2) (WorldSize - 1) / 2.0f;
+            var position = ((coordinate * 2 - 1) * gridPosition).xyy;
+            position.z = 0;
+
+            return position;
+        }
+
+        private int2 ClampCoordinate(int2 coordinate)
+        {
+            var c = coordinate % _size;
+            return math.select(c, c + _size, c < int2.zero);
+        }
+
         public IEnumerator<GridTileType> GetEnumerator()
         {
             return _grid.AsEnumerable().GetEnumerator();
