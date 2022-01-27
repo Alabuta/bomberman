@@ -7,6 +7,7 @@ using Configs.Game;
 using Configs.Level;
 using Core;
 using Entity;
+using Infrastructure.Factory;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -27,12 +28,14 @@ namespace Level
 
         private int[] _hiddenItemsIndices;
 
-        private IHero[] _players;
+        private IHero[] _heroes;
 
         public GameLevelState CurrentGameLevelState { get; }
 
         private LevelStageConfig _levelStageConfig;
         private GameLevelGridModel _gameLevelGridModel;
+
+        private static readonly IGameFactory _gameFactory;// :TODO: inject
 
         public void GenerateLevel(GameModePvEConfig gameModePvE, LevelConfig levelConfig)
         {
@@ -53,7 +56,17 @@ namespace Level
 
             SetupWalls(levelConfig, _gameLevelGridModel);
 
-            SpawnPlayers(gameModePvE.Players, _levelStageConfig, _gameLevelGridModel);
+            var heroes = SpawnHeroesPrefabs(gameModePvE.Players, _levelStageConfig.PlayersSpawnCorners, _gameLevelGridModel);
+            _heroes = heroes
+                .Select(go => go.GetComponent<HeroController>())
+                .Select(c =>
+                {
+                    c.BombPlantedEvent += BombPlantEventHandler;
+                    EntitySpawnedEvent?.Invoke(c);
+
+                    return (IHero) c;
+                })
+                .ToArray();
 
             /*PrefabsManager.Instantiate();
 
@@ -61,49 +74,19 @@ namespace Level
             PlayersManager.PopulateLevel(levelConfig, levelMode);*/
         }
 
-        private void SpawnPlayers(IReadOnlyCollection<PlayerConfig> playerConfigs, LevelStageConfig levelStageConfig,
+        private static IEnumerable<GameObject> SpawnHeroesPrefabs(IReadOnlyCollection<PlayerConfig> playerConfigs,
+            IReadOnlyCollection<int2> spawnCorners,
             GameLevelGridModel levelGridModel)
         {
-            var spawnCorners = levelStageConfig.PlayersSpawnCorners;
+            Assert.IsTrue(playerConfigs.Count <= spawnCorners.Count, "players count greater than the level spawn corners");
 
-            Assert.IsTrue(playerConfigs.Count <= spawnCorners.Length, "players count greater than spawn corners");
-
-            _players = spawnCorners.Zip(playerConfigs, (spawnCorner, playerConfig) =>
+            return spawnCorners
+                .Zip(playerConfigs, (spawnCorner, playerConfig) =>
                 {
-                    var position = ((spawnCorner * 2 - 1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy *
-                                   math.float3(1, 1, 0);
-
-                    var playerGameObject = Object.Instantiate(playerConfig.HeroConfig.Prefab, position, Quaternion.identity);
-
-                    var playerController = playerGameObject.GetComponent<HeroController>();
-                    Assert.IsNotNull(playerController, "'HeroController' component is null");
-
-                    playerController.BombPlantedEvent += BombPlantEventHandler;
-
-                    EntitySpawnedEvent?.Invoke(playerController);
-
-                    return (IHero) playerController;
+                    var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
+                    return _gameFactory.SpawnEntity(playerConfig.HeroConfig, position);
                 })
                 .ToArray();
-
-            /*_players = spawnCorners
-                .Select(spawnCorner =>
-                {
-                    var position = ((spawnCorner * 2 - 1) * (float2) (levelGridModel.Size - 1) / 2.0f).xyy *
-                                   math.float3(1, 1, 0);
-
-                    var playerGameObject =
-                        Object.Instantiate(playerConfigs.BombermanConfig.Prefab, position, Quaternion.identity);
-                    var playerController = playerGameObject.GetComponent<HeroController>();
-                    Assert.IsNotNull(playerController, "'PlayerController' component is null");
-
-                    playerController.BombPlantedEvent += BombPlantEventHandler;
-
-                    EntitySpawnedEvent?.Invoke(playerController);
-
-                    return (IHero) playerController;
-                })
-                .ToArray();*/
         }
 
         private void BombPlantEventHandler(object sender, BombPlantEventData data)

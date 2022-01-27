@@ -122,8 +122,16 @@ namespace Level
         {
             var idx = ClampCoordinate(coordinate);
 
-            var gridPosition = (float2) (WorldSize - 1) / 2.0f;
+            var gridPosition = (float2) (WorldSize - 1) / 2f;
             var position = ((coordinate * 2 - 1) * gridPosition).xyy;
+            position.z = 0;
+
+            return position;
+        }
+
+        public float3 GetCornerWorldPosition(int2 corner)
+        {
+            var position = ((corner * 2 - 1) * (float2) WorldSize / 2f).xyy;
             position.z = 0;
 
             return position;
