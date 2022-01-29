@@ -1,4 +1,5 @@
 using App;
+using Infrastructure.Services;
 using Infrastructure.States;
 using Level;
 
@@ -12,7 +13,7 @@ namespace Infrastructure
 
         public Game(ICoroutineRunner coroutineRunner)
         {
-            GameStateMachine = new GameStateMachine(new SceneLoader(coroutineRunner));
+            GameStateMachine = new GameStateMachine(new SceneLoader(coroutineRunner), ServiceLocator.Container);
         }
     }
 }

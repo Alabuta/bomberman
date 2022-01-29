@@ -1,7 +1,9 @@
 using App;
 using Configs.Level;
 using Configs.Singletons;
+using Infrastructure.Factory;
 using Infrastructure.States;
+using Level;
 
 namespace Infrastructure
 {
@@ -9,11 +11,13 @@ namespace Infrastructure
     {
         private readonly GameStateMachine _gameStateMachine;
         private readonly SceneLoader _sceneLoader;
+        private readonly IGameFactory _gameFactory;
 
-        public LoadLevelState(GameStateMachine gameStateMachine, SceneLoader sceneLoader)
+        public LoadLevelState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, IGameFactory gameFactory)
         {
             _gameStateMachine = gameStateMachine;
             _sceneLoader = sceneLoader;
+            _gameFactory = gameFactory;
         }
 
         public void Enter(LevelConfig levelConfig)
@@ -28,7 +32,9 @@ namespace Infrastructure
         private void OnSceneLoaded(LevelConfig levelConfig)
         {
             var applicationConfig = ApplicationConfig.Instance;
-            Game.LevelManager.GenerateLevel(applicationConfig.GameModePvE, levelConfig);
+
+            Game.LevelManager = new GameLevelManager();
+            Game.LevelManager.GenerateLevel(applicationConfig.GameModePvE, levelConfig, _gameFactory);
 
             // Camera follow
         }

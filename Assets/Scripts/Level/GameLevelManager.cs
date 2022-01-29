@@ -19,7 +19,7 @@ namespace Level
     {
         event Action<IEntity> EntitySpawnedEvent;
 
-        void GenerateLevel(GameModePvEConfig applicationConfigGameModePvE, LevelConfig levelConfig);
+        void GenerateLevel(GameModePvEConfig applicationConfigGameModePvE, LevelConfig levelConfig, IGameFactory gameFactory);
     }
 
     public class GameLevelManager : ILevelManager
@@ -35,14 +35,7 @@ namespace Level
         private LevelStageConfig _levelStageConfig;
         private GameLevelGridModel _gameLevelGridModel;
 
-        private readonly IGameFactory _gameFactory;// :TODO: inject
-
-        public GameLevelManager(IGameFactory gameFactory)
-        {
-            _gameFactory = gameFactory;
-        }
-
-        public void GenerateLevel(GameModePvEConfig gameModePvE, LevelConfig levelConfig)
+        public void GenerateLevel(GameModePvEConfig gameModePvE, LevelConfig levelConfig, IGameFactory gameFactory)
         {
             // Assert.IsTrue(ApplicationHolder.Instance.TryGet<ISceneManager>(out var sceneManager));
 
@@ -61,7 +54,8 @@ namespace Level
 
             SetupWalls(levelConfig, _gameLevelGridModel);
 
-            var heroes = SpawnHeroesPrefabs(gameModePvE.Players, _levelStageConfig.PlayersSpawnCorners, _gameLevelGridModel);
+            var heroes = SpawnHeroesPrefabs(gameModePvE.Players, _levelStageConfig.PlayersSpawnCorners, _gameLevelGridModel,
+                gameFactory);
             _heroes = heroes
                 .Select(go => go.GetComponent<HeroController>())
                 .Select(c =>
@@ -79,9 +73,11 @@ namespace Level
             PlayersManager.PopulateLevel(levelConfig, levelMode);*/
         }
 
-        private IEnumerable<GameObject> SpawnHeroesPrefabs(IReadOnlyCollection<PlayerConfig> playerConfigs,
+        private static IEnumerable<GameObject> SpawnHeroesPrefabs(
+            IReadOnlyCollection<PlayerConfig> playerConfigs,
             IReadOnlyCollection<int2> spawnCorners,
-            GameLevelGridModel levelGridModel)
+            GameLevelGridModel levelGridModel,
+            IGameFactory gameFactory)
         {
             Assert.IsTrue(playerConfigs.Count <= spawnCorners.Count, "players count greater than the level spawn corners");
 
@@ -89,7 +85,7 @@ namespace Level
                 .Zip(playerConfigs, (spawnCorner, playerConfig) =>
                 {
                     var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
-                    return _gameFactory.SpawnEntity(playerConfig.HeroConfig, position);
+                    return gameFactory.SpawnEntity(playerConfig.HeroConfig, position);
                 })
                 .ToArray();
         }

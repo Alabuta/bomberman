@@ -5,7 +5,6 @@ using Configs.Singletons;
 using Infrastructure.AssetManagement;
 using Infrastructure.Factory;
 using Infrastructure.Services;
-using Level;
 using Services.Input;
 using UnityEngine;
 
@@ -16,17 +15,20 @@ namespace Infrastructure.States
         private const string InitialSceneName = "InitialScene";
         private readonly GameStateMachine _gameStateMachine;
         private readonly SceneLoader _sceneLoader;
+        private readonly ServiceLocator _serviceLocator;
 
-        public BootstrapState(GameStateMachine gameStateMachine, SceneLoader sceneLoader)
+        public BootstrapState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, ServiceLocator serviceLocator)
         {
+            _serviceLocator = serviceLocator;
+
             _gameStateMachine = gameStateMachine;
             _sceneLoader = sceneLoader;
+
+            RegisterServices();
         }
 
         public void Enter()
         {
-            RegisterServices();
-
             var applicationConfig = ApplicationConfig.Instance;
 
             QualitySettings.vSyncCount = applicationConfig.EnableVSync ? 1 : 0;
@@ -44,12 +46,10 @@ namespace Infrastructure.States
 
         private void RegisterServices()
         {
-            ServiceLocator.Container.RegisterSingle<IInputService>(new InputService());
+            _serviceLocator.RegisterSingle<IInputService>(new InputService());
 
-            var assetProvider = ServiceLocator.Container.RegisterSingle<IAssetProvider>(new AssetProvider());
-            var gameFactory = ServiceLocator.Container.RegisterSingle<IGameFactory>(new GameFactory(assetProvider));
-
-            Game.LevelManager = new GameLevelManager(gameFactory);
+            var assetProvider = _serviceLocator.RegisterSingle<IAssetProvider>(new AssetProvider());
+            _serviceLocator.RegisterSingle<IGameFactory>(new GameFactory(assetProvider));
         }
 
         private void OnLoadLevel(LevelConfig levelConfig)
