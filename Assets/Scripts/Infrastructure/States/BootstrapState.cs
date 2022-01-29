@@ -2,6 +2,9 @@ using System.Linq;
 using App;
 using Configs.Level;
 using Configs.Singletons;
+using Infrastructure.AssetManagement;
+using Infrastructure.Factory;
+using Infrastructure.Services;
 using Level;
 using Services.Input;
 using UnityEngine;
@@ -41,13 +44,12 @@ namespace Infrastructure.States
 
         private void RegisterServices()
         {
-            Game.InputService = RegisterInputService();
-            Game.LevelManager = new GameLevelManager();
-        }
+            var assetProvider = ServiceLocator.Container.Single<IAssetProvider>();
 
-        private static IInputService RegisterInputService()
-        {
-            return new InputService();
+            ServiceLocator.Container.RegisterSingle<IInputService>(new InputService());
+            ServiceLocator.Container.RegisterSingle<IGameFactory>(new GameFactory(assetProvider));
+
+            Game.LevelManager = new GameLevelManager();
         }
 
         private void OnLoadLevel(LevelConfig levelConfig)

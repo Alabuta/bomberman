@@ -1,10 +1,11 @@
 ﻿using Configs.Game;
+using Infrastructure.Services;
 using Input;
 using UnityEngine;
 
 namespace Services.Input
 {
-    public interface IInputService
+    public interface IInputService : IService
     {
         // get specific player input
         // send event when a player connects to the game

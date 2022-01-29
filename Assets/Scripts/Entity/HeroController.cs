@@ -34,6 +34,8 @@ namespace Entity
 
         private int _bombCapacity;
 
+        private float2 _directionVector = float2.zero;
+
         public event EventHandler<BombPlantEventData> BombPlantedEvent;
 
         public event Action<int> BombCapacityChangedEvent;
