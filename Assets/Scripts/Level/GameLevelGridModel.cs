@@ -131,7 +131,7 @@ namespace Level
 
         public float3 GetCornerWorldPosition(int2 corner)
         {
-            var position = ((corner * 2 - 1) * (float2) WorldSize / 2f).xyy;
+            var position = ((corner * 2 - 1) * (float2) (WorldSize - 1) / 2f).xyy;
             position.z = 0;
 
             return position;
