@@ -44,12 +44,12 @@ namespace Infrastructure.States
 
         private void RegisterServices()
         {
-            var assetProvider = ServiceLocator.Container.Single<IAssetProvider>();
-
             ServiceLocator.Container.RegisterSingle<IInputService>(new InputService());
-            ServiceLocator.Container.RegisterSingle<IGameFactory>(new GameFactory(assetProvider));
 
-            Game.LevelManager = new GameLevelManager();
+            var assetProvider = ServiceLocator.Container.RegisterSingle<IAssetProvider>(new AssetProvider());
+            var gameFactory = ServiceLocator.Container.RegisterSingle<IGameFactory>(new GameFactory(assetProvider));
+
+            Game.LevelManager = new GameLevelManager(gameFactory);
         }
 
         private void OnLoadLevel(LevelConfig levelConfig)

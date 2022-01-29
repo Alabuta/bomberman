@@ -35,7 +35,12 @@ namespace Level
         private LevelStageConfig _levelStageConfig;
         private GameLevelGridModel _gameLevelGridModel;
 
-        private static readonly IGameFactory _gameFactory;// :TODO: inject
+        private readonly IGameFactory _gameFactory;// :TODO: inject
+
+        public GameLevelManager(IGameFactory gameFactory)
+        {
+            _gameFactory = gameFactory;
+        }
 
         public void GenerateLevel(GameModePvEConfig gameModePvE, LevelConfig levelConfig)
         {
@@ -74,7 +79,7 @@ namespace Level
             PlayersManager.PopulateLevel(levelConfig, levelMode);*/
         }
 
-        private static IEnumerable<GameObject> SpawnHeroesPrefabs(IReadOnlyCollection<PlayerConfig> playerConfigs,
+        private IEnumerable<GameObject> SpawnHeroesPrefabs(IReadOnlyCollection<PlayerConfig> playerConfigs,
             IReadOnlyCollection<int2> spawnCorners,
             GameLevelGridModel levelGridModel)
         {

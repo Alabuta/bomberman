@@ -1,6 +1,7 @@
 ﻿using System;
 using Configs.Entity;
 using Configs.Game;
+using Infrastructure.Services;
 using Input;
 using Services.Input;
 using Unity.Mathematics;
@@ -32,6 +33,8 @@ namespace Entity
         [SerializeField]
         private int PlayerIndex;
 
+        private IPlayerInputForwarder _playerInput;
+
         private int _bombCapacity;
 
         private float2 _directionVector = float2.zero;
@@ -40,6 +43,21 @@ namespace Entity
 
         public event Action<int> BombCapacityChangedEvent;
 
+        [Inject]
+        private void Construct(IInputService inputService)
+        {
+            // var playerInput = inputService.GetPlayerInputService(PlayerTag);
+            _playerInput = inputService.RegisterPlayerInput(PlayerTagConfig, PlayerIndex, Forwarder.gameObject);
+
+            _playerInput.OnMoveEvent += OnMove;
+            _playerInput.OnBombPlantEvent += OnBombPlant;
+        }
+
+        private void Awake()
+        {
+            Construct(ServiceLocator.Container.Single<IInputService>());// :TODO: replace by injection in ctor
+        }
+
         private new void Start()
         {
             base.Start();
@@ -47,13 +65,6 @@ namespace Entity
             BlastRadius = EntityConfig.BlastRadius;
             BombCapacity = EntityConfig.BombCapacity;
             Health = EntityConfig.Health;
-
-            var inputService = Infrastructure.Game.InputService;
-            // var playerInput = inputService.GetPlayerInputService(PlayerTag);
-            var playerInput = inputService.RegisterPlayerInput(PlayerTag, PlayerIndex, Forwarder.gameObject);
-
-            playerInput.OnMoveEvent += OnMoveEvent;
-            playerInput.OnBombPlantEvent += OnBombPlant;
         }
 
         private void Update()
@@ -61,7 +72,16 @@ namespace Entity
             MovementVector = math.round(_directionVector) * Speed;
         }
 
-        private void OnMoveEvent(float2 value)
+        private void OnDestroy()
+        {
+            if (_playerInput == null)
+                return;
+
+            _playerInput.OnMoveEvent -= OnMove;
+            _playerInput.OnBombPlantEvent -= OnBombPlant;
+        }
+
+        private void OnMove(float2 value)
         {
             _directionVector = value;
         }

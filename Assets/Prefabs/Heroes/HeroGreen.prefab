@@ -23,6 +23,10 @@ PrefabInstance:
       propertyPath: EntityConfig
       value: 
       objectReference: {fileID: 11400000, guid: bec97291b26f4914a89d1844cecdc73a, type: 2}
+    - target: {fileID: 2269895994269024557, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
+      propertyPath: PlayerTagConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 71920bcca3a263b49b4ed86e5886004b, type: 2}
     - target: {fileID: 3606758829682564296, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
       propertyPath: m_Controller
       value: 
@@ -31,6 +35,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 862315571626163721, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+    - target: {fileID: 3606758829682564298, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3606758829682564299, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
       propertyPath: m_RootOrder
       value: 0
