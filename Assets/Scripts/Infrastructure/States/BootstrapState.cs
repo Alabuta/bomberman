@@ -6,6 +6,7 @@ using Infrastructure.AssetManagement;
 using Infrastructure.Factory;
 using Infrastructure.Services;
 using Services.Input;
+using Services.PersistentProgress;
 using UnityEngine;
 
 namespace Infrastructure.States
@@ -47,6 +48,7 @@ namespace Infrastructure.States
         private void RegisterServices()
         {
             _serviceLocator.RegisterSingle<IInputService>(new InputService());
+            _serviceLocator.RegisterSingle<IPersistentProgressService>(new PersistentProgressService());
 
             var assetProvider = _serviceLocator.RegisterSingle<IAssetProvider>(new AssetProvider());
             _serviceLocator.RegisterSingle<IGameFactory>(new GameFactory(assetProvider));
