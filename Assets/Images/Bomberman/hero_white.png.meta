@@ -78,6 +78,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -256,7 +257,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 235b9c9176a5b5800800000000000000
-      internalID: 602174374044874034
+      internalID: 2529731512542032465
       vertices: []
       indices: 
       edges: []
@@ -544,6 +545,25 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      hero_white_die_0: 8502436122128325658
+      hero_white_down_0: -5650923121182500696
+      hero_white_down_1: 4773892178952424503
+      hero_white_up_0: 3871899048301674620
+      hero_white_right_2: -495439157162718789
+      hero_white_die_3: 4331949162178425716
+      hero_white_right_0: -8625371329298913337
+      hero_white_down_2: 5444086452886408986
+      hero_white_die_2: -7565072906226192088
+      hero_white_die_4: -3818379334653528297
+      hero_white_die_8: 254437594356709370
+      hero_white_up_1: 7523337388877413470
+      hero_white_right_1: -257760086348800069
+      hero_white_die_1: 2529731512542032465
+      hero_white_up_2: 1786588511432173546
+      hero_white_die_6: 7138317337429422357
+      hero_white_die_5: -4108487879694969822
+      hero_white_die_7: -4020983021202058936
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

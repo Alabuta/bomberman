@@ -438,6 +438,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -447,8 +448,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 0
     wrapV: 0
     wrapW: 0
@@ -3412,6 +3413,145 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      FieldSpriteSheet_11: 4143457885474365724
+      FieldSpriteSheet_25: -5177377309924794876
+      FieldSpriteSheet_72: -3201202907205164952
+      FieldSpriteSheet_84: 8712983405945522454
+      FieldSpriteSheet_125: 4430891459752204736
+      FieldSpriteSheet_38: 7262951425800210578
+      FieldSpriteSheet_21: 7959260649894707807
+      FieldSpriteSheet_103: 4919395393750267526
+      FieldSpriteSheet_109: 6205509552282971324
+      FieldSpriteSheet_126: -4635379327446366459
+      FieldSpriteSheet_28: 7422009869561146859
+      FieldSpriteSheet_82: -8029829469948552155
+      FieldSpriteSheet_92: -6214763644670390518
+      FieldSpriteSheet_3: 2739311592505715348
+      FieldSpriteSheet_23: -6155092372479133024
+      FieldSpriteSheet_88: -2946324768143447188
+      FieldSpriteSheet_91: -3193841963145320044
+      FieldSpriteSheet_1: 5214215924905741428
+      FieldSpriteSheet_5: 1317680881867448497
+      FieldSpriteSheet_13: 7218868662806669619
+      FieldSpriteSheet_94: -2573314687560905126
+      FieldSpriteSheet_16: -6958669747121343302
+      FieldSpriteSheet_87: 4472499223995689112
+      FieldSpriteSheet_40: -5034136369120654172
+      FieldSpriteSheet_53: 7627365404750345836
+      FieldSpriteSheet_107: 6656097317490608851
+      FieldSpriteSheet_104: -1874966647088069951
+      FieldSpriteSheet_4: -749440351792962500
+      FieldSpriteSheet_105: -727027403791715453
+      FieldSpriteSheet_121: -4261462479564204391
+      FieldSpriteSheet_71: 8572462298904922045
+      FieldSpriteSheet_113: 3373134891857221235
+      FieldSpriteSheet_33: -2129667993091901759
+      FieldSpriteSheet_0: -5484925936277549191
+      FieldSpriteSheet_112: -6155887330632981103
+      FieldSpriteSheet_14: -6057971866195632873
+      FieldSpriteSheet_128: -969737875720993667
+      FieldSpriteSheet_110: -1773416910813838520
+      FieldSpriteSheet_8: -1095027765137321490
+      FieldSpriteSheet_76: 8186388701031412231
+      FieldSpriteSheet_79: -5860030417279321914
+      FieldSpriteSheet_74: 7736720200567981827
+      FieldSpriteSheet_134: 6181833328506757545
+      FieldSpriteSheet_17: -1236275906556568090
+      FieldSpriteSheet_95: 4079681407458307666
+      FieldSpriteSheet_115: 6825968585619860339
+      FieldSpriteSheet_137: -676226770915757011
+      FieldSpriteSheet_124: 93784123784185894
+      FieldSpriteSheet_89: 9001446156176275279
+      FieldSpriteSheet_122: -6252659625109290663
+      FieldSpriteSheet_45: 2082600362457415194
+      FieldSpriteSheet_99: 4586877036252171463
+      FieldSpriteSheet_132: 146390711508410016
+      FieldSpriteSheet_123: 2291181515832611441
+      FieldSpriteSheet_19: 4196789155666152388
+      FieldSpriteSheet_37: 5111270752967093649
+      FieldSpriteSheet_44: 2509758753926934194
+      FieldSpriteSheet_93: -2814605075417533447
+      FieldSpriteSheet_27: -7822074151890117028
+      FieldSpriteSheet_63: -682003454189941200
+      FieldSpriteSheet_111: 7133753271152882162
+      FieldSpriteSheet_127: -6165071715016316515
+      FieldSpriteSheet_15: -7695127938530273440
+      FieldSpriteSheet_61: -1774339243809857097
+      FieldSpriteSheet_57: -4552417850932890298
+      FieldSpriteSheet_97: 297098726827911705
+      FieldSpriteSheet_120: -4104362519710961765
+      FieldSpriteSheet_75: -7551033044043603057
+      FieldSpriteSheet_86: -6973095450423552925
+      FieldSpriteSheet_117: 1087788651461930389
+      FieldSpriteSheet_101: -7474106748639649813
+      FieldSpriteSheet_65: -4324642991287838079
+      FieldSpriteSheet_47: -4351732331477321986
+      FieldSpriteSheet_133: 5460100307014303168
+      FieldSpriteSheet_43: -2385684080891254496
+      FieldSpriteSheet_32: -6159769295866426685
+      FieldSpriteSheet_51: -8774239389900307170
+      FieldSpriteSheet_6: 6793715380386955785
+      FieldSpriteSheet_81: -850560861106457383
+      FieldSpriteSheet_85: -2474135360720443024
+      FieldSpriteSheet_55: 4141189549991178932
+      FieldSpriteSheet_100: -8485343657988848316
+      FieldSpriteSheet_56: -1830468369289801106
+      FieldSpriteSheet_64: 1535934721830905793
+      FieldSpriteSheet_119: 429611519159622870
+      FieldSpriteSheet_106: -1973511824304457893
+      FieldSpriteSheet_96: 8498992199226505485
+      FieldSpriteSheet_42: -8462593355322031746
+      FieldSpriteSheet_20: -4123409915887853440
+      FieldSpriteSheet_67: 5025737345120232849
+      FieldSpriteSheet_62: 3774166891903048530
+      FieldSpriteSheet_60: 1065169260645282962
+      FieldSpriteSheet_46: 4643778114792022037
+      FieldSpriteSheet_10: 5851965865553470408
+      FieldSpriteSheet_9: 4051518271687922190
+      FieldSpriteSheet_22: 1631474563782533623
+      FieldSpriteSheet_114: -6077587819858054716
+      FieldSpriteSheet_31: 3194633510678723093
+      FieldSpriteSheet_66: 5069343354296285556
+      FieldSpriteSheet_118: -5324001634848072993
+      FieldSpriteSheet_41: -7690077329821581964
+      FieldSpriteSheet_54: -2371726606363057573
+      FieldSpriteSheet_135: -1777742293096070011
+      FieldSpriteSheet_26: 7692137780760642278
+      FieldSpriteSheet_59: -2806004813008432048
+      FieldSpriteSheet_98: 697206342263090235
+      FieldSpriteSheet_7: 2313501360656200595
+      FieldSpriteSheet_78: 4411201101579087586
+      FieldSpriteSheet_2: 4660766655876074644
+      FieldSpriteSheet_108: 5765430338808058601
+      FieldSpriteSheet_70: 2681604942040116628
+      FieldSpriteSheet_34: 175679702110595039
+      FieldSpriteSheet_36: 6762111988558556734
+      FieldSpriteSheet_30: -3097422167954666435
+      FieldSpriteSheet_24: 1191705414719577729
+      FieldSpriteSheet_48: -512858121402051244
+      FieldSpriteSheet_68: 8558280730926056647
+      FieldSpriteSheet_58: -2303928666977735802
+      FieldSpriteSheet_29: -3087773741624014802
+      FieldSpriteSheet_129: -1512357356626671612
+      FieldSpriteSheet_136: -6543215617222858530
+      FieldSpriteSheet_102: -4975321499492906837
+      FieldSpriteSheet_130: 4951533068083526949
+      FieldSpriteSheet_131: 2321050080416222340
+      FieldSpriteSheet_80: -1569219277978948033
+      FieldSpriteSheet_69: -4776356267049850369
+      FieldSpriteSheet_35: 7156210638032228216
+      FieldSpriteSheet_116: 4701531437427865774
+      FieldSpriteSheet_39: 5192583145821725066
+      FieldSpriteSheet_50: -760563979563723504
+      FieldSpriteSheet_52: 1608124735280690720
+      FieldSpriteSheet_12: 2138588935910530135
+      FieldSpriteSheet_90: -7170680829793826666
+      FieldSpriteSheet_49: 3922468996208949933
+      FieldSpriteSheet_18: 163997607340341850
+      FieldSpriteSheet_77: 4770947401101473151
+      FieldSpriteSheet_83: -4100798658411817822
+      FieldSpriteSheet_73: -4172388171762071053
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

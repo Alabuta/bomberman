@@ -75,6 +75,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -84,8 +85,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 1
@@ -508,6 +509,24 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      bomberman_12: -6399829903545349190
+      bomberman_9: 8973344428442287494
+      bomberman_1: -5514239266102739273
+      bomberman_10: -1279012168302359326
+      bomberman_15: -2658181086043229681
+      bomberman_11: -231092596940677593
+      bomberman_0: 606815385290419204
+      bomberman_3: 5908037983293996752
+      bomberman_8: 369425805612540251
+      bomberman_16: 2100272421300550067
+      bomberman_13: -5640541782330393381
+      bomberman_5: -7734626486112493306
+      bomberman_14: -4637408479436346706
+      bomberman_7: -7376293594790177015
+      bomberman_2: -2563568305980069896
+      bomberman_4: -5717266188942580074
+      bomberman_6: 7101649200011125524
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

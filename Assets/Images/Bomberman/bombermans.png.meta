@@ -285,6 +285,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -1849,7 +1850,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: eb7a62cc3f8278750800000000000000
-      internalID: 6307054830722918334
+      internalID: 5433805000798316076
       vertices: []
       indices: 
       edges: []
@@ -1870,7 +1871,7 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: a895f754a0bd8e4d0800000000000000
-      internalID: -3104991105909827190
+      internalID: 8904496549301178672
       vertices: []
       indices: 
       edges: []
@@ -1885,6 +1886,79 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      bombermans_9: 8249473230292542060
+      bombermans_52: 3859142849101133823
+      bombermans_20: 7366854782551869031
+      bombermans_50: -7987277749594062650
+      bombermans_13: -7896027031488229784
+      bombermans_19: 2627280714824839051
+      bombermans_5: -5647396429023951989
+      bombermans_3: -6863956329106479508
+      bombermans_74: -3410907017214290436
+      bombermans_15: 8509233527560810342
+      bombermans_30: -3168864305846557385
+      bombermans_58: 8457965404645564598
+      bombermans_36: -4203841235917123030
+      bombermans_34: 7999045048293714677
+      bombermans_37: 585069313699212043
+      bombermans_16: 4369297501958223860
+      bombermans_28: -3547355174950331486
+      bombermans_27: -5503169144431712535
+      bombermans_44: 5820509159102222349
+      bombermans_69: 5433805000798316076
+      bombermans_41: 4880323770094983605
+      bombermans_10: -7715798402808842359
+      bombermans_2: -4176717934106366240
+      bombermans_12: 8852961873579063110
+      bombermans_22: -4649600483699881555
+      bombermans_31: 3107497765194473213
+      bombermans_39: 2734674154543724953
+      bombermans_65: -9160593230637987342
+      bombermans_32: -1631093537271651133
+      bombermans_46: -2739633071628630579
+      bombermans_57: 7023116217595729451
+      bombermans_18: -619899149480791694
+      bombermans_33: 8395226734943688137
+      bombermans_43: -6508613642102591643
+      bombermans_14: 6547048888715032078
+      bombermans_48: -4709025157034297153
+      bombermans_73: 3917035589546694395
+      bombermans_45: -5848720725456308295
+      bombermans_25: 6450290862742954446
+      bombermans_77: 8904496549301178672
+      bombermans_75: 4781592370509808816
+      bombermans_42: -6627809576415883197
+      bombermans_67: 7731674275093214088
+      bombermans_61: 3316342620670292172
+      bombermans_49: -7883682594947350726
+      bombermans_0: -2846348362509050103
+      bombermans_66: 5296688696885062771
+      bombermans_40: 2805564310328833333
+      bombermans_24: 4380994292056769250
+      bombermans_51: 232700295370776398
+      bombermans_38: -8998660965244186602
+      bombermans_35: -689391734542498977
+      bombermans_56: 8115070988684412373
+      bombermans_6: 7028549003479119801
+      bombermans_64: -4849982759419501122
+      bombermans_1: 4295295058688239554
+      bombermans_29: -4914721490390070081
+      bombermans_17: -6520755809363333140
+      bombermans_60: 5908180359726785756
+      bombermans_59: 6455105801398705738
+      bombermans_7: 496902900788643026
+      bombermans_72: 7841721237584903457
+      bombermans_68: 6326643887483893674
+      bombermans_11: 3319617250858289323
+      bombermans_26: -8147722328995427344
+      bombermans_76: 2516963974948008169
+      bombermans_8: 19351067526864813
+      bombermans_23: -1938901085578366991
+      bombermans_47: -7856484141182993982
+      bombermans_4: -6571810541948431875
+      bombermans_21: -4911335284367993390
+      bombermans_53: -2014406384725789380
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

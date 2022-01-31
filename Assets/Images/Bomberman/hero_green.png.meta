@@ -78,6 +78,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -544,6 +545,25 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      hero_green_die_0: -446078865650958178
+      hero_green_die_4: 6877423418818437325
+      hero_green_die_2: -867529877265485618
+      hero_green_die_8: 6557374637736590982
+      hero_green_right_0: 4851729730391830114
+      hero_green_up_0: -3451985353402802373
+      hero_green_down_0: 862315571626163721
+      hero_green_up_1: -7541921364307087872
+      hero_green_right_2: -5576693916486694811
+      hero_green_die_6: 8666095005260131018
+      hero_green_down_2: 733546964298745471
+      hero_green_down_1: -5091356601053562703
+      hero_green_die_1: 2026318224494067603
+      hero_green_up_2: 7931664236777181325
+      hero_green_die_7: 158536243991751388
+      hero_green_die_5: 175649371615627432
+      hero_green_die_3: -5816185461334590079
+      hero_green_right_1: -54584782126590318
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
