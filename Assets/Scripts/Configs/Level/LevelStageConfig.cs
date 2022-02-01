@@ -11,6 +11,8 @@ namespace Configs.Level
         [Header("General Parameters")]
         public int Index;
 
+        public int RandomSeed;
+
         [Range(13, 65)]
         public int ColumnsNumber;
         [Range(11, 63)]

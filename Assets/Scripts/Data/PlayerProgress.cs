@@ -5,6 +5,8 @@ namespace Data
     [Serializable]
     public class PlayerProgress
     {
+        public Score Score;
+
         public WorldData WorldData;
     }
 }

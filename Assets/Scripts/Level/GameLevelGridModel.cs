@@ -74,6 +74,7 @@ namespace Level
             var powerUpItems = levelStageConfig.PowerUpItems;
             var softBlocksPerPowerUpItem = softBlocksNumber / powerUpItems.Length;
 
+            Random.InitState(levelStageConfig.RandomSeed);
             var powerItemsIndices = new HashSet<int>(
                 Enumerable
                     .Range(0, powerUpItems.Length)
@@ -110,6 +111,8 @@ namespace Level
                     }
                 )
                 .ToArray();
+
+            // Random.InitState(new System.Random().Next());
         }
 
         private int GetFlattenCellCoordinate(int2 coordinate)

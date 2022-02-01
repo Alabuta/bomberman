@@ -6,6 +6,5 @@ namespace Data
     public class WorldData
     {
         public LevelStage LevelStage;
-        public Score Score;
     }
 }

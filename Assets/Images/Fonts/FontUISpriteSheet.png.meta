@@ -156,6 +156,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -165,8 +166,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 1
@@ -1093,6 +1094,48 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      FontUISpriteSheet_7: 7047919197841032626
+      FontUISpriteSheet_39: 3138141524107870423
+      FontUISpriteSheet_1: 1923260324823717947
+      FontUISpriteSheet_13: 4994158290282747993
+      FontUISpriteSheet_12: -2389839683800893753
+      FontUISpriteSheet_27: -6947438010650785563
+      FontUISpriteSheet_23: 1929139009907381055
+      FontUISpriteSheet_8: -5397589749332702572
+      FontUISpriteSheet_32: 6240402902298981205
+      FontUISpriteSheet_9: -1598497902952012330
+      FontUISpriteSheet_11: 9131514799382623014
+      FontUISpriteSheet_20: -5059386583819814753
+      FontUISpriteSheet_0: 6375293918063554970
+      FontUISpriteSheet_21: -7305969474176485532
+      FontUISpriteSheet_26: -1048637244484847902
+      FontUISpriteSheet_28: -3660788862341610402
+      FontUISpriteSheet_25: -3508987299920809185
+      FontUISpriteSheet_5: -4666652167332878993
+      FontUISpriteSheet_10: -4631520047453174082
+      FontUISpriteSheet_22: 987517070085166895
+      FontUISpriteSheet_15: 2969168373566345749
+      FontUISpriteSheet_14: 461413338612276153
+      FontUISpriteSheet_18: -3032178296795619689
+      FontUISpriteSheet_31: -1550912713305563826
+      FontUISpriteSheet_4: 3930565326075066227
+      FontUISpriteSheet_33: -3092107378022542235
+      FontUISpriteSheet_35: -2659195183973297468
+      FontUISpriteSheet_40: -4297694384688251476
+      FontUISpriteSheet_2: -8767168600190909866
+      FontUISpriteSheet_3: -8590092983118913426
+      FontUISpriteSheet_37: 4727808394075152732
+      FontUISpriteSheet_29: -2626957613640756746
+      FontUISpriteSheet_30: -5599338864938664179
+      FontUISpriteSheet_34: 7661296833534992148
+      FontUISpriteSheet_16: 5834530900525666997
+      FontUISpriteSheet_38: 6358754416738211967
+      FontUISpriteSheet_19: -863966116541890961
+      FontUISpriteSheet_24: -7444445944298989589
+      FontUISpriteSheet_17: 6674535802995655154
+      FontUISpriteSheet_6: 1100286117302614000
+      FontUISpriteSheet_36: -856946529947349102
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
