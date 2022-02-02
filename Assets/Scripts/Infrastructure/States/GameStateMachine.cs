@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using App;
 using Infrastructure.Factory;
 using Infrastructure.Services;
+using Infrastructure.States.SaveLoad;
+using Services.PersistentProgress;
 
 namespace Infrastructure.States
 {
@@ -16,7 +18,9 @@ namespace Infrastructure.States
             _states = new Dictionary<Type, IExitableState>
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator),
-                [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, serviceLocator.Single<IGameFactory>())
+                [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, serviceLocator.Single<IGameFactory>()),
+                [typeof(LoadProgressState)] = new LoadProgressState(this, serviceLocator.Single<IPersistentProgressService>(),
+                    serviceLocator.Single<ISaveLoadService>())
             };
         }
 

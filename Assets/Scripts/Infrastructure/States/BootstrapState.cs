@@ -1,6 +1,4 @@
-using System.Linq;
 using App;
-using Configs.Level;
 using Configs.Singletons;
 using Infrastructure.AssetManagement;
 using Infrastructure.Factory;
@@ -35,10 +33,7 @@ namespace Infrastructure.States
             QualitySettings.vSyncCount = applicationConfig.EnableVSync ? 1 : 0;
             Application.targetFrameRate = applicationConfig.TargetFrameRate;
 
-            var gameMode = applicationConfig.GameModePvE;
-            var levelConfig = gameMode.Levels.First();
-
-            _sceneLoader.Load(InitialSceneName, () => OnLoadLevel(levelConfig));
+            _sceneLoader.Load(InitialSceneName, OnLoadLevel);
         }
 
         public void Exit()
@@ -54,9 +49,9 @@ namespace Infrastructure.States
             _serviceLocator.RegisterSingle<IGameFactory>(new GameFactory(assetProvider));
         }
 
-        private void OnLoadLevel(LevelConfig levelConfig)
+        private void OnLoadLevel()
         {
-            _gameStateMachine.Enter<LoadLevelState, LevelConfig>(levelConfig);
+            _gameStateMachine.Enter<LoadProgressState>();
         }
     }
 }

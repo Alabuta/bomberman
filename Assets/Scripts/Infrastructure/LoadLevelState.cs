@@ -1,13 +1,14 @@
 using App;
 using Configs.Level;
 using Configs.Singletons;
+using Data;
 using Infrastructure.Factory;
 using Infrastructure.States;
 using Level;
 
 namespace Infrastructure
 {
-    public class LoadLevelState : IPayloadedState<LevelConfig>
+    public class LoadLevelState : IPayloadedState<LevelStage>
     {
         private readonly GameStateMachine _gameStateMachine;
         private readonly SceneLoader _sceneLoader;
@@ -20,8 +21,13 @@ namespace Infrastructure
             _gameFactory = gameFactory;
         }
 
-        public void Enter(LevelConfig levelConfig)
+        public void Enter(LevelStage levelStage)
         {
+            var applicationConfig = ApplicationConfig.Instance;
+
+            var gameMode = applicationConfig.GameModePvE;
+            var levelConfig = gameMode.Levels[levelStage.LevelIndex];
+
             _sceneLoader.Load(levelConfig.SceneName, () => OnSceneLoaded(levelConfig));
         }
 
