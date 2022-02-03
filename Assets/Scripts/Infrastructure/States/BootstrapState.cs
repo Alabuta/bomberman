@@ -3,6 +3,7 @@ using Configs.Singletons;
 using Infrastructure.AssetManagement;
 using Infrastructure.Factory;
 using Infrastructure.Services;
+using Infrastructure.States.SaveLoad;
 using Services.Input;
 using Services.PersistentProgress;
 using UnityEngine;
@@ -44,6 +45,7 @@ namespace Infrastructure.States
         {
             _serviceLocator.RegisterSingle<IInputService>(new InputService());
             _serviceLocator.RegisterSingle<IPersistentProgressService>(new PersistentProgressService());
+            _serviceLocator.RegisterSingle<ISaveLoadService>(new SaveLoadService());
 
             var assetProvider = _serviceLocator.RegisterSingle<IAssetProvider>(new AssetProvider());
             _serviceLocator.RegisterSingle<IGameFactory>(new GameFactory(assetProvider));

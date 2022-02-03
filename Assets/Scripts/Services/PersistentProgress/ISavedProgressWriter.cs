@@ -7,7 +7,7 @@ namespace Services.PersistentProgress
         void LoadProgress(PlayerProgress progress);
     }
 
-    public interface ISavedProgress : ISavedProgressReader
+    public interface ISavedProgressWriter : ISavedProgressReader
     {
         void UpdateProgress(PlayerProgress progress);
     }

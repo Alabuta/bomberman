@@ -9,8 +9,10 @@ namespace Data
 
         public WorldData WorldData;
 
-        public PlayerProgress(LevelStage levelStage)
+        public PlayerProgress(Score score, LevelStage levelStage)
         {
+            Score = score;
+            WorldData = new WorldData(levelStage);
         }
     }
 }

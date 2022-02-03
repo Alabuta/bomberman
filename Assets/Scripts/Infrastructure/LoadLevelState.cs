@@ -23,6 +23,10 @@ namespace Infrastructure
 
         public void Enter(LevelStage levelStage)
         {
+            // :TODO: show loading progress
+
+            _gameFactory.CleanUp();
+
             var applicationConfig = ApplicationConfig.Instance;
 
             var gameMode = applicationConfig.GameModePvE;

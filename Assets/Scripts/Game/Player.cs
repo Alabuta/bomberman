@@ -6,7 +6,7 @@ using Services.PersistentProgress;
 
 namespace Game
 {
-    public class Player : IPlayer, ISavedProgress
+    public class Player : IPlayer, ISavedProgressWriter
     {
         public PlayerTagConfig PlayerTagConfig { get; }
         public HeroController HeroController { get; }

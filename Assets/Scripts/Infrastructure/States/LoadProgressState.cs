@@ -35,9 +35,6 @@ namespace Infrastructure.States
             _progressService.Progress = _saveLoadService.LoadProgress() ?? CreateEmptyProgress();
         }
 
-        private PlayerProgress CreateEmptyProgress()
-        {
-            return new PlayerProgress(new LevelStage(levelIndex: 0, levelStageIndex: 0));
-        }
+        private static PlayerProgress CreateEmptyProgress() => new(new Score(0, 0), new LevelStage(0, 0));
     }
 }
