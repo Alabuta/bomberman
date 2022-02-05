@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b7602b52d946308322b11823b18255, type: 3}
   m_Name: GameModePvE
   m_EditorClassIdentifier: 
-  Levels:
+  LevelConfigs:
   - {fileID: 11400000, guid: beb94d2d5caf9a247aed01603e5b6b25, type: 2}
-  Players:
+  PlayerConfigs:
   - {fileID: 11400000, guid: 40c19d944574f02408f7124102f08aa2, type: 2}
   - {fileID: 11400000, guid: b8485a6c177749b4e9fbd262983402c8, type: 2}
-  BombermanConfig: {fileID: 11400000, guid: 8ff7542800dc0444ab7a4f432a73f471, type: 2}

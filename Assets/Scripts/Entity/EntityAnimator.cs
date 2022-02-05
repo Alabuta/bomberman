@@ -1,10 +1,12 @@
-﻿using Configs.Entity;
+﻿using System;
+using Configs.Entity;
+using Logic;
 using UnityEngine;
 
 namespace Entity
 {
     [RequireComponent(typeof(Animator))]
-    public class EntityAnimator<T> : MonoBehaviour where T : EntityConfig
+    public abstract class EntityAnimator<T> : MonoBehaviour, IAnimationStateReader where T : EntityConfig
     {
         [SerializeField, HideInInspector]
         private int VerticalSpeedId = Animator.StringToHash("VerticalSpeed");
@@ -21,16 +23,28 @@ namespace Entity
         [SerializeField]
         public EntityController<T> Entity;
 
+        public AnimatorState State { get; private set; }
+
+        public event Action<AnimatorState> OnAnimationStateEnter;
+        public event Action<AnimatorState> OnAnimationStateExit;
+
+        public void OnEnterState(AnimatorState stateHash)
+        {
+            State = stateHash;
+            OnAnimationStateEnter?.Invoke(State);
+        }
+
+        public void OnStateExit(AnimatorState stateHash)
+        {
+            State = stateHash;
+            OnAnimationStateExit?.Invoke(State);
+        }
+
         protected void Start()
         {
             Animator.SetBool(IsAlive, Entity.IsAlive);
 
             Entity.OnKillEvent += OnEntityKill;
-        }
-
-        private void OnDestroy()
-        {
-            Entity.OnKillEvent -= OnEntityKill;
         }
 
         protected void Update()
@@ -46,6 +60,11 @@ namespace Entity
             Animator.SetBool(IsAlive, Entity.IsAlive);
 
             Animator.speed = Entity.InitialSpeed;
+        }
+
+        private void OnDestroy()
+        {
+            Entity.OnKillEvent -= OnEntityKill;
         }
     }
 }
