@@ -22,8 +22,8 @@ MonoBehaviour:
     z: 24
     w: -18
   Walls: {fileID: 162705767822815630, guid: 8c634c1303dbe3342b70fc802f196125, type: 3}
-  HardBlock: {fileID: 11400000, guid: bb2ce871e59ad11419e61453ebbe4e59, type: 2}
-  SoftBlock: {fileID: 11400000, guid: d6724458eb0d190478eecb58b2049449, type: 2}
-  PortalBlock: {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
+  HardBlockConfig: {fileID: 11400000, guid: bb2ce871e59ad11419e61453ebbe4e59, type: 2}
+  SoftBlockConfig: {fileID: 11400000, guid: d6724458eb0d190478eecb58b2049449, type: 2}
+  PortalBlockConfig: {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
   LevelStages:
   - {fileID: 11400000, guid: 97aa1d71627f6a9469640e2867508bee, type: 2}

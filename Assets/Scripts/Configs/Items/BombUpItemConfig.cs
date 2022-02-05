@@ -1,5 +1,5 @@
 ﻿using Effects;
-using Entity;
+using Entity.Hero;
 using UnityEngine;
 
 namespace Configs.Items

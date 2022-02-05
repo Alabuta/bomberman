@@ -1,6 +1,6 @@
 using Data;
+using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.SaveLoad;
-using Services.PersistentProgress;
 
 namespace Infrastructure.States
 {
@@ -35,6 +35,11 @@ namespace Infrastructure.States
             _progressService.Progress = _saveLoadService.LoadProgress() ?? CreateEmptyProgress();
         }
 
-        private static PlayerProgress CreateEmptyProgress() => new(new Score(0, 0), new LevelStage(0, 0));
+        private PlayerProgress CreateEmptyProgress()
+        {
+            var progress = new PlayerProgress(new Score(0, 1), new LevelStage(0, 0));
+            _saveLoadService.SaveProgress();
+            return progress;
+        }
     }
 }

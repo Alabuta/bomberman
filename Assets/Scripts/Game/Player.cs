@@ -1,18 +1,22 @@
-﻿using Configs.Game;
+﻿using Configs;
 using Data;
-using Entity;
+using Infrastructure.Services.PersistentProgress;
 using Input;
-using Services.PersistentProgress;
 
 namespace Game
 {
     public class Player : IPlayer, ISavedProgressWriter
     {
-        public PlayerTagConfig PlayerTagConfig { get; }
-        public HeroController HeroController { get; }
-        public IPlayerInputForwarder PlayerInputForwarder { get; }
+        public PlayerConfig Config { get; }
+        public IPlayerInput PlayerInput { get; }
 
         public Score Score;
+
+        public Player(IPlayerInput playerInput, PlayerConfig config)
+        {
+            Config = config;
+            PlayerInput = playerInput;
+        }
 
         public void LoadProgress(PlayerProgress progress)
         {

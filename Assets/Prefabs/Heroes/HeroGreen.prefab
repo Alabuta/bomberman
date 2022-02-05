@@ -24,6 +24,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: bec97291b26f4914a89d1844cecdc73a, type: 2}
     - target: {fileID: 2269895994269024557, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
+      propertyPath: PlayerConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: b8485a6c177749b4e9fbd262983402c8, type: 2}
+    - target: {fileID: 2269895994269024557, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
       propertyPath: PlayerTagConfig
       value: 
       objectReference: {fileID: 11400000, guid: 71920bcca3a263b49b4ed86e5886004b, type: 2}

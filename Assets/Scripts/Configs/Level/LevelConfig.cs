@@ -21,9 +21,9 @@ namespace Configs.Level
         public GameObject Walls;
 
         [Header("Block Parameters")]
-        public HardBlock HardBlock;
-        public SoftBlock SoftBlock;
-        public PortalBlock PortalBlock;
+        public HardBlockConfig HardBlockConfig;
+        public SoftBlockConfig SoftBlockConfig;
+        public PortalBlockConfig PortalBlockConfig;
 
         [Space(16)]
         public LevelStageConfig[] LevelStages;

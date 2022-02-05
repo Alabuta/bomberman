@@ -1,13 +1,13 @@
-﻿using Configs.Game;
-using Entity;
+﻿using Configs;
 using Input;
 
 namespace Game
 {
     public interface IPlayer
     {
-        PlayerTagConfig PlayerTagConfig { get; }
-        HeroController HeroController { get; }
-        IPlayerInputForwarder PlayerInputForwarder { get; }
+        PlayerConfig Config { get; }
+
+        // HeroController HeroController { get; }
+        IPlayerInput PlayerInput { get; }
     }
 }

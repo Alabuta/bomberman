@@ -1,0 +1,141 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: heroes
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 0
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 512
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 2
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: Standalone
+      m_MaxTextureSize: 512
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 25
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 2
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 1
+      enableAlphaDilation: 1
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+    - {fileID: 2800000, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: -495439157162718789, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: -257760086348800069, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: -8625371329298913337, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 4773892178952424503, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: -5650923121182500696, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 5444086452886408986, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 4331949162178425716, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: -7565072906226192088, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 2529731512542032465, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 8502436122128325658, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: -4020983021202058936, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 7138317337429422357, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: -4108487879694969822, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: -3818379334653528297, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 1786588511432173546, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 3871899048301674620, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 254437594356709370, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 7523337388877413470, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
+  - {fileID: 6557374637736590982, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 175649371615627432, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 6877423418818437325, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 158536243991751388, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 8666095005260131018, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 2026318224494067603, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: -446078865650958178, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: -5816185461334590079, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: -867529877265485618, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: -54584782126590318, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 4851729730391830114, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: -5576693916486694811, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: -3451985353402802373, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: -7541921364307087872, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 7931664236777181325, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 733546964298745471, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: -5091356601053562703, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  - {fileID: 862315571626163721, guid: b8ee1229367a7064a94b275f178f1989, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - hero_white_right_2
+  - hero_white_right_1
+  - hero_white_right_0
+  - hero_white_down_1
+  - hero_white_down_0
+  - hero_white_down_2
+  - hero_white_die_3
+  - hero_white_die_2
+  - hero_white_die_1
+  - hero_white_die_0
+  - hero_white_die_7
+  - hero_white_die_6
+  - hero_white_die_5
+  - hero_white_die_4
+  - hero_white_up_2
+  - hero_white_up_0
+  - hero_white_die_8
+  - hero_white_up_1
+  - hero_green_die_8
+  - hero_green_die_5
+  - hero_green_die_4
+  - hero_green_die_7
+  - hero_green_die_6
+  - hero_green_die_1
+  - hero_green_die_0
+  - hero_green_die_3
+  - hero_green_die_2
+  - hero_green_right_1
+  - hero_green_right_0
+  - hero_green_right_2
+  - hero_green_up_0
+  - hero_green_up_1
+  - hero_green_up_2
+  - hero_green_down_2
+  - hero_green_down_1
+  - hero_green_down_0
+  m_RenderDataMap: {}
+  m_Tag: heroes
+  m_IsVariant: 0

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using App;
 using Infrastructure.Factory;
 using Infrastructure.Services;
+using Infrastructure.Services.Input;
+using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.SaveLoad;
-using Services.PersistentProgress;
 
 namespace Infrastructure.States
 {
@@ -19,7 +20,7 @@ namespace Infrastructure.States
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator),
                 [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, serviceLocator.Single<IGameFactory>(),
-                    serviceLocator.Single<IPersistentProgressService>()),
+                    serviceLocator.Single<IPersistentProgressService>(), serviceLocator.Single<IInputService>()),
                 [typeof(LoadProgressState)] = new LoadProgressState(this, serviceLocator.Single<IPersistentProgressService>(),
                     serviceLocator.Single<ISaveLoadService>()),
                 [typeof(GameLoopState)] = new GameLoopState(this)

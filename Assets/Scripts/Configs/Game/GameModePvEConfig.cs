@@ -1,13 +1,9 @@
-﻿using Configs.Level;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Configs.Game
 {
     [CreateAssetMenu(fileName = "GameModePvE", menuName = "Configs/Game/PvE Game Mode")]
-    public sealed class GameModePvEConfig : ConfigBase
+    public sealed class GameModePvEConfig : GameModeBaseConfig
     {
-        public LevelConfig[] Levels;
-
-        public PlayerConfig[] Players;
     }
 }

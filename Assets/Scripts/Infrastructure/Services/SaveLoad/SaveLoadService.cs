@@ -1,8 +1,8 @@
 using Data;
 using Infrastructure.Data;
 using Infrastructure.Factory;
+using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.SaveLoad;
-using Services.PersistentProgress;
 using UnityEngine;
 
 namespace Infrastructure.States.SaveLoad

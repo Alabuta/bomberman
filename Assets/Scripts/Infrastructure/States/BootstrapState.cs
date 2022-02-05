@@ -3,10 +3,10 @@ using Configs.Singletons;
 using Infrastructure.AssetManagement;
 using Infrastructure.Factory;
 using Infrastructure.Services;
+using Infrastructure.Services.Input;
+using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.SaveLoad;
 using Infrastructure.States.SaveLoad;
-using Services.Input;
-using Services.PersistentProgress;
 using UnityEngine;
 
 namespace Infrastructure.States
@@ -44,13 +44,13 @@ namespace Infrastructure.States
 
         private void RegisterServices()
         {
-            _serviceLocator.RegisterSingle<IInputService>(new InputService());
+            _serviceLocator.RegisterSingle<IAssetProvider>(new AssetProvider());
+            _serviceLocator.RegisterSingle<IGameFactory>(new GameFactory(_serviceLocator.Single<IAssetProvider>()));
+            _serviceLocator.RegisterSingle<IInputService>(new InputService(_serviceLocator.Single<IGameFactory>()));
             _serviceLocator.RegisterSingle<IPersistentProgressService>(new PersistentProgressService());
             _serviceLocator.RegisterSingle<ISaveLoadService>(
                 new SaveLoadService(_serviceLocator.Single<IPersistentProgressService>(),
                     _serviceLocator.Single<IGameFactory>()));
-            _serviceLocator.RegisterSingle<IAssetProvider>(new AssetProvider());
-            _serviceLocator.RegisterSingle<IGameFactory>(new GameFactory(_serviceLocator.Single<IAssetProvider>()));
         }
 
         private void OnLoadLevel()

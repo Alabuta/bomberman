@@ -15,10 +15,13 @@ MonoBehaviour:
   Index: 0
   ColumnsNumber: 13
   RowsNumber: 11
+  RandomSeed: 8741688
   SoftBlocksCoverage: 48
   PlayersSpawnCorners:
   - x: 0
     y: 1
+  - x: 1
+    y: 0
   Enemies:
   - {fileID: 11400000, guid: 0f62e5b375077ae4dbddddfd979c623a, type: 2}
   EnemiesNumber: 4

@@ -10,15 +10,7 @@ namespace Entity
     {
         [SerializeField]
         [HideInInspector]
-        protected float2 HorizontalMovementMask = new float2(1, 0);
-
-        [SerializeField]
-        [HideInInspector]
-        protected float2 VerticalMovementMask = new float2(0, 1);
-
-        [SerializeField]
-        [HideInInspector]
-        private float3 MovementConvertMask = new float3(1, 1, 0);
+        private float3 MovementConvertMask = new(1, 1, 0);
 
         [SerializeField]
         protected T EntityConfig;

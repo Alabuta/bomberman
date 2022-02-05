@@ -1,5 +1,6 @@
 ﻿using System;
 using Configs.Items;
+using Entity.Hero;
 using Level;
 using UnityEngine;
 using UnityEngine.Assertions;

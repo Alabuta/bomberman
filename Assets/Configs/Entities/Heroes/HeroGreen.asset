@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d77cf4390f154efa9076cbc69365d9f0, type: 3}
   m_Name: HeroGreen
   m_EditorClassIdentifier: 
-  Name: Player.1
+  Name: Green
   Prefab: {fileID: 1343022026916402644, guid: df1298ec1fe507441a0029313f301aa1, type: 3}
   Speed: 2.4
   Health: 3

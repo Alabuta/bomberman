@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 090b76ff46f24563bf1ce9cb038e564c, type: 3}
   m_Name: DefaultPlayer
   m_EditorClassIdentifier: 
+  PlayerTagConfig: {fileID: 11400000, guid: 93d3f638576432049a4a22f30bb30aea, type: 2}
   HeroConfig: {fileID: 11400000, guid: 8ff7542800dc0444ab7a4f432a73f471, type: 2}
   PlayerInputHolder: {fileID: 165800034243630204, guid: 5fef539d1ae0d2c4480f5ff747253896, type: 3}
