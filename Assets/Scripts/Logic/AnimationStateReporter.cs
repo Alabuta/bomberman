@@ -11,13 +11,13 @@ namespace Logic
         private IAnimationStateReader _stateReader;
 
         [SerializeField]
-        private AnimatorStateTagsResolverConfig ResolverConfig;
+        private AnimatorStateTagsResolverConfig TagsResolverConfig;
 
         private Dictionary<int, AnimatorState> _states;
 
         private void Awake()
         {
-            _states = ResolverConfig.Tags.ToDictionary(p => Animator.StringToHash(p.TagName), p => p.State);
+            _states = TagsResolverConfig.Tags.ToDictionary(p => Animator.StringToHash(p.TagName), p => p.State);
         }
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

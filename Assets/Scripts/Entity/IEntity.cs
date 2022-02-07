@@ -10,13 +10,14 @@ namespace Entity
         bool IsAlive { get; }
 
         int Health { get; set; }
-        int MaxHealth { get; }
+        int InitialHealth { get; }
 
-        float Speed { get; set; }
+        float CurrentSpeed { get; }
         float InitialSpeed { get; }
+        float SpeedMultiplier { get; set; }
 
         float3 WorldPosition { get; }
-        float2 MovementVector { get; set; }
+        float2 DirectionVector { get; }
 
         void Kill();
     }

@@ -6,8 +6,8 @@ namespace Logic
     {
         AnimatorState State { get; }
 
-        void OnEnterState(AnimatorState stateHash);
+        void OnEnterState(AnimatorState state);
 
-        void OnStateExit(AnimatorState stateHash);
+        void OnStateExit(AnimatorState state);
     }
 }

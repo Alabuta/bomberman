@@ -1,8 +1,6 @@
-﻿using Configs.Entity;
-
-namespace Entity.Hero
+﻿namespace Entity.Hero
 {
-    public class HeroAnimator : EntityAnimator<HeroConfig>
+    public class HeroAnimator : EntityAnimator
     {
     }
 }

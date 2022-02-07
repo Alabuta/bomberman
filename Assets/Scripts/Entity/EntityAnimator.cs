@@ -1,70 +1,71 @@
 ﻿using System;
-using Configs.Entity;
 using Logic;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Entity
 {
     [RequireComponent(typeof(Animator))]
-    public abstract class EntityAnimator<T> : MonoBehaviour, IAnimationStateReader where T : EntityConfig
+    public abstract class EntityAnimator : MonoBehaviour, IAnimationStateReader
     {
         [SerializeField, HideInInspector]
-        private int VerticalSpeedId = Animator.StringToHash("VerticalSpeed");
+        private int IsAliveId = Animator.StringToHash("IsAlive");
 
         [SerializeField, HideInInspector]
-        private int HorizontalSpeedId = Animator.StringToHash("HorizontalSpeed");
+        private int IsMovingId = Animator.StringToHash("IsMoving");
 
         [SerializeField, HideInInspector]
-        private int IsAlive = Animator.StringToHash("IsAlive");
+        private int DirectionXId = Animator.StringToHash("DirectionX");
+
+        [SerializeField, HideInInspector]
+        private int DirectionYId = Animator.StringToHash("DirectionY");
 
         [SerializeField]
         private Animator Animator;
-
-        [SerializeField]
-        public EntityController<T> Entity;
 
         public AnimatorState State { get; private set; }
 
         public event Action<AnimatorState> OnAnimationStateEnter;
         public event Action<AnimatorState> OnAnimationStateExit;
 
-        public void OnEnterState(AnimatorState stateHash)
+        public void OnEnterState(AnimatorState state)
         {
-            State = stateHash;
+            State = state;
             OnAnimationStateEnter?.Invoke(State);
         }
 
-        public void OnStateExit(AnimatorState stateHash)
+        public void OnStateExit(AnimatorState state)
         {
-            State = stateHash;
+            State = state;
             OnAnimationStateExit?.Invoke(State);
         }
 
-        protected void Start()
+        public void UpdateDirection(float2 direction)
         {
-            Animator.SetBool(IsAlive, Entity.IsAlive);
-
-            Entity.OnKillEvent += OnEntityKill;
+            Animator.SetFloat(DirectionXId, direction.x);
+            Animator.SetFloat(DirectionYId, direction.y);
         }
 
-        protected void Update()
+        public void UpdateSpeed(float speed)
         {
-            Animator.SetFloat(HorizontalSpeedId, Entity.MovementVector.x);
-            Animator.SetFloat(VerticalSpeedId, Entity.MovementVector.y);
-
-            Animator.speed = Entity.Speed / Entity.InitialSpeed;
+            Animator.SetBool(IsMovingId, speed > .5f);
         }
 
-        private void OnEntityKill()
+        public void UpdatePlaybackSpeed(float speed)
         {
-            Animator.SetBool(IsAlive, Entity.IsAlive);
-
-            Animator.speed = Entity.InitialSpeed;
+            Animator.speed = speed;
         }
 
-        private void OnDestroy()
+        public void SetAlive()
         {
-            Entity.OnKillEvent -= OnEntityKill;
+            Animator.SetBool(IsAliveId, true);
+            Animator.speed = 1;
+        }
+
+        public void SetDead()
+        {
+            Animator.SetBool(IsAliveId, false);
+            Animator.speed = 1;
         }
     }
 }

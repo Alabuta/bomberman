@@ -12,6 +12,7 @@ namespace Entity.Hero
 {
     public sealed class HeroController : EntityController<HeroConfig>, IHero
     {
+        private const float Threshold = .001f;
         public event EventHandler<BombPlantEventData> BombPlantedEvent;
 
         [SerializeField]
@@ -19,26 +20,13 @@ namespace Entity.Hero
 
         private IPlayerInput _playerInput;
 
-        private int _bombCapacity;
-
-        private float2 _directionVector = float2.zero;
-
         public override int Health { get; set; }
 
-        public override float Speed { get; set; }
+        public override float CurrentSpeed { get; protected set; }
 
         public int BlastRadius { get; set; }
 
-        public int BombCapacity
-        {
-            get => _bombCapacity;
-            set
-            {
-                _bombCapacity = value;
-
-                // BombCapacityChangedEvent?.Invoke(_bombCapacity);
-            }
-        }
+        public int BombCapacity { get; set; }
 
         [Inject]
         private void Construct(IInputService inputService)
@@ -60,17 +48,21 @@ namespace Entity.Hero
 
             BlastRadius = EntityConfig.BlastRadius;
             BombCapacity = EntityConfig.BombCapacity;
-            Health = EntityConfig.Health;
-        }
-
-        private void Update()
-        {
-            MovementVector = math.round(_directionVector) * Speed;
         }
 
         private void OnMove(float2 value)
         {
-            _directionVector = value;
+            if (math.lengthsq(value) > Threshold)
+            {
+                DirectionVector = math.round(value);
+                CurrentSpeed = InitialSpeed * SpeedMultiplier;
+            }
+            else
+                CurrentSpeed = 0;
+
+            EntityAnimator.UpdateDirection(DirectionVector);
+            EntityAnimator.UpdateSpeed(CurrentSpeed);
+            EntityAnimator.UpdatePlaybackSpeed(CurrentSpeed / InitialHealth);
         }
 
         private void OnBombPlant()
@@ -93,7 +85,7 @@ namespace Entity.Hero
         }
     }
 
-    public class BombPlantEventData : EventArgs
+    public struct BombPlantEventData
     {
         public readonly int BlastRadius;
         public readonly float2 WorldPosition;

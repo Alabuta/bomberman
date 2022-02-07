@@ -15,6 +15,9 @@ MonoBehaviour:
   Name: Green
   Prefab: {fileID: 1343022026916402644, guid: df1298ec1fe507441a0029313f301aa1, type: 3}
   Speed: 2.4
+  StartDirection:
+    x: 0
+    y: -1
   Health: 3
   BlastRadius: 4
   BombCapacity: 2

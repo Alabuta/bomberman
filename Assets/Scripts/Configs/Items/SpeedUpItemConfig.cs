@@ -7,8 +7,9 @@ namespace Configs.Items
     public sealed class SpeedUpItemConfig : ItemConfigBase
     {
         [SerializeField]
-        private float SpeedIncreaseValue = 1;
+        private float MultiplierValue = 1;
 
-        public override void ApplyTo(IHero hero) => hero.Speed += SpeedIncreaseValue;
+        public override void ApplyTo(IHero hero) =>
+            hero.SpeedMultiplier = MultiplierValue;
     }
 }

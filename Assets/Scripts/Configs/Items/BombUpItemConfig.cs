@@ -10,7 +10,8 @@ namespace Configs.Items
         [SerializeField]
         private int BombCapacityIncreaseValue = 1;
 
-        public override void ApplyTo(IHero hero) => hero.BombCapacity += BombCapacityIncreaseValue;
+        public override void ApplyTo(IHero hero) =>
+            hero.BombCapacity += BombCapacityIncreaseValue;
 
         public int AdditionalValue => BombCapacityIncreaseValue;
         public int MultiplierValue => 1;
