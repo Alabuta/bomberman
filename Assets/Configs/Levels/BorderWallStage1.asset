@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: BorderWallStage1
   m_EditorClassIdentifier: 
   Index: 0
+  RandomSeed: 8741688
   ColumnsNumber: 13
   RowsNumber: 11
-  RandomSeed: 8741688
   SoftBlocksCoverage: 48
   PlayersSpawnCorners:
   - x: 0

@@ -125,10 +125,10 @@ namespace Level
 
             var offsetsAndSize = new[]
             {
-                (math.float2(+columnsNumber / 2.0f + 1, 0), math.float2(2, rowsNumber)),
-                (math.float2(-columnsNumber / 2.0f - 1, 0), math.float2(2, rowsNumber)),
-                (math.float2(0, +rowsNumber / 2.0f + 1), math.float2(columnsNumber, 2)),
-                (math.float2(0, -rowsNumber / 2.0f - 1), math.float2(columnsNumber, 2))
+                (math.float2(+columnsNumber / 2f + 1, 0), math.float2(2, rowsNumber)),
+                (math.float2(-columnsNumber / 2f - 1, 0), math.float2(2, rowsNumber)),
+                (math.float2(0, +rowsNumber / 2f + 1), math.float2(columnsNumber, 2)),
+                (math.float2(0, -rowsNumber / 2f - 1), math.float2(columnsNumber, 2))
             };
 
             foreach (var (offset, size) in offsetsAndSize)

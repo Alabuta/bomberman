@@ -1,10 +1,7 @@
 fileFormatVersion: 2
-guid: cd7cb7d92f315124b8a30b8990aa6414
+guid: 8f4e7cadbf80a384aa05bb89c1dbb28d
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: -3218248262026354849
-    second: Walls_0
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -69,7 +66,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 128
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -81,10 +78,22 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 128
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -101,16 +110,16 @@ TextureImporter:
         x: 0
         y: 0
         width: 80
-        height: 48
+        height: 144
       alignment: 0
       pivot: {x: 0, y: 0}
-      border: {x: 32, y: 16, z: 32, w: 16}
+      border: {x: 32, y: 64, z: 32, w: 64}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f5f96e6b14c7653d0800000000000000
-      internalID: -3218248262026354849
+      spriteID: 89574d6f17a520f4a8911030f02dfd49
+      internalID: 1894162364
       vertices: []
       indices: 
       edges: []
@@ -126,7 +135,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Walls_0: -3218248262026354849
+      Walls_0: 1894162364
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
