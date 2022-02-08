@@ -1,10 +1,11 @@
 ﻿using System;
+using Unity.Mathematics;
 
 namespace Entity.Hero
 {
     public interface IHero : IEntity
     {
-        event Action<BombPlantEventData> BombPlantedEvent;
+        event Action<float2> BombPlantedEvent;
 
         int BlastRadius { get; set; }
 

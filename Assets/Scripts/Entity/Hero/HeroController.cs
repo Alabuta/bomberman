@@ -1,8 +1,5 @@
 ﻿using System;
-using Configs;
 using Configs.Entity;
-using Infrastructure.Services;
-using Infrastructure.Services.Input;
 using Input;
 using Unity.Mathematics;
 using UnityEngine;
@@ -15,11 +12,11 @@ namespace Entity.Hero
         private const float MovementThreshold = .5f;
 
         [SerializeField]
-        private PlayerConfig PlayerConfig;
+        private new HeroAnimator EntityAnimator;
 
         private IPlayerInput _playerInput;
 
-        public event Action<BombPlantEventData> BombPlantedEvent;
+        public event Action<float2> BombPlantedEvent;
 
         public override int Health { get; set; }
 
@@ -29,17 +26,14 @@ namespace Entity.Hero
 
         public int BombCapacity { get; set; }
 
-        private void Construct(IInputService inputService)
+        public void AttachPlayerInput(IPlayerInput playerInput)
         {
-            _playerInput = inputService.GetPlayerInput(PlayerConfig.PlayerTagConfig);
+            UnsubscribeInputListeners();
+
+            _playerInput = playerInput;
 
             _playerInput.OnMoveEvent += OnMove;
             _playerInput.OnBombPlantEvent += OnBombPlant;
-        }
-
-        private void Awake()
-        {
-            Construct(ServiceLocator.Container.Single<IInputService>());// :TODO: replace by injection in Construct
         }
 
         private new void Start()
@@ -48,6 +42,9 @@ namespace Entity.Hero
 
             BlastRadius = EntityConfig.BlastRadius;
             BombCapacity = EntityConfig.BombCapacity;
+
+            EntityAnimator.UpdateDirection(DirectionVector);
+            EntityAnimator.StopMovement();
         }
 
         private void OnMove(float2 value)
@@ -77,10 +74,10 @@ namespace Entity.Hero
 
             --BombCapacity;
 
-            BombPlantedEvent?.Invoke(new BombPlantEventData(BlastRadius, WorldPosition.xy));
+            BombPlantedEvent?.Invoke(WorldPosition.xy);
         }
 
-        private void OnDestroy()
+        private void UnsubscribeInputListeners()
         {
             if (_playerInput == null)
                 return;
@@ -88,17 +85,10 @@ namespace Entity.Hero
             _playerInput.OnMoveEvent -= OnMove;
             _playerInput.OnBombPlantEvent -= OnBombPlant;
         }
-    }
 
-    public struct BombPlantEventData
-    {
-        public readonly int BlastRadius;
-        public readonly float2 WorldPosition;
-
-        public BombPlantEventData(int blastRadius, float2 worldPosition)
+        private void OnDestroy()
         {
-            BlastRadius = blastRadius;
-            WorldPosition = worldPosition;
+            UnsubscribeInputListeners();
         }
     }
 }

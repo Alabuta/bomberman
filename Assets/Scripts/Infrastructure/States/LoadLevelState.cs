@@ -1,32 +1,34 @@
 using System.Linq;
 using App;
 using Configs.Game;
+using Configs.Level;
 using Configs.Singletons;
 using Data;
+using Entity.Hero;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
-using Infrastructure.States;
 using Level;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Assertions;
 
-namespace Infrastructure
+namespace Infrastructure.States
 {
     public class LoadLevelState : IPayloadedState<LevelStage>
     {
         private readonly GameStateMachine _gameStateMachine;
         private readonly SceneLoader _sceneLoader;
         private readonly IGameFactory _gameFactory;
-        private readonly IPersistentProgressService _progressService;
         private readonly IInputService _inputService;
+        private readonly IPersistentProgressService _progressService;
 
         public LoadLevelState(
             GameStateMachine gameStateMachine,
             SceneLoader sceneLoader,
             IGameFactory gameFactory,
-            IPersistentProgressService progressService,
-            IInputService inputService)
+            IInputService inputService,
+            IPersistentProgressService progressService)
         {
             _gameStateMachine = gameStateMachine;
             _sceneLoader = sceneLoader;
@@ -73,25 +75,49 @@ namespace Infrastructure
             var gameMode = applicationConfig.GameModePvE;
 
             Game.LevelManager = new GameLevelManager();
+            Game.LevelManager.GenerateLevelStage(gameMode, levelStage);
 
-            foreach (var playerConfig in gameMode.PlayerConfigs)
+            var levelStageConfig = GetLevelStageConfig(gameMode, levelStage);
+
+            var levelGridModel = Game.LevelManager.LevelGridModel;
+
+            var playerConfigs = gameMode.PlayerConfigs;
+            var spawnCorners = levelStageConfig.PlayersSpawnCorners;
+            Assert.IsTrue(playerConfigs.Length <= spawnCorners.Length, "players count greater than the level spawn corners");
+
+            var zip = spawnCorners.Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig));
+            foreach (var (spawnCorner, playerConfig) in zip)
             {
                 var playerInput = _inputService.RegisterPlayerInput(playerConfig);
-                var player = _gameFactory.CreatePlayer(playerConfig, playerInput);
 
-                Game.LevelManager.AddPlayer(playerConfig, player);
+                var player = _gameFactory.CreatePlayer(playerConfig, playerInput);
+                Assert.IsNotNull(player);
+
+                var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
+
+                var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, position);
+                Assert.IsNotNull(go);
+
+                var hero = (IHero) go.GetComponent<HeroController>();
+                player.AttachHero(hero, playerInput);
+
+                Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
             }
 
-            Game.LevelManager.GenerateLevelStage(gameMode, levelStage, _gameFactory);
-
             // Camera setup and follow
-            var levelStageConfig = gameMode.LevelConfigs[levelStage.LevelIndex].LevelStages[levelStage.LevelStageIndex];
-            var defaultPlayerCorner = levelStageConfig.PlayersSpawnCorners.FirstOrDefault();
-            SetupCamera(gameMode, levelStage, Game.LevelManager.LevelGridModel.Size, defaultPlayerCorner);
+            var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
+            var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
+
+            SetupCamera(gameMode, levelStage, levelGridModel.Size, defaultPlayer.Hero.WorldPosition.xy);
+        }
+
+        private static LevelStageConfig GetLevelStageConfig(GameModeBaseConfig gameMode, LevelStage levelStage)
+        {
+            return gameMode.LevelConfigs[levelStage.LevelIndex].LevelStages[levelStage.LevelStageIndex];
         }
 
         private static void SetupCamera(GameModeBaseConfig gameMode, LevelStage levelStage, int2 levelSize,
-            int2 defaultPlayerCorner)
+            float2 playerPosition)
         {
             var mainCamera = Camera.main;
             if (mainCamera == null)
@@ -104,8 +130,7 @@ namespace Infrastructure
             var fieldRect = (levelSize - cameraRect) / 2f;
             var fieldMargins = (float4) levelConfig.ViewportPadding / levelConfig.OriginalPixelsPerUnits;
 
-            var position = (defaultPlayerCorner - (float2) .5f) * levelSize;
-            position = math.clamp(position, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
+            var position = math.clamp(playerPosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
 
             mainCamera.transform.position = math.float3(position, -1);
         }

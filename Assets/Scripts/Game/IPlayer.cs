@@ -1,4 +1,5 @@
 ﻿using Configs;
+using Entity.Hero;
 using Input;
 
 namespace Game
@@ -7,7 +8,8 @@ namespace Game
     {
         PlayerConfig Config { get; }
 
-        // HeroController HeroController { get; }
-        IPlayerInput PlayerInput { get; }
+        IHero Hero { get; }
+
+        void AttachHero(IHero hero, IPlayerInput playerInput);
     }
 }

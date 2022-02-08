@@ -1,7 +1,6 @@
 ﻿using System;
 using Configs.Items;
 using Entity.Hero;
-using Level;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -19,13 +18,6 @@ namespace Entity
         private ItemConfigBase ItemConfigBase;
 
         public event Action<Item> ItemEffectAppliedEvent;
-
-        private readonly IGameLevelState _gameLevelState;
-
-        public Item(IGameLevelState gameLevelState)
-        {
-            _gameLevelState = gameLevelState;
-        }
 
         private void Awake()
         {

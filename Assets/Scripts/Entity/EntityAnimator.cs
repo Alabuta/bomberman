@@ -1,6 +1,5 @@
 ﻿using System;
 using Logic;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Entity
@@ -8,20 +7,10 @@ namespace Entity
     [RequireComponent(typeof(Animator))]
     public abstract class EntityAnimator : MonoBehaviour, IAnimationStateReader
     {
-        [SerializeField, HideInInspector]
-        private int IsAliveId = Animator.StringToHash("IsAlive");
-
-        [SerializeField, HideInInspector]
-        private int IsMovingId = Animator.StringToHash("IsMoving");
-
-        [SerializeField, HideInInspector]
-        private int DirectionXId = Animator.StringToHash("DirectionX");
-
-        [SerializeField, HideInInspector]
-        private int DirectionYId = Animator.StringToHash("DirectionY");
+        private static readonly int IsAliveId = Animator.StringToHash("IsAlive");
 
         [SerializeField]
-        private Animator Animator;
+        protected Animator Animator;
 
         public AnimatorState State { get; private set; }
 
@@ -34,26 +23,10 @@ namespace Entity
             OnAnimationStateEnter?.Invoke(State);
         }
 
-        public void OnStateExit(AnimatorState state)
+        public void OnExitState(AnimatorState state)
         {
             State = state;
             OnAnimationStateExit?.Invoke(State);
-        }
-
-        public void UpdateDirection(float2 direction)
-        {
-            Animator.SetFloat(DirectionXId, direction.x);
-            Animator.SetFloat(DirectionYId, direction.y);
-        }
-
-        public void Move()
-        {
-            Animator.SetBool(IsMovingId, true);
-        }
-
-        public void StopMovement()
-        {
-            Animator.SetBool(IsMovingId, false);
         }
 
         public void UpdatePlaybackSpeed(float speed)

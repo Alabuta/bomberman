@@ -29,7 +29,7 @@ namespace Infrastructure.Factory
 
         public IPlayer CreatePlayer(PlayerConfig playerConfig, IPlayerInput playerInput)
         {
-            return new Player(playerInput, playerConfig);
+            return new Player(playerConfig);
         }
 
         public IPlayerInput CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex)
@@ -67,5 +67,21 @@ namespace Infrastructure.Factory
             ProgressReaders.Clear();
             ProgressWriters.Clear();
         }
+
+        /*private void SpawnBomb(float2 worldPosition)
+        {
+            var position = math.float3(math.round(worldPosition), 0);
+            var prefab = _levelStageConfig.BombConfig.Prefab;
+            var bomb = Object.Instantiate(prefab, position, Quaternion.identity);
+
+            StartCoroutine.Start(ExecuteAfterTime(_levelStageConfig.BombConfig.LifetimeSec, () => { bomb.SetActive(false); }));
+        }
+
+        private static IEnumerator ExecuteAfterTime(float time, Action callback)
+        {
+            yield return new WaitForSeconds(time);
+
+            callback?.Invoke();
+        }*/
     }
 }

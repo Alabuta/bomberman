@@ -37,7 +37,7 @@ namespace Logic
             FindReader(animator);
 
             var state = ResolveStateFromTagHash(stateInfo.tagHash);
-            _stateReader.OnStateExit(state);
+            _stateReader.OnExitState(state);
         }
 
         private AnimatorState ResolveStateFromTagHash(int tagHash) =>

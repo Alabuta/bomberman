@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: ApplicationConfig
   m_EditorClassIdentifier: 
   TargetFrameRate: 30
-  EnableVSync: 0
+  EnableVSync: 1
+  DefaultPlayerTag: {fileID: 11400000, guid: 93d3f638576432049a4a22f30bb30aea, type: 2}
   GameModePvE: {fileID: 11400000, guid: 55d9ce67e8dd3b948964a1b00b71b068, type: 2}

@@ -1,114 +1,45 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Configs;
 using Configs.Game;
 using Configs.Level;
-using Core;
 using Data;
-using Entity;
-using Entity.Hero;
 using Game;
-using Infrastructure.Factory;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Assertions;
-using Object = UnityEngine.Object;
 
 namespace Level
 {
-    public interface ILevelManager
+    public class GameLevelManager
     {
-        event Action<IEntity> EntitySpawnedEvent;
-        GameLevelGridModel LevelGridModel { get; }
-
-        void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelConfig,
-            IGameFactory gameFactory);
-
-        void AddPlayer(PlayerConfig playerConfig, IPlayer player);
-    }
-
-    public class GameLevelManager : ILevelManager
-    {
-        public event Action<IEntity> EntitySpawnedEvent;
-
-
-        public GameLevelState CurrentGameLevelState { get; }
-
-        private LevelStageConfig _levelStageConfig;
         public GameLevelGridModel LevelGridModel { get; private set; }
 
-        private int[] _hiddenItemsIndices;
+        private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
 
-        private IHero[] _heroes;
-
-        private readonly Dictionary<PlayerConfig, IPlayer> _players = new();
-
-        public void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelStage, IGameFactory gameFactory)
+        public void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelStage)
         {
             var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];
-            _levelStageConfig = levelConfig.LevelStages.First();
+            var levelStageConfig = levelConfig.LevelStages.First();
 
-            LevelGridModel = new GameLevelGridModel(_levelStageConfig);
+            LevelGridModel = new GameLevelGridModel(levelStageConfig);
 
-            _hiddenItemsIndices = LevelGridModel
+            /*_hiddenItemsIndices = LevelGridModel
                 .Select((_, i) => i)
                 .Where(i => (LevelGridModel[i] & GridTileType.PowerUpItem) != 0)
-                .ToArray();
+                .ToArray();*/
 
             SpawnGameObjects(levelConfig, LevelGridModel);
 
             SetupWalls(levelConfig, LevelGridModel);
-
-            var heroes = SpawnHeroesPrefabs(gameMode.PlayerConfigs, _levelStageConfig.PlayersSpawnCorners, LevelGridModel,
-                gameFactory);
-            _heroes = heroes
-                .Select(go => go.GetComponent<HeroController>())
-                .Select(c =>
-                {
-                    c.BombPlantedEvent += BombPlantEventHandler;
-                    EntitySpawnedEvent?.Invoke(c);
-
-                    return (IHero) c;
-                })
-                .ToArray();
-
-            /*PrefabsManager.Instantiate();
-
-            EnemiesManager.PopulateLevel(levelConfig, levelMode);
-            PlayersManager.PopulateLevel(levelConfig, levelMode);*/
         }
 
-        public void AddPlayer(PlayerConfig playerConfig, IPlayer player)
+        public void AddPlayer(PlayerTagConfig playerTagConfig, IPlayer player)
         {
-            _players.Add(playerConfig, player);// :TODO: refactor
+            _players.Add(playerTagConfig, player);// :TODO: refactor
         }
 
-        private static IEnumerable<GameObject> SpawnHeroesPrefabs(
-            IReadOnlyCollection<PlayerConfig> playerConfigs,
-            IReadOnlyCollection<int2> spawnCorners,
-            GameLevelGridModel levelGridModel,
-            IGameFactory gameFactory)
+        public IPlayer GetPlayer(PlayerTagConfig playerTagConfig)
         {
-            Assert.IsTrue(playerConfigs.Count <= spawnCorners.Count, "players count greater than the level spawn corners");
-
-            return spawnCorners
-                .Zip(playerConfigs, (spawnCorner, playerConfig) =>
-                {
-                    var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
-                    return gameFactory.SpawnEntity(playerConfig.HeroConfig, position);
-                })
-                .ToArray();
-        }
-
-        private void BombPlantEventHandler(BombPlantEventData data)
-        {
-            var position = math.float3(math.round(data.WorldPosition).xy, 0);
-            var prefab = _levelStageConfig.BombConfig.Prefab;
-            var bomb = Object.Instantiate(prefab, position, Quaternion.identity);
-
-            StartCoroutine.Start(ExecuteAfterTime(_levelStageConfig.BombConfig.LifetimeSec, () => { bomb.SetActive(false); }));
+            return _players.TryGetValue(playerTagConfig, out var player) ? player : null;// :TODO: refactor
         }
 
         private static void SetupWalls(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)
@@ -154,27 +85,18 @@ namespace Level
 
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
 
-            for (var index = 0; index < columnsNumber * rowsNumber; ++index)
+            for (var i = 0; i < columnsNumber * rowsNumber; ++i)
             {
-                var blockType = gameLevelGridModel[index];
-
+                var blockType = gameLevelGridModel[i];
                 if (blockType == GridTileType.FloorTile)
                     continue;
 
                 // ReSharper disable once PossibleLossOfFraction
-                var position = startPosition + math.float3(index % columnsNumber, index / columnsNumber, 0);
+                var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
 
                 var (parent, prefab) = blocks[blockType & ~GridTileType.PowerUpItem];
                 Object.Instantiate(prefab, position, Quaternion.identity, parent.transform);
             }
-        }
-
-
-        private static IEnumerator ExecuteAfterTime(float time, Action callback)
-        {
-            yield return new WaitForSeconds(time);
-
-            callback?.Invoke();
         }
     }
 }

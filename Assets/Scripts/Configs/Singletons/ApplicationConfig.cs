@@ -12,6 +12,8 @@ namespace Configs.Singletons
 
         public bool EnableVSync;
 
+        public PlayerTagConfig DefaultPlayerTag;
+
         [Header("Game Modes")]
         [InspectorName("Game Mode PvE")]
         public GameModePvEConfig GameModePvE;

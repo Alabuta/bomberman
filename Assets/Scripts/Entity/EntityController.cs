@@ -61,8 +61,6 @@ namespace Entity
 
             EntityAnimator.UpdatePlaybackSpeed(1);
             EntityAnimator.SetAlive();
-            EntityAnimator.UpdateDirection(DirectionVector);
-            EntityAnimator.StopMovement();
         }
 
         private void FixedUpdate()

@@ -173,8 +173,8 @@ MonoBehaviour:
     y: 1
     z: 0
   EntityConfig: {fileID: 0}
+  EntityAnimator: {fileID: 1415490775431177746}
   Transform: {fileID: 3606758829682564299}
-  PlayerConfig: {fileID: 0}
   EntityAnimator: {fileID: 1415490775431177746}
 --- !u!114 &1415490775431177746
 MonoBehaviour:
@@ -188,11 +188,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0361051982554d32acbeb5fbecbf63b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VerticalSpeedId: -1148172834
-  HorizontalSpeedId: -1118621987
-  IsAliveId: -695135503
-  IsMovingId: 120489994
-  SpeedId: -823668238
-  DiedId: 543283834
   Animator: {fileID: 3606758829682564296}
-  Entity: {fileID: 2269895994269024557}

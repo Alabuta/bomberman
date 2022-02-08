@@ -20,7 +20,7 @@ namespace Infrastructure.States
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator),
                 [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, serviceLocator.Single<IGameFactory>(),
-                    serviceLocator.Single<IPersistentProgressService>(), serviceLocator.Single<IInputService>()),
+                    serviceLocator.Single<IInputService>(), serviceLocator.Single<IPersistentProgressService>()),
                 [typeof(LoadProgressState)] = new LoadProgressState(this, serviceLocator.Single<IPersistentProgressService>(),
                     serviceLocator.Single<ISaveLoadService>()),
                 [typeof(GameLoopState)] = new GameLoopState(this)

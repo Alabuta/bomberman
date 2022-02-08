@@ -8,6 +8,6 @@ namespace Logic
 
         void OnEnterState(AnimatorState state);
 
-        void OnStateExit(AnimatorState state);
+        void OnExitState(AnimatorState state);
     }
 }

@@ -7,7 +7,7 @@ namespace Infrastructure
 {
     public class Game
     {
-        public static ILevelManager LevelManager;
+        public static GameLevelManager LevelManager;
 
         public readonly GameStateMachine GameStateMachine;
 
