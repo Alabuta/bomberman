@@ -6,19 +6,20 @@ using Infrastructure.Services.Input;
 using Input;
 using Unity.Mathematics;
 using UnityEngine;
-using Zenject;
 
 namespace Entity.Hero
 {
     public sealed class HeroController : EntityController<HeroConfig>, IHero
     {
-        private const float Threshold = .001f;
-        public event EventHandler<BombPlantEventData> BombPlantedEvent;
+        private const float MovementDeadZoneThreshold = .001f;
+        private const float MovementThreshold = .5f;
 
         [SerializeField]
         private PlayerConfig PlayerConfig;
 
         private IPlayerInput _playerInput;
+
+        public event Action<BombPlantEventData> BombPlantedEvent;
 
         public override int Health { get; set; }
 
@@ -28,7 +29,6 @@ namespace Entity.Hero
 
         public int BombCapacity { get; set; }
 
-        [Inject]
         private void Construct(IInputService inputService)
         {
             _playerInput = inputService.GetPlayerInput(PlayerConfig.PlayerTagConfig);
@@ -39,7 +39,7 @@ namespace Entity.Hero
 
         private void Awake()
         {
-            Construct(ServiceLocator.Container.Single<IInputService>());// :TODO: replace by injection in ctor
+            Construct(ServiceLocator.Container.Single<IInputService>());// :TODO: replace by injection in Construct
         }
 
         private new void Start()
@@ -52,7 +52,7 @@ namespace Entity.Hero
 
         private void OnMove(float2 value)
         {
-            if (math.lengthsq(value) > Threshold)
+            if (math.lengthsq(value) > MovementDeadZoneThreshold)
             {
                 DirectionVector = math.round(value);
                 CurrentSpeed = InitialSpeed * SpeedMultiplier;
@@ -61,7 +61,12 @@ namespace Entity.Hero
                 CurrentSpeed = 0;
 
             EntityAnimator.UpdateDirection(DirectionVector);
-            EntityAnimator.UpdateSpeed(CurrentSpeed);
+
+            if (CurrentSpeed > MovementThreshold)
+                EntityAnimator.Move();
+            else
+                EntityAnimator.StopMovement();
+
             EntityAnimator.UpdatePlaybackSpeed(CurrentSpeed / InitialHealth);
         }
 
@@ -72,7 +77,7 @@ namespace Entity.Hero
 
             --BombCapacity;
 
-            BombPlantedEvent?.Invoke(this, new BombPlantEventData(BlastRadius, WorldPosition.xy));
+            BombPlantedEvent?.Invoke(new BombPlantEventData(BlastRadius, WorldPosition.xy));
         }
 
         private void OnDestroy()

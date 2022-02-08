@@ -4,7 +4,7 @@ namespace Entity.Hero
 {
     public interface IHero : IEntity
     {
-        event EventHandler<BombPlantEventData> BombPlantedEvent;
+        event Action<BombPlantEventData> BombPlantedEvent;
 
         int BlastRadius { get; set; }
 

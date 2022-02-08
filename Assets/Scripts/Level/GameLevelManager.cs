@@ -102,10 +102,8 @@ namespace Level
                 .ToArray();
         }
 
-        private void BombPlantEventHandler(object sender, BombPlantEventData data)
+        private void BombPlantEventHandler(BombPlantEventData data)
         {
-            Assert.IsTrue(sender is IHero, $"expected {typeof(IHero)} sender type instead of {sender.GetType()}");
-
             var position = math.float3(math.round(data.WorldPosition).xy, 0);
             var prefab = _levelStageConfig.BombConfig.Prefab;
             var bomb = Object.Instantiate(prefab, position, Quaternion.identity);

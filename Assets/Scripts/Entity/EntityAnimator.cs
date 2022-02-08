@@ -46,9 +46,14 @@ namespace Entity
             Animator.SetFloat(DirectionYId, direction.y);
         }
 
-        public void UpdateSpeed(float speed)
+        public void Move()
         {
-            Animator.SetBool(IsMovingId, speed > .5f);
+            Animator.SetBool(IsMovingId, true);
+        }
+
+        public void StopMovement()
+        {
+            Animator.SetBool(IsMovingId, false);
         }
 
         public void UpdatePlaybackSpeed(float speed)
