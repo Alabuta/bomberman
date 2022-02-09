@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Configs;
 using Configs.Entity;
+using Entity.Enemies;
 using Game;
 using Infrastructure.AssetManagement;
 using Infrastructure.Services.PersistentProgress;
@@ -37,6 +38,11 @@ namespace Infrastructure.Factory
             var playerInput =
                 PlayerInput.Instantiate(playerConfig.PlayerInputHolder, playerIndex, ControlScheme, -1, _inputDevices);
             return playerInput.GetComponent<IPlayerInput>();
+        }
+
+        public IEnemy CreateEnemy(EnemyConfig enemyConfig)
+        {
+            throw new System.NotImplementedException();
         }
 
         public GameObject SpawnEntity(EntityConfig heroConfig, float3 position)

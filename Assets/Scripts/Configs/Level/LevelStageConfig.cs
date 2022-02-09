@@ -1,4 +1,5 @@
-﻿using Configs.Entity;
+﻿using System;
+using Configs.Entity;
 using Configs.Items;
 using Unity.Mathematics;
 using UnityEngine;
@@ -25,8 +26,7 @@ namespace Configs.Level
         public int2[] PlayersSpawnCorners = { int2.zero };
 
         [Space(16)]
-        public EnemyConfig[] Enemies;
-        public int EnemiesNumber;
+        public EnemySpawnElement[] Enemies;
 
         public EnemyConfig[] PortalEnemies;
         public EnemyConfig[] TimeIsUpEnemyConfigs;
@@ -36,5 +36,12 @@ namespace Configs.Level
 
         public BombConfig BombConfig;
         // public ItemsConfigBase[] Items;
+    }
+
+    [Serializable]
+    public struct EnemySpawnElement
+    {
+        public EnemyConfig EnemyConfig;
+        public int Count;
     }
 }
