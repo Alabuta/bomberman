@@ -5,6 +5,7 @@ using Configs.Level;
 using Configs.Singletons;
 using Data;
 using Entity.Hero;
+using Game;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
@@ -81,6 +82,16 @@ namespace Infrastructure.States
 
             var levelGridModel = Game.LevelManager.LevelGridModel;
 
+            CreateAndSpawnPlayers(gameMode, levelStageConfig, levelGridModel);
+
+            var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
+            var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
+            SetupCamera(levelStage, gameMode, levelGridModel, defaultPlayer);
+        }
+
+        private void CreateAndSpawnPlayers(GameModePvEConfig gameMode, LevelStageConfig levelStageConfig,
+            GameLevelGridModel levelGridModel)
+        {
             var playerConfigs = gameMode.PlayerConfigs;
             var spawnCorners = levelStageConfig.PlayersSpawnCorners;
             Assert.IsTrue(playerConfigs.Length <= spawnCorners.Length, "players count greater than the level spawn corners");
@@ -103,25 +114,18 @@ namespace Infrastructure.States
 
                 Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
             }
+        }
 
+        private static void SetupCamera(LevelStage levelStage, GameModeBaseConfig gameMode, GameLevelGridModel levelGridModel,
+            IPlayer defaultPlayer)
+        {
             // Camera setup and follow
-            var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
-            var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
-
-            SetupCamera(gameMode, levelStage, levelGridModel.Size, defaultPlayer.Hero.WorldPosition.xy);
-        }
-
-        private static LevelStageConfig GetLevelStageConfig(GameModeBaseConfig gameMode, LevelStage levelStage)
-        {
-            return gameMode.LevelConfigs[levelStage.LevelIndex].LevelStages[levelStage.LevelStageIndex];
-        }
-
-        private static void SetupCamera(GameModeBaseConfig gameMode, LevelStage levelStage, int2 levelSize,
-            float2 playerPosition)
-        {
             var mainCamera = Camera.main;
             if (mainCamera == null)
                 return;
+
+            var playerPosition = defaultPlayer.Hero.WorldPosition.xy;
+            var levelSize = levelGridModel.Size;
 
             var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];
 
@@ -133,6 +137,11 @@ namespace Infrastructure.States
             var position = math.clamp(playerPosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
 
             mainCamera.transform.position = math.float3(position, -1);
+        }
+
+        private static LevelStageConfig GetLevelStageConfig(GameModeBaseConfig gameMode, LevelStage levelStage)
+        {
+            return gameMode.LevelConfigs[levelStage.LevelIndex].LevelStages[levelStage.LevelStageIndex];
         }
     }
 }

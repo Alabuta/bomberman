@@ -2,7 +2,6 @@
 using Configs.Items;
 using Entity.Hero;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Entity
 {
@@ -11,18 +10,12 @@ namespace Entity
         event Action<Item> ItemEffectAppliedEvent;
     }
 
-    [RequireComponent(typeof(Collider2D))]
     public sealed class Item : MonoBehaviour, IItem
     {
         [SerializeField]
         private ItemConfigBase ItemConfigBase;
 
         public event Action<Item> ItemEffectAppliedEvent;
-
-        private void Awake()
-        {
-            Assert.IsNotNull(ItemConfigBase, "ItemConfigBase != null");
-        }
 
         private void OnTriggerEnter2D(Collider2D other)
         {

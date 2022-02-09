@@ -5,10 +5,14 @@ namespace Entity.Hero
 {
     public class HeroAnimator : EntityAnimator
     {
-        private static readonly int IsMovingId = Animator.StringToHash("IsMoving");
+        [SerializeField, HideInInspector]
+        private int IsMovingId = Animator.StringToHash("IsMoving");
 
-        private static readonly int DirectionXId = Animator.StringToHash("DirectionX");
-        private static readonly int DirectionYId = Animator.StringToHash("DirectionY");
+        [SerializeField, HideInInspector]
+        private int DirectionXId = Animator.StringToHash("DirectionX");
+
+        [SerializeField, HideInInspector]
+        private int DirectionYId = Animator.StringToHash("DirectionY");
 
         public void UpdateDirection(float2 direction)
         {

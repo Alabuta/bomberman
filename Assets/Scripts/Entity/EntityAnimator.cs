@@ -7,7 +7,8 @@ namespace Entity
     [RequireComponent(typeof(Animator))]
     public abstract class EntityAnimator : MonoBehaviour, IAnimationStateReader
     {
-        private static readonly int IsAliveId = Animator.StringToHash("IsAlive");
+        [SerializeField, HideInInspector]
+        private int IsAliveId = Animator.StringToHash("IsAlive");
 
         [SerializeField]
         protected Animator Animator;
