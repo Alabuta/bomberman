@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Configs.Entity;
 using Configs.Game;
 using Configs.Level;
 using Data;
+using Entity.Enemies;
 using Game;
 using Unity.Mathematics;
 using UnityEngine;
@@ -14,6 +16,7 @@ namespace Level
         public GameLevelGridModel LevelGridModel { get; private set; }
 
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
+        private readonly Dictionary<EnemyConfig, IEnemy> _enemies = new();
 
         public void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelStage)
         {
@@ -40,6 +43,11 @@ namespace Level
         public IPlayer GetPlayer(PlayerTagConfig playerTagConfig)
         {
             return _players.TryGetValue(playerTagConfig, out var player) ? player : null;// :TODO: refactor
+        }
+
+        public void AddEnemy(EnemyConfig enemyConfig, IEnemy enemy)
+        {
+            _enemies.Add(enemyConfig, enemy);
         }
 
         private static void SetupWalls(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)

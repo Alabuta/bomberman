@@ -84,6 +84,8 @@ namespace Infrastructure.States
 
             CreateAndSpawnPlayers(gameMode, levelStageConfig, levelGridModel);
 
+            CreateAndSpawnEnemies(levelStageConfig);
+
             var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
             var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
             SetupCamera(levelStage, gameMode, levelGridModel, defaultPlayer);
@@ -113,6 +115,18 @@ namespace Infrastructure.States
                 player.AttachHero(hero, playerInput);
 
                 Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
+            }
+        }
+
+        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig)
+        {
+            var enemySpawnElements = levelStageConfig.Enemies;
+            foreach (var enemySpawnElement in enemySpawnElements)
+            {
+                var enemy = _gameFactory.CreateEnemy(enemySpawnElement.EnemyConfig);
+                Assert.IsNotNull(enemy);
+
+                Game.LevelManager.AddEnemy(enemySpawnElement.EnemyConfig, enemy);
             }
         }
 
