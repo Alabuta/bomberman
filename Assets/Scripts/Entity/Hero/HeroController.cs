@@ -1,30 +1,27 @@
-﻿using System;
-using Configs.Entity;
-using Input;
+﻿using Input;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Entity.Hero
 {
-    public sealed class HeroController : EntityController<HeroConfig>, IHero
+    public sealed class HeroController : EntityController
     {
-        private const float MovementDeadZoneThreshold = .001f;
+        // private const float MovementDeadZoneThreshold = .001f;
         private const float MovementThreshold = .5f;
 
         [SerializeField]
-        private new HeroAnimator EntityAnimator;
+        private HeroAnimator HeroAnimator;
 
         private IPlayerInput _playerInput;
 
-        public event Action<float2> BombPlantedEvent;
+        private float _speed;
+        private float2 _direction;
 
-        public override int Health { get; set; }
-
-        public override float CurrentSpeed { get; protected set; }
+        /*public event Action<float2> BombPlantedEvent;
 
         public int BlastRadius { get; set; }
 
-        public int BombCapacity { get; set; }
+        public int BombCapacity { get; set; }*/
 
         public void AttachPlayerInput(IPlayerInput playerInput)
         {
@@ -33,41 +30,71 @@ namespace Entity.Hero
             _playerInput = playerInput;
 
             _playerInput.OnMoveEvent += OnMove;
-            _playerInput.OnBombPlantEvent += OnBombPlant;
+            // _playerInput.OnBombPlantEvent += OnBombPlant;
         }
+
+        public override float Speed
+        {
+            get => _speed;
+            set
+            {
+                _speed = value;
+
+                if (Speed > MovementThreshold)
+                    HeroAnimator.Move();
+                else
+                    HeroAnimator.StopMovement();
+
+                // UpdatePlaybackSpeed(TODO);
+            }
+        }
+
+        public override float2 Direction
+        {
+            get => _direction;
+            set
+            {
+                _direction = value;
+
+                HeroAnimator.UpdateDirection(Direction);
+            }
+        }
+
+        protected override EntityAnimator EntityAnimator =>
+            HeroAnimator;
 
         private new void Start()
         {
             base.Start();
 
-            BlastRadius = EntityConfig.BlastRadius;
-            BombCapacity = EntityConfig.BombCapacity;
+            /*BlastRadius = EntityConfig.BlastRadius;
+            BombCapacity = EntityConfig.BombCapacity;*/
 
-            EntityAnimator.UpdateDirection(DirectionVector);
-            EntityAnimator.StopMovement();
+            HeroAnimator.UpdateDirection(Direction);
+            HeroAnimator.StopMovement();
         }
 
         private void OnMove(float2 value)
         {
-            if (math.lengthsq(value) > MovementDeadZoneThreshold)
+            /*if (math.lengthsq(value) > MovementDeadZoneThreshold)
             {
-                DirectionVector = math.round(value);
-                CurrentSpeed = InitialSpeed * SpeedMultiplier;
+                Direction = math.round(value);
+                Speed = InitialSpeed * SpeedMultiplier;
             }
             else
-                CurrentSpeed = 0;
+                Speed = 0;*/
 
-            EntityAnimator.UpdateDirection(DirectionVector);
+            /*HeroAnimator.UpdateDirection(Direction);
 
-            if (CurrentSpeed > MovementThreshold)
-                EntityAnimator.Move();
+            if (Speed > MovementThreshold)
+                HeroAnimator.Move();
             else
-                EntityAnimator.StopMovement();
+                HeroAnimator.StopMovement();
 
-            EntityAnimator.UpdatePlaybackSpeed(CurrentSpeed / InitialHealth);
+            HeroAnimator.UpdatePlaybackSpeed(Speed / InitialHealth);*/
         }
 
-        private void OnBombPlant()
+        /*private void OnBombPlant()
         {
             if (BombCapacity <= 0)
                 return;
@@ -75,7 +102,7 @@ namespace Entity.Hero
             --BombCapacity;
 
             BombPlantedEvent?.Invoke(WorldPosition.xy);
-        }
+        }*/
 
         private void UnsubscribeInputListeners()
         {
@@ -83,7 +110,7 @@ namespace Entity.Hero
                 return;
 
             _playerInput.OnMoveEvent -= OnMove;
-            _playerInput.OnBombPlantEvent -= OnBombPlant;
+            // _playerInput.OnBombPlantEvent -= OnBombPlant;
         }
 
         private void OnDestroy()

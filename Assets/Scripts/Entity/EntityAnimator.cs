@@ -30,9 +30,10 @@ namespace Entity
             OnAnimationStateExit?.Invoke(State);
         }
 
-        public void UpdatePlaybackSpeed(float speed)
+        public float PlaybackSpeed
         {
-            Animator.speed = speed;
+            get => Animator.speed;
+            set => Animator.speed = value;
         }
 
         public void SetAlive()
