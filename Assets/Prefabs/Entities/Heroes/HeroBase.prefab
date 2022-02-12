@@ -172,10 +172,8 @@ MonoBehaviour:
     x: 1
     y: 1
     z: 0
-  EntityConfig: {fileID: 0}
-  EntityAnimator: {fileID: 1415490775431177746}
   Transform: {fileID: 3606758829682564299}
-  EntityAnimator: {fileID: 1415490775431177746}
+  HeroAnimator: {fileID: 1415490775431177746}
 --- !u!114 &1415490775431177746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,4 +186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0361051982554d32acbeb5fbecbf63b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsAliveId: -695135503
   Animator: {fileID: 3606758829682564296}
+  IsMovingId: 120489994
+  DirectionXId: -1430676100
+  DirectionYId: -574706198

@@ -9,7 +9,9 @@ namespace Configs.Items
         [SerializeField]
         private float MultiplierValue = 1;
 
-        public override void ApplyTo(IHero hero) =>
-            hero.SpeedMultiplier = MultiplierValue;
+        public override void ApplyTo(HeroController hero)
+        {
+            // hero.SpeedMultiplier = MultiplierValue;
+        }
     }
 }

@@ -172,9 +172,8 @@ MonoBehaviour:
     x: 1
     y: 1
     z: 0
-  EntityConfig: {fileID: 0}
-  EntityAnimator: {fileID: 6333523756334146544}
   Transform: {fileID: 3321701531713127331}
+  EnemyAnimator: {fileID: 6333523756334146544}
 --- !u!114 &6333523756334146544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,7 +187,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAliveId: -695135503
-  IsMovingId: 120489994
-  DirectionXId: -1430676100
-  DirectionYId: -574706198
   Animator: {fileID: 3321701531713127332}

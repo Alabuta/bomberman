@@ -15,7 +15,7 @@ namespace Infrastructure.Factory
     public interface IGameFactory : IService
     {
         [CanBeNull]
-        IPlayer CreatePlayer(PlayerConfig playerConfig, IPlayerInput playerInput);
+        IPlayer CreatePlayer(PlayerConfig playerConfig);
 
         [CanBeNull]
         IPlayerInput CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex);

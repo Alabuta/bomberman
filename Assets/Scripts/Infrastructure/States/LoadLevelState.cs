@@ -84,7 +84,7 @@ namespace Infrastructure.States
 
             CreateAndSpawnPlayers(gameMode, levelStageConfig, levelGridModel);
 
-            CreateAndSpawnEnemies(levelStageConfig);
+            // CreateAndSpawnEnemies(levelStageConfig);
 
             var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
             var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
@@ -101,18 +101,19 @@ namespace Infrastructure.States
             var zip = spawnCorners.Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig));
             foreach (var (spawnCorner, playerConfig) in zip)
             {
-                var playerInput = _inputService.RegisterPlayerInput(playerConfig);
-
-                var player = _gameFactory.CreatePlayer(playerConfig, playerInput);
+                var player = _gameFactory.CreatePlayer(playerConfig);
                 Assert.IsNotNull(player);
+
+                var playerInput = _inputService.RegisterPlayerInput(playerConfig);
+                player.AttachPlayerInput(playerInput);
 
                 var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
 
                 var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, position);
                 Assert.IsNotNull(go);
 
-                var hero = (IHero) go.GetComponent<HeroController>();
-                player.AttachHero(hero, playerInput);
+                var heroController = go.GetComponent<HeroController>();
+                player.AttachHero(heroController);
 
                 Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
             }
@@ -138,7 +139,7 @@ namespace Infrastructure.States
             if (mainCamera == null)
                 return;
 
-            var playerPosition = defaultPlayer.Hero.WorldPosition.xy;
+            var playerPosition = defaultPlayer.HeroController.WorldPosition.xy;
             var levelSize = levelGridModel.Size;
 
             var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];

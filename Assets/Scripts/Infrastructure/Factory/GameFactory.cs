@@ -28,7 +28,7 @@ namespace Infrastructure.Factory
             _assetProvider = assetProvider;
         }
 
-        public IPlayer CreatePlayer(PlayerConfig playerConfig, IPlayerInput playerInput)
+        public IPlayer CreatePlayer(PlayerConfig playerConfig)
         {
             return new Player(playerConfig);
         }
@@ -42,7 +42,7 @@ namespace Infrastructure.Factory
 
         public IEnemy CreateEnemy(EnemyConfig enemyConfig)
         {
-            throw new System.NotImplementedException();
+            return null;// :TODO:
         }
 
         public GameObject SpawnEntity(EntityConfig heroConfig, float3 position)

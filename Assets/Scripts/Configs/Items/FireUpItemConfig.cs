@@ -9,7 +9,9 @@ namespace Configs.Items
         [SerializeField]
         private int BlastRadiusIncreaseValue = 1;
 
-        public override void ApplyTo(IHero hero) =>
-            hero.BlastRadius += BlastRadiusIncreaseValue;
+        public override void ApplyTo(HeroController hero)
+        {
+            // hero.BlastRadius += BlastRadiusIncreaseValue;
+        }
     }
 }
