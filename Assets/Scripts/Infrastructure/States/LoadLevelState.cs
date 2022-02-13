@@ -4,6 +4,7 @@ using Configs.Game;
 using Configs.Level;
 using Configs.Singletons;
 using Data;
+using Entity.Enemies;
 using Entity.Hero;
 using Game;
 using Infrastructure.Factory;
@@ -84,7 +85,7 @@ namespace Infrastructure.States
 
             CreateAndSpawnPlayers(gameMode, levelStageConfig, levelGridModel);
 
-            // CreateAndSpawnEnemies(levelStageConfig);
+            CreateAndSpawnEnemies(levelStageConfig);
 
             var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
             var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
@@ -113,6 +114,8 @@ namespace Infrastructure.States
                 Assert.IsNotNull(go);
 
                 var heroController = go.GetComponent<HeroController>();
+                Assert.IsNotNull(heroController);
+
                 var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController);
                 player.AttachHero(hero);
 
@@ -125,7 +128,13 @@ namespace Infrastructure.States
             var enemySpawnElements = levelStageConfig.Enemies;
             foreach (var enemySpawnElement in enemySpawnElements)
             {
-                var enemy = _gameFactory.CreateEnemy(enemySpawnElement.EnemyConfig);
+                var go = _gameFactory.SpawnEntity(enemySpawnElement.EnemyConfig, math.float3(-4, 0, 0));
+                Assert.IsNotNull(go);
+
+                var entityController = go.GetComponent<EnemyController>();
+                Assert.IsNotNull(entityController);
+
+                var enemy = _gameFactory.CreateEnemy(enemySpawnElement.EnemyConfig, entityController);
                 Assert.IsNotNull(enemy);
 
                 Game.LevelManager.AddEnemy(enemySpawnElement.EnemyConfig, enemy);

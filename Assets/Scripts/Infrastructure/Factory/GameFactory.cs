@@ -46,9 +46,9 @@ namespace Infrastructure.Factory
             return new Hero(heroConfig, entityController);
         }
 
-        public Enemy CreateEnemy(EnemyConfig enemyConfig)
+        public Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController)
         {
-            return null;// :TODO:
+            return new Enemy(enemyConfig, entityController);
         }
 
         public GameObject SpawnEntity(EntityConfig heroConfig, float3 position)

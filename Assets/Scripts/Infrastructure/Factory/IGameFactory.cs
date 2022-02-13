@@ -23,7 +23,7 @@ namespace Infrastructure.Factory
 
         Hero CreateHero(HeroConfig heroConfig, HeroController entityController);
 
-        Enemy CreateEnemy(EnemyConfig enemyConfig);
+        Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController);
 
         [CanBeNull]
         GameObject SpawnEntity(EntityConfig heroConfig, float3 position);

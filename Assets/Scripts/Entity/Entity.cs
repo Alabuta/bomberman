@@ -60,7 +60,7 @@ namespace Entity
             SpeedMultiplier = 1;
 
             Health = EntityConfig.Health;
-            _direction = EntityConfig.StartDirection;
+            Direction = EntityConfig.StartDirection;
         }
 
         public void Kill()
