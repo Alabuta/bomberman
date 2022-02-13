@@ -11,6 +11,7 @@ namespace Configs.Items
 
         public override void ApplyTo(HeroController hero)
         {
+            Debug.LogWarning($"FireUpItemConfig.ApplyTo {BlastRadiusIncreaseValue}");
             // hero.BlastRadius += BlastRadiusIncreaseValue;
         }
     }

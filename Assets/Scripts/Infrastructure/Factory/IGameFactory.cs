@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Configs;
 using Configs.Entity;
 using Entity.Enemies;
+using Entity.Hero;
 using Game;
 using Infrastructure.Services;
 using Infrastructure.Services.PersistentProgress;
@@ -20,7 +21,9 @@ namespace Infrastructure.Factory
         [CanBeNull]
         IPlayerInput CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex);
 
-        IEnemy CreateEnemy(EnemyConfig enemyConfig);
+        Hero CreateHero(HeroConfig heroConfig, HeroController entityController);
+
+        Enemy CreateEnemy(EnemyConfig enemyConfig);
 
         [CanBeNull]
         GameObject SpawnEntity(EntityConfig heroConfig, float3 position);

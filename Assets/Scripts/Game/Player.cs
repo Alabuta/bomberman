@@ -14,58 +14,15 @@ namespace Game
         public event Action<float2> BombPlantedEvent;
 
         public PlayerConfig PlayerConfig { get; }
-
-        public HeroController HeroController { get; private set; }
-
-        public bool IsAlive => Health > 0;
-
-        public int Health { get; set; }
-        public int InitialHealth => PlayerConfig.HeroConfig.Health;
-
-        public float Speed
-        {
-            get => _speed;
-            private set
-            {
-                _speed = value;
-
-                if (HeroController != null)
-                    HeroController.Speed = value;
-            }
-        }
-
-        public float InitialSpeed => PlayerConfig.HeroConfig.Speed;
-        public float SpeedMultiplier { get; set; }
-
-        public float2 Direction
-        {
-            get => _direction;
-            set
-            {
-                _direction = value;
-
-                if (HeroController != null)
-                    HeroController.Direction = value;
-            }
-        }
-
-        public float3 WorldPosition => HeroController.WorldPosition;
+        public Hero Hero { get; private set; }
 
         private IPlayerInput _playerInput;
 
         private Score _score;
-        private float _speed;
-        private float2 _direction;
 
         public Player(PlayerConfig playerConfig)
         {
             PlayerConfig = playerConfig;
-
-            Speed = 0;
-            SpeedMultiplier = 1;
-
-            Health = PlayerConfig.HeroConfig.Health;
-            Direction = PlayerConfig.HeroConfig.StartDirection;
         }
 
         public void AttachPlayerInput(IPlayerInput playerInput)
@@ -78,18 +35,14 @@ namespace Game
             _playerInput.OnBombPlantEvent += OnBombPlant;
         }
 
-        public void AttachHero(HeroController heroController)
+        public void AttachHero(Hero hero)
         {
-            HeroController = heroController;
+            Hero = hero;
         }
 
         public void Kill()
         {
-            Health = 0;
-            Speed = 0;
-            SpeedMultiplier = 1;
-
-            HeroController.Kill();
+            Hero?.Kill();
 
             OnKillEvent?.Invoke();
         }
@@ -115,13 +68,16 @@ namespace Game
 
         private void OnMove(float2 value)
         {
+            if (Hero == null)
+                return;
+
             if (math.lengthsq(value) > 0)
             {
-                Direction = math.round(value);
-                Speed = InitialSpeed * SpeedMultiplier;
+                Hero.Direction = math.round(value);
+                Hero.Speed = Hero.InitialSpeed * Hero.SpeedMultiplier;
             }
             else
-                Speed = 0;
+                Hero.Speed = 0;
         }
 
         private void OnBombPlant()
@@ -131,7 +87,8 @@ namespace Game
 
             --BombCapacity;*/
 
-            BombPlantedEvent?.Invoke(WorldPosition.xy);
+            if (Hero != null)
+                BombPlantedEvent?.Invoke(Hero.WorldPosition.xy);
         }
     }
 }

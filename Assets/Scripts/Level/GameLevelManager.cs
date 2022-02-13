@@ -16,7 +16,7 @@ namespace Level
         public GameLevelGridModel LevelGridModel { get; private set; }
 
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
-        private readonly Dictionary<EnemyConfig, IEnemy> _enemies = new();
+        private readonly Dictionary<EnemyConfig, Enemy> _enemies = new();
 
         public void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelStage)
         {
@@ -45,7 +45,7 @@ namespace Level
             return _players.TryGetValue(playerTagConfig, out var player) ? player : null;// :TODO: refactor
         }
 
-        public void AddEnemy(EnemyConfig enemyConfig, IEnemy enemy)
+        public void AddEnemy(EnemyConfig enemyConfig, Enemy enemy)
         {
             _enemies.Add(enemyConfig, enemy);
         }

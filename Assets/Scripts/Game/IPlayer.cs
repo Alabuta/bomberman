@@ -12,22 +12,9 @@ namespace Game
 
         PlayerConfig PlayerConfig { get; }
 
-        HeroController HeroController { get; }
+        Hero Hero { get; }
 
-        bool IsAlive { get; }
-
-        int Health { get; set; }
-        int InitialHealth { get; }
-
-        float Speed { get; }
-        float InitialSpeed { get; }
-        float SpeedMultiplier { get; set; }
-
-        float2 Direction { get; set; }
-
-        float3 WorldPosition { get; }
-
-        void AttachHero(HeroController heroController);
+        void AttachHero(Hero hero);
 
         void AttachPlayerInput(IPlayerInput playerInput);
     }

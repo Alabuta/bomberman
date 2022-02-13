@@ -113,7 +113,8 @@ namespace Infrastructure.States
                 Assert.IsNotNull(go);
 
                 var heroController = go.GetComponent<HeroController>();
-                player.AttachHero(heroController);
+                var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController);
+                player.AttachHero(hero);
 
                 Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
             }
@@ -139,7 +140,7 @@ namespace Infrastructure.States
             if (mainCamera == null)
                 return;
 
-            var playerPosition = defaultPlayer.HeroController.WorldPosition.xy;
+            var playerPosition = defaultPlayer.Hero.WorldPosition.xy;
             var levelSize = levelGridModel.Size;
 
             var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];

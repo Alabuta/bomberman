@@ -2,6 +2,7 @@
 using Configs;
 using Configs.Entity;
 using Entity.Enemies;
+using Entity.Hero;
 using Game;
 using Infrastructure.AssetManagement;
 using Infrastructure.Services.PersistentProgress;
@@ -40,7 +41,12 @@ namespace Infrastructure.Factory
             return playerInput.GetComponent<IPlayerInput>();
         }
 
-        public IEnemy CreateEnemy(EnemyConfig enemyConfig)
+        public Hero CreateHero(HeroConfig heroConfig, HeroController entityController)
+        {
+            return new Hero(heroConfig, entityController);
+        }
+
+        public Enemy CreateEnemy(EnemyConfig enemyConfig)
         {
             return null;// :TODO:
         }
