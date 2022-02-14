@@ -19,15 +19,17 @@ namespace Level
         PowerUpItem = 4
     }
 
+
     public sealed class GameLevelGridModel : IEnumerable<GridTileType>
     {
         [NotNull]
         private readonly GridTileType[] _grid;
 
         private readonly int2 _size;
+        private readonly float2 _cellSizeWorldUnits;
 
         public int2 Size => _size;
-        public int2 WorldSize => _size;
+        public float2 WorldSize => _size * _cellSizeWorldUnits;
 
         public int ColumnsNumber => _size.x;
         public int RowsNumber => _size.y;
@@ -35,8 +37,10 @@ namespace Level
         public GridTileType this[int index] => _grid[index];
         public GridTileType this[int2 coordinate] => _grid[GetFlattenCellCoordinate(coordinate)];
 
-        public GameLevelGridModel(LevelStageConfig levelStageConfig)
+        public GameLevelGridModel(LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
+            _cellSizeWorldUnits = levelConfig.CellSizeWorldUnits;
+
             _size = math.int2(levelStageConfig.ColumnsNumber, levelStageConfig.RowsNumber);
             Assert.IsTrue(math.all(_size % 2 != int2.zero));
 
@@ -134,10 +138,15 @@ namespace Level
 
         public float3 GetCornerWorldPosition(int2 corner)
         {
-            var position = ((corner * 2 - 1) * (float2) (WorldSize - 1) / 2f).xyy;
+            var position = ((corner * 2 - 1) * (WorldSize - 1) / 2f).xyy;
             position.z = 0;
 
             return position;
+        }
+
+        public int2 WorldPositionToCellCoordinate(float3 position)
+        {
+            var coordinate = (int2) (position.xy * _cellSizeWorldUnits + (_size - 1) / math.float2(2f));
         }
 
         private int2 ClampCoordinate(int2 coordinate)

@@ -17,6 +17,7 @@ namespace Infrastructure
 
         public void Enter()
         {
+            Game.LevelManager.StartSimulation();
         }
     }
 }

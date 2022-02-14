@@ -23,7 +23,7 @@ namespace Level
             var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];
             var levelStageConfig = levelConfig.LevelStages.First();
 
-            LevelGridModel = new GameLevelGridModel(levelStageConfig);
+            LevelGridModel = new GameLevelGridModel(levelConfig, levelStageConfig);
 
             /*_hiddenItemsIndices = LevelGridModel
                 .Select((_, i) => i)
@@ -104,6 +104,13 @@ namespace Level
 
                 var (parent, prefab) = blocks[blockType & ~GridTileType.PowerUpItem];
                 Object.Instantiate(prefab, position, Quaternion.identity, parent.transform);
+            }
+        }
+
+        public void StartSimulation()
+        {
+            foreach (var enemy in _enemies)
+            {
             }
         }
     }
