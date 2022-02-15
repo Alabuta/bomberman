@@ -37,10 +37,10 @@ namespace Level
             var playersSpawnCorners = levelStageConfig.PlayersSpawnCorners;
             var softBlocksCoverage = levelStageConfig.SoftBlocksCoverage;
 
-            var reservedTilesIndices = GetReservedTilesIndices(playersSpawnCorners);
-            var reservedTilesCount = reservedTilesIndices.Count;
+            var spawnTilesIndices = GetPlayerSpawnTilesIndices(playersSpawnCorners);
+            var spawnTilesIndicesCount = spawnTilesIndices.Count;
 
-            var totalTilesCount = _size.x * _size.y - reservedTilesCount;
+            var totalTilesCount = _size.x * _size.y - spawnTilesIndicesCount;
 
             var hardBlocksCount = (_size.x - 1) * (_size.y - 1) / 4;
             var softBlocksCount = (int) math.round((totalTilesCount - hardBlocksCount) * softBlocksCoverage / 100.0f);
@@ -55,27 +55,48 @@ namespace Level
                     .Select(i => Random.Range(i * softBlocksPerPowerUpItem, (i + 1) * softBlocksPerPowerUpItem))
             );*/
 
-            _grid = GenerateLevelGrid(totalTilesCount, reservedTilesCount, reservedTilesIndices, floorTilesCount,
-                softBlocksCount);
+            _grid = GenerateLevelGrid(spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
         }
 
-        private LevelTile[] GenerateLevelGrid(int totalTilesCount, int reservedTilesCount,
-            ICollection<int> reservedTilesIndices, int floorTilesCount, int softBlocksCount)
+        private HashSet<int> GetPlayerSpawnTilesIndices(IEnumerable<int2> playersSpawnCorners)
+        {
+            return new HashSet<int>(
+                playersSpawnCorners
+                    .SelectMany(
+                        corner =>
+                        {
+                            var coordinate = corner * (_size - 1);
+                            var offset = math.select(-1, 1, corner == int2.zero);
+
+                            return new[]
+                            {
+                                GetFlattenTileCoordinate(coordinate),
+                                GetFlattenTileCoordinate(math.mad(math.int2(1, 0), offset, coordinate)),
+                                GetFlattenTileCoordinate(math.mad(math.int2(0, 1), offset, coordinate))
+                            };
+                        }
+                    )
+            );
+        }
+
+        private LevelTile[] GenerateLevelGrid(ICollection<int> spawnTilesIndices, int totalTilesCount,
+            int floorTilesCount, int softBlocksCount)
         {
             var tileTypeCount = math.int2(floorTilesCount, softBlocksCount);
+            var spawnTilesIndicesCount = spawnTilesIndices.Count;
 
             return Enumerable
-                .Range(0, totalTilesCount + reservedTilesCount)
+                .Range(0, totalTilesCount + spawnTilesIndicesCount)
                 .Select(
                     index =>
                     {
                         var coordinate = math.int2(index % _size.x, index / _size.x);
-                        var worldPosition = float3.zero;
+                        var worldPosition = ToWorldPosition(coordinate);
 
-                        if (reservedTilesIndices.Contains(index))
+                        if (spawnTilesIndices.Contains(index))
                             return new LevelTile(LevelTileType.FloorTile, coordinate, worldPosition);
 
-                        if (math.all(coordinate % 2 == 1))
+                        if (IsHardBlockTileCoordinate(coordinate))
                             return new LevelTile(LevelTileType.HardBlock, coordinate, worldPosition);
 
                         var range = (int2) (tileTypeCount == int2.zero);
@@ -98,27 +119,6 @@ namespace Level
                 .ToArray();
         }
 
-        private HashSet<int> GetReservedTilesIndices(IEnumerable<int2> playersSpawnCorners)
-        {
-            return new HashSet<int>(
-                playersSpawnCorners
-                    .SelectMany(
-                        corner =>
-                        {
-                            var coordinate = corner * (_size - 1);
-                            var offset = math.select(-1, 1, corner == int2.zero);
-
-                            return new[]
-                            {
-                                GetFlattenTileCoordinate(coordinate),
-                                GetFlattenTileCoordinate(math.mad(math.int2(1, 0), offset, coordinate)),
-                                GetFlattenTileCoordinate(math.mad(math.int2(0, 1), offset, coordinate))
-                            };
-                        }
-                    )
-            );
-        }
-
         public float3 GetCornerWorldPosition(int2 corner)
         {
             var position = ((corner * 2 - 1) * (WorldSize - 1) / 2f).xyy;
@@ -127,10 +127,20 @@ namespace Level
             return position;
         }
 
-        public int2 WorldPositionToTileCoordinate(float3 position)
+        public int2 ToTileCoordinate(float3 position)
         {
             return (int2) (position.xy * _tileSizeWorldUnits + (_size - 1) / math.float2(2f));
         }
+
+        public float3 ToWorldPosition(int2 coordinate)
+        {
+            var position = ((ClampCoordinate(coordinate) / (Size - 1) * 2 - 1) * (WorldSize - 1) / 2f).xyy;
+            position.z = 0;
+            return position;
+        }
+
+        private static bool IsHardBlockTileCoordinate(int2 coordinate) =>
+            math.all(coordinate % 2 == 1);
 
         private int GetFlattenTileCoordinate(int2 coordinate)
         {
