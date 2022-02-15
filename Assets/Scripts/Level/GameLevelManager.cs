@@ -85,24 +85,25 @@ namespace Level
             var softBlocksGroup = new GameObject("SoftBlocks");
 
             // :TODO: refactor
-            var blocks = new Dictionary<GridTileType, (GameObject, GameObject)>
+            var blocks = new Dictionary<LevelTileType, (GameObject, GameObject)>
             {
-                { GridTileType.HardBlock, (hardBlocksGroup, levelConfig.HardBlockConfig.Prefab) },
-                { GridTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlockConfig.Prefab) }
+                { LevelTileType.HardBlock, (hardBlocksGroup, levelConfig.HardBlockConfig.Prefab) },
+                { LevelTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlockConfig.Prefab) }
             };
 
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
 
             for (var i = 0; i < columnsNumber * rowsNumber; ++i)
             {
-                var blockType = gameLevelGridModel[i];
-                if (blockType == GridTileType.FloorTile)
+                var tile = gameLevelGridModel[i];
+                var tileType = tile.Type;
+                if (tileType == LevelTileType.FloorTile)
                     continue;
 
                 // ReSharper disable once PossibleLossOfFraction
                 var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
 
-                var (parent, prefab) = blocks[blockType & ~GridTileType.PowerUpItem];
+                var (parent, prefab) = blocks[tileType/* & ~LevelTileType.PowerUpItem*/];
                 Object.Instantiate(prefab, position, Quaternion.identity, parent.transform);
             }
         }

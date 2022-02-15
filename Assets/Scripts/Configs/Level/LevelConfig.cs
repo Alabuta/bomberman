@@ -20,7 +20,9 @@ namespace Configs.Level
         [Header("General Prefabs")]
         public GameObject Walls;
 
-        [Header("Block Parameters")]
+        [Header("Tiles & Blocks Parameters")]
+        public float2 TileSizeWorldUnits;
+
         public HardBlockConfig HardBlockConfig;
         public SoftBlockConfig SoftBlockConfig;
         public PortalBlockConfig PortalBlockConfig;

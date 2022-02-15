@@ -14,6 +14,7 @@ using Level;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Random = UnityEngine.Random;
 
 namespace Infrastructure.States
 {
@@ -76,10 +77,12 @@ namespace Infrastructure.States
             var applicationConfig = ApplicationConfig.Instance;
             var gameMode = applicationConfig.GameModePvE;
 
+            var levelStageConfig = GetLevelStageConfig(gameMode, levelStage);
+
+            Random.InitState(levelStageConfig.RandomSeed);
+
             Game.LevelManager = new GameLevelManager();
             Game.LevelManager.GenerateLevelStage(gameMode, levelStage);
-
-            var levelStageConfig = GetLevelStageConfig(gameMode, levelStage);
 
             var levelGridModel = Game.LevelManager.LevelGridModel;
 
