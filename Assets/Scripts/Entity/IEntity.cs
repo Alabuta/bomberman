@@ -21,7 +21,7 @@ namespace Entity
         float InitialSpeed { get; }
         float SpeedMultiplier { get; set; }
 
-        float2 Direction { get; }
+        float2 Direction { get; set; }
 
         float3 WorldPosition { get; }
 

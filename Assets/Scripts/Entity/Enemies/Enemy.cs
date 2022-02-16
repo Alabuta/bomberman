@@ -15,12 +15,12 @@ namespace Entity.Enemies
         {
         }
 
-        public void AddBehaviourComponent(BehaviourAgent agent)
+        public void AddBehaviourAgent(BehaviourAgent agent)
         {
             _agents.Add(agent);
         }
 
-        public void RemoveBehaviourComponent(BehaviourAgent agent)
+        public void RemoveBehaviourAgent(BehaviourAgent agent)
         {
             _agents.Remove(agent);
         }
