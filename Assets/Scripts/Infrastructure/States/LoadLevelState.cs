@@ -12,6 +12,7 @@ using Infrastructure.Factory;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Level;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -114,7 +115,7 @@ namespace Infrastructure.States
 
                 var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
 
-                var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, position);
+                var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, fix2.ToXY(position));
                 Assert.IsNotNull(go);
 
                 var heroController = go.GetComponent<HeroController>();
@@ -156,7 +157,7 @@ namespace Infrastructure.States
             if (mainCamera == null)
                 return;
 
-            var playerPosition = defaultPlayer.Hero.WorldPosition.xy;
+            var playerPosition = defaultPlayer.Hero.WorldPosition;
             var levelSize = levelGridModel.Size;
 
             var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];
@@ -166,8 +167,7 @@ namespace Infrastructure.States
             var fieldRect = (levelSize - cameraRect) / 2f;
             var fieldMargins = (float4) levelConfig.ViewportPadding / levelConfig.OriginalPixelsPerUnits;
 
-            var position = math.clamp(playerPosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
-
+            var position = math.clamp((float2) playerPosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
             mainCamera.transform.position = math.float3(position, -1);
         }
 

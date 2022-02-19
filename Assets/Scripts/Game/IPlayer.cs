@@ -2,13 +2,13 @@
 using Configs;
 using Entity.Hero;
 using Input;
-using Unity.Mathematics;
+using Math.FixedPointMath;
 
 namespace Game
 {
     public interface IPlayer
     {
-        event Action<float2> BombPlantedEvent;
+        event Action<fix2> BombPlantedEvent;
 
         PlayerConfig PlayerConfig { get; }
 

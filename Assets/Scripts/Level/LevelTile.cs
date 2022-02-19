@@ -1,3 +1,4 @@
+using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Level
@@ -7,9 +8,9 @@ namespace Level
         public LevelTileType Type { get; }
 
         public int2 Coordinate { get; }
-        public float3 WorldPosition { get; }
+        public fix2 WorldPosition { get; }
 
-        public LevelTile(LevelTileType type, int2 coordinate, float3 worldPosition)
+        public LevelTile(LevelTileType type, int2 coordinate, fix2 worldPosition)
         {
             Type = type;
             Coordinate = coordinate;

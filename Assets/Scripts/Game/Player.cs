@@ -4,6 +4,7 @@ using Data;
 using Entity.Hero;
 using Infrastructure.Services.PersistentProgress;
 using Input;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Game
@@ -11,7 +12,7 @@ namespace Game
     public class Player : IPlayer, ISavedProgressWriter
     {
         public event Action OnKillEvent;
-        public event Action<float2> BombPlantedEvent;
+        public event Action<fix2> BombPlantedEvent;
 
         public PlayerConfig PlayerConfig { get; }
         public Hero Hero { get; private set; }
@@ -88,7 +89,7 @@ namespace Game
             --BombCapacity;*/
 
             if (Hero != null)
-                BombPlantedEvent?.Invoke(Hero.WorldPosition.xy);
+                BombPlantedEvent?.Invoke(Hero.WorldPosition);
         }
     }
 }

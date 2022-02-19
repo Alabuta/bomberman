@@ -1,5 +1,6 @@
 using System;
 using Configs.Entity;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Entity
@@ -23,7 +24,7 @@ namespace Entity
 
         int2 Direction { get; set; }
 
-        float3 WorldPosition { get; }
+        fix2 WorldPosition { get; }
 
         void Kill();
     }

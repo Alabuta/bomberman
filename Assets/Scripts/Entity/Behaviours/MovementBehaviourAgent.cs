@@ -1,5 +1,6 @@
 using System.Linq;
 using Level;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 using Random = UnityEngine.Random;
 
@@ -7,22 +8,22 @@ namespace Entity.Behaviours
 {
     public class MovementBehaviourAgent : BehaviourAgent
     {
-        private float3 NextWorldPosition { get; set; }
+        private fix2 NextWorldPosition { get; set; }
 
-        public MovementBehaviourAgent(float3 nextWorldPosition)
+        public MovementBehaviourAgent(fix2 nextWorldPosition)
         {
             NextWorldPosition = nextWorldPosition;
         }
 
         public override void Update(GameContext gameContext, IEntity entity)
         {
-            var levelGridModel = gameContext.LevelGridModel;
-            // Debug.LogWarning($" {math.distancesq(entity.WorldPosition, NextWorldPosition)}");
-            if (math.distancesq(entity.WorldPosition, NextWorldPosition) > 0.01f)
+            if (fix2.distanceq(entity.WorldPosition, NextWorldPosition) > new fix(0.025))
                 return;
 
-            if (math.lengthsq(entity.Direction) < .01f)
+            if (entity.Direction.x == 0 || entity.Direction.y == 0)
                 entity.Direction = math.int2(1, 0);
+
+            var levelGridModel = gameContext.LevelGridModel;
 
             var currentTileCoordinate = levelGridModel.ToTileCoordinate(entity.WorldPosition);
             var nextTileCoordinate = currentTileCoordinate + (int2) math.normalize(entity.Direction);
@@ -38,7 +39,6 @@ namespace Entity.Behaviours
             NextWorldPosition = levelGridModel.ToWorldPosition(nextTileCoordinate);
             entity.Direction = (int2) math.normalize(nextTileCoordinate - currentTileCoordinate);
             entity.Speed = 1;
-            // Debug.LogWarning($"========= {nextTileCoordinate} {NextWorldPosition} {entity.Direction}");
         }
 
         private static int2 GetNextTileCoordinate(LevelTileType tileType, GameLevelGridModel levelGridModel,

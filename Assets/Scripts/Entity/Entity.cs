@@ -1,5 +1,6 @@
 using System;
 using Configs.Entity;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Entity
@@ -46,7 +47,7 @@ namespace Entity
             }
         }
 
-        public float3 WorldPosition => EntityController.WorldPosition;
+        public fix2 WorldPosition => EntityController.WorldPosition;
 
         private float _speed;
         private int2 _direction;

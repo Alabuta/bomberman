@@ -1,3 +1,4 @@
+using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Entity
@@ -8,7 +9,7 @@ namespace Entity
         float PlaybackSpeed { get; }
         float2 Direction { get; set; }
 
-        float3 WorldPosition { get; }
+        fix2 WorldPosition { get; }
 
         void Kill();
     }

@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using Math.FixedPointMath;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Entity
@@ -17,7 +18,7 @@ namespace Entity
 
         public abstract float2 Direction { get; set; }
 
-        public float3 WorldPosition => Transform.position;
+        public fix2 WorldPosition => (fix2) Transform.position;
 
         protected abstract EntityAnimator EntityAnimator { get; }
 

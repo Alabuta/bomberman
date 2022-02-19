@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Configs.Level;
 using JetBrains.Annotations;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
@@ -16,10 +17,10 @@ namespace Level
         private readonly LevelTile[] _grid;
 
         private readonly int2 _size;
-        private readonly float2 _tileSizeWorldUnits;
+        private readonly fix2 _tileSizeWorldUnits;
 
         public int2 Size => _size;
-        public float2 WorldSize => _size * _tileSizeWorldUnits;
+        public fix2 WorldSize => (fix2) _size * _tileSizeWorldUnits;
 
         public int ColumnsNumber => _size.x;
         public int RowsNumber => _size.y;
@@ -29,7 +30,7 @@ namespace Level
 
         public GameLevelGridModel(LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
-            _tileSizeWorldUnits = levelConfig.TileSizeWorldUnits;
+            _tileSizeWorldUnits = (fix2) levelConfig.TileSizeWorldUnits;
 
             _size = math.int2(levelStageConfig.ColumnsNumber, levelStageConfig.RowsNumber);
             Assert.IsTrue(math.all(_size % 2 != int2.zero));
@@ -119,23 +120,20 @@ namespace Level
                 .ToArray();
         }
 
-        public float3 GetCornerWorldPosition(int2 corner)
+        public fix2 GetCornerWorldPosition(int2 corner)
         {
-            var position = ((corner * 2 - 1) * (WorldSize - 1) / 2f).xyy;
-            position.z = 0;
-
+            var position = (fix2) (corner * 2 - 1) * (WorldSize - fix2.one) / new fix2(2);
             return position;
         }
 
-        public int2 ToTileCoordinate(float3 position)
+        public int2 ToTileCoordinate(fix2 position)
         {
-            return (int2) (position.xy / _tileSizeWorldUnits + (_size - 1) / math.float2(2));
+            return (int2) (position / _tileSizeWorldUnits + (fix2) (_size - 1) / new fix2(2));
         }
 
-        public float3 ToWorldPosition(int2 coordinate)
+        public fix2 ToWorldPosition(int2 coordinate)
         {
-            var position = ((coordinate - (_size - 1) / 2) * _tileSizeWorldUnits).xyy;
-            position.z = 0;
+            var position = (fix2) (coordinate - (_size - 1) / 2) * _tileSizeWorldUnits;
             return position;
         }
 
