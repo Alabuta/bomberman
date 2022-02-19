@@ -4,6 +4,7 @@ using Configs.Game;
 using Configs.Level;
 using Configs.Singletons;
 using Data;
+using Entity.Behaviours;
 using Entity.Enemies;
 using Entity.Hero;
 using Game;
@@ -141,6 +142,9 @@ namespace Infrastructure.States
                 Assert.IsNotNull(enemy);
 
                 Game.LevelManager.AddEnemy(enemySpawnElement.EnemyConfig, enemy);
+
+                var behaviourAgent = new MovementBehaviourAgent(enemy.WorldPosition);
+                Game.LevelManager.AddBehaviourAgent(enemy, behaviourAgent);
             }
         }
 

@@ -1,6 +1,4 @@
-using Infrastructure.States;
-
-namespace Infrastructure
+namespace Infrastructure.States
 {
     public class GameLoopState : IGameState
     {
@@ -18,6 +16,7 @@ namespace Infrastructure
         public void Enter()
         {
             Game.LevelManager.StartSimulation();
+            _gameStateMachine.UpdateCallback = Game.LevelManager.UpdateSimulation;
         }
     }
 }

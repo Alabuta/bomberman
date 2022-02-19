@@ -34,7 +34,7 @@ namespace Entity
 
         public float SpeedMultiplier { get; set; }
 
-        public float2 Direction
+        public int2 Direction
         {
             get => _direction;
             set
@@ -49,7 +49,7 @@ namespace Entity
         public float3 WorldPosition => EntityController.WorldPosition;
 
         private float _speed;
-        private float2 _direction;
+        private int2 _direction;
 
         protected Entity(TConfig config, IEntityController entityController)
         {

@@ -41,7 +41,7 @@ namespace Entity.Hero
         protected override EntityAnimator EntityAnimator =>
             HeroAnimator;
 
-        private new void Start()
+        protected override void Start()
         {
             base.Start();
 

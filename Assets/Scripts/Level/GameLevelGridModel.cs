@@ -129,12 +129,12 @@ namespace Level
 
         public int2 ToTileCoordinate(float3 position)
         {
-            return (int2) (position.xy * _tileSizeWorldUnits + (_size - 1) / math.float2(2f));
+            return (int2) (position.xy / _tileSizeWorldUnits + (_size - 1) / math.float2(2));
         }
 
         public float3 ToWorldPosition(int2 coordinate)
         {
-            var position = ((ClampCoordinate(coordinate) / (Size - 1) * 2 - 1) * (WorldSize - 1) / 2f).xyy;
+            var position = ((coordinate - (_size - 1) / 2) * _tileSizeWorldUnits).xyy;
             position.z = 0;
             return position;
         }

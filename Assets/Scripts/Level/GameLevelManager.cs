@@ -4,6 +4,8 @@ using Configs.Entity;
 using Configs.Game;
 using Configs.Level;
 using Data;
+using Entity;
+using Entity.Behaviours;
 using Entity.Enemies;
 using Game;
 using Unity.Mathematics;
@@ -17,6 +19,10 @@ namespace Level
 
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
         private readonly Dictionary<EnemyConfig, Enemy> _enemies = new();
+        private readonly Dictionary<IEntity, List<BehaviourAgent>> _behaviours = new();
+        private int _xxxx;
+        private float _prevTime;
+        private ulong _tick;
 
         public void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelStage)
         {
@@ -110,9 +116,42 @@ namespace Level
 
         public void StartSimulation()
         {
-            foreach (var enemy in _enemies)
+            _prevTime = Time.time;
+            _tick = 0;
+        }
+
+        public void UpdateSimulation()
+        {
+            const int ticksPerSecond = 60;
+
+            var gameContext = new GameContext(LevelGridModel);
+
+            var deltaTime = Time.time - _prevTime;
+
+            var targetTick = _tick + (ulong) (ticksPerSecond * deltaTime);
+            while (_tick < targetTick)
             {
+                foreach (var (entity, behaviourAgents) in _behaviours)
+                {
+                    foreach (var behaviourAgent in behaviourAgents)
+                        behaviourAgent.Update(gameContext, entity);
+                }
+
+                ++_tick;
             }
+
+            _prevTime = _tick / (float) ticksPerSecond;
+        }
+
+        public void AddBehaviourAgent(IEntity entity, BehaviourAgent behaviourAgent)
+        {
+            if (!_behaviours.TryGetValue(entity, out var agents))
+            {
+                agents = new List<BehaviourAgent>();
+                _behaviours.Add(entity, agents);
+            }
+
+            agents.Add(behaviourAgent);
         }
     }
 }

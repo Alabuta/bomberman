@@ -33,7 +33,7 @@ namespace Entity
             EntityAnimator.SetDead();
         }
 
-        protected void Start()
+        protected virtual void Start()
         {
             Revive();
         }

@@ -73,7 +73,7 @@ namespace Game
 
             if (math.lengthsq(value) > 0)
             {
-                Hero.Direction = math.round(value);
+                Hero.Direction = (int2) math.round(value);
                 Hero.Speed = Hero.InitialSpeed * Hero.SpeedMultiplier;
             }
             else

@@ -14,6 +14,8 @@ namespace Infrastructure.States
         private readonly Dictionary<Type, IExitableState> _states;
         private IExitableState _activeState;
 
+        public Action UpdateCallback;
+
         public GameStateMachine(SceneLoader sceneLoader, ServiceLocator serviceLocator)
         {
             _states = new Dictionary<Type, IExitableState>
@@ -51,5 +53,10 @@ namespace Infrastructure.States
 
         private TState GetState<TState>() where TState : class, IExitableState =>
             _states[typeof(TState)] as TState;
+
+        public void Update()
+        {
+            UpdateCallback?.Invoke();
+        }
     }
 }

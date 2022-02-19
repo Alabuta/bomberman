@@ -14,5 +14,10 @@ namespace Infrastructure
 
             DontDestroyOnLoad(this);
         }
+
+        private void Update()
+        {
+            _game.GameStateMachine.Update();
+        }
     }
 }
