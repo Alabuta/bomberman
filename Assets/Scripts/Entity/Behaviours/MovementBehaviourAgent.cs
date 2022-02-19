@@ -17,13 +17,13 @@ namespace Entity.Behaviours
 
         public override void Update(GameContext gameContext, IEntity entity)
         {
-            if (fix2.distanceq(entity.WorldPosition, NextWorldPosition) > new fix(0.025))
+            if (fix2.distanceq(entity.WorldPosition, NextWorldPosition) > new fix(0.001))
                 return;
+
+            var levelGridModel = gameContext.LevelGridModel;
 
             if (entity.Direction.x == 0 || entity.Direction.y == 0)
                 entity.Direction = math.int2(1, 0);
-
-            var levelGridModel = gameContext.LevelGridModel;
 
             var currentTileCoordinate = levelGridModel.ToTileCoordinate(entity.WorldPosition);
             var nextTileCoordinate = currentTileCoordinate + (int2) math.normalize(entity.Direction);

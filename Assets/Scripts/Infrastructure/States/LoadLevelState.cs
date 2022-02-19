@@ -90,7 +90,7 @@ namespace Infrastructure.States
 
             CreateAndSpawnPlayers(gameMode, levelStageConfig, levelGridModel);
 
-            CreateAndSpawnEnemies(levelStageConfig);
+            CreateAndSpawnEnemies(levelStageConfig, levelGridModel);
 
             var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
             var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
@@ -128,12 +128,13 @@ namespace Infrastructure.States
             }
         }
 
-        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig)
+        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel)
         {
             var enemySpawnElements = levelStageConfig.Enemies;
             foreach (var enemySpawnElement in enemySpawnElements)
             {
-                var go = _gameFactory.SpawnEntity(enemySpawnElement.EnemyConfig, math.float3(-4, 0, 0));
+                var position = levelGridModel.ToWorldPosition(math.int2(2, 0));
+                var go = _gameFactory.SpawnEntity(enemySpawnElement.EnemyConfig, fix2.ToXY(position));
                 Assert.IsNotNull(go);
 
                 var entityController = go.GetComponent<EnemyController>();

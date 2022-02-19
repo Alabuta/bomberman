@@ -21,7 +21,7 @@ namespace Level
         private readonly Dictionary<EnemyConfig, Enemy> _enemies = new();
         private readonly Dictionary<IEntity, List<BehaviourAgent>> _behaviours = new();
         private int _xxxx;
-        private float _prevTime;
+        private double _timeRemainder;
         private ulong _tick;
 
         public void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelStage)
@@ -116,7 +116,7 @@ namespace Level
 
         public void StartSimulation()
         {
-            _prevTime = Time.time;
+            _timeRemainder = 0;
             _tick = 0;
         }
 
@@ -126,9 +126,10 @@ namespace Level
 
             var gameContext = new GameContext(LevelGridModel);
 
-            var deltaTime = Time.time - _prevTime;
+            var deltaTime = Time.deltaTime + _timeRemainder;
 
             var targetTick = _tick + (ulong) (ticksPerSecond * deltaTime);
+            var tickCounts = targetTick - _tick;
             while (_tick < targetTick)
             {
                 foreach (var (entity, behaviourAgents) in _behaviours)
@@ -140,7 +141,7 @@ namespace Level
                 ++_tick;
             }
 
-            _prevTime = _tick / (float) ticksPerSecond;
+            _timeRemainder = math.max(0, deltaTime - tickCounts / (double) ticksPerSecond);
         }
 
         public void AddBehaviourAgent(IEntity entity, BehaviourAgent behaviourAgent)
