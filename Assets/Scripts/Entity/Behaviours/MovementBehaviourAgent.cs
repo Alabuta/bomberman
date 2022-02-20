@@ -8,17 +8,24 @@ namespace Entity.Behaviours
 {
     public class MovementBehaviourAgent : BehaviourAgent
     {
-        private fix2 NextWorldPosition { get; set; }
+        private fix2 _prevWorldPosition;
+        private fix2 _entityWorldPosition;
 
-        public MovementBehaviourAgent(fix2 nextWorldPosition)
+        public MovementBehaviourAgent(fix2 entityWorldPosition)
         {
-            NextWorldPosition = nextWorldPosition;
+            _prevWorldPosition = entityWorldPosition;
+            _entityWorldPosition = entityWorldPosition;
         }
 
         public override void Update(GameContext gameContext, IEntity entity)
         {
-            if (fix2.distanceq(entity.WorldPosition, NextWorldPosition) > new fix(0.001))
+            if (fix2.distanceq(_prevWorldPosition, _entityWorldPosition) < new fix(0.00001))
+                _prevWorldPosition = _entityWorldPosition - new fix2(math.int2(1, 0));
+
+            if (fix2.distanceq(_entityWorldPosition, _prevWorldPosition) < fix2.distanceq(entity.WorldPosition, _prevWorldPosition))
                 return;
+            /*if (fix2.distanceq(entity.WorldPosition, _entityWorldPosition) > new fix(0.01))
+                return;*/
 
             var levelGridModel = gameContext.LevelGridModel;
 
@@ -36,9 +43,16 @@ namespace Entity.Behaviours
 
             nextTileCoordinate = GetNextTileCoordinate(tileType, levelGridModel, currentTileCoordinate, nextTileCoordinate);
 
-            NextWorldPosition = levelGridModel.ToWorldPosition(nextTileCoordinate);
             entity.Direction = (int2) math.normalize(nextTileCoordinate - currentTileCoordinate);
             entity.Speed = 1;
+
+            entity.WorldPosition = _prevWorldPosition + (fix2) entity.Direction * fix2.distance(entity.WorldPosition, _entityWorldPosition);
+
+            /*var tileCoordinate = levelGridModel.ToTileCoordinate(_entityWorldPosition);
+            entity.WorldPosition = tileCoordinate + ;*/
+
+            _prevWorldPosition = _entityWorldPosition;
+            _entityWorldPosition = levelGridModel.ToWorldPosition(nextTileCoordinate);
         }
 
         private static int2 GetNextTileCoordinate(LevelTileType tileType, GameLevelGridModel levelGridModel,

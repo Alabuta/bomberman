@@ -18,7 +18,11 @@ namespace Entity
 
         public abstract float2 Direction { get; set; }
 
-        public fix2 WorldPosition => (fix2) Transform.position;
+        public fix2 WorldPosition
+        {
+            get => (fix2) Transform.position;
+            set => Transform.position = fix2.ToXY(value);
+        }
 
         protected abstract EntityAnimator EntityAnimator { get; }
 

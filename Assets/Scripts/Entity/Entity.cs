@@ -47,7 +47,11 @@ namespace Entity
             }
         }
 
-        public fix2 WorldPosition => EntityController.WorldPosition;
+        public fix2 WorldPosition
+        {
+            get => EntityController.WorldPosition;
+            set => EntityController.WorldPosition = value;
+        }
 
         private float _speed;
         private int2 _direction;

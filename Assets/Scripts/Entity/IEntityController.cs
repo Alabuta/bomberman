@@ -9,7 +9,7 @@ namespace Entity
         float PlaybackSpeed { get; }
         float2 Direction { get; set; }
 
-        fix2 WorldPosition { get; }
+        fix2 WorldPosition { get; set; }
 
         void Kill();
     }
