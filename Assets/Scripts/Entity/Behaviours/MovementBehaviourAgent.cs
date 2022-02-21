@@ -8,60 +8,60 @@ namespace Entity.Behaviours
 {
     public class MovementBehaviourAgent : BehaviourAgent
     {
-        private fix2 _prevWorldPosition;
-        private fix2 _entityWorldPosition;
+        private fix2 _fromWorldPosition;
+        private fix2 _toWorldPosition;
 
-        public MovementBehaviourAgent(fix2 entityWorldPosition)
+        public MovementBehaviourAgent(IEntity entity)
         {
-            _prevWorldPosition = entityWorldPosition;
-            _entityWorldPosition = entityWorldPosition;
+            _fromWorldPosition = entity.WorldPosition;
+            _toWorldPosition = entity.WorldPosition;
         }
 
         public override void Update(GameContext gameContext, IEntity entity)
         {
-            if (fix2.distanceq(_prevWorldPosition, _entityWorldPosition) < new fix(0.00001))
-                _prevWorldPosition = _entityWorldPosition - new fix2(math.int2(1, 0));
+            var directionA = _toWorldPosition - _fromWorldPosition;
+            var directionB = entity.WorldPosition - _fromWorldPosition;
+            var directionC = entity.WorldPosition - _toWorldPosition;
 
-            if (fix2.distanceq(_entityWorldPosition, _prevWorldPosition) < fix2.distanceq(entity.WorldPosition, _prevWorldPosition))
+            var lengthSqA = fix2.lengthsq(directionA);
+            var lengthSqC = fix2.lengthsq(directionC);
+
+            if (lengthSqA > fix.zero && lengthSqA > fix2.lengthsq(directionB) + lengthSqC)
                 return;
-            /*if (fix2.distanceq(entity.WorldPosition, _entityWorldPosition) > new fix(0.01))
-                return;*/
 
             var levelGridModel = gameContext.LevelGridModel;
 
-            if (entity.Direction.x == 0 || entity.Direction.y == 0)
+            if (entity.Direction.x == 0 && entity.Direction.y == 0)
                 entity.Direction = math.int2(1, 0);
 
-            var currentTileCoordinate = levelGridModel.ToTileCoordinate(entity.WorldPosition);
-            var nextTileCoordinate = currentTileCoordinate + (int2) math.normalize(entity.Direction);
+            var expectedTileCoordinate = levelGridModel.ToTileCoordinate(_fromWorldPosition);
+            var targetTileCoordinate = expectedTileCoordinate + (int2) math.normalize(entity.Direction);
 
-            if (math.any(nextTileCoordinate < 0) || !math.all(nextTileCoordinate < levelGridModel.Size))
-                nextTileCoordinate = GetRandomTileCoordinate(levelGridModel, currentTileCoordinate);
+            if (math.any(targetTileCoordinate < 0) || !math.all(targetTileCoordinate < levelGridModel.Size))
+                targetTileCoordinate = GetRandomTileCoordinate(levelGridModel, expectedTileCoordinate);
 
-            var tile = levelGridModel[nextTileCoordinate];
+            var tile = levelGridModel[targetTileCoordinate];
             var tileType = tile.Type;
 
-            nextTileCoordinate = GetNextTileCoordinate(tileType, levelGridModel, currentTileCoordinate, nextTileCoordinate);
+            targetTileCoordinate =
+                GetNextTileCoordinate(tileType, levelGridModel, expectedTileCoordinate, targetTileCoordinate);
 
-            entity.Direction = (int2) math.normalize(nextTileCoordinate - currentTileCoordinate);
+            entity.Direction = (int2) math.normalize(targetTileCoordinate - expectedTileCoordinate);
             entity.Speed = 1;
 
-            entity.WorldPosition = _prevWorldPosition + (fix2) entity.Direction * fix2.distance(entity.WorldPosition, _entityWorldPosition);
+            entity.WorldPosition = _toWorldPosition + (fix2) entity.Direction * fix.sqrt(lengthSqC);
 
-            /*var tileCoordinate = levelGridModel.ToTileCoordinate(_entityWorldPosition);
-            entity.WorldPosition = tileCoordinate + ;*/
-
-            _prevWorldPosition = _entityWorldPosition;
-            _entityWorldPosition = levelGridModel.ToWorldPosition(nextTileCoordinate);
+            _fromWorldPosition = _toWorldPosition;
+            _toWorldPosition = levelGridModel.ToWorldPosition(targetTileCoordinate);
         }
 
         private static int2 GetNextTileCoordinate(LevelTileType tileType, GameLevelGridModel levelGridModel,
-            int2 tileCoordinate, int2 nextTileCoordinate)
+            int2 fromTileCoordinate, int2 nextTileCoordinate)
         {
             return tileType switch
             {
-                LevelTileType.HardBlock => GetRandomTileCoordinate(levelGridModel, tileCoordinate),
-                LevelTileType.SoftBlock => GetRandomTileCoordinate(levelGridModel, tileCoordinate),
+                LevelTileType.HardBlock => GetRandomTileCoordinate(levelGridModel, fromTileCoordinate),
+                LevelTileType.SoftBlock => GetRandomTileCoordinate(levelGridModel, fromTileCoordinate),
                 _ => nextTileCoordinate
             };
         }
