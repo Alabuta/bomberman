@@ -146,10 +146,15 @@ namespace Level
             return math.mad(c.y, _size.x, c.x);
         }
 
-        private int2 ClampCoordinate(int2 coordinate)
+        /*private int2 ClampCoordinate(int2 coordinate)
         {
             var c = coordinate % _size;
             return math.select(c, c + _size, c < int2.zero);
+        }*/
+
+        public int2 ClampCoordinate(int2 coordinate)
+        {
+            return math.clamp(coordinate, int2.zero, _size);
         }
 
         public IEnumerator<ILevelTileView> GetEnumerator()
