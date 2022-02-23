@@ -166,5 +166,10 @@ namespace Level
         {
             return GetEnumerator();
         }
+
+        public bool IsCoordinateInField(int2 coordinate)
+        {
+            return math.all(coordinate >= 0) && math.all(coordinate < _size);
+        }
     }
 }
