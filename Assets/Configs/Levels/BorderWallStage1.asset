@@ -16,7 +16,7 @@ MonoBehaviour:
   RandomSeed: 8741688
   ColumnsNumber: 13
   RowsNumber: 11
-  SoftBlocksCoverage: 32
+  SoftBlocksCoverage: 40
   PlayersSpawnCorners:
   - x: 0
     y: 1

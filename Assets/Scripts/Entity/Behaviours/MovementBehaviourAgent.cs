@@ -15,12 +15,20 @@ namespace Entity.Behaviours
         private fix2 _fromWorldPosition;
         private fix2 _toWorldPosition;
 
+        private static bool _tryToSelectNewTile;
+
+        private static LevelTileType[] _fordableTileTypes;
+
         public MovementBehaviourAgent(MovementBehaviourConfig config, IEntity entity)
         {
             _movementDirections = config.MovementDirections;
 
             _fromWorldPosition = entity.WorldPosition;
             _toWorldPosition = entity.WorldPosition;
+
+            _tryToSelectNewTile = config.TryToSelectNewTile;
+
+            _fordableTileTypes = entity.EntityConfig.FordableTileTypes;
         }
 
         public override void Update(GameContext gameContext, IEntity entity)
@@ -73,12 +81,7 @@ namespace Entity.Behaviours
 
         private static bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
         {
-            return tile.Type switch
-            {
-                LevelTileType.HardBlock => false,
-                LevelTileType.SoftBlock => false,
-                _ => true
-            };
+            return _fordableTileTypes.Contains(tile.Type);
         }
 
         [CanBeNull]
@@ -101,9 +104,12 @@ namespace Entity.Behaviours
                     return tileCoordinates[0];
             }
 
-            tileCoordinates = tileCoordinates
-                .Where(c => math.all(c.Coordinate != tileCoordinate - entityDirection))
-                .ToArray();
+            if (_tryToSelectNewTile)
+            {
+                tileCoordinates = tileCoordinates
+                    .Where(c => math.all(c.Coordinate != tileCoordinate - entityDirection))
+                    .ToArray();
+            }
 
             var index = (int) math.round(Random.value * (tileCoordinates.Length - 1));
             return tileCoordinates[index];

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Ballom
   Prefab: {fileID: 8022701317914093698, guid: 05808de62001e784dae2b41d43471351, type: 3}
+  FordableTileTypes: 01000000
   Speed: 1
   StartDirection:
     x: 0

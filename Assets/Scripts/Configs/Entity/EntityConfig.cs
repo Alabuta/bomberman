@@ -1,3 +1,4 @@
+using Level;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace Configs.Entity
         public string Name;
 
         public GameObject Prefab;
+
+        public LevelTileType[] FordableTileTypes;
 
         [Header("Movement Parameters"), Range(0f, 10f)]
         public float Speed;

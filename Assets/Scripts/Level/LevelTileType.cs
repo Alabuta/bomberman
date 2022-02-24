@@ -5,8 +5,9 @@ namespace Level
     [Flags]
     public enum LevelTileType
     {
-        FloorTile = 0,
-        HardBlock = 1,
-        SoftBlock = 2
+        Nothing = 0,
+        FloorTile = 1,
+        HardBlock = 2,
+        SoftBlock = 3
     }
 }

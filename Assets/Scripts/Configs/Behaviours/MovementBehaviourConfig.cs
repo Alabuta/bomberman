@@ -7,5 +7,6 @@ namespace Configs.Behaviours
     public class MovementBehaviourConfig : BehaviourConfig
     {
         public int2[] MovementDirections;
+        public bool TryToSelectNewTile;
     }
 }
