@@ -1,4 +1,5 @@
-﻿using Configs.Level.Tile;
+﻿using Configs.Behaviours;
+using Configs.Level.Tile;
 using UnityEngine;
 
 namespace Configs.Entity
@@ -7,5 +8,7 @@ namespace Configs.Entity
     public sealed class EnemyConfig : EntityConfig
     {
         public BlockConfig[] FordableTiles;
+
+        public MovementBehaviourConfig BehaviourConfig;
     }
 }

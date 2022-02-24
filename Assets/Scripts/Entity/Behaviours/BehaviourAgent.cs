@@ -1,4 +1,3 @@
-using Configs;
 using Level;
 using Unity.Mathematics;
 
@@ -14,10 +13,6 @@ namespace Entity.Behaviours
         }*/
 
         public abstract void Update(GameContext gameContext, IEntity entity);
-    }
-
-    public class BehaviourConfig : ConfigBase
-    {
     }
 
     public class GameContext

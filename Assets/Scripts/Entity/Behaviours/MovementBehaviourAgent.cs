@@ -1,4 +1,5 @@
 using System.Linq;
+using Configs.Behaviours;
 using JetBrains.Annotations;
 using Level;
 using Math.FixedPointMath;
@@ -9,20 +10,14 @@ namespace Entity.Behaviours
 {
     public class MovementBehaviourAgent : BehaviourAgent
     {
-        private static int2[] _possibleMovementDirections;
+        private static int2[] _movementDirections;
 
         private fix2 _fromWorldPosition;
         private fix2 _toWorldPosition;
 
-        public MovementBehaviourAgent(IEntity entity)
+        public MovementBehaviourAgent(MovementBehaviourConfig config, IEntity entity)
         {
-            _possibleMovementDirections = new[]
-            {
-                math.int2(0, 1),
-                math.int2(0, -1),
-                math.int2(1, 0),
-                math.int2(-1, 0)
-            };
+            _movementDirections = config.MovementDirections;
 
             _fromWorldPosition = entity.WorldPosition;
             _toWorldPosition = entity.WorldPosition;
@@ -50,17 +45,20 @@ namespace Entity.Behaviours
             if (entity.Direction.x == 0 && entity.Direction.y == 0)
                 entity.Direction = math.int2(1, 0);
 
+            var entityDirection = (int2) math.normalize(entity.Direction);
+
             var currentTileCoordinate = levelGridModel.ToTileCoordinate(_toWorldPosition);
-            var targetTileCoordinate = currentTileCoordinate + (int2) math.normalize(entity.Direction);
+            var targetTileCoordinate = currentTileCoordinate + entityDirection;
 
             if (!levelGridModel.IsCoordinateInField(targetTileCoordinate))
-                targetTileCoordinate = GetRandomNeighborTile(levelGridModel, currentTileCoordinate)?.Coordinate ??
-                                       currentTileCoordinate;
+                targetTileCoordinate =
+                    GetRandomNeighborTile(levelGridModel, currentTileCoordinate, entityDirection)?.Coordinate ??
+                    currentTileCoordinate;
 
             var targetTile = levelGridModel[targetTileCoordinate];
             targetTile = IsTileCanBeAsMovementTarget(targetTile)
                 ? targetTile
-                : GetRandomNeighborTile(levelGridModel, currentTileCoordinate);
+                : GetRandomNeighborTile(levelGridModel, currentTileCoordinate, entityDirection);
 
             targetTileCoordinate = targetTile?.Coordinate ?? currentTileCoordinate;
 
@@ -84,17 +82,28 @@ namespace Entity.Behaviours
         }
 
         [CanBeNull]
-        private static ILevelTileView GetRandomNeighborTile(GameLevelGridModel levelGridModel, int2 tileCoordinate)
+        private static ILevelTileView GetRandomNeighborTile(GameLevelGridModel levelGridModel, int2 tileCoordinate,
+            int2 entityDirection)
         {
-            var tileCoordinates = _possibleMovementDirections
+            var tileCoordinates = _movementDirections
                 .Select(d => tileCoordinate + d)
                 .Where(levelGridModel.IsCoordinateInField)
                 .Select(c => levelGridModel[c])
                 .Where(t => t.Type == LevelTileType.FloorTile)
                 .ToArray();
 
-            if (tileCoordinates.Length == 0)
-                return null;
+            switch (tileCoordinates.Length)
+            {
+                case 0:
+                    return null;
+
+                case 1:
+                    return tileCoordinates[0];
+            }
+
+            tileCoordinates = tileCoordinates
+                .Where(c => math.all(c.Coordinate != tileCoordinate - entityDirection))
+                .ToArray();
 
             var index = (int) math.round(Random.value * (tileCoordinates.Length - 1));
             return tileCoordinates[index];
