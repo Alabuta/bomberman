@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 648fa72ef5894a899f07cd54efbcc50a, type: 3}
+  m_Name: Boyon
+  m_EditorClassIdentifier: 
+  Name: Boyon
+  Prefab: {fileID: 3584087449942931273, guid: fad79860e118cac469e68cf58a34733a, type: 3}
+  FordableTileTypes: 01000000
+  Speed: 1.5
+  StartDirection:
+    x: 0
+    y: -1
+  Health: 1
+  FordableTiles:
+  - {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
+  BehaviourConfig: {fileID: 11400000, guid: 01cfe548a7a7e254b8f2e9f0819f9d94, type: 2}
