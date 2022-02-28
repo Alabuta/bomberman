@@ -42,9 +42,10 @@ namespace Level
             var spawnTilesIndicesCount = spawnTilesIndices.Count;
 
             var totalTilesCount = _size.x * _size.y - spawnTilesIndicesCount;
+            var enemiesCount = levelStageConfig.Enemies.Sum(e => e.Count);
 
             var hardBlocksCount = (_size.x - 1) * (_size.y - 1) / 4;
-            var softBlocksCount = (int) math.round((totalTilesCount - hardBlocksCount) * softBlocksCoverage / 100.0f);
+            var softBlocksCount = (int) math.round((totalTilesCount - hardBlocksCount - enemiesCount) * softBlocksCoverage / 100.0f);
             var floorTilesCount = totalTilesCount - softBlocksCount - hardBlocksCount;
 
             /*var powerUpItems = levelStageConfig.PowerUpItems;
@@ -157,6 +158,16 @@ namespace Level
             return math.clamp(coordinate, int2.zero, _size);
         }
 
+        public bool IsCoordinateInField(int2 coordinate)
+        {
+            return math.all(coordinate >= 0) && math.all(coordinate < _size);
+        }
+
+        public IReadOnlyList<LevelTile> GetTilesByType(LevelTileType type)
+        {
+            return _grid.Where(t => t.Type == type).ToArray();
+        }
+
         public IEnumerator<ILevelTileView> GetEnumerator()
         {
             return _grid.AsEnumerable().GetEnumerator();
@@ -165,11 +176,6 @@ namespace Level
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        public bool IsCoordinateInField(int2 coordinate)
-        {
-            return math.all(coordinate >= 0) && math.all(coordinate < _size);
         }
     }
 }

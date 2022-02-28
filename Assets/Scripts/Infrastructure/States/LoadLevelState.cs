@@ -90,7 +90,7 @@ namespace Infrastructure.States
 
             CreateAndSpawnPlayers(gameMode, levelStageConfig, levelGridModel);
 
-            CreateAndSpawnEnemies(levelStageConfig, levelGridModel);
+            CreateAndSpawnEnemies(levelStageConfig, levelGridModel, Game.LevelManager);
 
             var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
             var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
@@ -128,24 +128,42 @@ namespace Infrastructure.States
             }
         }
 
-        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel)
+        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel,
+            GameLevelManager gameLevelManager)
         {
             var enemySpawnElements = levelStageConfig.Enemies;
-            foreach (var enemySpawnElement in enemySpawnElements)
+            var enemyConfigs = enemySpawnElements
+                .SelectMany(e => Enumerable.Range(0, e.Count).Select(_ => e.EnemyConfig))
+                .ToArray();
+
+            var playersCoordinates = gameLevelManager.Players.Values
+                .Select(p => levelGridModel.ToTileCoordinate(p.Hero.WorldPosition))
+                .ToArray();
+
+            var floorTiles = levelGridModel.GetTilesByType(LevelTileType.FloorTile)
+                .Where(t => !playersCoordinates.Contains(t.Coordinate))
+                .ToList();
+            Assert.IsTrue(enemyConfigs.Length <= floorTiles.Count, "enemies to spawn count greater than the floor tiles count");
+
+            foreach (var enemyConfig in enemyConfigs)
             {
-                var position = levelGridModel.ToWorldPosition(math.int2(2, 0));
-                var go = _gameFactory.SpawnEntity(enemySpawnElement.EnemyConfig, fix2.ToXY(position));
+                // var position = levelGridModel.ToWorldPosition(math.int2(8, 5));
+                var index = (int) math.round(Random.value * (floorTiles.Count - 1));
+                var floorTile = floorTiles[index];
+                var go = _gameFactory.SpawnEntity(enemyConfig, fix2.ToXY(floorTile.WorldPosition));
                 Assert.IsNotNull(go);
+
+                floorTiles.RemoveAt(index);
 
                 var entityController = go.GetComponent<EnemyController>();
                 Assert.IsNotNull(entityController);
 
-                var enemy = _gameFactory.CreateEnemy(enemySpawnElement.EnemyConfig, entityController);
+                var enemy = _gameFactory.CreateEnemy(enemyConfig, entityController);
                 Assert.IsNotNull(enemy);
 
-                Game.LevelManager.AddEnemy(enemySpawnElement.EnemyConfig, enemy);
+                Game.LevelManager.AddEnemy(enemy);
 
-                var behaviourAgent = new MovementBehaviourAgent(enemySpawnElement.EnemyConfig.BehaviourConfig, enemy);
+                var behaviourAgent = new MovementBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
                 Game.LevelManager.AddBehaviourAgent(enemy, behaviourAgent);
             }
         }

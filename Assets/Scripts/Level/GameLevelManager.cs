@@ -18,11 +18,13 @@ namespace Level
         public GameLevelGridModel LevelGridModel { get; private set; }
 
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
-        private readonly Dictionary<EnemyConfig, Enemy> _enemies = new();
+        private readonly HashSet<Enemy> _enemies = new();
         private readonly Dictionary<IEntity, List<BehaviourAgent>> _behaviours = new();
-        private int _xxxx;
+
         private double _timeRemainder;
         private ulong _tick;
+
+        public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
 
         public void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelStage)
         {
@@ -51,9 +53,9 @@ namespace Level
             return _players.TryGetValue(playerTagConfig, out var player) ? player : null;// :TODO: refactor
         }
 
-        public void AddEnemy(EnemyConfig enemyConfig, Enemy enemy)
+        public void AddEnemy(Enemy enemy)
         {
-            _enemies.Add(enemyConfig, enemy);
+            _enemies.Add(enemy);
         }
 
         private static void SetupWalls(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)
