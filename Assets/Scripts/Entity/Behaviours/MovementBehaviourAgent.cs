@@ -68,7 +68,15 @@ namespace Entity.Behaviours
                 ? targetTile
                 : GetRandomNeighborTile(levelGridModel, currentTileCoordinate, entityDirection);
 
-            targetTileCoordinate = targetTile?.Coordinate ?? currentTileCoordinate;
+            if (targetTile == null)
+            {
+                entity.Direction = int2.zero;
+                entity.Speed = 1;
+
+                return;
+            }
+
+            targetTileCoordinate = targetTile.Coordinate;
 
             entity.Direction = (int2) math.normalize(targetTileCoordinate - currentTileCoordinate);
             entity.Speed = 1;
