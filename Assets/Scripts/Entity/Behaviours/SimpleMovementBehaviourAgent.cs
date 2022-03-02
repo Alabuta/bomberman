@@ -8,35 +8,22 @@ using Random = UnityEngine.Random;
 
 namespace Entity.Behaviours
 {
-    public class MovementBehaviourAgent : BehaviourAgent
+    public class SimpleMovementBehaviourAgent : MovementBehaviourAgentBase
     {
-        private static int2[] _movementDirections;
-
-        private fix2 _fromWorldPosition;
-        private fix2 _toWorldPosition;
-
         private static bool _tryToSelectNewTile;
 
-        private static LevelTileType[] _fordableTileTypes;
-
-        public MovementBehaviourAgent(MovementBehaviourConfig config, IEntity entity)
+        public SimpleMovementBehaviourAgent(SimpleMovementBehaviourConfig config, IEntity entity)
+            : base(config, entity)
         {
-            _movementDirections = config.MovementDirections;
-
-            _fromWorldPosition = entity.WorldPosition;
-            _toWorldPosition = entity.WorldPosition;
-
             _tryToSelectNewTile = config.TryToSelectNewTile;
-
-            _fordableTileTypes = entity.EntityConfig.FordableTileTypes;
         }
 
         public override void Update(GameContext gameContext, IEntity entity)
         {
             var levelGridModel = gameContext.LevelGridModel;
 
-            var directionA = _toWorldPosition - _fromWorldPosition;
-            var directionC = entity.WorldPosition - _toWorldPosition;
+            var directionA = ToWorldPosition - FromWorldPosition;
+            var directionC = entity.WorldPosition - ToWorldPosition;
 
             var lengthSqA = fix2.lengthsq(directionA);
             var lengthSqC = fix2.lengthsq(directionC);
@@ -44,8 +31,7 @@ namespace Entity.Behaviours
             var isEntityMoved = lengthSqA > fix.zero;
             if (isEntityMoved)
             {
-                var directionB = entity.WorldPosition - _fromWorldPosition;
-
+                var directionB = entity.WorldPosition - FromWorldPosition;
                 if (lengthSqA > fix2.lengthsq(directionB) + lengthSqC)
                     return;
             }
@@ -55,7 +41,7 @@ namespace Entity.Behaviours
 
             var entityDirection = (int2) math.normalize(entity.Direction);
 
-            var currentTileCoordinate = levelGridModel.ToTileCoordinate(_toWorldPosition);
+            var currentTileCoordinate = levelGridModel.ToTileCoordinate(ToWorldPosition);
             var targetTileCoordinate = currentTileCoordinate + entityDirection;
 
             if (!levelGridModel.IsCoordinateInField(targetTileCoordinate))
@@ -81,22 +67,17 @@ namespace Entity.Behaviours
             entity.Direction = (int2) math.normalize(targetTileCoordinate - currentTileCoordinate);
             entity.Speed = 1;
 
-            entity.WorldPosition = _toWorldPosition + (fix2) entity.Direction * fix.sqrt(lengthSqC);
+            entity.WorldPosition = ToWorldPosition + (fix2) entity.Direction * fix.sqrt(lengthSqC);
 
-            _fromWorldPosition = _toWorldPosition;
-            _toWorldPosition = levelGridModel.ToWorldPosition(targetTileCoordinate);
-        }
-
-        private static bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
-        {
-            return _fordableTileTypes.Contains(tile.Type);
+            FromWorldPosition = ToWorldPosition;
+            ToWorldPosition = levelGridModel.ToWorldPosition(targetTileCoordinate);
         }
 
         [CanBeNull]
         private static ILevelTileView GetRandomNeighborTile(GameLevelGridModel levelGridModel, int2 tileCoordinate,
             int2 entityDirection)
         {
-            var tileCoordinates = _movementDirections
+            var tileCoordinates = MovementDirections
                 .Select(d => tileCoordinate + d)
                 .Where(levelGridModel.IsCoordinateInField)
                 .Select(c => levelGridModel[c])

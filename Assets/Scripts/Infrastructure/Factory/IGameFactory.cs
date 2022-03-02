@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using Configs;
+using Configs.Behaviours;
 using Configs.Entity;
+using Entity;
+using Entity.Behaviours;
 using Entity.Enemies;
 using Entity.Hero;
 using Game;
@@ -33,5 +36,7 @@ namespace Infrastructure.Factory
         List<ISavedProgressReader> ProgressReaders { get; }
 
         List<ISavedProgressWriter> ProgressWriters { get; }
+
+        BehaviourAgent CreateEntityBehaviourAgent(BehaviourConfig behaviourConfig, IEntity entity);
     }
 }

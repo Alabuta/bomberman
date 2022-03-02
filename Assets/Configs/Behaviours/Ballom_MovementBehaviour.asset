@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5cacac73b9f44c794c80c2aa47e87cd, type: 3}
-  m_Name: BallomMovementBehaviour
+  m_Script: {fileID: 11500000, guid: a89c065a51c941be945b25f75b9f5c26, type: 3}
+  m_Name: Ballom_MovementBehaviour
   m_EditorClassIdentifier: 
   MovementDirections:
   - x: 1

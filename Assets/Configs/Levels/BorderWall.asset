@@ -30,4 +30,3 @@ MonoBehaviour:
   PortalBlockConfig: {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
   LevelStages:
   - {fileID: 11400000, guid: f7576e6fcd87ff64ea80e4a7b85d3fad, type: 2}
-  - {fileID: 11400000, guid: 97aa1d71627f6a9469640e2867508bee, type: 2}
