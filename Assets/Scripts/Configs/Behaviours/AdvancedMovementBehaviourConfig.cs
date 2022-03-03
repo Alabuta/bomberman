@@ -1,6 +1,6 @@
 using Core.Attributes;
 using UnityEngine;
-using RangeInt = UnityEngine.RangeInt;
+using RangeInt = Core.Attributes.RangeInt;
 
 namespace Configs.Behaviours
 {
@@ -8,6 +8,6 @@ namespace Configs.Behaviours
     public class AdvancedMovementBehaviourConfig : MovementBehaviourBaseConfig
     {
         [RangeIntAttribute(0, 10)]
-        public RangeInt X;
+        public RangeInt TilesChangeRange;
     }
 }

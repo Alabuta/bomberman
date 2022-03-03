@@ -1,14 +1,13 @@
-﻿using Core.Attributes;
 using UnityEditor;
 using UnityEngine;
 
 namespace Editor.Attributes
 {
-    [CustomPropertyDrawer(typeof(RangeFloat))]
-    public class RangeFloatDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(RangeInt))]
+    public class RangeIntDrawer : PropertyDrawer
     {
         private readonly GUIContent[] _subLabels = {new("Min"), new("Max")};
-        private readonly float[] _range = {0f, 1f};
+        private readonly int[] _range = {0, 1};
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -19,17 +18,17 @@ namespace Editor.Attributes
             var minValueProperty = property.FindPropertyRelative("Min");
             var maxValueProperty = property.FindPropertyRelative("Max");
 
-            _range[0] = minValueProperty.floatValue;
-            _range[1] = maxValueProperty.floatValue;
+            _range[0] = minValueProperty.intValue;
+            _range[1] = maxValueProperty.intValue;
 
             EditorGUI.BeginChangeCheck();
 
-            EditorGUI.MultiFloatField(position, _subLabels, _range);
+            EditorGUI.MultiIntField(position, _subLabels, _range);
 
             if (EditorGUI.EndChangeCheck())
             {
-                minValueProperty.floatValue = _range[0];
-                maxValueProperty.floatValue = _range[1];
+                minValueProperty.intValue = _range[0];
+                maxValueProperty.intValue = _range[1];
             }
 
             property.serializedObject.ApplyModifiedProperties();
@@ -37,5 +36,4 @@ namespace Editor.Attributes
             EditorGUI.EndProperty();
         }
     }
-
 }

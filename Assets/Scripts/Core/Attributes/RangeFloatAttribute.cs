@@ -12,6 +12,5 @@ namespace Core.Attributes
             Min = min;
             Max = max;
         }
-
     }
 }

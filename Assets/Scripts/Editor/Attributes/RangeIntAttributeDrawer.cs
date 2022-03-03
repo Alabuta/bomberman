@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Core.Attributes;
 using Unity.Mathematics;
 using UnityEditor;
@@ -6,24 +6,24 @@ using UnityEngine;
 
 namespace Editor.Attributes
 {
-    [CustomPropertyDrawer(typeof(RangeFloatAttribute))]
-    public class RangeFloatAttributeDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(RangeIntAttribute))]
+    public class RangeIntAttributeDrawer : PropertyDrawer
     {
         private const int LabelWidth = 30;
         private const int IndentLevel = 5;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var range = attribute as RangeFloatAttribute;
+            var range = attribute as RangeIntAttribute;
 
-            var minLimit = range?.Min ?? 0f;
-            var maxLimit = range?.Max ?? 1f;
+            var minLimit = range?.Min ?? 0;
+            var maxLimit = range?.Max ?? 1;
 
             var minValueProperty = property.FindPropertyRelative("Min");
             var maxValueProperty = property.FindPropertyRelative("Max");
 
-            var minValue = math.clamp(minValueProperty.floatValue, minLimit, maxLimit);
-            var maxValue = math.clamp(maxValueProperty.floatValue, minLimit, maxLimit);
+            var minValue = (float) math.clamp(minValueProperty.intValue, minLimit, maxLimit);
+            var maxValue = (float) math.clamp(maxValueProperty.intValue, minLimit, maxLimit);
 
             EditorGUI.BeginProperty(position, label, minValueProperty);
 
@@ -48,8 +48,8 @@ namespace Editor.Attributes
 
             EditorGUI.LabelField(maxValueRect, maxValue.ToString("G2", CultureInfo.InvariantCulture));
 
-            minValueProperty.floatValue = minValue;
-            maxValueProperty.floatValue = maxValue;
+            minValueProperty.intValue = (int) math.round(minValue);
+            maxValueProperty.intValue = (int) math.round(maxValue);
 
             property.serializedObject.ApplyModifiedProperties();
 
