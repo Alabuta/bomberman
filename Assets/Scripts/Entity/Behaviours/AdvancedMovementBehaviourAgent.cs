@@ -9,13 +9,17 @@ namespace Entity.Behaviours
 {
     public class AdvancedMovementBehaviourAgent : MovementBehaviourAgentBase
     {
+        private readonly int _changeFrequency;
+
         public AdvancedMovementBehaviourAgent(AdvancedMovementBehaviourConfig config, IEntity entity)
             : base(config, entity)
         {
+            _changeFrequency = config.DirectionChangeFrequency;
         }
 
         public override void Update(GameContext gameContext, IEntity entity)
         {
+            var levelGridModel = gameContext.LevelGridModel;
 
             entity.Direction = int2.zero;
             entity.Speed = 0;
