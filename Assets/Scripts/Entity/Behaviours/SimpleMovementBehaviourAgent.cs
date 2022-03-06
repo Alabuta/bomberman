@@ -22,19 +22,8 @@ namespace Entity.Behaviours
         {
             var levelGridModel = gameContext.LevelGridModel;
 
-            var directionA = ToWorldPosition - FromWorldPosition;
-            var directionC = entity.WorldPosition - ToWorldPosition;
-
-            var lengthSqA = fix2.lengthsq(directionA);
-            var lengthSqC = fix2.lengthsq(directionC);
-
-            var isEntityMoved = lengthSqA > fix.zero;
-            if (isEntityMoved)
-            {
-                var directionB = entity.WorldPosition - FromWorldPosition;
-                if (lengthSqA > fix2.lengthsq(directionB) + lengthSqC)
-                    return;
-            }
+            if (!IsNeedToUpdate(entity))
+                return;
 
             if (entity.Direction.x == 0 && entity.Direction.y == 0)
                 entity.Direction = math.int2(1, 0);
@@ -67,10 +56,26 @@ namespace Entity.Behaviours
             entity.Direction = (int2) math.normalize(targetTileCoordinate - currentTileCoordinate);
             entity.Speed = 1;
 
-            entity.WorldPosition = ToWorldPosition + (fix2) entity.Direction * fix.sqrt(lengthSqC);
+            entity.WorldPosition =
+                ToWorldPosition + (fix2) entity.Direction * fix2.distance(entity.WorldPosition, ToWorldPosition);
 
             FromWorldPosition = ToWorldPosition;
             ToWorldPosition = levelGridModel.ToWorldPosition(targetTileCoordinate);
+        }
+
+        protected override bool IsNeedToUpdate(IEntity entity)
+        {
+            var directionA = ToWorldPosition - FromWorldPosition;
+            var directionC = entity.WorldPosition - ToWorldPosition;
+
+            var lengthSqA = fix2.lengthsq(directionA);
+            var lengthSqC = fix2.lengthsq(directionC);
+
+            var isEntityMoved = lengthSqA > fix.zero;
+            if (!isEntityMoved)
+                return true;
+
+            return lengthSqA <= fix2.distanceq(entity.WorldPosition, FromWorldPosition) + lengthSqC;
         }
 
         [CanBeNull]
@@ -81,7 +86,7 @@ namespace Entity.Behaviours
                 .Select(d => tileCoordinate + d)
                 .Where(levelGridModel.IsCoordinateInField)
                 .Select(c => levelGridModel[c])
-                .Where(t => t.Type == LevelTileType.FloorTile)
+                .Where(IsTileCanBeAsMovementTarget)
                 .ToArray();
 
             switch (tileCoordinates.Length)

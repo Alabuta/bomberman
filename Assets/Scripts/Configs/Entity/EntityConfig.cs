@@ -16,7 +16,7 @@ namespace Configs.Entity
         [Header("Movement Parameters"), Range(0f, 10f)]
         public float Speed;
 
-        public int2 StartDirection = new(0, -1);
+        public int2 StartDirection = int2.zero;
 
         [Header("Health Parameters"), Range(0, 5)]
         public int Health;

@@ -28,6 +28,7 @@ namespace Entity.Behaviours
         {
             return FordableTileTypes.Contains(tile.Type);
         }
-    }
 
+        protected abstract bool IsNeedToUpdate(IEntity entity);
+    }
 }
