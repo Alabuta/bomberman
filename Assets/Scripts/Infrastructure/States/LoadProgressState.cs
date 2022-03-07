@@ -37,7 +37,16 @@ namespace Infrastructure.States
 
         private PlayerProgress CreateEmptyProgress()
         {
-            var progress = new PlayerProgress(new Score(0, 1), new LevelStage(0, 0));
+            var progress = new PlayerProgress(new Score(0, 1), new LevelStage(0, 0))
+            {
+                HeroState =
+                {
+                    MaxHp = 1
+                }
+            };
+
+            progress.HeroState.ResetHp();
+
             _saveLoadService.SaveProgress();
             return progress;
         }
