@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: White
   Prefab: {fileID: 3476347086192181414, guid: ddac8d5521b1f4d478d8b4e7b1ad3c4b, type: 3}
+  FordableTileTypes: 
   Speed: 2.4
+  StartDirection:
+    x: 0
+    y: -1
   Health: 3
   BlastRadius: 4
   BombCapacity: 2
