@@ -61,7 +61,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -78,10 +78,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 128
-    resizeAlgorithm: 0
+    maxTextureSize: 256
+    resizeAlgorithm: 1
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,15 +100,27 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 128
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: gamestats_0
+      name: hud_0
       rect:
         serializedVersion: 2
         x: 2
-        y: 8
+        y: 40
         width: 22
         height: 22
       alignment: 0
@@ -118,18 +130,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d9dfa375aafccba20800000000000000
-      internalID: 3079564575729450397
+      spriteID: e85c0a0798d9ab148b139da9c4e4f33f
+      internalID: 356455107
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: gamestats_2
+      name: hud_2
       rect:
         serializedVersion: 2
         x: 26
-        y: 8
+        y: 40
         width: 22
         height: 22
       alignment: 0
@@ -139,39 +151,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a19b372006e10b80800000000000000
-      internalID: -8430204139128254047
+      spriteID: 2c043c84348bc3040954cd59329042aa
+      internalID: -918050958
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: gamestats_4
-      rect:
-        serializedVersion: 2
-        x: 50
-        y: 4
-        width: 24
-        height: 26
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7249c089bec228030800000000000000
-      internalID: 3495405651172824103
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: gamestats_5
+      name: hud_4
       rect:
         serializedVersion: 2
         x: 76
-        y: 0
+        y: 32
         width: 26
         height: 32
       alignment: 0
@@ -181,8 +172,113 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a1224f7e4b8654a70800000000000000
-      internalID: 8810563372215181850
+      spriteID: 4c1a9378a78ed444c8bdf59a545a5e87
+      internalID: -1001940425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hud_5
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8062be074d3349a4c9f1a374e2a1eaf1
+      internalID: 895486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hud_6
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 1
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c2b6503e30d85240add62b932046b94
+      internalID: 1652790701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hud_7
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 1
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a02e0c9a90f5f9d46845f0c916bf2e18
+      internalID: -1655176812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hud_8
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 1
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a77fe8620134bff48a86b8ee616354de
+      internalID: 970095868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hud_9
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 1
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eac8f337b63ddd74c8cfa75cf3ec2268
+      internalID: 1501255726
       vertices: []
       indices: 
       edges: []
@@ -198,10 +294,16 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      gamestats_2: -8430204139128254047
-      gamestats_0: 3079564575729450397
-      gamestats_4: 3495405651172824103
-      gamestats_5: 8810563372215181850
+      hud_4: -1001940425
+      hud_3: -1050914234
+      hud_5: 895486
+      hud_6: 1652790701
+      hud_0: 356455107
+      hud_9: 1501255726
+      hud_1: -759202767
+      hud_8: 970095868
+      hud_2: -918050958
+      hud_7: -1655176812
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
