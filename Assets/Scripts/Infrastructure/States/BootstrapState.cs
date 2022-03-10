@@ -6,7 +6,6 @@ using Infrastructure.Services;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.SaveLoad;
-using Infrastructure.States.SaveLoad;
 using UnityEngine;
 
 namespace Infrastructure.States

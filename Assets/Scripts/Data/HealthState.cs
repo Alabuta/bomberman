@@ -3,7 +3,7 @@ using System;
 namespace Data
 {
     [Serializable]
-    public class State
+    public class HealthState
     {
         public int CurrentHp;
         public int MaxHp;

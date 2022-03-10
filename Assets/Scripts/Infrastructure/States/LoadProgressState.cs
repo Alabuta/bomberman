@@ -39,13 +39,13 @@ namespace Infrastructure.States
         {
             var progress = new PlayerProgress(new Score(0, 1), new LevelStage(0, 0))
             {
-                HeroState =
+                HeroHealthState =
                 {
                     MaxHp = 1
                 }
             };
 
-            progress.HeroState.ResetHp();
+            progress.HeroHealthState.ResetHp();
 
             _saveLoadService.SaveProgress();
             return progress;

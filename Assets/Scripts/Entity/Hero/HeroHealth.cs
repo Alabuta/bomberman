@@ -7,19 +7,19 @@ namespace Entity.Hero
 {
     public class HeroHealth : ISavedProgressWriter
     {
-        private State _heroState;
+        private HealthState _heroHealthState;
 
         public Action OnHealthChangedEvent;
 
         public int Current
         {
-            get => _heroState.CurrentHp;
+            get => _heroHealthState.CurrentHp;
             set
             {
-                if (_heroState.CurrentHp == value)
+                if (_heroHealthState.CurrentHp == value)
                     return;
 
-                _heroState.CurrentHp = value;
+                _heroHealthState.CurrentHp = value;
 
                 OnHealthChangedEvent?.Invoke();
             }
@@ -27,19 +27,19 @@ namespace Entity.Hero
 
         public int Max
         {
-            get => _heroState.MaxHp;
-            set => _heroState.MaxHp = value;
+            get => _heroHealthState.MaxHp;
+            set => _heroHealthState.MaxHp = value;
         }
 
         public void LoadProgress(PlayerProgress progress)
         {
-            _heroState = progress.HeroState;
+            _heroHealthState = progress.HeroHealthState;
         }
 
         public void UpdateProgress(PlayerProgress progress)
         {
-            progress.HeroState.CurrentHp = Current;
-            progress.HeroState.MaxHp = Max;
+            progress.HeroHealthState.CurrentHp = Current;
+            progress.HeroHealthState.MaxHp = Max;
         }
 
         public void ApplyDamage(int damage)
