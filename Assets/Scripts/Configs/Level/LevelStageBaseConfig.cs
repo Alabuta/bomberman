@@ -1,13 +1,11 @@
 ﻿using System;
 using Configs.Entity;
 using Configs.Items;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Configs.Level
 {
-    [CreateAssetMenu(fileName = "LevelStage", menuName = "Configs/Level/Level Stage")]
-    public sealed class LevelStageConfig : ConfigBase
+    public abstract class LevelStageBaseConfig : ConfigBase
     {
         [Header("General Parameters")]
         public int Index;
@@ -21,9 +19,6 @@ namespace Configs.Level
 
         [Range(0, 100)]
         public int SoftBlocksCoverage = 30;
-
-        [Space(16)]
-        public int2[] PlayersSpawnCorners = { int2.zero };
 
         [Space(16)]
         public EnemySpawnElement[] Enemies;

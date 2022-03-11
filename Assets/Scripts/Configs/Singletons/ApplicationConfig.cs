@@ -15,7 +15,7 @@ namespace Configs.Singletons
         public PlayerTagConfig DefaultPlayerTag;
 
         [Header("Game Modes")]
-        [InspectorName("Game Mode PvE")]
         public GameModePvEConfig GameModePvE;
+        public GameModePvPConfig GameModePvP;
     }
 }

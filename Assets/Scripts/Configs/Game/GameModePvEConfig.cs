@@ -5,5 +5,6 @@ namespace Configs.Game
     [CreateAssetMenu(fileName = "GameModePvE", menuName = "Configs/Game/PvE Game Mode")]
     public sealed class GameModePvEConfig : GameModeBaseConfig
     {
+        public PlayerConfig PlayerConfig;
     }
 }
