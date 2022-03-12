@@ -29,4 +29,4 @@ MonoBehaviour:
   SoftBlockConfig: {fileID: 11400000, guid: d6724458eb0d190478eecb58b2049449, type: 2}
   PortalBlockConfig: {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
   LevelStages:
-  - {fileID: 11400000, guid: f7576e6fcd87ff64ea80e4a7b85d3fad, type: 2}
+  - {fileID: 11400000, guid: 12a4a982d81cadd459f4b0b8f6b634a0, type: 2}

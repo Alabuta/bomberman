@@ -13,9 +13,9 @@ namespace Configs.Level
         public int RandomSeed;
 
         [Range(13, 65)]
-        public int ColumnsNumber;
+        public int ColumnsNumber = 13;
         [Range(11, 63)]
-        public int RowsNumber;
+        public int RowsNumber = 11;
 
         [Range(0, 100)]
         public int SoftBlocksCoverage = 30;

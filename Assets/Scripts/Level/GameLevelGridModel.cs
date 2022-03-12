@@ -28,24 +28,25 @@ namespace Level
         public ILevelTileView this[int index] => _grid[index];
         public ILevelTileView this[int2 coordinate] => _grid[GetFlattenTileCoordinate(coordinate)];
 
-        public GameLevelGridModel(LevelConfig levelConfig, LevelStageConfig levelStageConfig)
+        public GameLevelGridModel(LevelConfig levelConfig, LevelStageBaseConfig levelStageBaseConfig)
         {
             _tileSizeWorldUnits = (fix2) levelConfig.TileSizeWorldUnits;
 
-            _size = math.int2(levelStageConfig.ColumnsNumber, levelStageConfig.RowsNumber);
+            _size = math.int2(levelStageBaseConfig.ColumnsNumber, levelStageBaseConfig.RowsNumber);
             Assert.IsTrue(math.all(_size % 2 != int2.zero));
 
-            var playersSpawnCorners = levelStageConfig.PlayersSpawnCorners;
-            var softBlocksCoverage = levelStageConfig.SoftBlocksCoverage;
+            var softBlocksCoverage = levelStageBaseConfig.SoftBlocksCoverage;
 
+            var playersSpawnCorners = GetPlayersSpawnCorners(levelStageBaseConfig);
             var spawnTilesIndices = GetPlayerSpawnTilesIndices(playersSpawnCorners);
             var spawnTilesIndicesCount = spawnTilesIndices.Count;
 
             var totalTilesCount = _size.x * _size.y - spawnTilesIndicesCount;
-            var enemiesCount = levelStageConfig.Enemies.Sum(e => e.Count);
+            var enemiesCount = levelStageBaseConfig.Enemies.Sum(e => e.Count);
 
             var hardBlocksCount = (_size.x - 1) * (_size.y - 1) / 4;
-            var softBlocksCount = (int) math.round((totalTilesCount - hardBlocksCount - enemiesCount) * softBlocksCoverage / 100.0f);
+            var softBlocksCount =
+                (int) math.round((totalTilesCount - hardBlocksCount - enemiesCount) * softBlocksCoverage / 100f);
             var floorTilesCount = totalTilesCount - softBlocksCount - hardBlocksCount;
 
             /*var powerUpItems = levelStageConfig.PowerUpItems;
@@ -58,6 +59,16 @@ namespace Level
             );*/
 
             _grid = GenerateLevelGrid(spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
+        }
+
+        private static IEnumerable<int2> GetPlayersSpawnCorners(LevelStageBaseConfig levelStageBaseConfig)
+        {
+            return levelStageBaseConfig switch
+            {
+                PvELevelStageConfig levelStageConfig => new[] { levelStageConfig.PlayerSpawnCorner },
+                PvPLevelStageConfig levelStageConfig => levelStageConfig.PlayersSpawnCorners,
+                _ => throw new ArgumentOutOfRangeException(nameof(levelStageBaseConfig))
+            };
         }
 
         private HashSet<int> GetPlayerSpawnTilesIndices(IEnumerable<int2> playersSpawnCorners)

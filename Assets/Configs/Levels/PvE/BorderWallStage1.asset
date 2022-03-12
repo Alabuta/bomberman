@@ -9,19 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b201956ae3d34e1fbcf9666665ed220e, type: 3}
+  m_Script: {fileID: 11500000, guid: bf2971e3985d43fb82aacd46fc15ccce, type: 3}
   m_Name: BorderWallStage1
   m_EditorClassIdentifier: 
   Index: 0
-  RandomSeed: 8741688
+  RandomSeed: 270888
   ColumnsNumber: 13
   RowsNumber: 11
-  SoftBlocksCoverage: 32
-  PlayersSpawnCorners:
-  - x: 0
-    y: 1
-  - x: 1
-    y: 0
+  SoftBlocksCoverage: 30
   Enemies:
   - EnemyConfig: {fileID: 11400000, guid: 0f62e5b375077ae4dbddddfd979c623a, type: 2}
     Count: 3
@@ -29,8 +24,8 @@ MonoBehaviour:
     Count: 1
   PortalEnemies: []
   TimeIsUpEnemyConfigs: []
-  PowerUpItems:
-  - {fileID: 11400000, guid: 542ddf502422bc843b6a851489f0e72e, type: 2}
-  - {fileID: 11400000, guid: d85a43981a0fbb944ad654f5fa28c274, type: 2}
-  - {fileID: 11400000, guid: 4241eb552cc3a9644ba862bde41f4cd7, type: 2}
+  PowerUpItems: []
   BombConfig: {fileID: 11400000, guid: cd27d438adfefc142a47e3e6fc845479, type: 2}
+  PlayerSpawnCorner:
+    x: 0
+    y: 1

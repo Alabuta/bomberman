@@ -77,7 +77,11 @@ namespace Infrastructure.States
         private void InitWorld(LevelStage levelStage)
         {
             var applicationConfig = ApplicationConfig.Instance;
-            var gameMode = applicationConfig.GameModePvE;
+
+            const bool isPvEGameMode = true;
+            var gameMode = (GameModeBaseConfig) (isPvEGameMode
+                ? applicationConfig.GameModePvE
+                : applicationConfig.GameModePvP);
 
             var levelStageConfig = GetLevelStageConfig(gameMode, levelStage);
 
@@ -88,7 +92,19 @@ namespace Infrastructure.States
 
             var levelGridModel = Game.LevelManager.LevelGridModel;
 
-            CreateAndSpawnPlayers(gameMode, levelStageConfig, levelGridModel);
+            switch (levelStageConfig)
+            {
+                case PvELevelStageConfig pvELevelStageConfig when gameMode is GameModePvEConfig gameModePvE:
+                    CreateAndSpawnPlayersPvE(gameModePvE, pvELevelStageConfig, levelGridModel);
+                    break;
+
+                case PvPLevelStageConfig pvPLevelStageConfig when gameMode is GameModePvPConfig gameModePvP:
+                    CreateAndSpawnPlayersPvP(gameModePvP, pvPLevelStageConfig, levelGridModel);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(levelStageConfig));
+            }
 
             CreateAndSpawnEnemies(levelStageConfig, levelGridModel, Game.LevelManager);
 
@@ -97,41 +113,50 @@ namespace Infrastructure.States
             SetupCamera(levelStage, gameMode, levelGridModel, defaultPlayer);
         }
 
-        private void CreateAndSpawnPlayers(GameModePvEConfig gameMode, LevelStageConfig levelStageConfig,
+        private void CreateAndSpawnPlayersPvE(GameModePvEConfig gameMode, PvELevelStageConfig levelStageBaseConfig,
+            GameLevelGridModel levelGridModel)
+        {
+            CreateAndSpawnPlayer(levelGridModel, gameMode.PlayerConfig, levelStageBaseConfig.PlayerSpawnCorner);
+        }
+
+        private void CreateAndSpawnPlayersPvP(GameModePvPConfig gameMode, PvPLevelStageConfig levelStageBaseConfig,
             GameLevelGridModel levelGridModel)
         {
             var playerConfigs = gameMode.PlayerConfigs;
-            var spawnCorners = levelStageConfig.PlayersSpawnCorners;
+            var spawnCorners = levelStageBaseConfig.PlayersSpawnCorners;
             Assert.IsTrue(playerConfigs.Length <= spawnCorners.Length, "players count greater than the level spawn corners");
 
             var zip = spawnCorners.Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig));
             foreach (var (spawnCorner, playerConfig) in zip)
-            {
-                var player = _gameFactory.CreatePlayer(playerConfig);
-                Assert.IsNotNull(player);
-
-                var playerInput = _inputService.RegisterPlayerInput(playerConfig);
-                player.AttachPlayerInput(playerInput);
-
-                var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
-
-                var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, fix2.ToXY(position));
-                Assert.IsNotNull(go);
-
-                var heroController = go.GetComponent<HeroController>();
-                Assert.IsNotNull(heroController);
-
-                var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController);
-                player.AttachHero(hero);
-
-                Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
-            }
+                CreateAndSpawnPlayer(levelGridModel, playerConfig, spawnCorner);
         }
 
-        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel,
+        private void CreateAndSpawnPlayer(GameLevelGridModel levelGridModel, PlayerConfig playerConfig, int2 spawnCorner)
+        {
+            var player = _gameFactory.CreatePlayer(playerConfig);
+            Assert.IsNotNull(player);
+
+            var playerInput = _inputService.RegisterPlayerInput(playerConfig);
+            player.AttachPlayerInput(playerInput);
+
+            var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
+
+            var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, fix2.ToXY(position));
+            Assert.IsNotNull(go);
+
+            var heroController = go.GetComponent<HeroController>();
+            Assert.IsNotNull(heroController);
+
+            var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController);
+            player.AttachHero(hero);
+
+            Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
+        }
+
+        private void CreateAndSpawnEnemies(LevelStageBaseConfig levelStageBaseConfig, GameLevelGridModel levelGridModel,
             GameLevelManager gameLevelManager)
         {
-            var enemySpawnElements = levelStageConfig.Enemies;
+            var enemySpawnElements = levelStageBaseConfig.Enemies;
             var enemyConfigs = enemySpawnElements
                 .SelectMany(e => Enumerable.Range(0, e.Count).Select(_ => e.EnemyConfig))
                 .ToArray();
@@ -190,7 +215,7 @@ namespace Infrastructure.States
             mainCamera.transform.position = math.float3(position, -1);
         }
 
-        private static LevelStageConfig GetLevelStageConfig(GameModeBaseConfig gameMode, LevelStage levelStage)
+        private static LevelStageBaseConfig GetLevelStageConfig(GameModeBaseConfig gameMode, LevelStage levelStage)
         {
             return gameMode.LevelConfigs[levelStage.LevelIndex].LevelStages[levelStage.LevelStageIndex];
         }
