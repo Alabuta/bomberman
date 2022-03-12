@@ -5,9 +5,9 @@ namespace Data
     [Serializable]
     public class HealthState
     {
-        public int CurrentHp;
-        public int MaxHp;
+        public int CurrentHealth;
+        public int MaxHealth;
 
-        public void ResetHp() => CurrentHp = MaxHp;
+        public void ResetHealth() => CurrentHealth = MaxHealth;
     }
 }

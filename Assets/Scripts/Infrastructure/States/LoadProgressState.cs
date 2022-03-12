@@ -33,22 +33,13 @@ namespace Infrastructure.States
         private void LoadOrCreateProgressState()
         {
             _progressService.Progress = _saveLoadService.LoadProgress() ?? CreateEmptyProgress();
+
+            _saveLoadService.SaveProgress();
         }
 
         private PlayerProgress CreateEmptyProgress()
         {
-            var progress = new PlayerProgress(new Score(0, 1), new LevelStage(0, 0))
-            {
-                HeroHealthState =
-                {
-                    MaxHp = 1
-                }
-            };
-
-            progress.HeroHealthState.ResetHp();
-
-            _saveLoadService.SaveProgress();
-            return progress;
+            return new PlayerProgress(new Score(0, 1), new LevelStage(0, 0));
         }
     }
 }

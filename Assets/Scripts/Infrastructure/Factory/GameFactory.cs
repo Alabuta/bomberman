@@ -56,7 +56,11 @@ namespace Infrastructure.Factory
 
         public Hero CreateHero(HeroConfig heroConfig, HeroController entityController)
         {
-            return new Hero(heroConfig, entityController);
+            var hero = new Hero(heroConfig, entityController);
+
+            // RegisterProgressReader(hero.HeroHealth); :TODO: remove?
+
+            return hero;
         }
 
         public Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController)

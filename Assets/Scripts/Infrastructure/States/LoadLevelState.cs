@@ -1,10 +1,11 @@
+using System;
 using System.Linq;
 using App;
+using Configs;
 using Configs.Game;
 using Configs.Level;
 using Configs.Singletons;
 using Data;
-using Entity.Behaviours;
 using Entity.Enemies;
 using Entity.Hero;
 using Game;
@@ -13,9 +14,11 @@ using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Level;
 using Math.FixedPointMath;
+using UI;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace Infrastructure.States
@@ -63,9 +66,25 @@ namespace Infrastructure.States
         private void OnLoaded(LevelStage levelStage)
         {
             InitWorld(levelStage);
+
             InformProgressReaders();
 
+            UpdateGameStatsPanel();
+
             _gameStateMachine.Enter<GameLoopState>();
+        }
+
+        private static void UpdateGameStatsPanel()
+        {
+            var gameStatsViewController = Object.FindObjectOfType<GameStatsViewController>();
+            Assert.IsNotNull(gameStatsViewController);
+
+            // :TODO: extend draw logic for variable players count
+            var (_, player) = Game.LevelManager.Players.FirstOrDefault();
+            var heroHealth = player.Hero.HeroHealth;
+
+            gameStatsViewController.SetHeroIcon(player.PlayerConfig.HeroConfig.Icon);
+            gameStatsViewController.SetHeroHealth(heroHealth.Current);
         }
 
         private void InformProgressReaders()

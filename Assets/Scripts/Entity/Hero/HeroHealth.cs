@@ -1,25 +1,33 @@
 ﻿using System;
 using Data;
-using Infrastructure.Services.PersistentProgress;
 using Unity.Mathematics;
 
 namespace Entity.Hero
 {
-    public class HeroHealth : ISavedProgressWriter
+    public class HeroHealth/* : ISavedProgressWriter*/
     {
-        private HealthState _heroHealthState;
+        private readonly HealthState _heroHealthState;
 
         public Action OnHealthChangedEvent;
 
+        public HeroHealth(int health)
+        {
+            _heroHealthState = new HealthState
+            {
+                CurrentHealth = health,
+                MaxHealth = health
+            };
+        }
+
         public int Current
         {
-            get => _heroHealthState.CurrentHp;
+            get => _heroHealthState.CurrentHealth;
             set
             {
-                if (_heroHealthState.CurrentHp == value)
+                if (_heroHealthState.CurrentHealth == value)
                     return;
 
-                _heroHealthState.CurrentHp = value;
+                _heroHealthState.CurrentHealth = value;
 
                 OnHealthChangedEvent?.Invoke();
             }
@@ -27,20 +35,22 @@ namespace Entity.Hero
 
         public int Max
         {
-            get => _heroHealthState.MaxHp;
-            set => _heroHealthState.MaxHp = value;
+            get => _heroHealthState.MaxHealth;
+            set => _heroHealthState.MaxHealth = value;
         }
 
-        public void LoadProgress(PlayerProgress progress)
+        /*public void LoadProgress(PlayerProgress progress)
         {
             _heroHealthState = progress.HeroHealthState;
+
+            OnHealthChangedEvent?.Invoke();
         }
 
         public void UpdateProgress(PlayerProgress progress)
         {
-            progress.HeroHealthState.CurrentHp = Current;
-            progress.HeroHealthState.MaxHp = Max;
-        }
+            progress.HeroHealthState.CurrentHealth = Current;
+            progress.HeroHealthState.MaxHealth = Max;
+        }*/
 
         public void ApplyDamage(int damage)
         {
