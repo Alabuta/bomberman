@@ -9,11 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3321701531713127263, guid: aa3a272579b13954095bf26e27a390d0, type: 3}
       propertyPath: m_Name
-      value: BallomEnemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 3321701531713127263, guid: aa3a272579b13954095bf26e27a390d0, type: 3}
-      propertyPath: m_Layer
-      value: 7
+      value: EnemyBallom
       objectReference: {fileID: 0}
     - target: {fileID: 3321701531713127328, guid: aa3a272579b13954095bf26e27a390d0, type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.x
@@ -33,11 +29,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3321701531713127330, guid: aa3a272579b13954095bf26e27a390d0, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3321701531713127330, guid: aa3a272579b13954095bf26e27a390d0, type: 3}
-      propertyPath: m_SortingLayerID
-      value: 1425963347
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3321701531713127331, guid: aa3a272579b13954095bf26e27a390d0, type: 3}
       propertyPath: m_RootOrder
