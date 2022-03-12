@@ -4,13 +4,13 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class HUDView : MonoBehaviour
+    public class GameStatsViewController : MonoBehaviour
     {
         [SerializeField]
         private Image HeroIcon;
 
         [SerializeField]
-        private TextMeshProUGUI HeroHpText;
+        private TextMeshProUGUI HeroHealthText;
 
         public void SetHeroIcon(Sprite sprite)
         {
@@ -18,10 +18,10 @@ namespace UI
                 HeroIcon.sprite = sprite;
         }
 
-        public void SetHeroHp(int hp)
+        public void SetHeroHealth(int health)
         {
-            if (HeroHpText != null)
-                HeroHpText.SetText(hp.ToString());
+            if (HeroHealthText != null)
+                HeroHealthText.SetText(health.ToString());
         }
     }
 }

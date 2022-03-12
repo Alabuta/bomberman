@@ -164,7 +164,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 895486, guid: be46b9aa429661841a641b80d9eae521, type: 3}
+  m_Sprite: {fileID: 1501255726, guid: be46b9aa429661841a641b80d9eae521, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HeroIcon: {fileID: 7832636159868292408}
-  HeroHpText: {fileID: 7832636159421479004}
+  HeroHealthText: {fileID: 7832636159421479004}
 --- !u!1 &7832636160297040174
 GameObject:
   m_ObjectHideFlags: 0

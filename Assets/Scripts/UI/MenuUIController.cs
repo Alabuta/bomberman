@@ -1,7 +1,6 @@
 ﻿using App;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 
 namespace UI
@@ -22,11 +21,13 @@ namespace UI
             _sceneManager = sceneManager;
         }*/
 
+        /*
         private void Awake()
         {
             Assert.IsNotNull(ApplicationHolder.Instance, "failed to initialize app holder");
             Assert.IsTrue(ApplicationHolder.Instance.TryGet(out _sceneManager), "failed to get scene manager");
         }
+        */
 
         private void Start()
         {
@@ -38,7 +39,7 @@ namespace UI
         public void OnSubmit(InputValue value)
         {
             var menuEntryAnimator = MenuEntryAnimators[_currentSelectedIndex];
-            menuEntryAnimator.SubmitAndPlayAnimation(() => _sceneManager.StartNewGame());
+            menuEntryAnimator.SubmitAndPlayAnimation(() => { }/*_sceneManager.StartNewGame()*/);
         }
 
         [UsedImplicitly]
