@@ -8,6 +8,8 @@ namespace Configs.Entity
         public int BlastRadius = 1;
         public int BombCapacity = 1;
 
+        public Sprite Icon;
+
         public BombConfig BombConfig;
     }
 }
