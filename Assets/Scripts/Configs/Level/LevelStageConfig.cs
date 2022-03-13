@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Configs.Level
 {
-    public abstract class LevelStageBaseConfig : ConfigBase
+    public abstract class LevelStageConfig : ConfigBase
     {
         [Header("General Parameters")]
         public int Index;

@@ -2,7 +2,7 @@ using Configs.Level;
 
 namespace Configs.Game
 {
-    public abstract class GameModeBaseConfig : ConfigBase
+    public abstract class GameModeConfig : ConfigBase
     {
         public LevelConfig[] LevelConfigs;
     }

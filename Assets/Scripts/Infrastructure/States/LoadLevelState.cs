@@ -51,12 +51,7 @@ namespace Infrastructure.States
 
             _gameFactory.CleanUp();
 
-            var applicationConfig = ApplicationConfig.Instance;
-
-            var gameMode = applicationConfig.GameModePvE;
-            var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];
-
-            _sceneLoader.Load(levelConfig.SceneName, () => OnLoaded(levelStage));
+            _sceneLoader.Load(levelStage.LevelConfig.SceneName, () => OnLoaded(levelStage));
         }
 
         public void Exit()
@@ -97,28 +92,24 @@ namespace Infrastructure.States
         {
             var applicationConfig = ApplicationConfig.Instance;
 
-            const bool isPvEGameMode = true;
-            var gameMode = (GameModeBaseConfig) (isPvEGameMode
-                ? applicationConfig.GameModePvE
-                : applicationConfig.GameModePvP);
-
-            var levelStageConfig = GetLevelStageConfig(gameMode, levelStage);
+            var gameModeConfig = levelStage.GameModeConfig;
+            var levelStageConfig = levelStage.LevelStageConfig;
 
             Random.InitState(levelStageConfig.RandomSeed);
 
             Game.LevelManager = new GameLevelManager();
-            Game.LevelManager.GenerateLevelStage(gameMode, levelStage);
+            Game.LevelManager.GenerateLevelStage(levelStage);
 
             var levelGridModel = Game.LevelManager.LevelGridModel;
 
             switch (levelStageConfig)
             {
-                case PvELevelStageConfig pvELevelStageConfig when gameMode is GameModePvEConfig gameModePvE:
-                    CreateAndSpawnPlayersPvE(gameModePvE, pvELevelStageConfig, levelGridModel);
+                case PvELevelStageConfig config when gameModeConfig is GameModePvEConfig gameModePvE:
+                    CreateAndSpawnPlayersPvE(gameModePvE, config, levelGridModel);
                     break;
 
-                case PvPLevelStageConfig pvPLevelStageConfig when gameMode is GameModePvPConfig gameModePvP:
-                    CreateAndSpawnPlayersPvP(gameModePvP, pvPLevelStageConfig, levelGridModel);
+                case PvPLevelStageConfig config when gameModeConfig is GameModePvPConfig gameModePvP:
+                    CreateAndSpawnPlayersPvP(gameModePvP, config, levelGridModel);
                     break;
 
                 default:
@@ -129,7 +120,7 @@ namespace Infrastructure.States
 
             var defaultPlayerTag = applicationConfig.DefaultPlayerTag;
             var defaultPlayer = Game.LevelManager.GetPlayer(defaultPlayerTag);
-            SetupCamera(levelStage, gameMode, levelGridModel, defaultPlayer);
+            SetupCamera(levelStage, levelGridModel, defaultPlayer);
         }
 
         private void CreateAndSpawnPlayersPvE(GameModePvEConfig gameMode, PvELevelStageConfig levelStageBaseConfig,
@@ -172,10 +163,10 @@ namespace Infrastructure.States
             Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
         }
 
-        private void CreateAndSpawnEnemies(LevelStageBaseConfig levelStageBaseConfig, GameLevelGridModel levelGridModel,
+        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel,
             GameLevelManager gameLevelManager)
         {
-            var enemySpawnElements = levelStageBaseConfig.Enemies;
+            var enemySpawnElements = levelStageConfig.Enemies;
             var enemyConfigs = enemySpawnElements
                 .SelectMany(e => Enumerable.Range(0, e.Count).Select(_ => e.EnemyConfig))
                 .ToArray();
@@ -212,8 +203,7 @@ namespace Infrastructure.States
             }
         }
 
-        private static void SetupCamera(LevelStage levelStage, GameModeBaseConfig gameMode, GameLevelGridModel levelGridModel,
-            IPlayer defaultPlayer)
+        private static void SetupCamera(LevelStage levelStage, GameLevelGridModel levelGridModel, IPlayer defaultPlayer)
         {
             // Camera setup and follow
             var mainCamera = Camera.main;
@@ -223,7 +213,7 @@ namespace Infrastructure.States
             var playerPosition = defaultPlayer.Hero.WorldPosition;
             var levelSize = levelGridModel.Size;
 
-            var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];
+            var levelConfig = levelStage.LevelConfig;
 
             var cameraRect = math.float2(Screen.width * 2f / Screen.height, 1) * mainCamera.orthographicSize;
 
@@ -232,11 +222,6 @@ namespace Infrastructure.States
 
             var position = math.clamp((float2) playerPosition, fieldMargins.xy - fieldRect, fieldRect + fieldMargins.zw);
             mainCamera.transform.position = math.float3(position, -1);
-        }
-
-        private static LevelStageBaseConfig GetLevelStageConfig(GameModeBaseConfig gameMode, LevelStage levelStage)
-        {
-            return gameMode.LevelConfigs[levelStage.LevelIndex].LevelStages[levelStage.LevelStageIndex];
         }
     }
 }

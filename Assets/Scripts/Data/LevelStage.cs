@@ -1,17 +1,22 @@
 using System;
+using Configs.Game;
+using Configs.Level;
 
 namespace Data
 {
     [Serializable]
     public class LevelStage
     {
-        public int LevelIndex;
-        public int LevelStageIndex;
+        public GameModeConfig GameModeConfig;
 
-        public LevelStage(int levelIndex, int levelStageIndex)
+        public LevelConfig LevelConfig;
+        public LevelStageConfig LevelStageConfig;
+
+        public LevelStage(GameModeConfig gameModeConfig, LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
-            LevelIndex = levelIndex;
-            LevelStageIndex = levelStageIndex;
+            GameModeConfig = gameModeConfig;
+            LevelConfig = levelConfig;
+            LevelStageConfig = levelStageConfig;
         }
     }
 }

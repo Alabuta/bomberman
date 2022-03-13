@@ -1,6 +1,9 @@
+using System.Linq;
+using Configs.Singletons;
 using Data;
 using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.SaveLoad;
+using UnityEngine.Assertions;
 
 namespace Infrastructure.States
 {
@@ -32,14 +35,28 @@ namespace Infrastructure.States
 
         private void LoadOrCreateProgressState()
         {
+            // :TODO: use player progress from server
             _progressService.Progress = _saveLoadService.LoadProgress() ?? CreateEmptyProgress();
 
             _saveLoadService.SaveProgress();
         }
 
-        private PlayerProgress CreateEmptyProgress()
+        private static PlayerProgress CreateEmptyProgress()
         {
-            return new PlayerProgress(new Score(0, 1), new LevelStage(0, 0));
+            var applicationConfig = ApplicationConfig.Instance;
+
+            var gameModePvE = applicationConfig.GameModePvE;
+
+            var levelConfig = gameModePvE.LevelConfigs.FirstOrDefault();
+            Assert.IsNotNull(levelConfig);
+
+            var levelStageConfig = levelConfig.LevelStages.FirstOrDefault();
+            Assert.IsNotNull(levelStageConfig);
+
+            var defaultLevelStage = new LevelStage(gameModePvE, levelConfig, levelStageConfig);
+            var defaultScore = new Score(0, 1);
+
+            return new PlayerProgress(defaultScore, defaultLevelStage);
         }
     }
 }

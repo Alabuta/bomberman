@@ -28,6 +28,6 @@ namespace Configs.Level
         public PortalBlockConfig PortalBlockConfig;
 
         [Space(16)]
-        public LevelStageBaseConfig[] LevelStages;
+        public LevelStageConfig[] LevelStages;
     }
 }

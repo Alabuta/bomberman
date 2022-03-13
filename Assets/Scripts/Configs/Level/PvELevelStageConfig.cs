@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Configs.Level
 {
     [CreateAssetMenu(fileName = "PvELevelStage", menuName = "Configs/Level/PvE Level Stage")]
-    public class PvELevelStageConfig : LevelStageBaseConfig
+    public class PvELevelStageConfig : LevelStageConfig
     {
         public int2 PlayerSpawnCorner;
     }

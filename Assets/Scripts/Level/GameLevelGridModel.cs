@@ -28,21 +28,21 @@ namespace Level
         public ILevelTileView this[int index] => _grid[index];
         public ILevelTileView this[int2 coordinate] => _grid[GetFlattenTileCoordinate(coordinate)];
 
-        public GameLevelGridModel(LevelConfig levelConfig, LevelStageBaseConfig levelStageBaseConfig)
+        public GameLevelGridModel(LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
             _tileSizeWorldUnits = (fix2) levelConfig.TileSizeWorldUnits;
 
-            _size = math.int2(levelStageBaseConfig.ColumnsNumber, levelStageBaseConfig.RowsNumber);
+            _size = math.int2(levelStageConfig.ColumnsNumber, levelStageConfig.RowsNumber);
             Assert.IsTrue(math.all(_size % 2 != int2.zero));
 
-            var softBlocksCoverage = levelStageBaseConfig.SoftBlocksCoverage;
+            var softBlocksCoverage = levelStageConfig.SoftBlocksCoverage;
 
-            var playersSpawnCorners = GetPlayersSpawnCorners(levelStageBaseConfig);
+            var playersSpawnCorners = GetPlayersSpawnCorners(levelStageConfig);
             var spawnTilesIndices = GetPlayerSpawnTilesIndices(playersSpawnCorners);
             var spawnTilesIndicesCount = spawnTilesIndices.Count;
 
             var totalTilesCount = _size.x * _size.y - spawnTilesIndicesCount;
-            var enemiesCount = levelStageBaseConfig.Enemies.Sum(e => e.Count);
+            var enemiesCount = levelStageConfig.Enemies.Sum(e => e.Count);
 
             var hardBlocksCount = (_size.x - 1) * (_size.y - 1) / 4;
             var softBlocksCount =
@@ -61,13 +61,13 @@ namespace Level
             _grid = GenerateLevelGrid(spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
         }
 
-        private static IEnumerable<int2> GetPlayersSpawnCorners(LevelStageBaseConfig levelStageBaseConfig)
+        private static IEnumerable<int2> GetPlayersSpawnCorners(LevelStageConfig levelStageConfig)
         {
-            return levelStageBaseConfig switch
+            return levelStageConfig switch
             {
-                PvELevelStageConfig levelStageConfig => new[] { levelStageConfig.PlayerSpawnCorner },
-                PvPLevelStageConfig levelStageConfig => levelStageConfig.PlayersSpawnCorners,
-                _ => throw new ArgumentOutOfRangeException(nameof(levelStageBaseConfig))
+                PvELevelStageConfig config => new[] { config.PlayerSpawnCorner },
+                PvPLevelStageConfig config => config.PlayersSpawnCorners,
+                _ => throw new ArgumentOutOfRangeException(nameof(levelStageConfig))
             };
         }
 

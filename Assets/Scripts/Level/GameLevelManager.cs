@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Configs.Entity;
 using Configs.Game;
 using Configs.Level;
 using Data;
@@ -26,10 +24,10 @@ namespace Level
 
         public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
 
-        public void GenerateLevelStage(GameModeBaseConfig gameMode, LevelStage levelStage)
+        public void GenerateLevelStage(LevelStage levelStage)
         {
-            var levelConfig = gameMode.LevelConfigs[levelStage.LevelIndex];
-            var levelStageConfig = levelConfig.LevelStages.First();
+            var levelConfig = levelStage.LevelConfig;
+            var levelStageConfig = levelStage.LevelStageConfig;
 
             LevelGridModel = new GameLevelGridModel(levelConfig, levelStageConfig);
 
