@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelConfigs:
   - {fileID: 11400000, guid: beb94d2d5caf9a247aed01603e5b6b25, type: 2}
-  PlayerConfig: {fileID: 11400000, guid: 40c19d944574f02408f7124102f08aa2, type: 2}
+  HeroStatsViewPrefab: {fileID: 7832636160285249900, guid: 98d16566b122d9842ad77dc573723c74, type: 3}
+  PlayerConfig: {fileID: 11400000, guid: b8485a6c177749b4e9fbd262983402c8, type: 2}

@@ -65,8 +65,8 @@ namespace Level
         {
             return levelStageConfig switch
             {
-                PvELevelStageConfig config => new[] { config.PlayerSpawnCorner },
-                PvPLevelStageConfig config => config.PlayersSpawnCorners,
+                LevelStagePvEConfig config => new[] { config.PlayerSpawnCorner },
+                LevelStagePvPConfig config => config.PlayersSpawnCorners,
                 _ => throw new ArgumentOutOfRangeException(nameof(levelStageConfig))
             };
         }

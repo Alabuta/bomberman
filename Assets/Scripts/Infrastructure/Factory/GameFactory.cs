@@ -70,7 +70,12 @@ namespace Infrastructure.Factory
 
         public GameObject SpawnEntity(EntityConfig heroConfig, float3 position)
         {
-            var gameObject = _assetProvider.Instantiate(heroConfig.Prefab, position);
+            return InstantiatePrefab(heroConfig.Prefab, position);
+        }
+
+        public GameObject InstantiatePrefab(GameObject prefab, float3 position)
+        {
+            var gameObject = _assetProvider.Instantiate(prefab, position);
 
             RegisterProgressWatchers(gameObject);
 

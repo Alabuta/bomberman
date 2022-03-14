@@ -8,7 +8,7 @@ namespace Entity.Hero
     {
         private readonly HealthState _heroHealthState;
 
-        public Action OnHealthChangedEvent;
+        public Action<int> HealthChangedEvent;
 
         public HeroHealth(int health)
         {
@@ -29,7 +29,7 @@ namespace Entity.Hero
 
                 _heroHealthState.CurrentHealth = value;
 
-                OnHealthChangedEvent?.Invoke();
+                HealthChangedEvent?.Invoke(value);
             }
         }
 
