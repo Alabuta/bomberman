@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Configs.Game;
 using Configs.Level;
 using Data;
@@ -13,11 +14,12 @@ namespace Level
 {
     public class GameLevelManager
     {
+        private const int TicksPerSecond = 60;
         public GameLevelGridModel LevelGridModel { get; private set; }
 
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
         private readonly HashSet<Enemy> _enemies = new();
-        private readonly Dictionary<IEntity, List<BehaviourAgent>> _behaviours = new();
+        private readonly Dictionary<IEntity, List<IBehaviourAgent>> _behaviours = new();
 
         private double _timeRemainder;
         private ulong _tick;
@@ -122,13 +124,13 @@ namespace Level
 
         public void UpdateSimulation()
         {
-            const int ticksPerSecond = 60;
+            var heroes = Players.Values.Select(p => p.Hero).ToArray();
 
-            var gameContext = new GameContext(LevelGridModel);
+            var gameContext = new GameContext(LevelGridModel, heroes);
 
             var deltaTime = Time.deltaTime + _timeRemainder;
 
-            var targetTick = _tick + (ulong) (ticksPerSecond * deltaTime);
+            var targetTick = _tick + (ulong) (TicksPerSecond * deltaTime);
             var tickCounts = targetTick - _tick;
             while (_tick < targetTick)
             {
@@ -141,18 +143,21 @@ namespace Level
                 ++_tick;
             }
 
-            _timeRemainder = math.max(0, deltaTime - tickCounts / (double) ticksPerSecond);
+            _timeRemainder = math.max(0, deltaTime - tickCounts / (double) TicksPerSecond);
         }
 
-        public void AddBehaviourAgent(IEntity entity, BehaviourAgent behaviourAgent)
+        public void AddBehaviourAgents(IEntity entity, IEnumerable<IBehaviourAgent> behaviourAgents)
         {
-            if (!_behaviours.TryGetValue(entity, out var agents))
+            foreach (var behaviourAgent in behaviourAgents)
             {
-                agents = new List<BehaviourAgent>();
-                _behaviours.Add(entity, agents);
-            }
+                if (!_behaviours.TryGetValue(entity, out var agents))
+                {
+                    agents = new List<IBehaviourAgent>();
+                    _behaviours.Add(entity, agents);
+                }
 
-            agents.Add(behaviourAgent);
+                agents.Add(behaviourAgent);
+            }
         }
     }
 }

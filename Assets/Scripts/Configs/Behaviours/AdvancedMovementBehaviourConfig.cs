@@ -1,4 +1,6 @@
 using Core.Attributes;
+using Entity;
+using Entity.Behaviours;
 using UnityEngine;
 using RangeInt = Core.Attributes.RangeInt;
 
@@ -9,5 +11,8 @@ namespace Configs.Behaviours
     {
         [RangeIntAttribute(1, 10)]
         public RangeInt DirectionChangeFrequency;
+
+        public override IBehaviourAgent Make(IEntity entity) =>
+            new AdvancedMovementBehaviourAgent(this, entity);
     }
 }

@@ -194,8 +194,8 @@ namespace Infrastructure.States
 
                 Game.LevelManager.AddEnemy(enemy);
 
-                var behaviourAgent = _gameFactory.CreateEntityBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
-                Game.LevelManager.AddBehaviourAgent(enemy, behaviourAgent);
+                var behaviourAgents = _gameFactory.CreateEntityBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
+                Game.LevelManager.AddBehaviourAgents(enemy, behaviourAgents);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Configs;
 using Configs.Behaviours;
 using Configs.Entity;
@@ -27,14 +28,12 @@ namespace Infrastructure.Factory
         public List<ISavedProgressReader> ProgressReaders { get; } = new();
         public List<ISavedProgressWriter> ProgressWriters { get; } = new();
 
-        public BehaviourAgent CreateEntityBehaviourAgent(BehaviourConfig behaviourConfig, IEntity entity)
+        public IReadOnlyList<IBehaviourAgent> CreateEntityBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs,
+            IEntity entity)
         {
-            return behaviourConfig switch
-            {
-                SimpleMovementBehaviourConfig simple => new SimpleMovementBehaviourAgent(simple, entity),
-                AdvancedMovementBehaviourConfig advanced => new AdvancedMovementBehaviourAgent(advanced, entity),
-                _ => null
-            };
+            return behaviourConfigs
+                .Select(c => c.Make(entity))
+                .ToArray();
         }
 
         public GameFactory(IAssetProvider assetProvider)

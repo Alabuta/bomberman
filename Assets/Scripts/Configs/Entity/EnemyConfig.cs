@@ -9,6 +9,6 @@ namespace Configs.Entity
     {
         public BlockConfig[] FordableTiles;
 
-        public MovementBehaviourBaseConfig BehaviourConfig;
+        public BehaviourConfig[] BehaviourConfig;
     }
 }

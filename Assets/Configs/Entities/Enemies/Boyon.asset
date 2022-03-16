@@ -22,4 +22,6 @@ MonoBehaviour:
   Health: 1
   FordableTiles:
   - {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
-  BehaviourConfig: {fileID: 11400000, guid: 7708f79e7adc0044b9a814b8334dc0c5, type: 2}
+  BehaviourConfig:
+  - {fileID: 11400000, guid: 7708f79e7adc0044b9a814b8334dc0c5, type: 2}
+  - {fileID: 11400000, guid: 8842cef8766b1f54b8c43a352698648c, type: 2}

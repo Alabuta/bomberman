@@ -28,7 +28,8 @@ namespace Infrastructure.Factory
 
         Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController);
 
-        BehaviourAgent CreateEntityBehaviourAgent(BehaviourConfig behaviourConfig, IEntity entity);
+        IReadOnlyList<IBehaviourAgent>
+            CreateEntityBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs, IEntity entity);
 
         [CanBeNull]
         GameObject SpawnEntity(EntityConfig heroConfig, float3 position);

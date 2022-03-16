@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using Level;
 using Unity.Mathematics;
 
 namespace Entity.Behaviours
 {
-    public abstract class BehaviourAgent//<TConfig> where TConfig : BehaviourConfig
+    public abstract class BehaviourAgent : IBehaviourAgent//<TConfig> where TConfig : BehaviourConfig
     {
         /*public TConfig Config { get; private set; }
 
