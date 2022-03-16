@@ -20,5 +20,8 @@ namespace Configs.Entity
 
         [Header("Health Parameters"), Range(0, 5)]
         public int Health;
+
+        public double HitRadius = .1;
+        public double HurtRadius = .1;
     }
 }

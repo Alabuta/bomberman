@@ -26,6 +26,9 @@ namespace Entity
 
         fix2 WorldPosition { get; set; }
 
+        fix HitRadius { get; }
+        fix HurtRadius { get; }
+
         void Kill();
     }
 }

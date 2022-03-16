@@ -20,6 +20,8 @@ MonoBehaviour:
     x: 0
     y: -1
   Health: 1
+  HitRadius: 0.4
+  HurtRadius: 0
   FordableTiles:
   - {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
   BehaviourConfig:

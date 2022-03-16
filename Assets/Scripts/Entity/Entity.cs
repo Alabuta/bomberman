@@ -53,6 +53,9 @@ namespace Entity
             set => EntityController.WorldPosition = value;
         }
 
+        public fix HitRadius { get; }
+        public fix HurtRadius { get; }
+
         private float _speed;
         private int2 _direction;
 
@@ -66,6 +69,9 @@ namespace Entity
 
             Health = EntityConfig.Health;
             Direction = EntityConfig.StartDirection;
+
+            HitRadius = (fix) config.HitRadius;
+            HurtRadius = (fix) config.HurtRadius;
         }
 
         public void Kill()
