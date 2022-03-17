@@ -1,38 +1,36 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Configs.Behaviours;
 using Math.FixedPointMath;
-using Unity.Mathematics;
 
 namespace Entity.Behaviours
 {
     public class AttackBehaviourAgent : BehaviourAgent
     {
-        private int2 _tileCoordinate;
-
-        private readonly fix _attackThreshold;
         private readonly int _damageValue;
+
+        private Hero.Hero[] _overlappedHeroes;
 
         public AttackBehaviourAgent(AttackBehaviourConfig config, IEntity entity)
         {
-            _attackThreshold = (fix) config.AttackThreshold;
             _damageValue = config.DamageValue;
+
+            _overlappedHeroes = Array.Empty<Hero.Hero>();
         }
 
         public override void Update(GameContext gameContext, IEntity entity)
         {
-            var levelGridModel = gameContext.LevelGridModel;
-            var entityTileCoordinate = levelGridModel.ToTileCoordinate(entity.WorldPosition);
+            var overlappedHeroes = gameContext.Heroes
+                .Where(h => AreEntitiesOverlapped(entity, h))
+                .ToArray();
 
-            var hero = gameContext.Heroes.FirstOrDefault(h => AreEntitiesOverlapped(entity, h));
-            if (hero == null)
-                return;
+            foreach (var hero in overlappedHeroes.Except(_overlappedHeroes))
+                hero.HeroHealth.ApplyDamage(_damageValue);
 
-            hero.HeroHealth.ApplyDamage(_damageValue);
-
-            _tileCoordinate = entityTileCoordinate;
+            _overlappedHeroes = overlappedHeroes;
         }
 
-        private bool AreEntitiesOverlapped(IEntity entityA, IEntity entityB)
+        private static bool AreEntitiesOverlapped(IEntity entityA, IEntity entityB)
         {
             return fix2.distance(entityA.WorldPosition, entityB.WorldPosition) < entityA.HitRadius + entityB.HurtRadius;
         }

@@ -7,7 +7,7 @@ namespace Entity
 {
     public abstract class Entity<TConfig> : IEntity where TConfig : EntityConfig
     {
-        public event Action OnKillEvent;
+        public event Action KillEvent;
 
         public EntityConfig EntityConfig { get; protected set; }
 
@@ -82,7 +82,7 @@ namespace Entity
 
             EntityController.Kill();
 
-            OnKillEvent?.Invoke();
+            KillEvent?.Invoke();
         }
     }
 }

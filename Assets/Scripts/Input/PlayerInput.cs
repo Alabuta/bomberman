@@ -9,8 +9,8 @@ namespace Input
     [RequireComponent(typeof(UnityEngine.InputSystem.PlayerInput))]
     public class PlayerInput : MonoBehaviour, IPlayerInput
     {
-        private readonly float2 _horizontalMovementMask = new float2(1, 0);
-        private readonly float2 _verticalMovementMask = new float2(0, 1);
+        private readonly float2 _horizontalMovementMask = new(1, 0);
+        private readonly float2 _verticalMovementMask = new(0, 1);
 
         public event Action<float2> OnMoveEvent;
 

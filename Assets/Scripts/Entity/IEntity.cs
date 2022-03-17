@@ -7,7 +7,7 @@ namespace Entity
 {
     public interface IEntity
     {
-        event Action OnKillEvent;
+        event Action KillEvent;
 
         EntityConfig EntityConfig { get; }
 

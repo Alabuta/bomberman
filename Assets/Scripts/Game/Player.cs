@@ -11,7 +11,6 @@ namespace Game
 {
     public class Player : IPlayer, ISavedProgressWriter
     {
-        public event Action OnKillEvent;
         public event Action<fix2> BombPlantedEvent;
 
         public PlayerConfig PlayerConfig { get; }
@@ -39,13 +38,7 @@ namespace Game
         public void AttachHero(Hero hero)
         {
             Hero = hero;
-        }
-
-        public void Kill()
-        {
-            Hero?.Kill();
-
-            OnKillEvent?.Invoke();
+            Hero.KillEvent += OnHeroKill;
         }
 
         public void LoadProgress(PlayerProgress progress)
@@ -69,7 +62,7 @@ namespace Game
 
         private void OnMove(float2 value)
         {
-            if (Hero == null)
+            if (Hero is not { IsAlive: true })
                 return;
 
             if (math.lengthsq(value) > 0)
@@ -88,8 +81,13 @@ namespace Game
 
             --BombCapacity;*/
 
-            if (Hero != null)
+            if (Hero is not { IsAlive: true })
                 BombPlantedEvent?.Invoke(Hero.WorldPosition);
+        }
+
+        private void OnHeroKill()
+        {
+            Hero.KillEvent -= OnHeroKill;
         }
     }
 }

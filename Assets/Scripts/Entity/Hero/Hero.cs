@@ -10,6 +10,13 @@ namespace Entity.Hero
             : base(config, entityController)
         {
             HeroHealth = new HeroHealth(config.Health);
+            HeroHealth.HealthChangedEvent += OnHealthChanged;
+        }
+
+        private void OnHealthChanged(int health)
+        {
+            if (health < 1)
+                Kill();
         }
     }
 }

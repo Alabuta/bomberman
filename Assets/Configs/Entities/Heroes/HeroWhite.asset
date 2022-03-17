@@ -19,7 +19,7 @@ MonoBehaviour:
   StartDirection:
     x: 0
     y: -1
-  Health: 2
+  Health: 1
   HitRadius: 0
   HurtRadius: 0.2
   BlastRadius: 4

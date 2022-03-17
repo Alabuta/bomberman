@@ -13,12 +13,12 @@ namespace Configs.Entity
 
         public LevelTileType[] FordableTileTypes;
 
-        [Header("Movement Parameters"), Range(0f, 10f)]
+        [Header("Movement Parameters"), Range(.01f, 10f)]
         public float Speed;
 
         public int2 StartDirection = int2.zero;
 
-        [Header("Health Parameters"), Range(0, 5)]
+        [Header("Health Parameters"), Range(1, 5)]
         public int Health;
 
         public double HitRadius = .1;
