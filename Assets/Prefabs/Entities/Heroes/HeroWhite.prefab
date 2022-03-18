@@ -36,6 +36,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9100000, guid: e30f4a47731f6104a8b5fa5ce695c0c0, type: 2}
     - target: {fileID: 3606758829682564298, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
+      propertyPath: m_Size.x
+      value: 1.0625
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606758829682564298, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
+      propertyPath: m_Size.y
+      value: 1.375
+      objectReference: {fileID: 0}
+    - target: {fileID: 3606758829682564298, guid: 376339d247c40b743b7fc79ae362749e, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -5650923121182500696, guid: 75b6cc865aa29614d9aa691f07428d46, type: 3}
