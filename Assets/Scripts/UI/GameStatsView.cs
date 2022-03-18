@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class HeroStatsView : MonoBehaviour
+    public class GameStatsView : MonoBehaviour
     {
         [SerializeField]
         private Image HeroIcon;

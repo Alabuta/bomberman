@@ -7,6 +7,6 @@ namespace Configs.Game
     {
         public LevelConfig[] LevelConfigs;
 
-        public GameObject HeroStatsViewPrefab;
+        public GameObject GameStatsViewPrefab;
     }
 }

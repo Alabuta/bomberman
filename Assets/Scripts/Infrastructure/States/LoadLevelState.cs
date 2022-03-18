@@ -62,22 +62,22 @@ namespace Infrastructure.States
 
             InformProgressReaders();
 
-            UpdateGameStatsPanel(levelStage.GameModeConfig);
+            CreateGameStatsPanel(levelStage.GameModeConfig);
 
             _gameStateMachine.Enter<GameLoopState>();
         }
 
-        private void UpdateGameStatsPanel(GameModeConfig gameModeConfig)
+        private void CreateGameStatsPanel(GameModeConfig gameModeConfig)
         {
-            var gameObject = _gameFactory.InstantiatePrefab(gameModeConfig.HeroStatsViewPrefab, float3.zero);
-            var heroStatsView = gameObject.GetComponent<HeroStatsView>();
-            Assert.IsNotNull(heroStatsView);
+            var gameObject = _gameFactory.InstantiatePrefab(gameModeConfig.GameStatsViewPrefab, float3.zero);
+            var gameStatsView = gameObject.GetComponent<GameStatsView>();
+            Assert.IsNotNull(gameStatsView);
 
             // :TODO: extend draw logic for variable players count
             var player = Game.LevelManager.Players.Values.FirstOrDefault();
             Assert.IsNotNull(player);
 
-            heroStatsView.Construct(player.Hero);
+            gameStatsView.Construct(player.Hero);
         }
 
         private void InformProgressReaders()
