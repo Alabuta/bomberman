@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Index: 0
   Name: Border Wall
-  SceneName: GameLevel
+  SceneName: BattleScene
   OriginalPixelsPerUnits: 16
   ViewportPadding:
     x: -24
