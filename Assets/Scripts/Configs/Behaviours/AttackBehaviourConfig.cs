@@ -1,5 +1,6 @@
 using Entity;
 using Entity.Behaviours;
+using Entity.Behaviours.AttackBehaviours;
 using UnityEngine;
 
 namespace Configs.Behaviours
@@ -10,6 +11,6 @@ namespace Configs.Behaviours
         public int DamageValue = 1;
 
         public override IBehaviourAgent Make(IEntity entity) =>
-            new AttackBehaviourAgent(this, entity);
+            new SimpleAttackBehaviourAgent(this, entity);
     }
 }

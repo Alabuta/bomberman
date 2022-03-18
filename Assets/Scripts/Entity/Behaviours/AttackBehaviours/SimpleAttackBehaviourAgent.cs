@@ -3,15 +3,15 @@ using System.Linq;
 using Configs.Behaviours;
 using Math.FixedPointMath;
 
-namespace Entity.Behaviours
+namespace Entity.Behaviours.AttackBehaviours
 {
-    public class AttackBehaviourAgent : BehaviourAgent
+    public class SimpleAttackBehaviourAgent : BehaviourAgent
     {
         private readonly int _damageValue;
 
         private Hero.Hero[] _overlappedHeroes;
 
-        public AttackBehaviourAgent(AttackBehaviourConfig config, IEntity entity)
+        public SimpleAttackBehaviourAgent(AttackBehaviourConfig config, IEntity entity)
         {
             _damageValue = config.DamageValue;
 
