@@ -20,7 +20,6 @@ namespace Infrastructure.Factory
 {
     public class GameFactory : IGameFactory
     {
-        private const string ControlScheme = "Keyboard";
         private readonly InputDevice[] _inputDevices = { Keyboard.current };
 
         private readonly IAssetProvider _assetProvider;
@@ -49,7 +48,8 @@ namespace Infrastructure.Factory
         public IPlayerInput CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex)
         {
             var playerInput =
-                PlayerInput.Instantiate(playerConfig.PlayerInputHolder, playerIndex, ControlScheme, -1, _inputDevices);
+                PlayerInput.Instantiate(playerConfig.PlayerInputHolder, playerIndex, InputService.ControlScheme, -1,
+                    _inputDevices);
             return playerInput.GetComponent<IPlayerInput>();
         }
 

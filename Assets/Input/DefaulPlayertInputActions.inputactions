@@ -1,5 +1,5 @@
 {
-    "name": "Player0",
+    "name": "DefaulPlayertInputActions",
     "maps": [
         {
             "name": "Player",
@@ -18,6 +18,15 @@
                     "name": "BombPlant",
                     "type": "Button",
                     "id": "d1e132ec-0a46-4b42-97d2-cf269995deaa",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BombBlast",
+                    "type": "Button",
+                    "id": "a6d0f47a-4c9a-4f75-aff4-ae4477e98b72",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -88,6 +97,17 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "BombPlant",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4a3a5340-48a6-4aeb-94fb-22134de91bb8",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "BombBlast",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -15,6 +15,7 @@ namespace Input
         public event Action<float2> OnMoveEvent;
 
         public event Action OnBombPlantEvent;
+        public event Action OnBombBlastEvent;
 
         [UsedImplicitly]
         public void OnMove(InputValue value)
@@ -29,6 +30,12 @@ namespace Input
         public void OnBombPlant(InputValue value)
         {
             OnBombPlantEvent?.Invoke();
+        }
+
+        [UsedImplicitly]
+        public void OnBombBlast(InputValue value)
+        {
+            OnBombBlastEvent?.Invoke();
         }
     }
 }

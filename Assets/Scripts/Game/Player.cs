@@ -11,7 +11,8 @@ namespace Game
 {
     public class Player : IPlayer, ISavedProgressWriter
     {
-        public event Action<fix2> BombPlantedEvent;
+        public event Action<fix2> BombPlantEvent;
+        public event Action OnBombBlastEvent;
 
         public PlayerConfig PlayerConfig { get; }
         public Hero Hero { get; private set; }
@@ -31,8 +32,7 @@ namespace Game
 
             _playerInput = playerInput;
 
-            _playerInput.OnMoveEvent += OnMove;
-            _playerInput.OnBombPlantEvent += OnBombPlant;
+            SubscribeInputListeners();
         }
 
         public void AttachHero(Hero hero)
@@ -51,6 +51,13 @@ namespace Game
             progress.Score = _score;
         }
 
+        private void SubscribeInputListeners()
+        {
+            _playerInput.OnMoveEvent += OnMove;
+            _playerInput.OnBombPlantEvent += OnBombPlant;
+            _playerInput.OnBombBlastEvent += OnBombBlast;
+        }
+
         private void UnsubscribeInputListeners()
         {
             if (_playerInput == null)
@@ -58,6 +65,7 @@ namespace Game
 
             _playerInput.OnMoveEvent -= OnMove;
             _playerInput.OnBombPlantEvent -= OnBombPlant;
+            _playerInput.OnBombBlastEvent -= OnBombBlast;
         }
 
         private void OnMove(float2 value)
@@ -76,18 +84,21 @@ namespace Game
 
         private void OnBombPlant()
         {
-            /*if (BombCapacity <= 0)
-                return;
-
-            --BombCapacity;*/
-
             if (Hero is not { IsAlive: true })
-                BombPlantedEvent?.Invoke(Hero.WorldPosition);
+                BombPlantEvent?.Invoke(Hero.WorldPosition);
+        }
+
+        private void OnBombBlast()
+        {
+            if (Hero is not { IsAlive: true })
+                OnBombBlastEvent?.Invoke();
         }
 
         private void OnHeroKill()
         {
             Hero.KillEvent -= OnHeroKill;
+
+            UnsubscribeInputListeners();
         }
     }
 }

@@ -7,5 +7,6 @@ namespace Input
     {
         event Action<float2> OnMoveEvent;
         event Action OnBombPlantEvent;
+        event Action OnBombBlastEvent;
     }
 }

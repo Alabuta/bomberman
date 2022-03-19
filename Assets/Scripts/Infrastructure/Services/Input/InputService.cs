@@ -9,9 +9,12 @@ namespace Infrastructure.Services.Input
 {
     public class InputService : IInputService
     {
+        public const string ControlScheme = "Keyboard";
+
         private readonly IGameFactory _gameFactory;
 
-        private readonly Dictionary<PlayerTagConfig, IPlayerInput> _playerInputServices = new();
+        private readonly Dictionary<PlayerTagConfig, IPlayerInput> _playerInputs = new();
+
 
         public InputService(IGameFactory gameFactory)
         {
@@ -20,19 +23,19 @@ namespace Infrastructure.Services.Input
 
         public IPlayerInput RegisterPlayerInput(PlayerConfig player)
         {
-            var playerIndex = _playerInputServices.Count;
+            var playerIndex = _playerInputs.Count;
 
             var component = _gameFactory.CreatePlayerInputHolder(player, playerIndex);
             Assert.IsNotNull(component);
 
-            _playerInputServices.Add(player.PlayerTagConfig, component);
+            _playerInputs.Add(player.PlayerTagConfig, component);
 
             return component;
         }
 
         public IPlayerInput GetPlayerInput(PlayerTagConfig playerTag)
         {
-            return _playerInputServices.TryGetValue(playerTag, out var inputService) ? inputService : null;
+            return _playerInputs.TryGetValue(playerTag, out var inputService) ? inputService : null;
         }
     }
 }
