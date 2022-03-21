@@ -12,6 +12,8 @@ namespace Configs.Level
 
         public int RandomSeed;
 
+        public int LevelStageTimer = 4 * 60;
+
         [Range(13, 65)]
         public int ColumnsNumber = 13;
         [Range(11, 63)]

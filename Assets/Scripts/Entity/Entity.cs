@@ -1,5 +1,6 @@
 using System;
 using Configs.Entity;
+using Entity.Hero;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
@@ -13,11 +14,9 @@ namespace Entity
 
         public IEntityController EntityController { get; protected set; }
 
-        public bool IsAlive => Health > 0;
+        public bool IsAlive => Health.Current > 0;
 
-        public int Health { get; set; }
-
-        public int InitialHealth => EntityConfig.Health;
+        public Health Health { get; private set; }
 
         public float Speed
         {
@@ -67,7 +66,9 @@ namespace Entity
             Speed = 0;
             SpeedMultiplier = 1;
 
-            Health = EntityConfig.Health;
+            Health = new Health(EntityConfig.Health);
+            Health.HealthChangedEvent += OnHealthChanged;
+
             Direction = EntityConfig.StartDirection;
 
             HitRadius = (fix) config.HitRadius;
@@ -76,13 +77,20 @@ namespace Entity
 
         public void Kill()
         {
-            Health = 0;
             Speed = 0;
             SpeedMultiplier = 1;
+
+            Health = new Health(0);
 
             EntityController.Kill();
 
             KillEvent?.Invoke();
+        }
+
+        private void OnHealthChanged(int health)
+        {
+            if (health < 1)
+                Kill();
         }
     }
 }

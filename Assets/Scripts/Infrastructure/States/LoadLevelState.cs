@@ -70,14 +70,14 @@ namespace Infrastructure.States
         private void CreateGameStatsPanel(GameModeConfig gameModeConfig)
         {
             var gameObject = _gameFactory.InstantiatePrefab(gameModeConfig.GameStatsViewPrefab, float3.zero);
-            var gameStatsView = gameObject.GetComponent<GameStatsView>();
-            Assert.IsNotNull(gameStatsView);
+            Game.GameStatsView = gameObject.GetComponent<GameStatsView>();
+            Assert.IsNotNull(Game.GameStatsView);
 
             // :TODO: extend draw logic for variable players count
             var player = Game.LevelManager.Players.Values.FirstOrDefault();
             Assert.IsNotNull(player);
 
-            gameStatsView.Construct(player.Hero);
+            gameObject.GetComponent<GameStatsView>().Construct(player.Hero);
         }
 
         private void InformProgressReaders()
@@ -93,8 +93,8 @@ namespace Infrastructure.States
 
             Random.InitState(levelStageConfig.RandomSeed);
 
-            Game.LevelManager = new GameLevelManager();
-            Game.LevelManager.GenerateLevelStage(levelStage);
+            Game.LevelManager = new GameLevelManager(_gameFactory, levelStage);// :TODO: move to DI
+            Game.LevelManager.GenerateLevelStage(levelStage, _gameFactory);
 
             var levelGridModel = Game.LevelManager.LevelGridModel;
 

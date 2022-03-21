@@ -261,6 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59011274b1984c0bab992ac64014561d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LevelStageTimeText: {fileID: 1536896538108298564}
   HeroIcon: {fileID: 7832636159868292408}
   HeroHealthText: {fileID: 7832636159421479004}
 --- !u!1 &7832636160297040174
@@ -589,6 +590,10 @@ PrefabInstance:
       propertyPath: m_MinWidth
       value: 94
       objectReference: {fileID: 0}
+    - target: {fileID: 2207620653584969503, guid: e9f609e8cead84d45924c5639debe47b, type: 3}
+      propertyPath: m_Name
+      value: LevelStageTimeText
+      objectReference: {fileID: 0}
     - target: {fileID: 2207620653584969505, guid: e9f609e8cead84d45924c5639debe47b, type: 3}
       propertyPath: m_text
       value: 4:27
@@ -656,6 +661,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 787405224454698732, guid: e9f609e8cead84d45924c5639debe47b, type: 3}
   m_PrefabInstance: {fileID: 862206281665374821}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1536896538108298564 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2207620653584969505, guid: e9f609e8cead84d45924c5639debe47b, type: 3}
+  m_PrefabInstance: {fileID: 862206281665374821}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1624927098402093259
 PrefabInstance:
   m_ObjectHideFlags: 0

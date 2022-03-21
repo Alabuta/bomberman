@@ -16,7 +16,12 @@ namespace Infrastructure.States
         public void Enter()
         {
             Game.LevelManager.StartSimulation();
-            _gameStateMachine.UpdateCallback = Game.LevelManager.UpdateSimulation;
+
+            _gameStateMachine.UpdateCallback = () =>
+            {
+                Game.LevelManager.UpdateSimulation();
+                Game.GameStatsView.UpdateLevelStageTimer(Game.LevelManager.LevelStageTimer);
+            };
         }
     }
 }

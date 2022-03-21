@@ -25,7 +25,7 @@ namespace Entity.Behaviours.AttackBehaviours
                 .ToArray();
 
             foreach (var hero in overlappedHeroes.Except(_overlappedHeroes))
-                hero.HeroHealth.ApplyDamage(_damageValue);
+                hero.Health.ApplyDamage(_damageValue);
 
             _overlappedHeroes = overlappedHeroes;
         }

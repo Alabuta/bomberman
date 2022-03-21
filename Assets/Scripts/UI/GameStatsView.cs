@@ -1,4 +1,5 @@
-﻿using Configs.Entity;
+﻿using System;
+using Configs.Entity;
 using Entity.Hero;
 using TMPro;
 using UnityEngine;
@@ -8,29 +9,42 @@ namespace UI
 {
     public class GameStatsView : MonoBehaviour
     {
+        [Header("General")]
+        [SerializeField]
+        private TextMeshProUGUI LevelStageTimeText;
+
+        [Header("Hero")]
         [SerializeField]
         private Image HeroIcon;
 
         [SerializeField]
         private TextMeshProUGUI HeroHealthText;
 
-        private HeroHealth _heroHealth;
+        private Health _health;
 
         public void Construct(Hero hero)
         {
+            UpdateLevelStageTimer(0);
+
             var entityConfig = (HeroConfig) hero.EntityConfig;
 
-            _heroHealth = hero.HeroHealth;
+            _health = hero.Health;
 
             SetHeroIcon(entityConfig.Icon);
-            SetHeroHealth(_heroHealth.Current);
+            SetHeroHealth(_health.Current);
 
-            _heroHealth.HealthChangedEvent += SetHeroHealth;
+            _health.HealthChangedEvent += SetHeroHealth;
         }
 
         private void OnDestroy()
         {
-            _heroHealth.HealthChangedEvent -= SetHeroHealth;
+            _health.HealthChangedEvent -= SetHeroHealth;
+        }
+
+        public void UpdateLevelStageTimer(double timer)
+        {
+            if (LevelStageTimeText != null)
+                LevelStageTimeText.SetText(TimeSpan.FromSeconds(timer).ToString("m':'ss"));
         }
 
         private void SetHeroIcon(Sprite sprite)

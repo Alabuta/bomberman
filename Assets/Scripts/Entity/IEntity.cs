@@ -1,5 +1,6 @@
 using System;
 using Configs.Entity;
+using Entity.Hero;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
@@ -15,8 +16,7 @@ namespace Entity
 
         bool IsAlive { get; }
 
-        int Health { get; set; }
-        int InitialHealth { get; }
+        public Health Health { get; }
 
         float Speed { get; set; }
         float InitialSpeed { get; }

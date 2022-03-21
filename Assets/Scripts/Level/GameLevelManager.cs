@@ -1,32 +1,53 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Configs.Game;
 using Configs.Level;
+using Configs.Level.Tile;
 using Data;
 using Entity;
 using Entity.Behaviours;
 using Entity.Enemies;
 using Game;
+using Infrastructure.Factory;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Level
 {
     public class GameLevelManager
     {
-        private const int TicksPerSecond = 60;
+        private const int TickRate = 60;
+
         public GameLevelGridModel LevelGridModel { get; private set; }
+
+        public double LevelStageTimer => math.max(0, _levelStageTimer - _simulationCurrentTime + _simulationStartTime);
+
+        private readonly IGameFactory _gameFactory;
 
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
         private readonly HashSet<Enemy> _enemies = new();
+
         private readonly Dictionary<IEntity, List<IBehaviourAgent>> _behaviours = new();
+
+        private readonly double _levelStageTimer;
+        private double _simulationStartTime;
+        private double _simulationCurrentTime;
 
         private double _timeRemainder;
         private ulong _tick;
 
         public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
 
-        public void GenerateLevelStage(LevelStage levelStage)
+        public GameLevelManager(IGameFactory gameFactory, LevelStage levelStage)
+        {
+            _gameFactory = gameFactory;
+            _levelStageTimer = levelStage.LevelStageConfig.LevelStageTimer;
+        }
+
+        public void GenerateLevelStage(LevelStage levelStage, IGameFactory gameFactory)
         {
             var levelConfig = levelStage.LevelConfig;
             var levelStageConfig = levelStage.LevelStageConfig;
@@ -120,17 +141,18 @@ namespace Level
         {
             _timeRemainder = 0;
             _tick = 0;
+
+            _simulationStartTime = Time.timeAsDouble;
         }
 
         public void UpdateSimulation()
         {
             var heroes = Players.Values.Select(p => p.Hero).ToArray();
-
             var gameContext = new GameContext(LevelGridModel, heroes);
 
             var deltaTime = Time.deltaTime + _timeRemainder;
 
-            var targetTick = _tick + (ulong) (TicksPerSecond * deltaTime);
+            var targetTick = _tick + (ulong) (TickRate * deltaTime);
             var tickCounts = targetTick - _tick;
             while (_tick < targetTick)
             {
@@ -143,7 +165,9 @@ namespace Level
                 ++_tick;
             }
 
-            _timeRemainder = math.max(0, deltaTime - tickCounts / (double) TicksPerSecond);
+            _timeRemainder = math.max(0, deltaTime - tickCounts / (double) TickRate);
+
+            _simulationCurrentTime += deltaTime - _timeRemainder;
         }
 
         public void AddBehaviourAgents(IEntity entity, IEnumerable<IBehaviourAgent> behaviourAgents)
