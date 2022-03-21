@@ -25,4 +25,4 @@ MonoBehaviour:
   BlastRadius: 4
   BombCapacity: 2
   Icon: {fileID: 895486, guid: be46b9aa429661841a641b80d9eae521, type: 3}
-  BombConfig: {fileID: 11400000, guid: cd27d438adfefc142a47e3e6fc845479, type: 2}
+  BombConfig: {fileID: 11400000, guid: 61f1d4abaafbdf2489a0cdd6f6d8ee97, type: 2}

@@ -7,9 +7,9 @@ namespace Infrastructure.AssetManagement
     public class AssetProvider : IAssetProvider
     {
         [CanBeNull]
-        public GameObject Instantiate(GameObject prefab, float3 position)
+        public GameObject Instantiate(GameObject prefab, float3 position, Transform parent)
         {
-            return Object.Instantiate(prefab, position, Quaternion.identity);
+            return Object.Instantiate(prefab, position, Quaternion.identity, parent);
         }
 
         [CanBeNull]

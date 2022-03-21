@@ -138,9 +138,11 @@ namespace Level
             return position;
         }
 
-        public int2 ToTileCoordinate(fix2 position)
+        public int2 ToTileCoordinate(fix2 position, bool isRounded = false)
         {
-            return (int2) (position / _tileSizeWorldUnits + (fix2) (_size - 1) / new fix2(2));
+            var coordinate = position / _tileSizeWorldUnits + (fix2) (_size - 1) / new fix2(2);
+
+            return ClampCoordinate((int2) (isRounded ? fix2.round(coordinate) : coordinate));
         }
 
         public fix2 ToWorldPosition(int2 coordinate)

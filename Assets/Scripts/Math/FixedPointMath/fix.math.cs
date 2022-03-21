@@ -451,6 +451,7 @@ namespace Math.FixedPointMath
             return new fix((long) result, true);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fix clamp(fix x, fix a, fix b)
         {
             return max(a, min(b, x));

@@ -54,5 +54,23 @@ namespace Math.FixedPointMath
         {
             return rsqrt(dot(vec, vec)) * vec;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fix2 min(fix2 x, fix2 y)
+        {
+            return new fix2(fix.min(x.x, y.x), fix.min(x.y, y.y));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fix2 max(fix2 x, fix2 y)
+        {
+            return new fix2(fix.max(x.x, y.x), fix.max(x.y, y.y));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fix2 clamp(fix2 x, fix2 a, fix2 b)
+        {
+            return max(a, min(b, x));
+        }
     }
 }

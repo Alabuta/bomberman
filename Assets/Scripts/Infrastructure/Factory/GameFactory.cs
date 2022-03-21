@@ -9,6 +9,7 @@ using Entity.Enemies;
 using Entity.Hero;
 using Game;
 using Infrastructure.AssetManagement;
+using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Input;
 using Unity.Mathematics;
@@ -27,22 +28,17 @@ namespace Infrastructure.Factory
         public List<ISavedProgressReader> ProgressReaders { get; } = new();
         public List<ISavedProgressWriter> ProgressWriters { get; } = new();
 
-        public IReadOnlyList<IBehaviourAgent> CreateEntityBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs,
-            IEntity entity)
-        {
-            return behaviourConfigs
-                .Select(c => c.Make(entity))
-                .ToArray();
-        }
-
         public GameFactory(IAssetProvider assetProvider)
         {
             _assetProvider = assetProvider;
         }
 
-        public IPlayer CreatePlayer(PlayerConfig playerConfig)
+        public IReadOnlyList<IBehaviourAgent> CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs,
+            IEntity entity)
         {
-            return new Player(playerConfig);
+            return behaviourConfigs
+                .Select(c => c.Make(entity))
+                .ToArray();
         }
 
         public IPlayerInput CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex)
@@ -51,6 +47,11 @@ namespace Infrastructure.Factory
                 PlayerInput.Instantiate(playerConfig.PlayerInputHolder, playerIndex, InputService.ControlScheme, -1,
                     _inputDevices);
             return playerInput.GetComponent<IPlayerInput>();
+        }
+
+        public IPlayer CreatePlayer(PlayerConfig playerConfig)
+        {
+            return new Player(playerConfig);
         }
 
         public Hero CreateHero(HeroConfig heroConfig, HeroController entityController)
@@ -72,9 +73,9 @@ namespace Infrastructure.Factory
             return InstantiatePrefab(heroConfig.Prefab, position);
         }
 
-        public GameObject InstantiatePrefab(GameObject prefab, float3 position)
+        public GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null)
         {
-            var gameObject = _assetProvider.Instantiate(prefab, position);
+            var gameObject = _assetProvider.Instantiate(prefab, position, parent);
 
             RegisterProgressWatchers(gameObject);
 

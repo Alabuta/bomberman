@@ -101,11 +101,11 @@ namespace Infrastructure.States
             switch (levelStageConfig)
             {
                 case LevelStagePvEConfig config when gameModeConfig is GameModePvEConfig gameModePvE:
-                    CreateAndSpawnPlayersPvE(gameModePvE, config, levelGridModel);
+                    CreatePlayersAndSpawnHeroesPvE(gameModePvE, config, levelGridModel);
                     break;
 
                 case LevelStagePvPConfig config when gameModeConfig is GameModePvPConfig gameModePvP:
-                    CreateAndSpawnPlayersPvP(gameModePvP, config, levelGridModel);
+                    CreatePlayersAndSpawnHeroesPvP(gameModePvP, config, levelGridModel);
                     break;
 
                 default:
@@ -119,13 +119,13 @@ namespace Infrastructure.States
                 SetupCamera(levelStage, levelGridModel, defaultPlayer);
         }
 
-        private void CreateAndSpawnPlayersPvE(GameModePvEConfig gameMode, LevelStagePvEConfig baseConfig,
+        private void CreatePlayersAndSpawnHeroesPvE(GameModePvEConfig gameMode, LevelStagePvEConfig baseConfig,
             GameLevelGridModel levelGridModel)
         {
-            CreateAndSpawnPlayer(levelGridModel, gameMode.PlayerConfig, baseConfig.PlayerSpawnCorner);
+            CreatePlayerAndSpawnHero(levelGridModel, gameMode.PlayerConfig, baseConfig.PlayerSpawnCorner);
         }
 
-        private void CreateAndSpawnPlayersPvP(GameModePvPConfig gameMode, LevelStagePvPConfig baseConfig,
+        private void CreatePlayersAndSpawnHeroesPvP(GameModePvPConfig gameMode, LevelStagePvPConfig baseConfig,
             GameLevelGridModel levelGridModel)
         {
             var playerConfigs = gameMode.PlayerConfigs;
@@ -134,10 +134,10 @@ namespace Infrastructure.States
 
             var zip = spawnCorners.Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig));
             foreach (var (spawnCorner, playerConfig) in zip)
-                CreateAndSpawnPlayer(levelGridModel, playerConfig, spawnCorner);
+                CreatePlayerAndSpawnHero(levelGridModel, playerConfig, spawnCorner);
         }
 
-        private void CreateAndSpawnPlayer(GameLevelGridModel levelGridModel, PlayerConfig playerConfig, int2 spawnCorner)
+        private void CreatePlayerAndSpawnHero(GameLevelGridModel levelGridModel, PlayerConfig playerConfig, int2 spawnCorner)
         {
             var player = _gameFactory.CreatePlayer(playerConfig);
             Assert.IsNotNull(player);
@@ -194,7 +194,7 @@ namespace Infrastructure.States
 
                 Game.LevelManager.AddEnemy(enemy);
 
-                var behaviourAgents = _gameFactory.CreateEntityBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
+                var behaviourAgents = _gameFactory.CreateBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
                 Game.LevelManager.AddBehaviourAgents(enemy, behaviourAgents);
             }
         }

@@ -59,7 +59,7 @@ namespace Level
                 .Where(i => (LevelGridModel[i] & GridTileType.PowerUpItem) != 0)
                 .ToArray();*/
 
-            SpawnGameObjects(levelConfig, LevelGridModel);
+            SpawnGameObjects(levelConfig, LevelGridModel, gameFactory);
 
             SetupWalls(levelConfig, LevelGridModel);
         }
@@ -105,7 +105,8 @@ namespace Level
             }
         }
 
-        private static void SpawnGameObjects(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)
+        private static void SpawnGameObjects(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel,
+            IGameFactory gameFactory)
         {
             var columnsNumber = gameLevelGridModel.ColumnsNumber;
             var rowsNumber = gameLevelGridModel.RowsNumber;
@@ -114,10 +115,10 @@ namespace Level
             var softBlocksGroup = new GameObject("SoftBlocks");
 
             // :TODO: refactor
-            var blocks = new Dictionary<LevelTileType, (GameObject, GameObject)>
+            var blocks = new Dictionary<LevelTileType, (GameObject, BlockConfig)>
             {
-                { LevelTileType.HardBlock, (hardBlocksGroup, levelConfig.HardBlockConfig.Prefab) },
-                { LevelTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlockConfig.Prefab) }
+                { LevelTileType.HardBlock, (hardBlocksGroup, levelConfig.HardBlockConfig) },
+                { LevelTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlockConfig) }
             };
 
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
@@ -132,8 +133,8 @@ namespace Level
                 // ReSharper disable once PossibleLossOfFraction
                 var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
 
-                var (parent, prefab) = blocks[tileType/* & ~LevelTileType.PowerUpItem*/];
-                Object.Instantiate(prefab, position, Quaternion.identity, parent.transform);
+                var (parent, blockConfig) = blocks[tileType/* & ~LevelTileType.PowerUpItem*/];
+                gameFactory.InstantiatePrefab(blockConfig.Prefab, position, parent.transform);
             }
         }
 

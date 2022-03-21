@@ -29,12 +29,12 @@ namespace Infrastructure.Factory
         Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController);
 
         IReadOnlyList<IBehaviourAgent>
-            CreateEntityBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs, IEntity entity);
+            CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs, IEntity entity);
 
         [CanBeNull]
         GameObject SpawnEntity(EntityConfig heroConfig, float3 position);
 
-        GameObject InstantiatePrefab(GameObject prefab, float3 position);
+        GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null);
 
         void CleanUp();
 

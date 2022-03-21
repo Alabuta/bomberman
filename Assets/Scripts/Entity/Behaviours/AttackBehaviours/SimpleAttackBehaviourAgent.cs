@@ -11,7 +11,7 @@ namespace Entity.Behaviours.AttackBehaviours
 
         private Hero.Hero[] _overlappedHeroes;
 
-        public SimpleAttackBehaviourAgent(AttackBehaviourConfig config, IEntity entity)
+        public SimpleAttackBehaviourAgent(SimpleAttackBehaviourConfig config, IEntity entity)
         {
             _damageValue = config.DamageValue;
 
