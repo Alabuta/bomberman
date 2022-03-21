@@ -67,6 +67,9 @@ namespace Level
         public void AddPlayer(PlayerTagConfig playerTagConfig, IPlayer player)
         {
             _players.Add(playerTagConfig, player);// :TODO: refactor
+
+            player.BombPlantEvent += OnPlayerBombPlant;
+            player.BombBlastEvent += OnPlayerBombBlast;
         }
 
         public IPlayer GetPlayer(PlayerTagConfig playerTagConfig)
@@ -183,6 +186,20 @@ namespace Level
 
                 agents.Add(behaviourAgent);
             }
+        }
+
+        private void OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
+        {
+            var bombConfig = player.Hero.BombConfig;
+            var bombCoordinate = LevelGridModel.ToTileCoordinate(worldPosition, true);
+            var position = LevelGridModel.ToWorldPosition(bombCoordinate);
+
+            _gameFactory.InstantiatePrefab(bombConfig.Prefab, fix2.ToXY(position));
+        }
+
+        private void OnPlayerBombBlast(IPlayer player)
+        {
+            throw new NotImplementedException();
         }
     }
 }

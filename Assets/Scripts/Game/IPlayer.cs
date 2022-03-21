@@ -8,8 +8,8 @@ namespace Game
 {
     public interface IPlayer
     {
-        event Action<fix2> BombPlantEvent;
-        event Action OnBombBlastEvent;
+        event Action<IPlayer, fix2> BombPlantEvent;
+        event Action<IPlayer> BombBlastEvent;
 
         PlayerConfig PlayerConfig { get; }
 

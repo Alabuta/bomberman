@@ -26,7 +26,7 @@ MonoBehaviour:
   PortalEnemies: []
   TimeIsUpEnemyConfigs: []
   PowerUpItems: []
-  BombConfig: {fileID: 11400000, guid: cd27d438adfefc142a47e3e6fc845479, type: 2}
+  BombConfig: {fileID: 0}
   PlayerSpawnCorner:
     x: 0
     y: 1

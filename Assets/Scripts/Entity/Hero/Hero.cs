@@ -9,8 +9,7 @@ namespace Entity.Hero
         public Hero(HeroConfig config, HeroController entityController)
             : base(config, entityController)
         {
-            HeroHealth = new HeroHealth(config.Health);
-            HeroHealth.HealthChangedEvent += OnHealthChanged;
+            BombConfig = config.BombConfig;
         }
     }
 }

@@ -11,8 +11,8 @@ namespace Game
 {
     public class Player : IPlayer, ISavedProgressWriter
     {
-        public event Action<fix2> BombPlantEvent;
-        public event Action OnBombBlastEvent;
+        public event Action<IPlayer, fix2> BombPlantEvent;
+        public event Action<IPlayer> BombBlastEvent;
 
         public PlayerConfig PlayerConfig { get; }
         public Hero Hero { get; private set; }
@@ -84,14 +84,14 @@ namespace Game
 
         private void OnBombPlant()
         {
-            if (Hero is not { IsAlive: true })
-                BombPlantEvent?.Invoke(Hero.WorldPosition);
+            if (Hero is { IsAlive: true })
+                BombPlantEvent?.Invoke(this, Hero.WorldPosition);
         }
 
         private void OnBombBlast()
         {
-            if (Hero is not { IsAlive: true })
-                OnBombBlastEvent?.Invoke();
+            if (Hero is { IsAlive: true })
+                BombBlastEvent?.Invoke(this);
         }
 
         private void OnHeroKill()
