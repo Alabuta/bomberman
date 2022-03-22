@@ -8,7 +8,7 @@ namespace Infrastructure
 {
     public class Game
     {
-        public static GameLevelManager LevelManager;
+        public static World World;
 
         public static GameStatsView GameStatsView;
 

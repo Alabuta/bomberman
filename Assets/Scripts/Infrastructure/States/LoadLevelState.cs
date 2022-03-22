@@ -74,7 +74,7 @@ namespace Infrastructure.States
             Assert.IsNotNull(Game.GameStatsView);
 
             // :TODO: extend draw logic for variable players count
-            var player = Game.LevelManager.Players.Values.FirstOrDefault();
+            var player = Game.World.Players.Values.FirstOrDefault();
             Assert.IsNotNull(player);
 
             gameObject.GetComponent<GameStatsView>().Construct(player.Hero);
@@ -93,10 +93,10 @@ namespace Infrastructure.States
 
             Random.InitState(levelStageConfig.RandomSeed);
 
-            Game.LevelManager = new GameLevelManager(_gameFactory, levelStage);// :TODO: move to DI
-            Game.LevelManager.GenerateLevelStage(levelStage, _gameFactory);
+            Game.World = new World(_gameFactory, levelStage);// :TODO: move to DI
+            Game.World.GenerateLevelStage(levelStage, _gameFactory);
 
-            var levelGridModel = Game.LevelManager.LevelGridModel;
+            var levelGridModel = Game.World.LevelGridModel;
 
             switch (levelStageConfig)
             {
@@ -112,9 +112,9 @@ namespace Infrastructure.States
                     throw new ArgumentOutOfRangeException(nameof(levelStageConfig));
             }
 
-            CreateAndSpawnEnemies(levelStageConfig, levelGridModel, Game.LevelManager);
+            CreateAndSpawnEnemies(levelStageConfig, levelGridModel, Game.World);
 
-            var defaultPlayer = Game.LevelManager.Players.Values.FirstOrDefault();// :TODO: use DefaultPlayerTag
+            var defaultPlayer = Game.World.Players.Values.FirstOrDefault();// :TODO: use DefaultPlayerTag
             if (defaultPlayer != null)
                 SetupCamera(levelStage, levelGridModel, defaultPlayer);
         }
@@ -156,18 +156,18 @@ namespace Infrastructure.States
             var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController);
             player.AttachHero(hero);
 
-            Game.LevelManager.AddPlayer(playerConfig.PlayerTagConfig, player);
+            Game.World.AddPlayer(playerConfig.PlayerTagConfig, player);
         }
 
         private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel,
-            GameLevelManager gameLevelManager)
+            World world)
         {
             var enemySpawnElements = levelStageConfig.Enemies;
             var enemyConfigs = enemySpawnElements
                 .SelectMany(e => Enumerable.Range(0, e.Count).Select(_ => e.EnemyConfig))
                 .ToArray();
 
-            var playersCoordinates = gameLevelManager.Players.Values
+            var playersCoordinates = world.Players.Values
                 .Select(p => levelGridModel.ToTileCoordinate(p.Hero.WorldPosition))
                 .ToArray();
 
@@ -192,10 +192,11 @@ namespace Infrastructure.States
                 var enemy = _gameFactory.CreateEnemy(enemyConfig, entityController);
                 Assert.IsNotNull(enemy);
 
-                Game.LevelManager.AddEnemy(enemy);
+                Game.World.AddEnemy(enemy);
 
                 var behaviourAgents = _gameFactory.CreateBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
-                Game.LevelManager.AddBehaviourAgents(enemy, behaviourAgents);
+                foreach (var behaviourAgent in behaviourAgents)
+                    Game.World.AddBehaviourAgent(enemy, behaviourAgent);
             }
         }
 
