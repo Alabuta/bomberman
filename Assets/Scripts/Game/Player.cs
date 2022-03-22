@@ -11,6 +11,7 @@ namespace Game
 {
     public class Player : IPlayer, ISavedProgressWriter
     {
+        public event Action<IPlayer, int2, fix> HeroMoveEvent;
         public event Action<IPlayer, fix2> BombPlantEvent;
         public event Action<IPlayer> BombBlastEvent;
 
@@ -77,9 +78,14 @@ namespace Game
             {
                 Hero.Direction = (int2) math.round(value);
                 Hero.Speed = Hero.InitialSpeed * Hero.SpeedMultiplier;
+
+                HeroMoveEvent?.Invoke(this, (int2) math.round(value), Hero.InitialSpeed * Hero.SpeedMultiplier);
             }
             else
-                Hero.Speed = 0;
+            {
+                Hero.Speed = fix.zero;
+                HeroMoveEvent?.Invoke(this, Hero.Direction, fix.zero);
+            }
         }
 
         private void OnBombPlant()

@@ -39,7 +39,7 @@ namespace Entity.Behaviours.MovementBehaviours
             if (targetTile == null)
             {
                 entity.Direction = int2.zero;
-                entity.Speed = 0;
+                entity.Speed = fix.zero;
 
                 return;
             }
@@ -47,7 +47,7 @@ namespace Entity.Behaviours.MovementBehaviours
             targetTileCoordinate = targetTile.Coordinate;
 
             entity.Direction = (int2) math.normalize(targetTileCoordinate - currentTileCoordinate);
-            entity.Speed = 1;
+            entity.Speed = fix.one;
 
             entity.WorldPosition =
                 ToWorldPosition + (fix2) entity.Direction * fix2.distance(entity.WorldPosition, ToWorldPosition);

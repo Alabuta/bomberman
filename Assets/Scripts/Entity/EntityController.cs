@@ -13,10 +13,10 @@ namespace Entity
         [SerializeField]
         protected Transform Transform;
 
-        public abstract float Speed { get; set; }
+        public abstract fix Speed { get; set; }
         public float PlaybackSpeed => EntityAnimator.PlaybackSpeed;
 
-        public abstract float2 Direction { get; set; }
+        public abstract int2 Direction { get; set; }
 
         public fix2 WorldPosition
         {
@@ -45,7 +45,12 @@ namespace Entity
 
         private void FixedUpdate()
         {
-            Transform.Translate(Direction.xyy * Speed * MovementConvertMask * Time.fixedDeltaTime);
+            Transform.Translate((float3) Direction.xyy * (float) Speed * MovementConvertMask * Time.fixedDeltaTime);
         }
+
+        /*public void Update(fix deltaTime)
+        {
+            // Transform.Translate(Direction.xyy * Speed * MovementConvertMask * (float) deltaTime);
+        }*/
     }
 }

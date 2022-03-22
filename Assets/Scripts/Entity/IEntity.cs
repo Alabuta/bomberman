@@ -18,9 +18,9 @@ namespace Entity
 
         public Health Health { get; }
 
-        float Speed { get; set; }
-        float InitialSpeed { get; }
-        float SpeedMultiplier { get; set; }
+        fix Speed { get; set; }
+        fix InitialSpeed { get; }
+        fix SpeedMultiplier { get; set; }
 
         int2 Direction { get; set; }
 

@@ -5,9 +5,9 @@ namespace Entity
 {
     public interface IEntityController
     {
-        float Speed { get; set; }
+        fix Speed { get; set; }
         float PlaybackSpeed { get; }
-        float2 Direction { get; set; }
+        int2 Direction { get; set; }
 
         fix2 WorldPosition { get; set; }
 

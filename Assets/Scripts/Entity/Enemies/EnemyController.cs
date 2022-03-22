@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using Math.FixedPointMath;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Entity.Enemies
@@ -11,7 +12,7 @@ namespace Entity.Enemies
         protected override EntityAnimator EntityAnimator =>
             EnemyAnimator;
 
-        public override float Speed { get; set; }
-        public override float2 Direction { get; set; }
+        public override fix Speed { get; set; }
+        public override int2 Direction { get; set; }
     }
 }

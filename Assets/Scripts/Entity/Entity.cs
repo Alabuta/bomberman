@@ -18,7 +18,7 @@ namespace Entity
 
         public Health Health { get; private set; }
 
-        public float Speed
+        public fix Speed
         {
             get => _speed;
             set
@@ -30,9 +30,9 @@ namespace Entity
             }
         }
 
-        public float InitialSpeed => EntityConfig.Speed;
+        public fix InitialSpeed => (fix) EntityConfig.Speed;
 
-        public float SpeedMultiplier { get; set; }
+        public fix SpeedMultiplier { get; set; }
 
         public int2 Direction
         {
@@ -55,7 +55,7 @@ namespace Entity
         public fix HitRadius { get; }
         public fix HurtRadius { get; }
 
-        private float _speed;
+        private fix _speed;
         private int2 _direction;
 
         protected Entity(TConfig config, IEntityController entityController)
@@ -63,8 +63,8 @@ namespace Entity
             EntityConfig = config;
             EntityController = entityController;
 
-            Speed = 0;
-            SpeedMultiplier = 1;
+            Speed = fix.zero;
+            SpeedMultiplier = fix.one;
 
             Health = new Health(EntityConfig.Health);
             Health.HealthChangedEvent += OnHealthChanged;
@@ -77,8 +77,8 @@ namespace Entity
 
         public void Kill()
         {
-            Speed = 0;
-            SpeedMultiplier = 1;
+            Speed = fix.zero;
+            SpeedMultiplier = fix.one;
 
             Health = new Health(0);
 

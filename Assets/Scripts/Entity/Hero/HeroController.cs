@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using Math.FixedPointMath;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Entity.Hero
@@ -8,17 +9,17 @@ namespace Entity.Hero
         [SerializeField]
         private HeroAnimator HeroAnimator;
 
-        private float _speed;
-        private float2 _direction;
+        private fix _speed;
+        private int2 _direction;
 
-        public override float Speed
+        public override fix Speed
         {
             get => _speed;
             set
             {
                 _speed = value;
 
-                if (Speed > 0)
+                if (Speed > fix.zero)
                     HeroAnimator.Move();
                 else
                     HeroAnimator.StopMovement();
@@ -27,7 +28,7 @@ namespace Entity.Hero
             }
         }
 
-        public override float2 Direction
+        public override int2 Direction
         {
             get => _direction;
             set
