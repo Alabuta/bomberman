@@ -4,7 +4,7 @@ using Math.FixedPointMath;
 using Unity.Mathematics;
 using Random = UnityEngine.Random;
 
-namespace Entity.Behaviours
+namespace Entity.Behaviours.MovementBehaviours
 {
     public class AdvancedMovementBehaviourAgent : MovementBehaviourAgentBase
     {

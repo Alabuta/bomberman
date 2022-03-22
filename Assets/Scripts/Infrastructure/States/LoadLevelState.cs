@@ -58,35 +58,16 @@ namespace Infrastructure.States
 
         private void OnLoaded(LevelStage levelStage)
         {
-            InitWorld(levelStage);
-
-            InformProgressReaders();
+            CreateWorld(levelStage);
 
             CreateGameStatsPanel(levelStage.GameModeConfig);
+
+            InformProgressReaders();
 
             _gameStateMachine.Enter<GameLoopState>();
         }
 
-        private void CreateGameStatsPanel(GameModeConfig gameModeConfig)
-        {
-            var gameObject = _gameFactory.InstantiatePrefab(gameModeConfig.GameStatsViewPrefab, float3.zero);
-            Game.GameStatsView = gameObject.GetComponent<GameStatsView>();
-            Assert.IsNotNull(Game.GameStatsView);
-
-            // :TODO: extend draw logic for variable players count
-            var player = Game.World.Players.Values.FirstOrDefault();
-            Assert.IsNotNull(player);
-
-            gameObject.GetComponent<GameStatsView>().Construct(player.Hero);
-        }
-
-        private void InformProgressReaders()
-        {
-            foreach (var progressReader in _gameFactory.ProgressReaders)
-                progressReader.LoadProgress(_progressService.Progress);
-        }
-
-        private void InitWorld(LevelStage levelStage)
+        private void CreateWorld(LevelStage levelStage)
         {
             var gameModeConfig = levelStage.GameModeConfig;
             var levelStageConfig = levelStage.LevelStageConfig;
@@ -117,6 +98,25 @@ namespace Infrastructure.States
             var defaultPlayer = Game.World.Players.Values.FirstOrDefault();// :TODO: use DefaultPlayerTag
             if (defaultPlayer != null)
                 SetupCamera(levelStage, levelGridModel, defaultPlayer);
+        }
+
+        private void CreateGameStatsPanel(GameModeConfig gameModeConfig)
+        {
+            var gameObject = _gameFactory.InstantiatePrefab(gameModeConfig.GameStatsViewPrefab, float3.zero);
+            Game.GameStatsView = gameObject.GetComponent<GameStatsView>();
+            Assert.IsNotNull(Game.GameStatsView);
+
+            // :TODO: extend draw logic for variable players count
+            var player = Game.World.Players.Values.FirstOrDefault();
+            Assert.IsNotNull(player);
+
+            gameObject.GetComponent<GameStatsView>().Construct(player.Hero);
+        }
+
+        private void InformProgressReaders()
+        {
+            foreach (var progressReader in _gameFactory.ProgressReaders)
+                progressReader.LoadProgress(_progressService.Progress);
         }
 
         private void CreatePlayersAndSpawnHeroesPvE(GameModePvEConfig gameMode, LevelStagePvEConfig baseConfig,

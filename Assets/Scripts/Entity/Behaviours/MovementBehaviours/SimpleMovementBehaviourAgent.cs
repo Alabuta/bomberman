@@ -2,7 +2,7 @@ using Configs.Behaviours;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
-namespace Entity.Behaviours
+namespace Entity.Behaviours.MovementBehaviours
 {
     public class SimpleMovementBehaviourAgent : MovementBehaviourAgentBase
     {

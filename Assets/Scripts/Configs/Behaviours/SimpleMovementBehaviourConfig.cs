@@ -1,5 +1,6 @@
 using Entity;
 using Entity.Behaviours;
+using Entity.Behaviours.MovementBehaviours;
 using UnityEngine;
 
 namespace Configs.Behaviours

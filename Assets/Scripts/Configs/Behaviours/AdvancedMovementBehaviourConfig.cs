@@ -1,6 +1,7 @@
 using Core.Attributes;
 using Entity;
 using Entity.Behaviours;
+using Entity.Behaviours.MovementBehaviours;
 using UnityEngine;
 using RangeInt = Core.Attributes.RangeInt;
 
