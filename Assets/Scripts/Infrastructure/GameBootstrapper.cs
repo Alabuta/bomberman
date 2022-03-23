@@ -19,5 +19,10 @@ namespace Infrastructure
         {
             _game.GameStateMachine.Update();
         }
+
+        private void FixedUpdate()
+        {
+            _game.GameStateMachine.FixedUpdate();
+        }
     }
 }

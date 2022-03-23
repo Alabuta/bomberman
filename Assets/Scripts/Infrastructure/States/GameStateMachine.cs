@@ -15,6 +15,7 @@ namespace Infrastructure.States
         private IExitableState _activeState;
 
         public Action UpdateCallback;
+        public Action FixedUpdateCallback;
 
         public GameStateMachine(SceneLoader sceneLoader, ServiceLocator serviceLocator)
         {
@@ -57,6 +58,11 @@ namespace Infrastructure.States
         public void Update()
         {
             UpdateCallback?.Invoke();
+        }
+
+        public void FixedUpdate()
+        {
+            FixedUpdateCallback?.Invoke();
         }
     }
 }

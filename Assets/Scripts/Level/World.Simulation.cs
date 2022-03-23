@@ -28,7 +28,7 @@ namespace Level
             var heroes = Players.Values.Select(p => p.Hero).ToArray();
             var gameContext = new GameContext(LevelGridModel, heroes);
 
-            var deltaTime = Time.deltaTime + _timeRemainder;
+            var deltaTime = Time.fixedDeltaTime + _timeRemainder;
 
             var targetTick = _tick + (ulong) (TickRate * deltaTime);
             var tickCounts = targetTick - _tick;
