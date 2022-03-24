@@ -6,6 +6,14 @@ using UnityEngine.InputSystem;
 
 namespace Input
 {
+    public struct PlayerInputAction
+    {
+        public IPlayerInput PlayerInput;
+        public float2 MovementVector;
+        public bool BombPlant;
+        public bool BombBlast;
+    }
+
     [RequireComponent(typeof(UnityEngine.InputSystem.PlayerInput))]
     public class PlayerInput : MonoBehaviour, IPlayerInput
     {
