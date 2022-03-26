@@ -11,12 +11,18 @@ namespace Entity.Behaviours.MovementBehaviours
         {
         }
 
-        public override void Update(GameContext gameContext, IEntity entity)
+        public override void Update(GameContext gameContext, IEntity entity, fix deltaTime)
         {
             var levelGridModel = gameContext.LevelGridModel;
 
-            if (!IsNeedToUpdate(entity))
+            var path = entity.Speed * deltaTime;
+            var worldPosition = entity.WorldPosition + (fix2) entity.Direction * path;
+
+            if (!IsNeedToUpdate(worldPosition))
+            {
+                entity.WorldPosition = worldPosition;
                 return;
+            }
 
             if (entity.Direction.x == 0 && entity.Direction.y == 0)
                 entity.Direction = math.int2(1, 0);

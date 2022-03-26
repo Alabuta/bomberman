@@ -19,7 +19,11 @@ namespace Infrastructure.States
 
             _gameStateMachine.FixedUpdateCallback = () => { Game.World.UpdateSimulation(); };
 
-            _gameStateMachine.UpdateCallback = () => { Game.GameStatsView.UpdateLevelStageTimer(Game.World.LevelStageTimer); };
+            _gameStateMachine.UpdateCallback = () =>
+            {
+                Game.World.UpdateView();
+                Game.GameStatsView.UpdateLevelStageTimer(Game.World.LevelStageTimer);
+            };
         }
     }
 }

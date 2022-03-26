@@ -20,10 +20,7 @@ namespace Input
         private readonly float2 _horizontalMovementMask = new(1, 0);
         private readonly float2 _verticalMovementMask = new(0, 1);
 
-        public event Action<float2> OnMoveEvent;
-
-        public event Action OnBombPlantEvent;
-        public event Action OnBombBlastEvent;
+        public event Action<PlayerInputAction> OnInputActionEvent;
 
         [UsedImplicitly]
         public void OnMove(InputValue value)
@@ -31,19 +28,19 @@ namespace Input
             var moveVector = (float2) value.Get<Vector2>();
             moveVector *= math.select(_horizontalMovementMask, _verticalMovementMask, moveVector.y != 0);
 
-            OnMoveEvent?.Invoke(moveVector);
+            OnInputActionEvent?.Invoke(new PlayerInputAction { PlayerInput = this, MovementVector = moveVector });
         }
 
         [UsedImplicitly]
         public void OnBombPlant(InputValue value)
         {
-            OnBombPlantEvent?.Invoke();
+            OnInputActionEvent?.Invoke(new PlayerInputAction { PlayerInput = this, BombPlant = true });
         }
 
         [UsedImplicitly]
         public void OnBombBlast(InputValue value)
         {
-            OnBombBlastEvent?.Invoke();
+            OnInputActionEvent?.Invoke(new PlayerInputAction { PlayerInput = this, BombBlast = true });
         }
     }
 }

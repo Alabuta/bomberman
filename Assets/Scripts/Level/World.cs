@@ -6,6 +6,8 @@ using Entity.Behaviours;
 using Entity.Enemies;
 using Game;
 using Infrastructure.Factory;
+using Infrastructure.Services.Input;
+using Input;
 using Unity.Mathematics;
 
 namespace Level
@@ -16,9 +18,13 @@ namespace Level
 
         public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
 
-        public double LevelStageTimer => math.max(0, _levelStageTimer - _simulationCurrentTime + _simulationStartTime);
+        public double LevelStageTimer =>
+            math.max(0, _levelStageTimer - (double) (_simulationCurrentTime - _simulationStartTime));
 
         private readonly IGameFactory _gameFactory;
+        private readonly IInputService _inputService;
+
+        private readonly Dictionary<IPlayerInput, IPlayer> _playerInputs = new();
 
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
         private readonly HashSet<Enemy> _enemies = new();
@@ -28,18 +34,16 @@ namespace Level
         private readonly double _levelStageTimer;
 
 
-        public World(IGameFactory gameFactory, LevelStage levelStage)
+        public World(IGameFactory gameFactory, LevelStage levelStage, IInputService inputService)
         {
             _gameFactory = gameFactory;
+            _inputService = inputService;
             _levelStageTimer = levelStage.LevelStageConfig.LevelStageTimer;
         }
 
         public void AddPlayer(PlayerTagConfig playerTagConfig, IPlayer player)
         {
             _players.Add(playerTagConfig, player);// :TODO: refactor
-
-            player.BombPlantEvent += OnPlayerBombPlant;
-            player.BombBlastEvent += OnPlayerBombBlast;
         }
 
         public IPlayer GetPlayer(PlayerTagConfig playerTagConfig)
@@ -52,12 +56,6 @@ namespace Level
             _enemies.Add(enemy);
         }
 
-        public void AddBehaviourAgents(IEntity entity, IEnumerable<IBehaviourAgent> behaviourAgents)
-        {
-            foreach (var behaviourAgent in behaviourAgents)
-                AddBehaviourAgent(entity, behaviourAgent);
-        }
-
         public void AddBehaviourAgent(IEntity entity, IBehaviourAgent behaviourAgent)
         {
             if (!_behaviourAgents.TryGetValue(entity, out var agents))
@@ -67,6 +65,13 @@ namespace Level
             }
 
             agents.Add(behaviourAgent);
+        }
+
+        public void AttachPlayerInput(IPlayer player, IPlayerInput playerInput)
+        {
+            _playerInputs.Add(playerInput, player);
+
+            playerInput.OnInputActionEvent += OnPlayerInputAction;// :TODO: unsubscribe when player is dead
         }
     }
 }

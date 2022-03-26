@@ -7,10 +7,6 @@ namespace Entity
     public abstract class EntityController : MonoBehaviour, IEntityController
     {
         [SerializeField]
-        [HideInInspector]
-        private float3 MovementConvertMask = new(1, 1, 0);
-
-        [SerializeField]
         protected Transform Transform;
 
         public abstract fix Speed { get; set; }
@@ -42,15 +38,5 @@ namespace Entity
         {
             Revive();
         }
-
-        private void FixedUpdate()
-        {
-            Transform.Translate((float3) Direction.xyy * (float) Speed * MovementConvertMask * Time.fixedDeltaTime);
-        }
-
-        /*public void Update(fix deltaTime)
-        {
-            // Transform.Translate(Direction.xyy * Speed * MovementConvertMask * (float) deltaTime);
-        }*/
     }
 }

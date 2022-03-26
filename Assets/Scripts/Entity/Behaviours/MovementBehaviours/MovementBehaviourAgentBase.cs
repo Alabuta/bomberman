@@ -67,10 +67,10 @@ namespace Entity.Behaviours
             return tileCoordinates[index];
         }
 
-        protected virtual bool IsNeedToUpdate(IEntity entity)
+        protected virtual bool IsNeedToUpdate(fix2 worldPosition)
         {
             var directionA = ToWorldPosition - FromWorldPosition;
-            var directionC = entity.WorldPosition - ToWorldPosition;
+            var directionC = worldPosition - ToWorldPosition;
 
             var lengthSqA = fix2.lengthsq(directionA);
             var lengthSqC = fix2.lengthsq(directionC);
@@ -79,7 +79,7 @@ namespace Entity.Behaviours
             if (!isEntityMoved)
                 return true;
 
-            return lengthSqA <= fix2.distanceq(entity.WorldPosition, FromWorldPosition) + lengthSqC;
+            return lengthSqA <= fix2.distanceq(worldPosition, FromWorldPosition) + lengthSqC;
         }
     }
 }

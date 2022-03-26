@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Level;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Entity.Behaviours
@@ -13,7 +14,7 @@ namespace Entity.Behaviours
             Config = config;
         }*/
 
-        public abstract void Update(GameContext gameContext, IEntity entity);
+        public abstract void Update(GameContext gameContext, IEntity entity, fix deltaTime);
     }
 
     public class GameContext

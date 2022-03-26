@@ -18,7 +18,7 @@ namespace Entity.Behaviours.AttackBehaviours
             _overlappedHeroes = Array.Empty<Hero.Hero>();
         }
 
-        public override void Update(GameContext gameContext, IEntity entity)
+        public override void Update(GameContext gameContext, IEntity entity, fix deltaTime)
         {
             var overlappedHeroes = gameContext.Heroes
                 .Where(h => AreEntitiesOverlapped(entity, h))

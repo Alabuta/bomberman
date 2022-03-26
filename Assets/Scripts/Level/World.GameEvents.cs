@@ -1,11 +1,23 @@
 using System;
+using System.Collections.Generic;
 using Game;
+using Input;
 using Math.FixedPointMath;
 
 namespace Level
 {
     public partial class World
     {
+        private readonly Dictionary<ulong, List<PlayerInputAction>> _playerInputActions = new();
+
+        private void OnPlayerInputAction(PlayerInputAction inputActions)
+        {
+            if (!_playerInputActions.ContainsKey(Tick))
+                _playerInputActions.Add(Tick, new List<PlayerInputAction>());
+
+            _playerInputActions[Tick].Add(inputActions);
+        }
+
         private void OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
         {
             var bombConfig = player.Hero.BombConfig;

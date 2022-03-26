@@ -20,12 +20,18 @@ namespace Entity.Behaviours.MovementBehaviours
             _changeFrequencyUpperBound = config.DirectionChangeFrequency.Max;
         }
 
-        public override void Update(GameContext gameContext, IEntity entity)
+        public override void Update(GameContext gameContext, IEntity entity, fix deltaTime)
         {
             var levelGridModel = gameContext.LevelGridModel;
 
-            if (!IsNeedToUpdate(entity))
+            var path = entity.Speed * deltaTime;
+            var worldPosition = entity.WorldPosition + (fix2) entity.Direction * path;
+
+            if (!IsNeedToUpdate(worldPosition))
+            {
+                entity.WorldPosition = worldPosition;
                 return;
+            }
 
             var currentTileCoordinate = levelGridModel.ToTileCoordinate(ToWorldPosition);
             int2 targetTileCoordinate;

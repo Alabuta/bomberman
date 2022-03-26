@@ -46,14 +46,11 @@ namespace Entity
             }
         }
 
-        public fix2 WorldPosition
-        {
-            get => EntityController.WorldPosition;
-            set => EntityController.WorldPosition = value;
-        }
+        public fix2 WorldPosition { get; set; }
 
         public fix HitRadius { get; }
         public fix HurtRadius { get; }
+        public fix ColliderRadius { get; }
 
         private fix _speed;
         private int2 _direction;
@@ -73,6 +70,9 @@ namespace Entity
 
             HitRadius = (fix) config.HitRadius;
             HurtRadius = (fix) config.HurtRadius;
+            ColliderRadius = (fix) config.ColliderRadius;
+
+            WorldPosition = entityController.WorldPosition;
         }
 
         public void Kill()

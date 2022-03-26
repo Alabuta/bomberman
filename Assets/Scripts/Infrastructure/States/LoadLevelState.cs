@@ -74,7 +74,7 @@ namespace Infrastructure.States
 
             Random.InitState(levelStageConfig.RandomSeed);
 
-            Game.World = new World(_gameFactory, levelStage);// :TODO: move to DI
+            Game.World = new World(_gameFactory, levelStage, _inputService);// :TODO: move to DI
             Game.World.GenerateLevelStage(levelStage, _gameFactory);
 
             var levelGridModel = Game.World.LevelGridModel;
@@ -143,7 +143,7 @@ namespace Infrastructure.States
             Assert.IsNotNull(player);
 
             var playerInput = _inputService.RegisterPlayerInput(playerConfig);
-            player.AttachPlayerInput(playerInput);
+            Game.World.AttachPlayerInput(player, playerInput);
 
             var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
 

@@ -98,7 +98,7 @@ Rigidbody2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3606758829682564309}
   m_BodyType: 0
-  m_Simulated: 1
+  m_Simulated: 0
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
@@ -168,10 +168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1d5feea348f4113a91639474414b381, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MovementConvertMask:
-    x: 1
-    y: 1
-    z: 0
   Transform: {fileID: 3606758829682564299}
   HeroAnimator: {fileID: 1415490775431177746}
 --- !u!114 &1415490775431177746
