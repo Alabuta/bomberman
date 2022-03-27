@@ -8,20 +8,20 @@ namespace Level
 {
     public partial class World
     {
-        private readonly Dictionary<ulong, List<PlayerInputAction>> _playerInputActions = new();
+        private readonly Dictionary<ulong, List<PlayerInputAction>> _playersInputActions = new();
 
         private void OnPlayerInputAction(PlayerInputAction inputActions)
         {
-            if (!_playerInputActions.ContainsKey(Tick))
-                _playerInputActions.Add(Tick, new List<PlayerInputAction>());
+            if (!_playersInputActions.ContainsKey(Tick))
+                _playersInputActions.Add(Tick, new List<PlayerInputAction>());
 
-            _playerInputActions[Tick].Add(inputActions);
+            _playersInputActions[Tick].Add(inputActions);
         }
 
         private void OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
         {
             var bombConfig = player.Hero.BombConfig;
-            var bombCoordinate = LevelGridModel.ToTileCoordinate(worldPosition, true);
+            var bombCoordinate = LevelGridModel.ToTileCoordinate(worldPosition);
             var position = LevelGridModel.ToWorldPosition(bombCoordinate);
 
             _gameFactory.InstantiatePrefab(bombConfig.Prefab, fix2.ToXY(position));

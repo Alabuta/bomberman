@@ -79,7 +79,7 @@ namespace Entity.Behaviours
             if (!isEntityMoved)
                 return true;
 
-            return lengthSqA <= fix2.distanceq(worldPosition, FromWorldPosition) + lengthSqC;
+            return lengthSqA <= fix2.distancesq(worldPosition, FromWorldPosition) + lengthSqC;
         }
     }
 }

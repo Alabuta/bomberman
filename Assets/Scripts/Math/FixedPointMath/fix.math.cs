@@ -456,5 +456,22 @@ namespace Math.FixedPointMath
         {
             return max(a, min(b, x));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool is_point_inside_circle(fix2 point, fix2 circleCenter, fix circleRadius)
+        {
+            return fix2.distancesq(point, circleCenter) < circleRadius * circleRadius;
+        }
+
+        public static bool intersection_point(fix2 circleCenter, fix circleR, fix2 aabbCenter, fix innerR, out fix2 point)
+        {
+            var pMax = aabbCenter + innerR;
+            var pMin = aabbCenter - innerR;
+
+            point = fix2.max(pMin, fix2.min(circleCenter, pMax));
+
+            var x = is_point_inside_circle(point, circleCenter, circleR);
+            return x;
+        }
     }
 }

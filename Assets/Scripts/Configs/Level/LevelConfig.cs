@@ -21,7 +21,7 @@ namespace Configs.Level
         public GameObject Walls;
 
         [Header("Tiles & Blocks Parameters")]
-        public float2 TileSizeWorldUnits;
+        public double TileSizeWorldUnits = 1;
 
         public HardBlockConfig HardBlockConfig;
         public SoftBlockConfig SoftBlockConfig;

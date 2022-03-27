@@ -13,11 +13,24 @@ namespace Level
 {
     public sealed class GameLevelGridModel : IEnumerable<ILevelTileView>
     {
+        private static readonly int2[] NeighborTilesOffsets =
+        {
+            new(1, 1),
+            new(1, -1),
+            new(-1, -1),
+            new(-1, 1),
+
+            new(0, 1),
+            new(1, 0),
+            new(0, -1),
+            new(-1, 0)
+        };
+
         [NotNull]
-        private readonly LevelTile[] _grid;
+        private readonly LevelTile[] _tiles;
 
         private readonly int2 _size;
-        private readonly fix2 _tileSizeWorldUnits;
+        private readonly fix _tileSizeWorldUnits;
 
         public int2 Size => _size;
         public fix2 WorldSize => (fix2) _size * _tileSizeWorldUnits;
@@ -25,12 +38,16 @@ namespace Level
         public int ColumnsNumber => _size.x;
         public int RowsNumber => _size.y;
 
-        public ILevelTileView this[int index] => _grid[index];
-        public ILevelTileView this[int2 coordinate] => _grid[GetFlattenTileCoordinate(coordinate)];
+        public fix TileSize => _tileSizeWorldUnits;
+        public fix TileInnerRadius => _tileSizeWorldUnits / new fix(2);
+        public fix TileOuterRadius => TileInnerRadius * fix.sqrt(new fix(2));
+
+        public ILevelTileView this[int index] => _tiles[index];
+        public ILevelTileView this[int2 coordinate] => _tiles[GetFlattenTileCoordinate(coordinate)];
 
         public GameLevelGridModel(LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
-            _tileSizeWorldUnits = (fix2) levelConfig.TileSizeWorldUnits;
+            _tileSizeWorldUnits = (fix) levelConfig.TileSizeWorldUnits;
 
             _size = math.int2(levelStageConfig.ColumnsNumber, levelStageConfig.RowsNumber);
             Assert.IsTrue(math.all(_size % 2 != int2.zero));
@@ -58,7 +75,7 @@ namespace Level
                     .Select(i => Random.Range(i * softBlocksPerPowerUpItem, (i + 1) * softBlocksPerPowerUpItem))
             );*/
 
-            _grid = GenerateLevelGrid(spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
+            _tiles = GenerateLevelGrid(spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
         }
 
         private static IEnumerable<int2> GetPlayersSpawnCorners(LevelStageConfig levelStageConfig)
@@ -138,11 +155,11 @@ namespace Level
             return position;
         }
 
-        public int2 ToTileCoordinate(fix2 position, bool isRounded = false)
+        public int2 ToTileCoordinate(fix2 position)
         {
             var coordinate = position / _tileSizeWorldUnits + (fix2) (_size - 1) / new fix2(2);
 
-            return ClampCoordinate((int2) (isRounded ? fix2.round(coordinate) : coordinate));
+            return ClampCoordinate((int2) fix2.round(coordinate));
         }
 
         public fix2 ToWorldPosition(int2 coordinate)
@@ -176,14 +193,22 @@ namespace Level
             return math.all(coordinate >= 0) && math.all(coordinate < _size);
         }
 
-        public IReadOnlyList<LevelTile> GetTilesByType(LevelTileType type)
+        public IEnumerable<ILevelTileView> GetNeighborTiles(int2 coordinate)
         {
-            return _grid.Where(t => t.Type == type).ToArray();
+            return NeighborTilesOffsets
+                .Select(o => coordinate + o)
+                .Where(IsCoordinateInField)
+                .Select(c => this[c]);
+        }
+
+        public IEnumerable<LevelTile> GetTilesByType(LevelTileType type)
+        {
+            return _tiles.Where(t => t.Type == type);
         }
 
         public IEnumerator<ILevelTileView> GetEnumerator()
         {
-            return _grid.AsEnumerable().GetEnumerator();
+            return _tiles.AsEnumerable().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

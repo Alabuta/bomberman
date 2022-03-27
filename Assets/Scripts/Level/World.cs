@@ -22,7 +22,6 @@ namespace Level
             math.max(0, _levelStageTimer - (double) (_simulationCurrentTime - _simulationStartTime));
 
         private readonly IGameFactory _gameFactory;
-        private readonly IInputService _inputService;
 
         private readonly Dictionary<IPlayerInput, IPlayer> _playerInputs = new();
 
@@ -37,7 +36,6 @@ namespace Level
         public World(IGameFactory gameFactory, LevelStage levelStage, IInputService inputService)
         {
             _gameFactory = gameFactory;
-            _inputService = inputService;
             _levelStageTimer = levelStage.LevelStageConfig.LevelStageTimer;
         }
 

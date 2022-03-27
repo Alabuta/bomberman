@@ -26,7 +26,7 @@ namespace Math.FixedPointMath
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static fix distanceq(fix2 a, fix2 b)
+        public static fix distancesq(fix2 a, fix2 b)
         {
             return lengthsq(b - a);
         }

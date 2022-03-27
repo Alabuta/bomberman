@@ -1,7 +1,6 @@
 using System.Linq;
 using Entity.Behaviours;
 using Math.FixedPointMath;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Level
@@ -38,71 +37,11 @@ namespace Level
             var tickCounts = targetTick - Tick;
             while (Tick < targetTick)
             {
-                if (_playerInputActions.TryGetValue(Tick, out var playerInputActions))
-                {
-                    foreach (var inputAction in playerInputActions)
-                    {
-                        var player = _playerInputs[inputAction.PlayerInput];
-                        player.ApplyInputAction(inputAction);
-                    }
-                }
+                ProcessPlayersInput();
 
-                _playerInputActions.Remove(Tick);
+                UpdateCollisions();
 
-                foreach (var (_, player) in _players)
-                {
-                    player.Hero.UpdatePosition(_fixedDeltaTime);
-
-                    var heroWorldPosition = player.Hero.WorldPosition;
-                    var tileCoordinate = LevelGridModel.ToTileCoordinate(heroWorldPosition);
-                    var minDistance = player.Hero.ColliderRadius + new fix(.5);
-                    var overlappedTiles = new[]
-                    {
-                        new int2(1, 1),
-                        new int2(1, -1),
-                        new int2(-1, -1),
-                        new int2(-1, 1),
-
-                        new int2(0, 1),
-                        new int2(1, 0),
-                        new int2(0, -1),
-                        new int2(-1, 0)
-                    };
-                    var overlappedTiles2 = overlappedTiles
-                            .Select(d => tileCoordinate + d)
-                            .Where(LevelGridModel.IsCoordinateInField)
-                            .Select(c => LevelGridModel[c])
-                            .Where(t => t.Type != LevelTileType.FloorTile)
-                        /*.FirstOrDefault(t => fix2.distance(t.WorldPosition, heroWorldPosition) < minDistance)*/;
-                    /*if (overlappedTile != null)
-                    {
-                        var vector = fix2.normalize(player.Hero.WorldPosition - overlappedTile.WorldPosition);
-                        player.Hero.WorldPosition = overlappedTile.WorldPosition + vector * minDistance;
-                    }*/
-                    foreach (var overlappedTile in overlappedTiles2)
-                    {
-                        if (fix2.distance(overlappedTile.WorldPosition, heroWorldPosition) < minDistance)
-                        {
-                            var vector = fix2.normalize(overlappedTile.WorldPosition - player.Hero.WorldPosition);
-                            player.Hero.WorldPosition = overlappedTile.WorldPosition - vector * minDistance;
-                        }
-                    }
-                    /*if (LevelGridModel[tileCoordinate].Type != LevelTileType.FloorTile)
-                    {
-                        player.Hero.WorldPosition = LevelGridModel.ToWorldPosition(tileCoordinate - player.Hero.Direction);
-                    }*/
-
-                    /*if (math.any(tileCoordinate < int2.zero) || math.any(tileCoordinate >= LevelGridModel.Size))
-                    {
-                        player.Hero.WorldPosition = LevelGridModel.ToWorldPosition(tileCoordinate - player.Hero.Direction);
-                    }*/
-                }
-
-                foreach (var (entity, behaviourAgents) in _behaviourAgents)
-                {
-                    foreach (var behaviourAgent in behaviourAgents)
-                        behaviourAgent.Update(gameContext, entity, _fixedDeltaTime);
-                }
+                UpdateBehaviourAgents(gameContext);
 
                 ++Tick;
             }
@@ -119,6 +58,61 @@ namespace Level
 
             foreach (var enemy in _enemies)
                 enemy.EntityController.WorldPosition = enemy.WorldPosition;
+        }
+
+        private void ProcessPlayersInput()
+        {
+            if (_playersInputActions.TryGetValue(Tick, out var playerInputActions))
+            {
+                foreach (var inputAction in playerInputActions)
+                {
+                    var player = _playerInputs[inputAction.PlayerInput];
+                    player.ApplyInputAction(inputAction);
+
+                    if (inputAction.BombPlant)
+                        OnPlayerBombPlant(player, player.Hero.WorldPosition);
+                }
+            }
+
+            _playersInputActions.Remove(Tick);
+        }
+
+        private void UpdateCollisions()
+        {
+            var innerRadius = LevelGridModel.TileInnerRadius;
+
+            foreach (var (_, player) in _players)
+            {
+                player.Hero.UpdatePosition(_fixedDeltaTime);
+
+                var circleCenter = player.Hero.WorldPosition;
+                var heroTileCoordinate = LevelGridModel.ToTileCoordinate(circleCenter);
+
+                var neighborTiles = LevelGridModel
+                    .GetNeighborTiles(heroTileCoordinate)
+                    .Where(t => t.Type != LevelTileType.FloorTile);
+
+                foreach (var neighborTile in neighborTiles)
+                {
+                    var aabbCenter = neighborTile.WorldPosition;
+                    var isIntersected = fix.intersection_point(circleCenter, player.Hero.ColliderRadius,
+                        aabbCenter, innerRadius, out var intersectionPoint);
+                    if (!isIntersected)
+                        continue;
+
+                    var vector = fix2.normalize(player.Hero.WorldPosition - intersectionPoint);
+                    player.Hero.WorldPosition = intersectionPoint + vector * player.Hero.ColliderRadius;
+                }
+            }
+        }
+
+        private void UpdateBehaviourAgents(GameContext gameContext)
+        {
+            foreach (var (entity, behaviourAgents) in _behaviourAgents)
+            {
+                foreach (var behaviourAgent in behaviourAgents)
+                    behaviourAgent.Update(gameContext, entity, _fixedDeltaTime);
+            }
         }
     }
 }

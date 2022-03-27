@@ -22,7 +22,6 @@ MonoBehaviour:
   Health: 1
   HitRadius: 0
   HurtRadius: 0.2
-  BlastRadius: 4
-  BombCapacity: 2
+  ColliderRadius: 0.5
   Icon: {fileID: 895486, guid: be46b9aa429661841a641b80d9eae521, type: 3}
   BombConfig: {fileID: 11400000, guid: 61f1d4abaafbdf2489a0cdd6f6d8ee97, type: 2}
