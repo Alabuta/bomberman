@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Configs.Level;
+using Items;
 using JetBrains.Annotations;
 using Math.FixedPointMath;
 using Unity.Mathematics;
@@ -11,7 +12,7 @@ using Random = UnityEngine.Random;
 
 namespace Level
 {
-    public sealed class GameLevelGridModel : IEnumerable<ILevelTileView>
+    public sealed class LevelModel : IEnumerable<ILevelTileView>
     {
         private static readonly int2[] NeighborTilesOffsets =
         {
@@ -45,7 +46,7 @@ namespace Level
         public ILevelTileView this[int index] => _tiles[index];
         public ILevelTileView this[int2 coordinate] => _tiles[GetFlattenTileCoordinate(coordinate)];
 
-        public GameLevelGridModel(LevelConfig levelConfig, LevelStageConfig levelStageConfig)
+        public LevelModel(LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
             _tileSizeWorldUnits = (fix) levelConfig.TileSizeWorldUnits;
 
@@ -214,6 +215,11 @@ namespace Level
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void AddItem(BombItem bombItem, int2 bombCoordinate)
+        {
+            this[bombCoordinate].AddItem(bombItem);
         }
     }
 }

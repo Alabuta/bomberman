@@ -1,6 +1,5 @@
 ﻿using System;
 using Configs.Items;
-using Entity.Hero;
 using UnityEngine;
 
 namespace Entity
@@ -8,25 +7,21 @@ namespace Entity
     public sealed class PickUpItem : MonoBehaviour, IPickUpItem
     {
         [SerializeField]
-        private ItemConfigBase ItemConfigBase;
+        private ItemConfig ItemConfig;
 
         public event Action<PickUpItem> ItemEffectAppliedEvent;
 
-        private void OnTriggerEnter2D(Collider2D other)
+        /*private void OnTriggerEnter2D(Collider2D other)
         {
-            if (!other.CompareTag(ItemConfigBase.ApplyObjectTag))
+            if (!other.CompareTag(ItemConfig.ApplyObjectTag))
                 return;
 
             var playerController = other.gameObject.GetComponent<HeroController>();
             if (playerController != null)
-                ItemConfigBase.ApplyTo(playerController);
+                ItemConfig.ApplyTo(playerController);
 
             ItemEffectAppliedEvent?.Invoke(this);
             Destroy(gameObject);// :TODO: refactor - use OnDestroy event
-        }
-    }
-
-    public class Item : MonoBehaviour
-    {
+        }*/
     }
 }

@@ -19,13 +19,13 @@ namespace Entity.Behaviours
 
     public class GameContext
     {
-        public GameLevelGridModel LevelGridModel { get; }
+        public LevelModel LevelModel { get; }
 
         public IReadOnlyCollection<Hero.Hero> Heroes { get; }
 
-        public GameContext(GameLevelGridModel levelGridModel, IReadOnlyCollection<Hero.Hero> heroes)
+        public GameContext(LevelModel levelModel, IReadOnlyCollection<Hero.Hero> heroes)
         {
-            LevelGridModel = levelGridModel;
+            LevelModel = levelModel;
             Heroes = heroes;
         }
     }

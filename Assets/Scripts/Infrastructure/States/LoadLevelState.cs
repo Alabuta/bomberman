@@ -77,7 +77,7 @@ namespace Infrastructure.States
             Game.World = new World(_gameFactory, levelStage, _inputService);// :TODO: move to DI
             Game.World.GenerateLevelStage(levelStage, _gameFactory);
 
-            var levelGridModel = Game.World.LevelGridModel;
+            var levelGridModel = Game.World.LevelModel;
 
             switch (levelStageConfig)
             {
@@ -120,13 +120,13 @@ namespace Infrastructure.States
         }
 
         private void CreatePlayersAndSpawnHeroesPvE(GameModePvEConfig gameMode, LevelStagePvEConfig baseConfig,
-            GameLevelGridModel levelGridModel)
+            LevelModel levelModel)
         {
-            CreatePlayerAndSpawnHero(levelGridModel, gameMode.PlayerConfig, baseConfig.PlayerSpawnCorner);
+            CreatePlayerAndSpawnHero(levelModel, gameMode.PlayerConfig, baseConfig.PlayerSpawnCorner);
         }
 
         private void CreatePlayersAndSpawnHeroesPvP(GameModePvPConfig gameMode, LevelStagePvPConfig baseConfig,
-            GameLevelGridModel levelGridModel)
+            LevelModel levelModel)
         {
             var playerConfigs = gameMode.PlayerConfigs;
             var spawnCorners = baseConfig.PlayersSpawnCorners;
@@ -134,10 +134,10 @@ namespace Infrastructure.States
 
             var zip = spawnCorners.Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig));
             foreach (var (spawnCorner, playerConfig) in zip)
-                CreatePlayerAndSpawnHero(levelGridModel, playerConfig, spawnCorner);
+                CreatePlayerAndSpawnHero(levelModel, playerConfig, spawnCorner);
         }
 
-        private void CreatePlayerAndSpawnHero(GameLevelGridModel levelGridModel, PlayerConfig playerConfig, int2 spawnCorner)
+        private void CreatePlayerAndSpawnHero(LevelModel levelModel, PlayerConfig playerConfig, int2 spawnCorner)
         {
             var player = _gameFactory.CreatePlayer(playerConfig);
             Assert.IsNotNull(player);
@@ -145,7 +145,7 @@ namespace Infrastructure.States
             var playerInput = _inputService.RegisterPlayerInput(playerConfig);
             Game.World.AttachPlayerInput(player, playerInput);
 
-            var position = levelGridModel.GetCornerWorldPosition(spawnCorner);
+            var position = levelModel.GetCornerWorldPosition(spawnCorner);
 
             var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, fix2.ToXY(position));
             Assert.IsNotNull(go);
@@ -159,7 +159,7 @@ namespace Infrastructure.States
             Game.World.AddPlayer(playerConfig.PlayerTagConfig, player);
         }
 
-        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, GameLevelGridModel levelGridModel,
+        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, LevelModel levelModel,
             World world)
         {
             var enemySpawnElements = levelStageConfig.Enemies;
@@ -168,10 +168,10 @@ namespace Infrastructure.States
                 .ToArray();
 
             var playersCoordinates = world.Players.Values
-                .Select(p => levelGridModel.ToTileCoordinate(p.Hero.WorldPosition))
+                .Select(p => levelModel.ToTileCoordinate(p.Hero.WorldPosition))
                 .ToArray();
 
-            var floorTiles = levelGridModel.GetTilesByType(LevelTileType.FloorTile)
+            var floorTiles = levelModel.GetTilesByType(LevelTileType.FloorTile)
                 .Where(t => !playersCoordinates.Contains(t.Coordinate))
                 .ToList();
             Assert.IsTrue(enemyConfigs.Length <= floorTiles.Count, "enemies to spawn count greater than the floor tiles count");
@@ -200,7 +200,7 @@ namespace Infrastructure.States
             }
         }
 
-        private static void SetupCamera(LevelStage levelStage, GameLevelGridModel levelGridModel, IPlayer player)
+        private static void SetupCamera(LevelStage levelStage, LevelModel levelModel, IPlayer player)
         {
             // Camera setup and follow
             var mainCamera = Camera.main;
@@ -208,7 +208,7 @@ namespace Infrastructure.States
                 return;
 
             var playerPosition = player.Hero.WorldPosition;
-            var levelSize = levelGridModel.Size;
+            var levelSize = levelModel.Size;
 
             var levelConfig = levelStage.LevelConfig;
 

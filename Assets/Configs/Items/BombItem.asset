@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 541a6c15b61d4f5babe10e3f500fb1cb, type: 3}
-  m_Name: DefaultBomb
+  m_Script: {fileID: 11500000, guid: 53c9166b44ce4e66b25bc7dc35aca9d7, type: 3}
+  m_Name: BombItem
   m_EditorClassIdentifier: 
+  ApplyObjectTag: 
   Prefab: {fileID: 8352911379006920328, guid: 3b1548050419d0f49a7da257cb5fdc9d, type: 3}
-  ItemConfig: {fileID: 11400000, guid: 529986ff8ccd1dd41b6cc0ca61bc85b1, type: 2}
-  LifetimeSec: 3

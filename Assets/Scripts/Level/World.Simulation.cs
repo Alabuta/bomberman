@@ -29,7 +29,7 @@ namespace Level
         public void UpdateSimulation()
         {
             var heroes = Players.Values.Select(p => p.Hero).ToArray();
-            var gameContext = new GameContext(LevelGridModel, heroes);
+            var gameContext = new GameContext(LevelModel, heroes);
 
             var deltaTime = (fix) Time.fixedDeltaTime + _timeRemainder;
 
@@ -79,16 +79,16 @@ namespace Level
 
         private void UpdateCollisions()
         {
-            var innerRadius = LevelGridModel.TileInnerRadius;
+            var innerRadius = LevelModel.TileInnerRadius;
 
             foreach (var (_, player) in _players)
             {
                 player.Hero.UpdatePosition(_fixedDeltaTime);
 
                 var circleCenter = player.Hero.WorldPosition;
-                var heroTileCoordinate = LevelGridModel.ToTileCoordinate(circleCenter);
+                var heroTileCoordinate = LevelModel.ToTileCoordinate(circleCenter);
 
-                var neighborTiles = LevelGridModel
+                var neighborTiles = LevelModel
                     .GetNeighborTiles(heroTileCoordinate)
                     .Where(t => t.Type != LevelTileType.FloorTile);
 

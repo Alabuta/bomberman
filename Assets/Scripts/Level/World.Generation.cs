@@ -15,22 +15,22 @@ namespace Level
             var levelConfig = levelStage.LevelConfig;
             var levelStageConfig = levelStage.LevelStageConfig;
 
-            LevelGridModel = new GameLevelGridModel(levelConfig, levelStageConfig);
+            LevelModel = new LevelModel(levelConfig, levelStageConfig);
 
             /*_hiddenItemsIndices = LevelGridModel
                 .Select((_, i) => i)
                 .Where(i => (LevelGridModel[i] & GridTileType.PowerUpItem) != 0)
                 .ToArray();*/
 
-            SpawnBlocks(levelConfig, LevelGridModel, gameFactory);
+            SpawnBlocks(levelConfig, LevelModel, gameFactory);
 
-            SpawnWalls(levelConfig, LevelGridModel);
+            SpawnWalls(levelConfig, LevelModel);
         }
 
-        private static void SpawnWalls(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel)
+        private static void SpawnWalls(LevelConfig levelConfig, LevelModel levelModel)
         {
-            var columnsNumber = gameLevelGridModel.ColumnsNumber;
-            var rowsNumber = gameLevelGridModel.RowsNumber;
+            var columnsNumber = levelModel.ColumnsNumber;
+            var rowsNumber = levelModel.RowsNumber;
 
             var walls = Object.Instantiate(levelConfig.Walls, Vector3.zero, Quaternion.identity);
 
@@ -53,11 +53,11 @@ namespace Level
             }
         }
 
-        private static void SpawnBlocks(LevelConfig levelConfig, GameLevelGridModel gameLevelGridModel,
+        private static void SpawnBlocks(LevelConfig levelConfig, LevelModel levelModel,
             IGameFactory gameFactory)
         {
-            var columnsNumber = gameLevelGridModel.ColumnsNumber;
-            var rowsNumber = gameLevelGridModel.RowsNumber;
+            var columnsNumber = levelModel.ColumnsNumber;
+            var rowsNumber = levelModel.RowsNumber;
 
             var hardBlocksGroup = new GameObject("HardBlocks");
             var softBlocksGroup = new GameObject("SoftBlocks");
@@ -73,7 +73,7 @@ namespace Level
 
             for (var i = 0; i < columnsNumber * rowsNumber; ++i)
             {
-                var tile = gameLevelGridModel[i];
+                var tile = levelModel[i];
                 var tileType = tile.Type;
                 if (tileType == LevelTileType.FloorTile)
                     continue;

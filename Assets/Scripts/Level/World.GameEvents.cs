@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Game;
 using Input;
 using Math.FixedPointMath;
+using UnityEngine.Assertions;
 
 namespace Level
 {
@@ -21,10 +22,16 @@ namespace Level
         private void OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
         {
             var bombConfig = player.Hero.BombConfig;
-            var bombCoordinate = LevelGridModel.ToTileCoordinate(worldPosition);
-            var position = LevelGridModel.ToWorldPosition(bombCoordinate);
+            var bombCoordinate = LevelModel.ToTileCoordinate(worldPosition);
+            var position = LevelModel.ToWorldPosition(bombCoordinate);
 
-            _gameFactory.InstantiatePrefab(bombConfig.Prefab, fix2.ToXY(position));
+            var go = _gameFactory.InstantiatePrefab(bombConfig.Prefab, fix2.ToXY(position));
+            Assert.IsNotNull(go);
+
+            var bombItem = _gameFactory.CreateItem(bombConfig.ItemConfig);
+            Assert.IsNotNull(bombItem);
+
+            LevelModel.AddItem(bombItem, bombCoordinate);
         }
 
         private void OnPlayerBombBlast(IPlayer player)

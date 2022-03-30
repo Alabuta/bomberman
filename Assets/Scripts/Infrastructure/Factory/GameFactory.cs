@@ -3,6 +3,7 @@ using System.Linq;
 using Configs;
 using Configs.Behaviours;
 using Configs.Entity;
+using Configs.Items;
 using Entity;
 using Entity.Behaviours;
 using Entity.Enemies;
@@ -12,6 +13,7 @@ using Infrastructure.AssetManagement;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Input;
+using Items;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -31,14 +33,6 @@ namespace Infrastructure.Factory
         public GameFactory(IAssetProvider assetProvider)
         {
             _assetProvider = assetProvider;
-        }
-
-        public IReadOnlyList<IBehaviourAgent> CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs,
-            IEntity entity)
-        {
-            return behaviourConfigs
-                .Select(c => c.Make(entity))
-                .ToArray();
         }
 
         public IPlayerInput CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex)
@@ -66,6 +60,19 @@ namespace Infrastructure.Factory
         public Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController)
         {
             return new Enemy(enemyConfig, entityController);
+        }
+
+        public BombItem CreateItem(BombItemConfig bobItemConfig)
+        {
+            return new BombItem(bobItemConfig);
+        }
+
+        public IReadOnlyList<IBehaviourAgent> CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs,
+            IEntity entity)
+        {
+            return behaviourConfigs
+                .Select(c => c.Make(entity))
+                .ToArray();
         }
 
         public GameObject SpawnEntity(EntityConfig heroConfig, float3 position)

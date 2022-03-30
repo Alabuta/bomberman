@@ -14,7 +14,7 @@ namespace Level
 {
     public partial class World
     {
-        public GameLevelGridModel LevelGridModel { get; private set; }
+        public LevelModel LevelModel { get; private set; }
 
         public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
 

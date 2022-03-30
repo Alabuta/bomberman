@@ -1,3 +1,4 @@
+using Configs.Items;
 using Level;
 using Unity.Mathematics;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace Configs.Entity
         public GameObject Prefab;
 
         public LevelTileType[] FordableTileTypes;
+        public ItemConfig[] ColidedItems;
 
         [Header("Movement Parameters"), Range(.01f, 10f)]
         public float Speed;

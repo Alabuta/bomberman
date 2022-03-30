@@ -22,7 +22,7 @@ namespace Entity.Behaviours.MovementBehaviours
 
         public override void Update(GameContext gameContext, IEntity entity, fix deltaTime)
         {
-            var levelGridModel = gameContext.LevelGridModel;
+            var levelGridModel = gameContext.LevelModel;
 
             var path = entity.Speed * deltaTime;
             var worldPosition = entity.WorldPosition + (fix2) entity.Direction * path;

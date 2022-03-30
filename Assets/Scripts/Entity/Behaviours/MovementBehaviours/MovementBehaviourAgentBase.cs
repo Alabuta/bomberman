@@ -1,5 +1,6 @@
 using System.Linq;
 using Configs.Behaviours;
+using Configs.Items;
 using JetBrains.Annotations;
 using Level;
 using Math.FixedPointMath;
@@ -15,7 +16,8 @@ namespace Entity.Behaviours
 
         protected static int2[] MovementDirections;
 
-        private static LevelTileType[] _fordableTileTypes;
+        private readonly LevelTileType[] _fordableTileTypes;
+        private readonly ItemConfig[] _colidedItems;
 
         private static bool _tryToSelectNewTile;
 
@@ -27,23 +29,24 @@ namespace Entity.Behaviours
             ToWorldPosition = entity.WorldPosition;
 
             _fordableTileTypes = entity.EntityConfig.FordableTileTypes;
+            _colidedItems = entity.EntityConfig.ColidedItems;
 
             _tryToSelectNewTile = config.TryToSelectNewTile;
         }
 
-        protected static bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
+        protected bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
         {
-            return _fordableTileTypes.Contains(tile.Type);
+            return _colidedItems.All(i => i != tile.HoldedItem?.ItemConfig) && _fordableTileTypes.Contains(tile.Type);
         }
 
         [CanBeNull]
-        protected static ILevelTileView GetRandomNeighborTile(GameLevelGridModel levelGridModel, int2 tileCoordinate,
+        protected ILevelTileView GetRandomNeighborTile(LevelModel levelModel, int2 tileCoordinate,
             int2 entityDirection)
         {
             var tileCoordinates = MovementDirections
                 .Select(d => tileCoordinate + d)
-                .Where(levelGridModel.IsCoordinateInField)
-                .Select(c => levelGridModel[c])
+                .Where(levelModel.IsCoordinateInField)
+                .Select(c => levelModel[c])
                 .Where(IsTileCanBeAsMovementTarget)
                 .ToArray();
 
