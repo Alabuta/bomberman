@@ -1,6 +1,5 @@
 using System;
 using Configs.Entity;
-using Entity.Hero;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
@@ -8,7 +7,8 @@ namespace Entity
 {
     public interface IEntity
     {
-        event Action KillEvent;
+        event Action<IEntity> DeathEvent;
+        event Action<IEntity, int> DamageEvent;
 
         EntityConfig EntityConfig { get; }
 
@@ -30,6 +30,6 @@ namespace Entity
         fix HurtRadius { get; }
         fix ColliderRadius { get; }
 
-        void Kill();
+        void Die();
     }
 }

@@ -142,7 +142,7 @@ namespace Infrastructure.States
             var player = _gameFactory.CreatePlayer(playerConfig);
             Assert.IsNotNull(player);
 
-            var playerInput = _inputService.RegisterPlayerInput(playerConfig);
+            var playerInput = _inputService.RegisterPlayerInput(player);
             Game.World.AttachPlayerInput(player, playerInput);
 
             var position = levelModel.GetCornerWorldPosition(spawnCorner);

@@ -28,10 +28,17 @@ namespace Entity
             EntityAnimator.SetAlive();
         }
 
-        public void Kill()
+        public void Die()
         {
             EntityAnimator.PlaybackSpeed = 1;
             EntityAnimator.SetDead();
+
+            // :TODO: Destroy() after while
+        }
+
+        public void TakeDamage(int damage)
+        {
+            EntityAnimator.PlayHit();
         }
 
         protected virtual void Start()

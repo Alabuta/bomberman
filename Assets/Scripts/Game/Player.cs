@@ -1,5 +1,6 @@
 ﻿using Configs;
 using Data;
+using Entity;
 using Entity.Hero;
 using Infrastructure.Services.PersistentProgress;
 using Input;
@@ -31,7 +32,7 @@ namespace Game
         public void AttachHero(Hero hero)
         {
             Hero = hero;
-            Hero.KillEvent += OnHeroKill;
+            Hero.DeathEvent += OnHeroDeath;
         }
 
         public void LoadProgress(PlayerProgress progress)
@@ -55,9 +56,9 @@ namespace Game
                 Hero.Speed = fix.zero;
         }
 
-        private void OnHeroKill()
+        private void OnHeroDeath(IEntity entity)
         {
-            Hero.KillEvent -= OnHeroKill;
+            Hero.DeathEvent -= OnHeroDeath;
         }
     }
 }

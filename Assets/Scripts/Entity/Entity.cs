@@ -1,6 +1,5 @@
 using System;
 using Configs.Entity;
-using Entity.Hero;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
@@ -8,7 +7,8 @@ namespace Entity
 {
     public abstract class Entity<TConfig> : IEntity where TConfig : EntityConfig
     {
-        public event Action KillEvent;
+        public event Action<IEntity> DeathEvent;
+        public event Action<IEntity, int> DamageEvent;
 
         public EntityConfig EntityConfig { get; protected set; }
 
@@ -64,7 +64,7 @@ namespace Entity
             SpeedMultiplier = fix.one;
 
             Health = new Health(EntityConfig.Health);
-            Health.HealthChangedEvent += OnHealthChanged;
+            Health.HealthDamagedEvent += OnHealthDamaged;
 
             Direction = EntityConfig.StartDirection;
 
@@ -75,22 +75,33 @@ namespace Entity
             WorldPosition = entityController.WorldPosition;
         }
 
-        public void Kill()
+        public void Die()
         {
             Speed = fix.zero;
             SpeedMultiplier = fix.one;
 
+            Health.HealthDamagedEvent -= OnHealthDamaged;
             Health = new Health(0);
 
-            EntityController.Kill();
+            EntityController.Die();
 
-            KillEvent?.Invoke();
+            DeathEvent?.Invoke(this);
         }
 
-        private void OnHealthChanged(int health)
+        private void OnHealthDamaged(int damage)
         {
-            if (health < 1)
-                Kill();
+            if (Health.Current < 1)
+                Die();
+
+            else
+                TakeDamage(damage);
+        }
+
+        private void TakeDamage(int damage)
+        {
+            EntityController.TakeDamage(damage);
+
+            DamageEvent?.Invoke(this, damage);
         }
     }
 }

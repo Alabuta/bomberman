@@ -1,5 +1,6 @@
 ﻿using System;
 using Configs.Entity;
+using Entity;
 using Entity.Hero;
 using TMPro;
 using UnityEngine;
@@ -31,7 +32,7 @@ namespace UI
             _health = hero.Health;
 
             SetHeroIcon(entityConfig.Icon);
-            SetHeroHealth(_health.Current);
+            SetHeroHealth();
 
             _health.HealthChangedEvent += SetHeroHealth;
         }
@@ -53,10 +54,10 @@ namespace UI
                 HeroIcon.sprite = sprite;
         }
 
-        private void SetHeroHealth(int health)
+        private void SetHeroHealth()
         {
             if (HeroHealthText != null)
-                HeroHealthText.SetText(health.ToString());
+                HeroHealthText.SetText(_health.Current.ToString());
         }
     }
 }

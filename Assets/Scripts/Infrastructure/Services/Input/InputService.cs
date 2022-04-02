@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Configs;
 using Configs.Game;
+using Game;
 using Infrastructure.Factory;
 using Input;
 using UnityEngine.Assertions;
@@ -21,14 +21,19 @@ namespace Infrastructure.Services.Input
             _gameFactory = gameFactory;
         }
 
-        public IPlayerInput RegisterPlayerInput(PlayerConfig player)
+        public IPlayerInput RegisterPlayerInput(IPlayer player)
         {
             var playerIndex = _playerInputs.Count;
+            var playerConfig = player.PlayerConfig;
 
-            var component = _gameFactory.CreatePlayerInputHolder(player, playerIndex);
+            var component = _gameFactory.CreatePlayerInputHolder(playerConfig, playerIndex);
             Assert.IsNotNull(component);
 
-            _playerInputs.Add(player.PlayerTagConfig, component);
+            if (_playerInputs.ContainsKey(playerConfig.PlayerTagConfig))
+                _playerInputs[playerConfig.PlayerTagConfig] = component;
+
+            else
+                _playerInputs.Add(playerConfig.PlayerTagConfig, component);
 
             return component;
         }

@@ -47,5 +47,10 @@ namespace Entity
             Animator.SetBool(IsAliveId, false);
             Animator.speed = 1;
         }
+
+        public void PlayHit()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

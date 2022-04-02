@@ -17,7 +17,7 @@ namespace Entity.Behaviours
         protected static int2[] MovementDirections;
 
         private readonly LevelTileType[] _fordableTileTypes;
-        private readonly ItemConfig[] _colidedItems;
+        private readonly ItemConfig[] _collidedItems;
 
         private static bool _tryToSelectNewTile;
 
@@ -29,14 +29,14 @@ namespace Entity.Behaviours
             ToWorldPosition = entity.WorldPosition;
 
             _fordableTileTypes = entity.EntityConfig.FordableTileTypes;
-            _colidedItems = entity.EntityConfig.ColidedItems;
+            _collidedItems = entity.EntityConfig.ColidedItems;
 
             _tryToSelectNewTile = config.TryToSelectNewTile;
         }
 
         protected bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
         {
-            return _colidedItems.All(i => i != tile.HoldedItem?.ItemConfig) && _fordableTileTypes.Contains(tile.Type);
+            return !_collidedItems.Any(i => i == tile.HoldedItem?.ItemConfig) && _fordableTileTypes.Contains(tile.Type);
         }
 
         [CanBeNull]

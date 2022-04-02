@@ -2,13 +2,14 @@
 using Data;
 using Unity.Mathematics;
 
-namespace Entity.Hero
+namespace Entity
 {
     public class Health
     {
         private readonly HealthState _healthState;
 
-        public Action<int> HealthChangedEvent;
+        public Action HealthChangedEvent;
+        public Action<int> HealthDamagedEvent;
 
         public Health(int health)
         {
@@ -29,7 +30,7 @@ namespace Entity.Hero
 
                 _healthState.CurrentHealth = value;
 
-                HealthChangedEvent?.Invoke(value);
+                HealthChangedEvent?.Invoke();
             }
         }
 
@@ -42,6 +43,8 @@ namespace Entity.Hero
         public void ApplyDamage(int damage)
         {
             Current = math.max(0, Current - damage);
+
+            HealthDamagedEvent?.Invoke(damage);
         }
     }
 }

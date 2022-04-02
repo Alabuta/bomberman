@@ -1,5 +1,5 @@
-﻿using Configs;
-using Configs.Game;
+﻿using Configs.Game;
+using Game;
 using Input;
 
 namespace Infrastructure.Services.Input
@@ -9,7 +9,7 @@ namespace Infrastructure.Services.Input
         // get specific player input
         // send event when a player connects to the game
 
-        IPlayerInput RegisterPlayerInput(PlayerConfig player);
+        IPlayerInput RegisterPlayerInput(IPlayer playerConfig);
 
         IPlayerInput GetPlayerInput(PlayerTagConfig playerTag);
     }

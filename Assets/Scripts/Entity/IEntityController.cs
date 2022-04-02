@@ -11,6 +11,8 @@ namespace Entity
 
         fix2 WorldPosition { get; set; }
 
-        void Kill();
+        void Die();
+
+        void TakeDamage(int damage);
     }
 }
