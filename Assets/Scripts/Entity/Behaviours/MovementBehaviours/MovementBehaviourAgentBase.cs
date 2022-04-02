@@ -34,11 +34,6 @@ namespace Entity.Behaviours
             _tryToSelectNewTile = config.TryToSelectNewTile;
         }
 
-        protected bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
-        {
-            return !_collidedItems.Any(i => i == tile.HoldedItem?.ItemConfig) && _fordableTileTypes.Contains(tile.Type);
-        }
-
         [CanBeNull]
         protected ILevelTileView GetRandomNeighborTile(LevelModel levelModel, int2 tileCoordinate,
             int2 entityDirection)
@@ -68,6 +63,16 @@ namespace Entity.Behaviours
 
             var index = (int) math.round(Random.value * (tileCoordinates.Length - 1));
             return tileCoordinates[index];
+        }
+
+        protected bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
+        {
+            var isTileFordable = _fordableTileTypes.Contains(tile.Type);
+
+            if (tile.HoldedItem?.ItemConfig == null)
+                return isTileFordable;
+
+            return _collidedItems.All(i => i != tile.HoldedItem.ItemConfig) && isTileFordable;
         }
 
         protected virtual bool IsNeedToUpdate(fix2 worldPosition)

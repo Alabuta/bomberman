@@ -8,6 +8,7 @@ namespace Data
         public int CurrentHealth;
         public int MaxHealth;
 
-        public void ResetHealth() => CurrentHealth = MaxHealth;
+        public void ResetHealth() =>
+            CurrentHealth = MaxHealth;
     }
 }
