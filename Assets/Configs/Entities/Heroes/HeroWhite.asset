@@ -15,6 +15,7 @@ MonoBehaviour:
   Name: White
   Prefab: {fileID: 3476347086192181414, guid: ddac8d5521b1f4d478d8b4e7b1ad3c4b, type: 3}
   FordableTileTypes: 
+  ColidedItems: []
   Speed: 2.4
   StartDirection:
     x: 0
@@ -23,5 +24,5 @@ MonoBehaviour:
   HitRadius: 0
   HurtRadius: 0.2
   ColliderRadius: 0.5
-  Icon: {fileID: 895486, guid: be46b9aa429661841a641b80d9eae521, type: 3}
+  Icon: {fileID: 1578751620, guid: 4a6cef6fa7f02df4795bfca7789746a7, type: 3}
   BombConfig: {fileID: 11400000, guid: 61f1d4abaafbdf2489a0cdd6f6d8ee97, type: 2}
