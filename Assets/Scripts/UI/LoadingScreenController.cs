@@ -19,13 +19,13 @@ namespace UI
 
         public void Show(int level, int stage)
         {
+            gameObject.SetActive(true);
+
             if (LevelAndStageText != null)
                 LevelAndStageText.text = $"{level}<color=#F6E500><voffset=0.2em>‒</voffset></color>{stage}";
 
             if (CanvasGroup != null)
                 CanvasGroup.alpha = 1;
-
-            gameObject.SetActive(true);
         }
 
         public void Hide()
