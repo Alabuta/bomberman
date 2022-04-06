@@ -14,9 +14,10 @@ namespace Infrastructure
 
         public readonly GameStateMachine GameStateMachine;
 
-        public Game(ICoroutineRunner coroutineRunner)
+        public Game(ICoroutineRunner coroutineRunner, LoadingScreenController loadingScreenController)
         {
-            GameStateMachine = new GameStateMachine(new SceneLoader(coroutineRunner), ServiceLocator.Container);
+            GameStateMachine = new GameStateMachine(new SceneLoader(coroutineRunner), ServiceLocator.Container,
+                loadingScreenController);
         }
     }
 }

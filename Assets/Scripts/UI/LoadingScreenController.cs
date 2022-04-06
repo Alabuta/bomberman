@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using TMPro;
+﻿using System;
+using DG.Tweening;
 using UnityEngine;
 
 namespace UI
@@ -10,44 +10,46 @@ namespace UI
         private CanvasGroup CanvasGroup;
 
         [SerializeField]
-        private TextMeshProUGUI LevelAndStageText;
+        private Animation CanvasGroupAnimation;
+
+        private Sequence _sequence;
 
         private void Awake()
         {
             DontDestroyOnLoad(this);
         }
 
-        public void Show(int level, int stage)
+        public void Show()
         {
             gameObject.SetActive(true);
-
-            if (LevelAndStageText != null)
-                LevelAndStageText.text = $"{level}<color=#F6E500><voffset=0.2em>‒</voffset></color>{stage}";
 
             if (CanvasGroup != null)
                 CanvasGroup.alpha = 1;
         }
 
-        public void Hide()
+        public void Hide(Action callback)
         {
-            StartCoroutine(FadeIn());
+            FadeIn(callback);
         }
 
-        private IEnumerator FadeIn()
+        private void FadeIn(Action callback)
         {
-            if (CanvasGroup == null)
-            {
-                gameObject.SetActive(false);
-                yield break;
-            }
+            if (_sequence?.IsActive() ?? false)
+                _sequence?.Complete();
 
-            while (CanvasGroup.alpha < 0)
-            {
-                CanvasGroup.alpha -= .04f;
-                yield return new WaitForSeconds(0.04f);
-            }
+            _sequence?.Kill();
 
-            gameObject.SetActive(false);
+            _sequence = DOTween.Sequence()
+                .AppendCallback(() => { CanvasGroupAnimation.Play(CanvasGroupAnimation.clip.name); })
+                .AppendInterval(CanvasGroupAnimation.clip.length)
+                .AppendCallback(() =>
+                {
+                    CanvasGroupAnimation.Stop();
+
+                    gameObject.SetActive(false);
+
+                    callback?.Invoke();
+                });
         }
     }
 }

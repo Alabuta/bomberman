@@ -6,6 +6,7 @@ using Infrastructure.Services;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Infrastructure.Services.SaveLoad;
+using UI;
 
 namespace Infrastructure.States
 {
@@ -17,13 +18,15 @@ namespace Infrastructure.States
         public Action UpdateCallback;
         public Action FixedUpdateCallback;
 
-        public GameStateMachine(SceneLoader sceneLoader, ServiceLocator serviceLocator)
+        public GameStateMachine(SceneLoader sceneLoader, ServiceLocator serviceLocator,
+            LoadingScreenController loadingScreenController)
         {
             _states = new Dictionary<Type, IExitableState>
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator),
                 [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, serviceLocator.Single<IGameFactory>(),
-                    serviceLocator.Single<IInputService>(), serviceLocator.Single<IPersistentProgressService>()),
+                    serviceLocator.Single<IInputService>(), serviceLocator.Single<IPersistentProgressService>(),
+                    loadingScreenController),
                 [typeof(LoadProgressState)] = new LoadProgressState(this, serviceLocator.Single<IPersistentProgressService>(),
                     serviceLocator.Single<ISaveLoadService>()),
                 [typeof(GameLoopState)] = new GameLoopState(this)

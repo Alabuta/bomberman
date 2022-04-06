@@ -28,24 +28,25 @@ namespace Infrastructure.States
         private readonly IGameFactory _gameFactory;
         private readonly IInputService _inputService;
         private readonly IPersistentProgressService _progressService;
+        private readonly LoadingScreenController _loadingScreenController;
 
-        public LoadLevelState(
-            GameStateMachine gameStateMachine,
+        public LoadLevelState(GameStateMachine gameStateMachine,
             SceneLoader sceneLoader,
             IGameFactory gameFactory,
             IInputService inputService,
-            IPersistentProgressService progressService)
+            IPersistentProgressService progressService, LoadingScreenController loadingScreenController)
         {
             _gameStateMachine = gameStateMachine;
             _sceneLoader = sceneLoader;
             _gameFactory = gameFactory;
             _progressService = progressService;
+            _loadingScreenController = loadingScreenController;
             _inputService = inputService;
         }
 
         public void Enter(LevelStage levelStage)
         {
-            // :TODO: show loading progress
+            _loadingScreenController.Show();
 
             _gameFactory.CleanUp();
 
@@ -64,7 +65,7 @@ namespace Infrastructure.States
 
             InformProgressReaders();
 
-            _gameStateMachine.Enter<GameLoopState>();
+            _loadingScreenController.Hide(() => { _gameStateMachine.Enter<GameLoopState>(); });
         }
 
         private void CreateWorld(LevelStage levelStage)
@@ -74,7 +75,7 @@ namespace Infrastructure.States
 
             Random.InitState(levelStageConfig.RandomSeed);
 
-            Game.World = new World(_gameFactory, levelStage, _inputService);// :TODO: move to DI
+            Game.World = new World(_gameFactory, levelStage, _inputService); // :TODO: move to DI
             Game.World.GenerateLevelStage(levelStage, _gameFactory);
 
             var levelGridModel = Game.World.LevelModel;
@@ -95,7 +96,7 @@ namespace Infrastructure.States
 
             CreateAndSpawnEnemies(levelStageConfig, levelGridModel, Game.World);
 
-            var defaultPlayer = Game.World.Players.Values.FirstOrDefault();// :TODO: use DefaultPlayerTag
+            var defaultPlayer = Game.World.Players.Values.FirstOrDefault(); // :TODO: use DefaultPlayerTag
             if (defaultPlayer != null)
                 SetupCamera(levelStage, levelGridModel, defaultPlayer);
         }
