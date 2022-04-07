@@ -179,7 +179,6 @@ namespace Infrastructure.States
 
             foreach (var enemyConfig in enemyConfigs)
             {
-                // var position = levelGridModel.ToWorldPosition(math.int2(8, 5));
                 var index = (int) math.round(Random.value * (floorTiles.Count - 1));
                 var floorTile = floorTiles[index];
                 var go = _gameFactory.SpawnEntity(enemyConfig, fix2.ToXY(floorTile.WorldPosition));
@@ -203,7 +202,6 @@ namespace Infrastructure.States
 
         private static void SetupCamera(LevelStage levelStage, LevelModel levelModel, IPlayer player)
         {
-            // Camera setup and follow
             var mainCamera = Camera.main;
             if (mainCamera == null)
                 return;

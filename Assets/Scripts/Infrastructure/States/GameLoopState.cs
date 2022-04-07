@@ -22,7 +22,7 @@ namespace Infrastructure.States
             _gameStateMachine.UpdateCallback = () =>
             {
                 Game.World.UpdateView();
-                Game.GameStatsView.UpdateLevelStageTimer(Game.World.LevelStageTimer);
+                Game.GameStatsView.UpdateLevelStageTimer(Game.World.StageTimer);
             };
         }
     }

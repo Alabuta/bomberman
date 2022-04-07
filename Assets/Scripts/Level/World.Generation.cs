@@ -17,11 +17,6 @@ namespace Level
 
             LevelModel = new LevelModel(levelConfig, levelStageConfig);
 
-            /*_hiddenItemsIndices = LevelGridModel
-                .Select((_, i) => i)
-                .Where(i => (LevelGridModel[i] & GridTileType.PowerUpItem) != 0)
-                .ToArray();*/
-
             SpawnBlocks(levelConfig, LevelModel, gameFactory);
 
             SpawnWalls(levelConfig, LevelModel);
@@ -81,7 +76,7 @@ namespace Level
                 // ReSharper disable once PossibleLossOfFraction
                 var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
 
-                var (parent, blockConfig) = blocks[tileType/* & ~LevelTileType.PowerUpItem*/];
+                var (parent, blockConfig) = blocks[tileType /* & ~LevelTileType.PowerUpItem*/];
                 gameFactory.InstantiatePrefab(blockConfig.Prefab, position, parent.transform);
             }
         }

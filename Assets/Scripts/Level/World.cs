@@ -18,35 +18,36 @@ namespace Level
 
         public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
 
-        public double LevelStageTimer =>
-            math.max(0, _levelStageTimer - (double) (_simulationCurrentTime - _simulationStartTime));
+        public double StageTimer =>
+            math.max(0, _stageTimer - (double) (_simulationCurrentTime - _simulationStartTime));
 
         private readonly IGameFactory _gameFactory;
 
         private readonly Dictionary<IPlayerInput, IPlayer> _playerInputs = new();
 
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
+
         private readonly HashSet<Enemy> _enemies = new();
 
         private readonly Dictionary<IEntity, List<IBehaviourAgent>> _behaviourAgents = new();
 
-        private readonly double _levelStageTimer;
+        private readonly double _stageTimer;
 
 
         public World(IGameFactory gameFactory, LevelStage levelStage, IInputService inputService)
         {
             _gameFactory = gameFactory;
-            _levelStageTimer = levelStage.LevelStageConfig.LevelStageTimer;
+            _stageTimer = levelStage.LevelStageConfig.LevelStageTimer;
         }
 
         public void AddPlayer(PlayerTagConfig playerTagConfig, IPlayer player)
         {
-            _players.Add(playerTagConfig, player);// :TODO: refactor
+            _players.Add(playerTagConfig, player); // :TODO: refactor
         }
 
         public IPlayer GetPlayer(PlayerTagConfig playerTagConfig)
         {
-            return _players.TryGetValue(playerTagConfig, out var player) ? player : null;// :TODO: refactor
+            return _players.TryGetValue(playerTagConfig, out var player) ? player : null; // :TODO: refactor
         }
 
         public void AddEnemy(Enemy enemy)
@@ -69,7 +70,7 @@ namespace Level
         {
             _playerInputs.Add(playerInput, player);
 
-            playerInput.OnInputActionEvent += OnPlayerInputAction;// :TODO: unsubscribe when player is dead
+            playerInput.OnInputActionEvent += OnPlayerInputAction; // :TODO: unsubscribe when player is dead
         }
     }
 }
