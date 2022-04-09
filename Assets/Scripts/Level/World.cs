@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using Configs.Game;
 using Data;
-using Entity;
-using Entity.Behaviours;
-using Entity.Enemies;
 using Game;
+using Game.Behaviours;
+using Game.Enemies;
 using Infrastructure.Factory;
-using Infrastructure.Services.Input;
 using Input;
 using Unity.Mathematics;
 
@@ -14,13 +12,6 @@ namespace Level
 {
     public partial class World
     {
-        public LevelModel LevelModel { get; private set; }
-
-        public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
-
-        public double StageTimer =>
-            math.max(0, _stageTimer - (double) (_simulationCurrentTime - _simulationStartTime));
-
         private readonly IGameFactory _gameFactory;
 
         private readonly Dictionary<IPlayerInput, IPlayer> _playerInputs = new();
@@ -33,8 +24,14 @@ namespace Level
 
         private readonly double _stageTimer;
 
+        public LevelModel LevelModel { get; private set; }
 
-        public World(IGameFactory gameFactory, LevelStage levelStage, IInputService inputService)
+        public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
+
+        public double StageTimer =>
+            math.max(0, _stageTimer - (double) (_simulationCurrentTime - _simulationStartTime));
+
+        public World(IGameFactory gameFactory, LevelStage levelStage)
         {
             _gameFactory = gameFactory;
             _stageTimer = levelStage.LevelStageConfig.LevelStageTimer;

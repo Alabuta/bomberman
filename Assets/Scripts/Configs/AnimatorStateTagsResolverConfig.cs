@@ -1,5 +1,5 @@
 using System;
-using Entity;
+using Game;
 using UnityEngine;
 
 namespace Configs

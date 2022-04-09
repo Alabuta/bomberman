@@ -1,4 +1,4 @@
-using Entity;
+using Game;
 
 namespace Logic
 {

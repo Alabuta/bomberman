@@ -1,7 +1,5 @@
 ﻿using Configs;
 using Data;
-using Entity;
-using Entity.Hero;
 using Infrastructure.Services.PersistentProgress;
 using Input;
 using Math.FixedPointMath;
@@ -12,7 +10,7 @@ namespace Game
     public class Player : IPlayer, ISavedProgressWriter
     {
         public PlayerConfig PlayerConfig { get; }
-        public Hero Hero { get; private set; }
+        public Hero.Hero Hero { get; private set; }
 
         private Score _score;
 
@@ -29,7 +27,7 @@ namespace Game
             OnMove(inputAction.MovementVector);
         }
 
-        public void AttachHero(Hero hero)
+        public void AttachHero(Hero.Hero hero)
         {
             Hero = hero;
             Hero.DeathEvent += OnHeroDeath;

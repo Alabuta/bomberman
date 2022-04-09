@@ -1,5 +1,4 @@
 ﻿using Configs;
-using Entity.Hero;
 using Input;
 
 namespace Game
@@ -8,9 +7,9 @@ namespace Game
     {
         PlayerConfig PlayerConfig { get; }
 
-        Hero Hero { get; }
+        Hero.Hero Hero { get; }
 
-        void AttachHero(Hero hero);
+        void AttachHero(Hero.Hero hero);
 
         void ApplyInputAction(PlayerInputAction inputAction);
     }

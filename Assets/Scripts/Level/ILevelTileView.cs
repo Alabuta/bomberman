@@ -12,5 +12,7 @@ namespace Level
         IItem HoldedItem { get; }
 
         void AddItem(IItem item);
+
+        void RemoveItem();
     }
 }

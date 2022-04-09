@@ -4,11 +4,11 @@ using Configs;
 using Configs.Behaviours;
 using Configs.Entity;
 using Configs.Items;
-using Entity;
-using Entity.Behaviours;
-using Entity.Enemies;
-using Entity.Hero;
 using Game;
+using Game.Behaviours;
+using Game.Enemies;
+using Game.Hero;
+using Game.Items;
 using Infrastructure.AssetManagement;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
@@ -62,9 +62,9 @@ namespace Infrastructure.Factory
             return new Enemy(enemyConfig, entityController);
         }
 
-        public BombItem CreateItem(BombItemConfig bobItemConfig)
+        public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller)
         {
-            return new BombItem(bobItemConfig);
+            return new BombItem(bobItemConfig, controller);
         }
 
         public IReadOnlyList<IBehaviourAgent> CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs,

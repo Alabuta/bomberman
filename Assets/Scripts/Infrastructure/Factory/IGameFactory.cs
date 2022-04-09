@@ -3,11 +3,11 @@ using Configs;
 using Configs.Behaviours;
 using Configs.Entity;
 using Configs.Items;
-using Entity;
-using Entity.Behaviours;
-using Entity.Enemies;
-using Entity.Hero;
 using Game;
+using Game.Behaviours;
+using Game.Enemies;
+using Game.Hero;
+using Game.Items;
 using Infrastructure.Services;
 using Infrastructure.Services.PersistentProgress;
 using Input;
@@ -30,7 +30,7 @@ namespace Infrastructure.Factory
 
         Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController);
 
-        BombItem CreateItem(BombItemConfig bobItemConfig);
+        BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller);
 
         IReadOnlyList<IBehaviourAgent>
             CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs, IEntity entity);

@@ -1,7 +1,7 @@
 ﻿using System;
 using Configs.Entity;
-using Entity;
-using Entity.Hero;
+using Game;
+using Game.Hero;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

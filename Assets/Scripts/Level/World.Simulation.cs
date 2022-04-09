@@ -1,5 +1,5 @@
 using System.Linq;
-using Entity.Behaviours;
+using Game.Behaviours;
 using Math.FixedPointMath;
 using UnityEngine;
 
@@ -71,6 +71,9 @@ namespace Level
 
                     if (inputAction.BombPlant)
                         OnPlayerBombPlant(player, player.Hero.WorldPosition);
+
+                    if (inputAction.BombBlast)
+                        OnPlayerBombBlast(player);
                 }
             }
 
@@ -103,6 +106,8 @@ namespace Level
                     var vector = fix2.normalize(player.Hero.WorldPosition - intersectionPoint);
                     player.Hero.WorldPosition = intersectionPoint + vector * player.Hero.ColliderRadius;
                 }
+
+                // heroTileCoordinate = LevelModel.ToTileCoordinate(circleCenter);
             }
         }
 

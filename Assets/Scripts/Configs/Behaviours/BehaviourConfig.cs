@@ -1,5 +1,5 @@
-using Entity;
-using Entity.Behaviours;
+using Game;
+using Game.Behaviours;
 
 namespace Configs.Behaviours
 {

@@ -1,4 +1,5 @@
 using Configs.Items;
+using Game.Items;
 
 namespace Items
 {
@@ -6,9 +7,12 @@ namespace Items
     {
         public ItemConfig ItemConfig { get; }
 
-        protected Item(TConfig itemConfig)
+        public ItemController Controller { get; set; }
+
+        protected Item(TConfig itemConfig, ItemController controller)
         {
             ItemConfig = itemConfig;
+            Controller = controller;
         }
     }
 }

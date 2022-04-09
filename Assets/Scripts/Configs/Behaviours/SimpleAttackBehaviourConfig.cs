@@ -1,6 +1,6 @@
-using Entity;
-using Entity.Behaviours;
-using Entity.Behaviours.AttackBehaviours;
+using Game;
+using Game.Behaviours;
+using Game.Behaviours.AttackBehaviours;
 using UnityEngine;
 
 namespace Configs.Behaviours

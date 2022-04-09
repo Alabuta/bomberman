@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Configs.Game.Colliders;
 using Configs.Level;
+using Configs.Level.Tile;
+using Game.Colliders;
 using Items;
 using JetBrains.Annotations;
 using Math.FixedPointMath;
@@ -76,7 +79,7 @@ namespace Level
                     .Select(i => Random.Range(i * softBlocksPerPowerUpItem, (i + 1) * softBlocksPerPowerUpItem))
             );*/
 
-            _tiles = GenerateLevelGrid(spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
+            _tiles = GenerateLevelGrid(levelConfig, spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
         }
 
         private static IEnumerable<int2> GetPlayersSpawnCorners(LevelStageConfig levelStageConfig)
@@ -110,11 +113,14 @@ namespace Level
             );
         }
 
-        private LevelTile[] GenerateLevelGrid(ICollection<int> spawnTilesIndices, int totalTilesCount,
+        private LevelTile[] GenerateLevelGrid(LevelConfig levelConfig, ICollection<int> spawnTilesIndices, int totalTilesCount,
             int floorTilesCount, int softBlocksCount)
         {
             var tileTypeCount = math.int2(floorTilesCount, softBlocksCount);
             var spawnTilesIndicesCount = spawnTilesIndices.Count;
+
+            var hardBlockConfig = levelConfig.HardBlockConfig;
+            var softBlockConfig = levelConfig.SoftBlockConfig;
 
             return Enumerable
                 .Range(0, totalTilesCount + spawnTilesIndicesCount)
@@ -128,7 +134,8 @@ namespace Level
                             return new LevelTile(LevelTileType.FloorTile, coordinate, worldPosition);
 
                         if (IsHardBlockTileCoordinate(coordinate))
-                            return new LevelTile(LevelTileType.HardBlock, coordinate, worldPosition);
+                            return CreateTile(hardBlockConfig, coordinate, worldPosition);
+                        // return new LevelTile(LevelTileType.HardBlock, coordinate, worldPosition);
 
                         var range = (int2) (tileTypeCount == int2.zero);
 
@@ -139,15 +146,38 @@ namespace Level
 
                         var tileType = typeIndex == 0 ? LevelTileType.FloorTile : LevelTileType.SoftBlock;
 
-                        /*if (tileType == LevelTileType.SoftBlock && powerItemsIndices.Contains(tileTypeNumbers[typeIndex]))
-                            tileType |= LevelTileType.PowerUpItem;*/
-
                         --tileTypeCount[typeIndex];
 
                         return new LevelTile(tileType, coordinate, worldPosition);
                     }
                 )
                 .ToArray();
+        }
+
+        private static LevelTile CreateTile(BlockConfig blockConfig, int2 coordinate, fix2 worldPosition)
+        {
+            LevelTileType type;
+            ICollider collider;
+
+            switch (blockConfig.ColliderComponent)
+            {
+                case BoxColliderComponentConfig config:
+                    type = LevelTileType.HardBlock;
+                    collider = new BoxCollider(config);
+                    break;
+
+                case CircleColliderComponentConfig config:
+                    type = LevelTileType.SoftBlock;
+                    collider = new CircleCollider(config);
+                    break;
+
+                default:
+                    type = LevelTileType.FloorTile;
+                    collider = null;
+                    break;
+            }
+
+            return new LevelTile(type, collider, coordinate, worldPosition);
         }
 
         public fix2 GetCornerWorldPosition(int2 corner)
@@ -217,9 +247,14 @@ namespace Level
             return GetEnumerator();
         }
 
-        public void AddItem(BombItem bombItem, int2 bombCoordinate)
+        public void AddItem(BombItem item, int2 itemCoordinate)
         {
-            this[bombCoordinate].AddItem(bombItem);
+            this[itemCoordinate].AddItem(item);
+        }
+
+        public void RemoveItem(int2 itemCoordinate)
+        {
+            this[itemCoordinate].RemoveItem();
         }
     }
 }

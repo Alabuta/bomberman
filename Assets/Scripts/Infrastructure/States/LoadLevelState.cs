@@ -5,9 +5,9 @@ using Configs;
 using Configs.Game;
 using Configs.Level;
 using Data;
-using Entity.Enemies;
-using Entity.Hero;
 using Game;
+using Game.Enemies;
+using Game.Hero;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
@@ -75,7 +75,7 @@ namespace Infrastructure.States
 
             Random.InitState(levelStageConfig.RandomSeed);
 
-            Game.World = new World(_gameFactory, levelStage, _inputService); // :TODO: move to DI
+            Game.World = new World(_gameFactory, levelStage); // :TODO: move to DI
             Game.World.GenerateLevelStage(levelStage, _gameFactory);
 
             var levelGridModel = Game.World.LevelModel;
@@ -146,9 +146,8 @@ namespace Infrastructure.States
             var playerInput = _inputService.RegisterPlayerInput(player);
             Game.World.AttachPlayerInput(player, playerInput);
 
-            var position = levelModel.GetCornerWorldPosition(spawnCorner);
-
-            var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, fix2.ToXY(position));
+            var spawnCoordinate = levelModel.GetCornerWorldPosition(spawnCorner);
+            var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, fix2.ToXY(spawnCoordinate));
             Assert.IsNotNull(go);
 
             var heroController = go.GetComponent<HeroController>();
@@ -175,6 +174,7 @@ namespace Infrastructure.States
             var floorTiles = levelModel.GetTilesByType(LevelTileType.FloorTile)
                 .Where(t => !playersCoordinates.Contains(t.Coordinate))
                 .ToList();
+
             Assert.IsTrue(enemyConfigs.Length <= floorTiles.Count, "enemies to spawn count greater than the floor tiles count");
 
             foreach (var enemyConfig in enemyConfigs)
