@@ -1,4 +1,7 @@
 ﻿using Configs.Entity;
+using Configs.Game.Colliders;
+using Game.Colliders;
+using Game.Components;
 using Math.FixedPointMath;
 
 namespace Game.Hero
@@ -11,6 +14,13 @@ namespace Game.Hero
             : base(config, entityController)
         {
             BombConfig = config.BombConfig;
+
+            var collider = new CircleColliderComponent(config.Collider as CircleColliderComponentConfig);
+
+            _components = new Component[]
+            {
+                collider
+            };
         }
 
         public void UpdatePosition(fix deltaTime)

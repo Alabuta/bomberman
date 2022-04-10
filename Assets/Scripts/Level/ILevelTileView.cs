@@ -9,10 +9,7 @@ namespace Level
         LevelTileType Type { get; }
         public int2 Coordinate { get; }
         public fix2 WorldPosition { get; }
+        TileLoad TileLoad { get; }
         IItem HoldedItem { get; }
-
-        void AddItem(IItem item);
-
-        void RemoveItem();
     }
 }

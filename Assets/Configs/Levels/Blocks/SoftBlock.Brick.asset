@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SoftBlock.Brick
   m_EditorClassIdentifier: 
   Prefab: {fileID: 1089567522068187189, guid: d0fd97865f63d25439c18be72b152fd4, type: 3}
-  ColliderComponent: {fileID: 11400000, guid: 992c630ce5e01774d8e7a1a43957a2ec, type: 2}
+  Collider: {fileID: 11400000, guid: 992c630ce5e01774d8e7a1a43957a2ec, type: 2}

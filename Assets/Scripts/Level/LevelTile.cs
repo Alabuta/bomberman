@@ -1,4 +1,3 @@
-using Game.Colliders;
 using Items;
 using Math.FixedPointMath;
 using Unity.Mathematics;
@@ -12,16 +11,20 @@ namespace Level
         public int2 Coordinate { get; }
         public fix2 WorldPosition { get; }
 
-        public ICollider Collider { get; }
+        public TileLoad TileLoad { get; private set; }
 
         public IItem HoldedItem { get; private set; }
 
-        public LevelTile(LevelTileType type, ICollider collider, int2 coordinate, fix2 worldPosition)
+        public LevelTile(LevelTileType type, int2 coordinate, fix2 worldPosition)
         {
             Type = type;
             Coordinate = coordinate;
             WorldPosition = worldPosition;
-            Collider = collider;
+        }
+
+        public void SetLoad(TileLoad load)
+        {
+            TileLoad = load;
         }
 
         public void AddItem(IItem item)

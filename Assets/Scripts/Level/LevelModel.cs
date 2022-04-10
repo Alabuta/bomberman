@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Configs.Game.Colliders;
 using Configs.Level;
 using Configs.Level.Tile;
-using Game.Colliders;
 using Items;
 using JetBrains.Annotations;
 using Math.FixedPointMath;
@@ -132,9 +130,14 @@ namespace Level
 
                         if (spawnTilesIndices.Contains(index))
                             return new LevelTile(LevelTileType.FloorTile, coordinate, worldPosition);
+                        // return new LevelTile(LevelTileType.FloorTile, coordinate, worldPosition);
 
                         if (IsHardBlockTileCoordinate(coordinate))
-                            return CreateTile(hardBlockConfig, coordinate, worldPosition);
+                        {
+                            var levelTile = new LevelTile(LevelTileType.HardBlock, coordinate, worldPosition);
+                            levelTile.SetLoad(CreateBlock(hardBlockConfig));
+                            return levelTile;
+                        }
                         // return new LevelTile(LevelTileType.HardBlock, coordinate, worldPosition);
 
                         var range = (int2) (tileTypeCount == int2.zero);
@@ -145,39 +148,27 @@ namespace Level
                         typeIndex = math.clamp(typeIndex, range.x, 2 - range.y);
 
                         var tileType = typeIndex == 0 ? LevelTileType.FloorTile : LevelTileType.SoftBlock;
+                        var tile = new LevelTile(tileType, coordinate, worldPosition);
+
+                        if (tileType == LevelTileType.SoftBlock)
+                            tile.SetLoad(CreateBlock(softBlockConfig));
 
                         --tileTypeCount[typeIndex];
 
-                        return new LevelTile(tileType, coordinate, worldPosition);
+                        return tile;
                     }
                 )
                 .ToArray();
         }
 
-        private static LevelTile CreateTile(BlockConfig blockConfig, int2 coordinate, fix2 worldPosition)
+        private static TileLoad CreateBlock(BlockConfig blockConfig)
         {
-            LevelTileType type;
-            ICollider collider;
-
-            switch (blockConfig.ColliderComponent)
+            return blockConfig switch
             {
-                case BoxColliderComponentConfig config:
-                    type = LevelTileType.HardBlock;
-                    collider = new BoxCollider(config);
-                    break;
-
-                case CircleColliderComponentConfig config:
-                    type = LevelTileType.SoftBlock;
-                    collider = new CircleCollider(config);
-                    break;
-
-                default:
-                    type = LevelTileType.FloorTile;
-                    collider = null;
-                    break;
-            }
-
-            return new LevelTile(type, collider, coordinate, worldPosition);
+                HardBlockConfig config => new HardBlock(config),
+                SoftBlockConfig config => new SoftBlock(config),
+                _ => null
+            };
         }
 
         public fix2 GetCornerWorldPosition(int2 corner)
@@ -247,14 +238,14 @@ namespace Level
             return GetEnumerator();
         }
 
-        public void AddItem(BombItem item, int2 itemCoordinate)
+        public void AddItem(BombItem item, int2 coordinate)
         {
-            this[itemCoordinate].AddItem(item);
+            _tiles[GetFlattenTileCoordinate(coordinate)].AddItem(item);
         }
 
-        public void RemoveItem(int2 itemCoordinate)
+        public void RemoveItem(int2 coordinate)
         {
-            this[itemCoordinate].RemoveItem();
+            _tiles[GetFlattenTileCoordinate(coordinate)].RemoveItem();
         }
     }
 }

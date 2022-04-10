@@ -7,6 +7,6 @@ namespace Configs.Level.Tile
     {
         public GameObject Prefab;
 
-        public ColliderComponentConfig ColliderComponent;
+        public ColliderComponentConfig Collider;
     }
 }

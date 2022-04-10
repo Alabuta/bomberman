@@ -1,7 +1,9 @@
 using System.Linq;
 using Game.Behaviours;
+using Game.Colliders;
 using Math.FixedPointMath;
 using UnityEngine;
+using Component = Game.Components.Component;
 
 namespace Level
 {
@@ -82,33 +84,58 @@ namespace Level
 
         private void UpdateCollisions()
         {
-            var innerRadius = LevelModel.TileInnerRadius;
+            var radius = LevelModel.TileInnerRadius;
 
             foreach (var (_, player) in _players)
             {
+                var heroCollider = player.Hero.Components.FirstOrDefault(c => c is ColliderComponent) as ColliderComponent;
                 player.Hero.UpdatePosition(_fixedDeltaTime);
 
-                var circleCenter = player.Hero.WorldPosition;
-                var heroTileCoordinate = LevelModel.ToTileCoordinate(circleCenter);
+                var heroPosition = player.Hero.WorldPosition;
+                var heroTileCoordinate = LevelModel.ToTileCoordinate(heroPosition);
 
                 var neighborTiles = LevelModel
-                    .GetNeighborTiles(heroTileCoordinate)
-                    .Where(t => t.Type != LevelTileType.FloorTile);
+                        .GetNeighborTiles(heroTileCoordinate)
+                        .Where(t => t.TileLoad?.Components?.Any(c => c is ColliderComponent) ?? false)
+                    /*.Where(t => t.Type != LevelTileType.FloorTile)*/;
 
                 foreach (var neighborTile in neighborTiles)
                 {
-                    var aabbCenter = neighborTile.WorldPosition;
-                    var isIntersected = fix.intersection_point(circleCenter, player.Hero.ColliderRadius,
-                        aabbCenter, innerRadius, out var intersectionPoint);
+                    var tileCollider = neighborTile.TileLoad.Components.FirstOrDefault(c => c is ColliderComponent);
+                    var tilePosition = neighborTile.WorldPosition;
+
+                    var isIntersected = IntersectionPoint(heroCollider, heroPosition, tileCollider, tilePosition,
+                        out var intersectionPoint);
+
+                    /*isIntersected = fix.intersection_point(heroPosition, player.Hero.ColliderRadius,
+                        tilePosition, radius, out intersectionPoint);*/
                     if (!isIntersected)
                         continue;
 
-                    var vector = fix2.normalize(player.Hero.WorldPosition - intersectionPoint);
+                    var vector = fix2.normalize(heroPosition - intersectionPoint);
                     player.Hero.WorldPosition = intersectionPoint + vector * player.Hero.ColliderRadius;
                 }
-
-                // heroTileCoordinate = LevelModel.ToTileCoordinate(circleCenter);
             }
+        }
+
+        private static bool IntersectionPoint(ColliderComponent colliderA, fix2 centerA, Component colliderB, fix2 centerB,
+            out fix2 intersection)
+        {
+            intersection = default;
+
+            if (colliderA is CircleColliderComponent circleA)
+            {
+                if (colliderB is BoxColliderComponent boxB)
+                    return CircleAndBoxIntersectionPoint(circleA, centerA, boxB, centerB, out intersection);
+            }
+
+            return false;
+        }
+
+        private static bool CircleAndBoxIntersectionPoint(CircleColliderComponent colliderA, fix2 centerA,
+            BoxColliderComponent colliderB, fix2 centerB, out fix2 intersection)
+        {
+            return fix.intersection_point(centerA, colliderA.Radius, centerB, colliderB.InnerRadius, out intersection);
         }
 
         private void UpdateBehaviourAgents(GameContext gameContext)

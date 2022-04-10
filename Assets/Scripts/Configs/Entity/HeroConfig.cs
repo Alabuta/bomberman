@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Configs.Game.Colliders;
+using UnityEngine;
 
 namespace Configs.Entity
 {
@@ -8,5 +9,7 @@ namespace Configs.Entity
         public Sprite Icon;
 
         public BombConfig BombConfig;
+
+        public ColliderComponentConfig Collider;
     }
 }

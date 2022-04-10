@@ -1,11 +1,12 @@
 using System;
 using Configs.Entity;
+using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Game
 {
-    public abstract class Entity<TConfig> : IEntity where TConfig : EntityConfig
+    public abstract class Entity<TConfig> : TileLoad, IEntity where TConfig : EntityConfig
     {
         public event Action<IEntity> DeathEvent;
         public event Action<IEntity, int> DamageEvent;
@@ -70,6 +71,7 @@ namespace Game
 
             HitRadius = (fix) config.HitRadius;
             HurtRadius = (fix) config.HurtRadius;
+
             ColliderRadius = (fix) config.ColliderRadius;
 
             WorldPosition = entityController.WorldPosition;

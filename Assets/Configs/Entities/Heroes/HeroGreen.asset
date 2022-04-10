@@ -26,3 +26,4 @@ MonoBehaviour:
   ColliderRadius: 0.5
   Icon: {fileID: -476391304, guid: 4a6cef6fa7f02df4795bfca7789746a7, type: 3}
   BombConfig: {fileID: 11400000, guid: 61f1d4abaafbdf2489a0cdd6f6d8ee97, type: 2}
+  Collider: {fileID: 11400000, guid: e911884e32db2ba468e442651285f4f3, type: 2}

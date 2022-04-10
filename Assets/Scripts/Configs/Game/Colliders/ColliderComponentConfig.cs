@@ -1,6 +1,6 @@
 namespace Configs.Game.Colliders
 {
-    public abstract class ColliderComponentConfig : ConfigBase
+    public abstract class ColliderComponentConfig : ComponentConfig
     {
     }
 }
