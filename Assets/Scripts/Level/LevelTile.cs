@@ -1,4 +1,3 @@
-using Items;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
@@ -13,8 +12,6 @@ namespace Level
 
         public TileLoad TileLoad { get; private set; }
 
-        public IItem HoldedItem { get; private set; }
-
         public LevelTile(LevelTileType type, int2 coordinate, fix2 worldPosition)
         {
             Type = type;
@@ -27,14 +24,9 @@ namespace Level
             TileLoad = load;
         }
 
-        public void AddItem(IItem item)
+        public void RemoveLoad()
         {
-            HoldedItem = item;
-        }
-
-        public void RemoveItem()
-        {
-            HoldedItem = null;
+            TileLoad = null;
         }
     }
 }

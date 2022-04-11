@@ -137,7 +137,7 @@ namespace Math.FixedPointMath
             // if the top 32 bits of hihi (unused in the result) are neither all 0s or 1s,
             // then this means the result overflowed.
             var topCarry = hihi >> FRAC_BITS;
-            if (topCarry != 0 && topCarry != -1/*&& xl != -17 && yl != -17*/)
+            if (topCarry != 0 && topCarry != -1 /*&& xl != -17 && yl != -17*/)
                 return opSignsEqual ? MaxValue : MinValue;
 
             // If signs differ, both operands' magnitudes are greater than 1,
@@ -463,7 +463,8 @@ namespace Math.FixedPointMath
             return fix2.distancesq(point, circleCenter) < circleRadius * circleRadius;
         }
 
-        public static bool intersection_point(fix2 circleCenter, fix circleR, fix2 aabbCenter, fix innerR, out fix2 point)
+        public static bool circle_and_box_intersection_point(fix2 circleCenter, fix circleR, fix2 aabbCenter, fix innerR,
+            out fix2 point)
         {
             var pMax = aabbCenter + innerR;
             var pMin = aabbCenter - innerR;
@@ -472,6 +473,23 @@ namespace Math.FixedPointMath
 
             var x = is_point_inside_circle(point, circleCenter, circleR);
             return x;
+        }
+
+        public static bool circle_and_circle_intersection_point(fix2 centerA, fix radiusA, fix2 centerB, fix radiusB,
+            out fix2 point)
+        {
+            var vector = centerB - centerA;
+            var lengthsq = fix2.lengthsq(vector);
+            var twoRadii = radiusA + radiusB;
+
+            if (lengthsq <= twoRadii * twoRadii)
+            {
+                point = centerA + vector / (lengthsq * lengthsq) * radiusA;
+                return true;
+            }
+
+            point = default;
+            return false;
         }
     }
 }

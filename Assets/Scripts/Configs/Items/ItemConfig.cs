@@ -7,6 +7,6 @@ namespace Configs.Items
     {
         public GameObject Prefab;
 
-        public ColliderComponentConfig ColliderComponentConfig;
+        public ColliderComponentConfig Collider;
     }
 }

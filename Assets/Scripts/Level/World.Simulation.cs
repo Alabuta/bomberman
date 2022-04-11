@@ -95,9 +95,8 @@ namespace Level
                 var heroTileCoordinate = LevelModel.ToTileCoordinate(heroPosition);
 
                 var neighborTiles = LevelModel
-                        .GetNeighborTiles(heroTileCoordinate)
-                        .Where(t => t.TileLoad?.Components?.Any(c => c is ColliderComponent) ?? false)
-                    /*.Where(t => t.Type != LevelTileType.FloorTile)*/;
+                    .GetNeighborTiles(heroTileCoordinate)
+                    .Where(t => t.TileLoad?.Components?.Any(c => c is ColliderComponent) ?? false);
 
                 foreach (var neighborTile in neighborTiles)
                 {
@@ -107,8 +106,6 @@ namespace Level
                     var isIntersected = IntersectionPoint(heroCollider, heroPosition, tileCollider, tilePosition,
                         out var intersectionPoint);
 
-                    /*isIntersected = fix.intersection_point(heroPosition, player.Hero.ColliderRadius,
-                        tilePosition, radius, out intersectionPoint);*/
                     if (!isIntersected)
                         continue;
 
@@ -125,17 +122,10 @@ namespace Level
 
             if (colliderA is CircleColliderComponent circleA)
             {
-                if (colliderB is BoxColliderComponent boxB)
-                    return CircleAndBoxIntersectionPoint(circleA, centerA, boxB, centerB, out intersection);
+                return circleA.CircleIntersectionPoint(centerA, colliderB, centerB, out intersection);
             }
 
             return false;
-        }
-
-        private static bool CircleAndBoxIntersectionPoint(CircleColliderComponent colliderA, fix2 centerA,
-            BoxColliderComponent colliderB, fix2 centerB, out fix2 intersection)
-        {
-            return fix.intersection_point(centerA, colliderA.Radius, centerB, colliderB.InnerRadius, out intersection);
         }
 
         private void UpdateBehaviourAgents(GameContext gameContext)

@@ -69,10 +69,12 @@ namespace Game.Behaviours.MovementBehaviours
         {
             var isTileFordable = _fordableTileTypes.Contains(tile.Type);
 
-            if (tile.HoldedItem?.ItemConfig == null)
+            return isTileFordable;
+
+            /*if (tile.HoldedItem?.ItemConfig == null)
                 return isTileFordable;
 
-            return _collidedItems.All(i => i != tile.HoldedItem.ItemConfig) && isTileFordable;
+            return _collidedItems.All(i => i != tile.HoldedItem.ItemConfig) && isTileFordable;*/
         }
 
         protected virtual bool IsNeedToUpdate(fix2 worldPosition)

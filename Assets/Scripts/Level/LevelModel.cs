@@ -240,12 +240,12 @@ namespace Level
 
         public void AddItem(BombItem item, int2 coordinate)
         {
-            _tiles[GetFlattenTileCoordinate(coordinate)].AddItem(item);
+            _tiles[GetFlattenTileCoordinate(coordinate)].SetLoad(item);
         }
 
         public void RemoveItem(int2 coordinate)
         {
-            _tiles[GetFlattenTileCoordinate(coordinate)].RemoveItem();
+            _tiles[GetFlattenTileCoordinate(coordinate)].RemoveLoad();
         }
     }
 }
