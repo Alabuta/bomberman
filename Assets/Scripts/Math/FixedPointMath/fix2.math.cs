@@ -16,7 +16,7 @@ namespace Math.FixedPointMath
 
         public static fix lengthsq(fix2 vec)
         {
-            return vec.x * vec.x + vec.y * vec.y;
+            return dot(vec, vec);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -53,6 +53,13 @@ namespace Math.FixedPointMath
         public static fix2 normalize(fix2 vec)
         {
             return rsqrt(dot(vec, vec)) * vec;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fix2 normalize_safe(fix2 vec, fix2 safeResult)
+        {
+            var length = fix2.length(vec);
+            return length != fix.zero ? vec / length : safeResult;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

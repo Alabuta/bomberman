@@ -109,7 +109,8 @@ namespace Level
                     if (!isIntersected)
                         continue;
 
-                    var vector = fix2.normalize(heroPosition - intersectionPoint);
+                    var vector = fix2.normalize_safe(heroPosition - intersectionPoint, fix2.zero);
+                    Debug.LogWarning(vector);
                     player.Hero.WorldPosition = intersectionPoint + vector * player.Hero.ColliderRadius;
                 }
             }
@@ -120,12 +121,14 @@ namespace Level
         {
             intersection = default;
 
-            if (colliderA is CircleColliderComponent circleA)
+            return colliderA switch
             {
-                return circleA.CircleIntersectionPoint(centerA, colliderB, centerB, out intersection);
-            }
-
-            return false;
+                CircleColliderComponent circleCollider => circleCollider.CircleIntersectionPoint(centerA, colliderB, centerB,
+                    out intersection),
+                BoxColliderComponent boxCollider => boxCollider.BoxIntersectionPoint(centerA, colliderB, centerB,
+                    out intersection),
+                _ => false
+            };
         }
 
         private void UpdateBehaviourAgents(GameContext gameContext)
