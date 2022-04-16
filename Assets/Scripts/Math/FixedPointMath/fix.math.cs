@@ -484,7 +484,7 @@ namespace Math.FixedPointMath
 
             if (length <= twoRadii)
             {
-                point = centerA + vector / length * radiusA;
+                point = centerA + vector / length * (length - radiusA);
                 return true;
             }
 

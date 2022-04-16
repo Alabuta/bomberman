@@ -84,8 +84,6 @@ namespace Level
 
         private void UpdateCollisions()
         {
-            var radius = LevelModel.TileInnerRadius;
-
             foreach (var (_, player) in _players)
             {
                 var heroCollider = player.Hero.Components.FirstOrDefault(c => c is ColliderComponent) as ColliderComponent;
@@ -110,8 +108,8 @@ namespace Level
                         continue;
 
                     var vector = fix2.normalize_safe(heroPosition - intersectionPoint, fix2.zero);
-                    Debug.LogWarning(vector);
-                    player.Hero.WorldPosition = intersectionPoint + vector * player.Hero.ColliderRadius;
+                    player.Hero.WorldPosition =
+                        intersectionPoint + vector * player.Hero.ColliderRadius; // :TODO: use actual radius
                 }
             }
         }
