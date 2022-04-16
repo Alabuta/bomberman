@@ -1,6 +1,7 @@
 using System.Linq;
 using Configs.Behaviours;
 using Configs.Items;
+using Game.Colliders;
 using JetBrains.Annotations;
 using Level;
 using Math.FixedPointMath;
@@ -68,8 +69,8 @@ namespace Game.Behaviours.MovementBehaviours
         protected bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
         {
             var isTileFordable = _fordableTileTypes.Contains(tile.Type);
-
-            return isTileFordable;
+            var collider = tile.TileLoad?.Components?.FirstOrDefault(c => c is ColliderComponent);
+            return isTileFordable && collider == null;
 
             /*if (tile.HoldedItem?.ItemConfig == null)
                 return isTileFordable;
