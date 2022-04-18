@@ -1,6 +1,6 @@
 using System.Linq;
 using Configs.Behaviours;
-using Configs.Items;
+using Configs.Game;
 using Game.Colliders;
 using JetBrains.Annotations;
 using Level;
@@ -17,10 +17,8 @@ namespace Game.Behaviours.MovementBehaviours
 
         protected static int2[] MovementDirections;
 
-        private readonly LevelTileType[] _fordableTileTypes;
-        private readonly ItemConfig[] _collidedItems;
-
         private static bool _tryToSelectNewTile;
+        private readonly GameTagConfig[] _entityExcludeInteractionTags;
 
         protected MovementBehaviourAgentBase(MovementBehaviourBaseConfig config, IEntity entity)
         {
@@ -29,10 +27,8 @@ namespace Game.Behaviours.MovementBehaviours
             FromWorldPosition = entity.WorldPosition;
             ToWorldPosition = entity.WorldPosition;
 
-            _fordableTileTypes = entity.EntityConfig.FordableTileTypes;
-            _collidedItems = entity.EntityConfig.ColidedItems;
-
             _tryToSelectNewTile = config.TryToSelectNewTile;
+            _entityExcludeInteractionTags = entity.EntityConfig.ExcludeInteractionTags;
         }
 
         [CanBeNull]
@@ -68,14 +64,11 @@ namespace Game.Behaviours.MovementBehaviours
 
         protected bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
         {
-            var isTileFordable = _fordableTileTypes.Contains(tile.Type);
-            var collider = tile.TileLoad?.Components?.FirstOrDefault(c => c is ColliderComponent);
-            return isTileFordable && collider == null;
+            var tileLoad = tile.TileLoad;
+            if (tileLoad == null || _entityExcludeInteractionTags.Contains(tileLoad.GameTag))
+                return true;
 
-            /*if (tile.HoldedItem?.ItemConfig == null)
-                return isTileFordable;
-
-            return _collidedItems.All(i => i != tile.HoldedItem.ItemConfig) && isTileFordable;*/
+            return !(tileLoad.Components?.OfType<ColliderComponent>().Any() ?? false);
         }
 
         protected virtual bool IsNeedToUpdate(fix2 worldPosition)

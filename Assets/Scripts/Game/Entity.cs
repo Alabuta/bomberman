@@ -1,12 +1,14 @@
 using System;
 using Configs.Entity;
+using Configs.Game;
+using Game.Components;
 using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Game
 {
-    public abstract class Entity<TConfig> : TileLoad, IEntity where TConfig : EntityConfig
+    public abstract class Entity<TConfig> : ITileLoad, IEntity where TConfig : EntityConfig
     {
         public event Action<IEntity> DeathEvent;
         public event Action<IEntity, int> DamageEvent;
@@ -18,6 +20,10 @@ namespace Game
         public bool IsAlive => Health.Current > 0;
 
         public Health Health { get; private set; }
+
+        public GameTagConfig GameTag => EntityConfig.GameTag;
+
+        public Component[] Components { get; protected set; }
 
         public fix Speed
         {

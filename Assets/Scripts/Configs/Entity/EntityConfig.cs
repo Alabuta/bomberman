@@ -1,5 +1,4 @@
-using Configs.Items;
-using Level;
+using Configs.Game;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -9,15 +8,14 @@ namespace Configs.Entity
     {
         [Header("General Parameters")]
         public string Name;
+        public GameTagConfig GameTag;
+
+        public GameTagConfig[] ExcludeInteractionTags;
 
         public GameObject Prefab;
 
-        public LevelTileType[] FordableTileTypes;
-        public ItemConfig[] ColidedItems;
-
         [Header("Movement Parameters"), Range(.01f, 10f)]
         public float Speed;
-
         public int2 StartDirection = int2.zero;
 
         [Header("Health Parameters"), Range(1, 5)]

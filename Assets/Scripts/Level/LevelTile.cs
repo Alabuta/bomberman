@@ -10,7 +10,7 @@ namespace Level
         public int2 Coordinate { get; }
         public fix2 WorldPosition { get; }
 
-        public TileLoad TileLoad { get; private set; }
+        public ITileLoad TileLoad { get; private set; }
 
         public LevelTile(LevelTileType type, int2 coordinate, fix2 worldPosition)
         {
@@ -19,7 +19,7 @@ namespace Level
             WorldPosition = worldPosition;
         }
 
-        public void SetLoad(TileLoad load)
+        public void SetLoad(ITileLoad load)
         {
             TileLoad = load;
         }

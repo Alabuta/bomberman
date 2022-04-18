@@ -161,7 +161,7 @@ namespace Level
                 .ToArray();
         }
 
-        private static TileLoad CreateBlock(BlockConfig blockConfig)
+        private static ITileLoad CreateBlock(BlockConfig blockConfig)
         {
             return blockConfig switch
             {

@@ -6,8 +6,8 @@ namespace Level
     public interface ILevelTileView
     {
         LevelTileType Type { get; }
-        public int2 Coordinate { get; }
-        public fix2 WorldPosition { get; }
-        TileLoad TileLoad { get; }
+        int2 Coordinate { get; }
+        fix2 WorldPosition { get; }
+        ITileLoad TileLoad { get; }
     }
 }

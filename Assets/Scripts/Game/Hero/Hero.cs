@@ -16,8 +16,7 @@ namespace Game.Hero
             BombConfig = config.BombConfig;
 
             var collider = new CircleColliderComponent(config.Collider as CircleColliderComponentConfig);
-
-            _components = new Component[]
+            Components = new Component[]
             {
                 collider
             };

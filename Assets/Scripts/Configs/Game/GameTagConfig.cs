@@ -1,6 +1,9 @@
-﻿namespace Configs.Game
+﻿using UnityEngine;
+
+namespace Configs.Game
 {
-    public abstract class GameTagConfig : ConfigBase
+    [CreateAssetMenu(menuName = "Configs/Game Tag", fileName = "GameTag")]
+    public class GameTagConfig : ConfigBase
     {
     }
 }

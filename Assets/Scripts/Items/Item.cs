@@ -1,3 +1,4 @@
+using Configs.Game;
 using Configs.Game.Colliders;
 using Configs.Items;
 using Game.Colliders;
@@ -7,11 +8,15 @@ using Level;
 
 namespace Items
 {
-    public abstract class Item<TConfig> : TileLoad, IItem where TConfig : ItemConfig
+    public abstract class Item<TConfig> : ITileLoad, IItem where TConfig : ItemConfig
     {
         public ItemConfig ItemConfig { get; }
 
         public ItemController Controller { get; set; }
+
+        public GameTagConfig GameTag => ItemConfig.GameTag;
+
+        public Component[] Components { get; protected set; }
 
         protected Item(TConfig itemConfig, ItemController controller)
         {
@@ -25,7 +30,7 @@ namespace Items
                 _ => null
             };
 
-            _components = new Component[]
+            Components = new Component[]
             {
                 collider
             };
