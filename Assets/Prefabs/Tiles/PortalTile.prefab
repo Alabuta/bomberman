@@ -27,10 +27,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalTile
       objectReference: {fileID: 0}
-    - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 7033162139016997559, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_RootOrder
       value: 0

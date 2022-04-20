@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 058db1ba8b684ae2b12effa79cee65e4, type: 3}
   m_Name: Blocks_BoxCollider
   m_EditorClassIdentifier: 
+  InteractionLayerMask:
+    serializedVersion: 2
+    m_Bits: 8320
   InnerRadius: 0.5

@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93829bed80f74ab7bb88d3e5c32dfbc1, type: 3}
   m_Name: SoftBlock.Brick
   m_EditorClassIdentifier: 
+  Layer: 11
+  GameTag: {fileID: 0}
   Prefab: {fileID: 1089567522068187189, guid: d0fd97865f63d25439c18be72b152fd4, type: 3}
   Collider: {fileID: 11400000, guid: 992c630ce5e01774d8e7a1a43957a2ec, type: 2}

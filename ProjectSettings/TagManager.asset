@@ -12,6 +12,7 @@ TagManager:
   - Wall
   - PowerUpItem
   - PlayerInput
+  - Hero
   layers:
   - Default
   - TransparentFX
@@ -19,15 +20,15 @@ TagManager:
   - 
   - Water
   - UI
-  - Floor
-  - Enemies
-  - Collectables
-  - Walls
-  - Explosives
-  - Effects
-  - Blocks
-  - Player
-  - PowerUpItems
+  - 
+  - Enemy
+  - PickUpItem
+  - Bomb
+  - 
+  - SoftBlock
+  - HardBlock
+  - Hero
+  - PowerUpItem
   - PostProcessing
   - 
   - 

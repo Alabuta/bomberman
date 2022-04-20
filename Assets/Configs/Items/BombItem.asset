@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53c9166b44ce4e66b25bc7dc35aca9d7, type: 3}
   m_Name: BombItem
   m_EditorClassIdentifier: 
+  Layer: 9
+  GameTag: {fileID: 0}
   Prefab: {fileID: 8352911379006920328, guid: 3b1548050419d0f49a7da257cb5fdc9d, type: 3}
   Collider: {fileID: 11400000, guid: 35b9b66de5a5fea4cb4074966e989ed0, type: 2}

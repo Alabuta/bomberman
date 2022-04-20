@@ -86,7 +86,7 @@ namespace Level
         {
             foreach (var (_, player) in _players)
             {
-                var heroCollider = player.Hero.Components.FirstOrDefault(c => c is ColliderComponent) as ColliderComponent;
+                var heroCollider = player.Hero.Components.OfType<ColliderComponent>().FirstOrDefault();
                 player.Hero.UpdatePosition(_fixedDeltaTime);
 
                 var heroPosition = player.Hero.WorldPosition;

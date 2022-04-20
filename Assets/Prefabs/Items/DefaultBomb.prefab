@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8352911379006920331}
   - component: {fileID: 908286854}
   - component: {fileID: 5894507425330670346}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: DefaultBomb
   m_TagString: Explosive
   m_Icon: {fileID: 0}

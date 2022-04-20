@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be43481c27d04d9598c5af9f16dca0ce, type: 3}
   m_Name: Bomb_CircleCollider
   m_EditorClassIdentifier: 
+  InteractionLayerMask:
+    serializedVersion: 2
+    m_Bits: 8320
   Radius: 0.5
