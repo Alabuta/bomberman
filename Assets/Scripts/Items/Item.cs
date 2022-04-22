@@ -1,4 +1,3 @@
-using Configs.Game;
 using Configs.Game.Colliders;
 using Configs.Items;
 using Game.Colliders;
@@ -14,7 +13,7 @@ namespace Items
 
         public ItemController Controller { get; set; }
 
-        public GameTagConfig GameTag => ItemConfig.GameTag;
+        public int LayerMask { get; }
 
         public Component[] Components { get; protected set; }
 
@@ -22,6 +21,8 @@ namespace Items
         {
             ItemConfig = itemConfig;
             Controller = controller;
+
+            LayerMask = itemConfig.LayerMask;
 
             ColliderComponent collider = itemConfig.Collider switch
             {

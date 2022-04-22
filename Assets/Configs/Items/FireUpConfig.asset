@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2b8413c22594175b734b553afa7a36d, type: 3}
   m_Name: FireUpConfig
   m_EditorClassIdentifier: 
-  ApplyObjectTag: Player
+  Layer: 8
+  GameTag: {fileID: 0}
   Prefab: {fileID: 4783022635340475195, guid: 347addfae4a53ec419ab1ee1495c52fe, type: 3}
+  Collider: {fileID: 0}
   BlastRadiusIncreaseValue: 1

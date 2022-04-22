@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: Dahl
   m_EditorClassIdentifier: 
   Name: Dahl
+  Layer: 0
   Prefab: {fileID: 0}
   Speed: 0
+  StartDirection:
+    x: 0
+    y: 0
   Health: 0
-  FordableTiles: []
+  HitRadius: 0.1
+  HurtRadius: 0.1
+  ColliderRadius: 0.45
+  Collider: {fileID: 0}
+  BehaviourConfig: []

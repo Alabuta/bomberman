@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc3acbbd7ed44e64975d9906f8f738c8, type: 3}
-  m_Name: SpeedUpConfig
+  m_Script: {fileID: 11500000, guid: be43481c27d04d9598c5af9f16dca0ce, type: 3}
+  m_Name: Enemy_CircleCollider
   m_EditorClassIdentifier: 
-  Layer: 8
-  GameTag: {fileID: 0}
-  Prefab: {fileID: 1798542183822249269, guid: 9e5727c3930d392488dcceb6e05444ff, type: 3}
-  Collider: {fileID: 0}
-  MultiplierValue: 1
+  InteractionLayerMask:
+    serializedVersion: 2
+    m_Bits: 6656
+  Radius: 0.5

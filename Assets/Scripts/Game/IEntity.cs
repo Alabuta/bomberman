@@ -28,7 +28,6 @@ namespace Game
 
         fix HitRadius { get; }
         fix HurtRadius { get; }
-        fix ColliderRadius { get; }
 
         void Die();
     }

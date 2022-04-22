@@ -1,5 +1,4 @@
-﻿using Configs.Game;
-using Configs.Game.Colliders;
+﻿using Configs.Game.Colliders;
 using Core.Attributes;
 using UnityEngine;
 
@@ -10,9 +9,10 @@ namespace Configs.Items
         [Layer]
         public int Layer;
 
-        public GameTagConfig GameTag;
         public GameObject Prefab;
 
         public ColliderComponentConfig Collider;
+
+        public int LayerMask => 1 << Layer;
     }
 }

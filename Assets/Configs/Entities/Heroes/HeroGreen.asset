@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: HeroGreen
   m_EditorClassIdentifier: 
   Name: Green
+  Layer: 13
+  GameTag: {fileID: 0}
+  ExcludeInteractionTags: []
   Prefab: {fileID: 1343022026916402644, guid: df1298ec1fe507441a0029313f301aa1, type: 3}
-  FordableTileTypes: 
-  ColidedItems: []
   Speed: 2.4
   StartDirection:
     x: 0

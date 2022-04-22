@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: HeroWhite
   m_EditorClassIdentifier: 
   Name: White
+  Layer: 13
+  GameTag: {fileID: 0}
+  ExcludeInteractionTags: []
   Prefab: {fileID: 3476347086192181414, guid: ddac8d5521b1f4d478d8b4e7b1ad3c4b, type: 3}
-  FordableTileTypes: 
-  ColidedItems: []
   Speed: 2.4
   StartDirection:
     x: 0

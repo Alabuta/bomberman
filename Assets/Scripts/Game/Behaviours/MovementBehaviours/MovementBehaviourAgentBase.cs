@@ -1,6 +1,5 @@
 using System.Linq;
 using Configs.Behaviours;
-using Configs.Game;
 using Game.Colliders;
 using JetBrains.Annotations;
 using Level;
@@ -18,7 +17,8 @@ namespace Game.Behaviours.MovementBehaviours
         protected static int2[] MovementDirections;
 
         private static bool _tryToSelectNewTile;
-        private readonly GameTagConfig[] _entityExcludeInteractionTags;
+
+        private readonly int _interactionLayerMask;
 
         protected MovementBehaviourAgentBase(MovementBehaviourBaseConfig config, IEntity entity)
         {
@@ -28,7 +28,8 @@ namespace Game.Behaviours.MovementBehaviours
             ToWorldPosition = entity.WorldPosition;
 
             _tryToSelectNewTile = config.TryToSelectNewTile;
-            _entityExcludeInteractionTags = entity.EntityConfig.ExcludeInteractionTags;
+
+            _interactionLayerMask = entity.EntityConfig.Collider.InteractionLayerMask;
         }
 
         [CanBeNull]
@@ -65,7 +66,7 @@ namespace Game.Behaviours.MovementBehaviours
         protected bool IsTileCanBeAsMovementTarget(ILevelTileView tile)
         {
             var tileLoad = tile.TileLoad;
-            if (tileLoad == null || _entityExcludeInteractionTags.Contains(tileLoad.GameTag))
+            if (tileLoad == null || (_interactionLayerMask & tileLoad.LayerMask) == 0)
                 return true;
 
             return !(tileLoad.Components?.OfType<ColliderComponent>().Any() ?? false);

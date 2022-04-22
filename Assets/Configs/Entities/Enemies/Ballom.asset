@@ -13,10 +13,8 @@ MonoBehaviour:
   m_Name: Ballom
   m_EditorClassIdentifier: 
   Name: Ballom
+  Layer: 7
   Prefab: {fileID: 8022701317914093698, guid: 05808de62001e784dae2b41d43471351, type: 3}
-  FordableTileTypes: 01000000
-  ColidedItems:
-  - {fileID: 11400000, guid: 529986ff8ccd1dd41b6cc0ca61bc85b1, type: 2}
   Speed: 1
   StartDirection:
     x: 0
@@ -25,8 +23,7 @@ MonoBehaviour:
   HitRadius: 0.4
   HurtRadius: 0
   ColliderRadius: 0.45
-  FordableTiles:
-  - {fileID: 11400000, guid: 142c8edaa79633241ad9ef5f4dec90d0, type: 2}
+  Collider: {fileID: 11400000, guid: 6cab3d149becc194d8dd440f66a46ede, type: 2}
   BehaviourConfig:
   - {fileID: 11400000, guid: 01cfe548a7a7e254b8f2e9f0819f9d94, type: 2}
   - {fileID: 11400000, guid: 8842cef8766b1f54b8c43a352698648c, type: 2}

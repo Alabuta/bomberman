@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52126da0c8a34c41b4f32a4bddcb90a7, type: 3}
   m_Name: BombUpConfig
   m_EditorClassIdentifier: 
-  ApplyObjectTag: Player
+  Layer: 8
+  GameTag: {fileID: 0}
   Prefab: {fileID: 1545694682774121090, guid: 98b41440dbbc4c444b214971565944d1, type: 3}
+  Collider: {fileID: 0}
   BombCapacityIncreaseValue: 1

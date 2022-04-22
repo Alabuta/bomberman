@@ -1,6 +1,5 @@
 using System;
 using Configs.Entity;
-using Configs.Game;
 using Game.Components;
 using Level;
 using Math.FixedPointMath;
@@ -21,7 +20,7 @@ namespace Game
 
         public Health Health { get; private set; }
 
-        public GameTagConfig GameTag => EntityConfig.GameTag;
+        public int LayerMask { get; }
 
         public Component[] Components { get; protected set; }
 
@@ -66,6 +65,8 @@ namespace Game
         {
             EntityConfig = config;
             EntityController = entityController;
+
+            LayerMask = config.LayerMask;
 
             Speed = fix.zero;
             SpeedMultiplier = fix.one;

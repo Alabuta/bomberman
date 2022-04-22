@@ -1,4 +1,5 @@
-using Configs.Game;
+using Configs.Game.Colliders;
+using Core.Attributes;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -8,9 +9,9 @@ namespace Configs.Entity
     {
         [Header("General Parameters")]
         public string Name;
-        public GameTagConfig GameTag;
 
-        public GameTagConfig[] ExcludeInteractionTags;
+        [Layer]
+        public int Layer;
 
         public GameObject Prefab;
 
@@ -24,5 +25,9 @@ namespace Configs.Entity
         public double HitRadius = .1;
         public double HurtRadius = .1;
         public double ColliderRadius = .45;
+
+        public ColliderComponentConfig Collider;
+
+        public int LayerMask => 1 << Layer;
     }
 }
