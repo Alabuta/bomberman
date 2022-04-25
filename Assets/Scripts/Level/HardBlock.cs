@@ -1,3 +1,4 @@
+using System.Linq;
 using Configs.Game.Colliders;
 using Configs.Level.Tile;
 using Game.Colliders;
@@ -20,6 +21,12 @@ namespace Level
             {
                 collider
             };
+        }
+
+        public bool TryGetComponent<T>(out T component) where T : Component
+        {
+            component = Components.OfType<T>().FirstOrDefault();
+            return component != default;
         }
     }
 }

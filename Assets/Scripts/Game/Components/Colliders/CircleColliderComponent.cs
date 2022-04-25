@@ -8,6 +8,7 @@ namespace Game.Colliders
         public fix Radius { get; }
 
         public CircleColliderComponent(CircleColliderComponentConfig config)
+            : base(config)
         {
             Radius = (fix) config.Radius;
         }

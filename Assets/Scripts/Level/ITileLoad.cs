@@ -6,5 +6,7 @@ namespace Level
     {
         int LayerMask { get; }
         Component[] Components { get; }
+
+        bool TryGetComponent<T>(out T component) where T : Component;
     }
 }

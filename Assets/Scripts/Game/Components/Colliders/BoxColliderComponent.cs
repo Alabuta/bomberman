@@ -8,6 +8,7 @@ namespace Game.Colliders
         public fix InnerRadius { get; }
 
         public BoxColliderComponent(BoxColliderComponentConfig config)
+            : base(config)
         {
             InnerRadius = (fix) config.InnerRadius;
         }

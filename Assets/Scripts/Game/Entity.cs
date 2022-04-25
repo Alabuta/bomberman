@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Configs.Entity;
 using Game.Components;
 using Level;
@@ -23,6 +24,12 @@ namespace Game
         public int LayerMask { get; }
 
         public Component[] Components { get; protected set; }
+
+        public bool TryGetComponent<T>(out T component) where T : Component
+        {
+            component = Components.OfType<T>().FirstOrDefault();
+            return component != default;
+        }
 
         public fix Speed
         {

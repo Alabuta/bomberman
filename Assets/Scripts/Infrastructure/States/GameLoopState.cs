@@ -17,11 +17,11 @@ namespace Infrastructure.States
         {
             Game.World.StartSimulation();
 
-            _gameStateMachine.FixedUpdateCallback = () => { Game.World.UpdateSimulation(); };
+            _gameStateMachine.FixedUpdateCallback = () => { Game.World.UpdateWorldModel(); };
 
             _gameStateMachine.UpdateCallback = () =>
             {
-                Game.World.UpdateView();
+                Game.World.UpdateWorldView();
                 Game.GameStatsView.UpdateLevelStageTimer(Game.World.StageTimer);
             };
         }

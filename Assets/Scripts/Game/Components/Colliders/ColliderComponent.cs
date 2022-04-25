@@ -1,4 +1,5 @@
 using System;
+using Configs.Game.Colliders;
 using Math.FixedPointMath;
 using UnityEngine;
 using Component = Game.Components.Component;
@@ -7,6 +8,12 @@ namespace Game.Colliders
 {
     public abstract class ColliderComponent : Component
     {
+        public LayerMask InteractionLayerMask;
+
+        protected ColliderComponent(ColliderComponentConfig config)
+        {
+            InteractionLayerMask = config.InteractionLayerMask;
+        }
     }
 
     public static class ColliderExtensions
@@ -18,10 +25,8 @@ namespace Game.Colliders
             {
                 case CircleColliderComponent circleCollider:
                 {
-                    var x = fix.circle_and_circle_intersection_point(centerA, colliderA.Radius, centerB, circleCollider.Radius,
+                    return fix.circle_and_circle_intersection_point(centerA, colliderA.Radius, centerB, circleCollider.Radius,
                         out intersection);
-                    Debug.LogWarning($"{x} {intersection}");
-                    return x;
                 }
 
                 case BoxColliderComponent boxCollider:

@@ -28,7 +28,16 @@ namespace Level
             _simulationStartTime = (fix) Time.timeAsDouble;
         }
 
-        public void UpdateSimulation()
+        public void UpdateWorldView()
+        {
+            foreach (var (_, player) in _players)
+                player.Hero.EntityController.WorldPosition = player.Hero.WorldPosition;
+
+            foreach (var enemy in _enemies)
+                enemy.EntityController.WorldPosition = enemy.WorldPosition;
+        }
+
+        public void UpdateWorldModel()
         {
             var heroes = Players.Values.Select(p => p.Hero).ToArray();
             var gameContext = new GameContext(LevelModel, heroes);
@@ -41,7 +50,8 @@ namespace Level
             {
                 ProcessPlayersInput();
 
-                UpdateCollisions();
+                UpdateHeroesPositions();
+                ResolveHeroesCollisions();
 
                 UpdateBehaviourAgents(gameContext);
 
@@ -51,15 +61,6 @@ namespace Level
             _timeRemainder = fix.max(fix.zero, deltaTime - (fix) tickCounts / (fix) TickRate);
 
             _simulationCurrentTime += deltaTime - _timeRemainder;
-        }
-
-        public void UpdateView()
-        {
-            foreach (var (_, player) in _players)
-                player.Hero.EntityController.WorldPosition = player.Hero.WorldPosition;
-
-            foreach (var enemy in _enemies)
-                enemy.EntityController.WorldPosition = enemy.WorldPosition;
         }
 
         private void ProcessPlayersInput()
@@ -82,14 +83,25 @@ namespace Level
             _playersInputActions.Remove(Tick);
         }
 
-        private void UpdateCollisions()
+        private void UpdateHeroesPositions()
         {
             foreach (var (_, player) in _players)
             {
-                var heroCollider = player.Hero.Components.OfType<ColliderComponent>().FirstOrDefault();
-                player.Hero.UpdatePosition(_fixedDeltaTime);
+                var playerHero = player.Hero;
+                playerHero.UpdatePosition(_fixedDeltaTime);
+            }
+        }
 
-                var heroPosition = player.Hero.WorldPosition;
+        private void ResolveHeroesCollisions()
+        {
+            foreach (var (_, player) in _players)
+            {
+                var playerHero = player.Hero;
+
+                if (!playerHero.TryGetComponent<ColliderComponent>(out var heroCollider))
+                    continue;
+
+                var heroPosition = playerHero.WorldPosition;
                 var heroTileCoordinate = LevelModel.ToTileCoordinate(heroPosition);
 
                 var neighborTiles = LevelModel
@@ -98,7 +110,12 @@ namespace Level
 
                 foreach (var neighborTile in neighborTiles)
                 {
-                    var tileCollider = neighborTile.TileLoad.Components.FirstOrDefault(c => c is ColliderComponent);
+                    if (!neighborTile.TileLoad.TryGetComponent<ColliderComponent>(out var tileCollider))
+                        continue;
+
+                    if ((heroCollider.InteractionLayerMask & neighborTile.TileLoad.LayerMask) == 0)
+                        continue;
+
                     var tilePosition = neighborTile.WorldPosition;
 
                     var isIntersected = IntersectionPoint(heroCollider, heroPosition, tileCollider, tilePosition,
@@ -108,8 +125,8 @@ namespace Level
                         continue;
 
                     var vector = fix2.normalize_safe(heroPosition - intersectionPoint, fix2.zero);
-                    player.Hero.WorldPosition =
-                        intersectionPoint + vector * player.Hero.ColliderRadius; // :TODO: use actual radius
+                    playerHero.WorldPosition =
+                        intersectionPoint + vector * playerHero.ColliderRadius; // :TODO: use actual radius
                 }
             }
         }

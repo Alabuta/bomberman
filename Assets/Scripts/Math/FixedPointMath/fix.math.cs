@@ -482,9 +482,9 @@ namespace Math.FixedPointMath
             var length = fix2.length(vector);
             var twoRadii = radiusA + radiusB;
 
-            if (length <= twoRadii)
+            if (length != zero && length <= twoRadii)
             {
-                point = centerA + vector / length * (length - radiusA);
+                point = centerB - vector / length * radiusB;
                 return true;
             }
 
