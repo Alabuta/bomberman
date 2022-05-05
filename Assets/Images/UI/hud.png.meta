@@ -104,7 +104,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: hud_0
+      name: hud_score
       rect:
         serializedVersion: 2
         x: 2
@@ -112,7 +112,7 @@ TextureImporter:
         width: 22
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -125,7 +125,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hud_2
+      name: hud_high_score
       rect:
         serializedVersion: 2
         x: 26
@@ -133,7 +133,7 @@ TextureImporter:
         width: 22
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -146,7 +146,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hud_4
+      name: hud_clock
       rect:
         serializedVersion: 2
         x: 76
@@ -154,7 +154,7 @@ TextureImporter:
         width: 26
         height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -167,7 +167,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hud_5
+      name: hud_white
       rect:
         serializedVersion: 2
         x: 1
@@ -175,7 +175,7 @@ TextureImporter:
         width: 24
         height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -188,7 +188,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hud_6
+      name: hud_black
       rect:
         serializedVersion: 2
         x: 26
@@ -196,7 +196,7 @@ TextureImporter:
         width: 24
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -209,7 +209,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hud_7
+      name: hud_red
       rect:
         serializedVersion: 2
         x: 51
@@ -217,7 +217,7 @@ TextureImporter:
         width: 24
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -230,7 +230,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hud_8
+      name: hud_blue
       rect:
         serializedVersion: 2
         x: 76
@@ -238,7 +238,7 @@ TextureImporter:
         width: 24
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -251,7 +251,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hud_9
+      name: hud_green
       rect:
         serializedVersion: 2
         x: 101
@@ -259,7 +259,7 @@ TextureImporter:
         width: 24
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -267,6 +267,27 @@ TextureImporter:
       bones: []
       spriteID: aeced997f6734884d9f6446bcd051531
       internalID: -476391304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: hud_not_texture
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 48
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 554dda4eb1a26f14b98afc7646f2c187
+      internalID: -457892383
       vertices: []
       indices: 
       edges: []
@@ -282,16 +303,16 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      hud_4: -1505447380
       hud_3: 1865219067
-      hud_5: 1578751620
-      hud_6: -666800895
-      hud_0: -1265735592
-      hud_9: -476391304
-      hud_1: -1103376611
-      hud_8: 754257947
-      hud_2: 1428464450
-      hud_7: 383870284
+      hud_green: -476391304
+      hud_red: 383870284
+      hud_not_texture: -1103376611
+      hud_high_score: 1428464450
+      hud_white: 1578751620
+      hud_score: -1265735592
+      hud_black: -666800895
+      hud_clock: -1505447380
+      hud_blue: 754257947
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
