@@ -36,7 +36,7 @@ namespace Infrastructure.States
         private void LoadOrCreateProgressState()
         {
             // :TODO: use player progress from server
-            _progressService.Progress = _saveLoadService.LoadProgress() ?? CreateEmptyProgress();
+            _progressService.Progress = /*_saveLoadService.LoadProgress() ??*/ CreateEmptyProgress();
 
             _saveLoadService.SaveProgress();
         }

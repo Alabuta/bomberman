@@ -1,5 +1,4 @@
-﻿using System;
-using Configs.Items;
+﻿using Configs.Items;
 using UnityEngine;
 
 namespace Game.Items
@@ -9,7 +8,7 @@ namespace Game.Items
         [SerializeField]
         private ItemConfig ItemConfig;
 
-        public event Action<PickUpItem> ItemEffectAppliedEvent;
+        // public event Action<PickUpItem> ItemEffectAppliedEvent;
 
         /*private void OnTriggerEnter2D(Collider2D other)
         {

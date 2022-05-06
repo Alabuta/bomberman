@@ -33,7 +33,7 @@ namespace Game
             EntityAnimator.PlaybackSpeed = 1;
             EntityAnimator.SetDead();
 
-            // :TODO: Destroy() after while
+            // :TODO: call Destroy() after while
         }
 
         public void TakeDamage(int damage)
