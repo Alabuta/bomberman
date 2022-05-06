@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Configs;
 using Configs.Behaviours;
@@ -16,7 +17,9 @@ using Input;
 using Items;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using PlayerInput = UnityEngine.InputSystem.PlayerInput;
 
 namespace Infrastructure.Factory
@@ -87,6 +90,20 @@ namespace Infrastructure.Factory
             RegisterProgressWatchers(gameObject);
 
             return gameObject;
+        }
+
+        public async void InstantiatePrefabAsync(Action<GameObject> callback, AssetReferenceGameObject reference,
+            float3 position, Transform parent = null)
+        {
+            var handle = Addressables.InstantiateAsync(reference, position, Quaternion.identity, parent);
+            await handle.Task;
+
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+                return;
+
+            callback?.Invoke(handle.Result);
+
+            // Addressables.ReleaseInstance(handle); :TODO:
         }
 
         private void RegisterProgressWatchers(GameObject gameObject)

@@ -57,7 +57,7 @@ namespace UI
 
             callback?.Invoke(handle.Result);
 
-            Addressables.Release(handle);
+            // Addressables.Release(handle); :TODO:
         }
 
         private void OnDestroy()

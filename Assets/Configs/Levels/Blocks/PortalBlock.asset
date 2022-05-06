@@ -12,5 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be36176d17db48e0b01eadd8cac74f7a, type: 3}
   m_Name: PortalBlock
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 2551957320819531834, guid: 9e0eeed35f429114a96eed3463274292, type: 3}
-  Enemies: []
+  Layer: 0
+  Prefab:
+    m_AssetGUID: 9e0eeed35f429114a96eed3463274292
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  Collider: {fileID: 0}

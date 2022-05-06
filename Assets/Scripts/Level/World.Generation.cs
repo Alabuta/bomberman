@@ -77,7 +77,7 @@ namespace Level
                 var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
 
                 var (parent, blockConfig) = blocks[tileType /* & ~LevelTileType.PowerUpItem*/];
-                gameFactory.InstantiatePrefab(blockConfig.Prefab, position, parent.transform);
+                gameFactory.InstantiatePrefabAsync(_ => { }, blockConfig.Prefab, position, parent.transform);
             }
         }
     }

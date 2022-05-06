@@ -21,6 +21,18 @@ MonoBehaviour:
     m_Address: Assets/Images/UI/hud.png
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 9ad4f47c6f37d944b8881ac32603b2dd
+    m_Address: Assets/Prefabs/Tiles/PillarTile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d0fd97865f63d25439c18be72b152fd4
+    m_Address: Assets/Prefabs/Tiles/BrickTile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9e0eeed35f429114a96eed3463274292
+    m_Address: Assets/Prefabs/Tiles/PortalTile.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 896cbd87d4ab9484c9a570227c2a3e79, type: 2}
   m_SchemaSet:

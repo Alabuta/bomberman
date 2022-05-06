@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: HardBlock.Pillar
   m_EditorClassIdentifier: 
   Layer: 12
-  GameTag: {fileID: 0}
-  Prefab: {fileID: 8666759617963854964, guid: 9ad4f47c6f37d944b8881ac32603b2dd, type: 3}
+  Prefab:
+    m_AssetGUID: 9ad4f47c6f37d944b8881ac32603b2dd
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   Collider: {fileID: 11400000, guid: 992c630ce5e01774d8e7a1a43957a2ec, type: 2}

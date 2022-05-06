@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Configs;
 using Configs.Behaviours;
@@ -15,6 +16,7 @@ using Items;
 using JetBrains.Annotations;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Infrastructure.Factory
 {
@@ -39,6 +41,9 @@ namespace Infrastructure.Factory
         GameObject SpawnEntity(EntityConfig heroConfig, float3 position);
 
         GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null);
+
+        void InstantiatePrefabAsync(Action<GameObject> callback, AssetReferenceGameObject reference, float3 position,
+            Transform parent = null);
 
         void CleanUp();
 
