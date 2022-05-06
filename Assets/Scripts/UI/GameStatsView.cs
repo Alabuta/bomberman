@@ -47,7 +47,7 @@ namespace UI
                 LevelStageTimeText.SetText(TimeSpan.FromSeconds(timer).ToString("m':'ss"));
         }
 
-        private async void Load<T>(AssetReference reference, Action<T> callback)
+        private static async void Load<T>(AssetReference reference, Action<T> callback)
         {
             var handle = reference.LoadAssetAsync<T>();
             await handle.Task;
