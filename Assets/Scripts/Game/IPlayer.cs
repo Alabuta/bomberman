@@ -1,5 +1,6 @@
 ﻿using Configs;
 using Input;
+using Level;
 
 namespace Game
 {
@@ -11,6 +12,6 @@ namespace Game
 
         void AttachHero(Hero.Hero hero);
 
-        void ApplyInputAction(PlayerInputAction inputAction);
+        void ApplyInputAction(World world, PlayerInputAction inputAction);
     }
 }

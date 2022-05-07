@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using Configs.Game;
+using Configs.Singletons;
 using Data;
 using Game;
 using Game.Behaviours;
 using Game.Enemies;
 using Infrastructure.Factory;
 using Input;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Level
@@ -31,8 +33,11 @@ namespace Level
         public double StageTimer =>
             math.max(0, _stageTimer - (double) (_simulationCurrentTime - _simulationStartTime));
 
-        public World(IGameFactory gameFactory, LevelStage levelStage)
+        public World(ApplicationConfig applicationConfig, IGameFactory gameFactory, LevelStage levelStage)
         {
+            _tickRate = applicationConfig.TickRate;
+            _fixedDeltaTime = fix.one / (fix) _tickRate;
+
             _gameFactory = gameFactory;
             _stageTimer = levelStage.LevelStageConfig.LevelStageTimer;
         }

@@ -1,5 +1,4 @@
-﻿using App;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,8 +9,6 @@ namespace UI
     {
         [SerializeField]
         private MenuEntryController[] MenuEntryAnimators;
-
-        private ISceneManager _sceneManager;
 
         private int _currentSelectedIndex;
 
@@ -39,7 +36,7 @@ namespace UI
         public void OnSubmit(InputValue value)
         {
             var menuEntryAnimator = MenuEntryAnimators[_currentSelectedIndex];
-            menuEntryAnimator.SubmitAndPlayAnimation(() => { }/*_sceneManager.StartNewGame()*/);
+            menuEntryAnimator.SubmitAndPlayAnimation(() => { } /*_sceneManager.StartNewGame()*/);
         }
 
         [UsedImplicitly]

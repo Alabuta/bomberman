@@ -21,7 +21,7 @@ namespace Level
             _playersInputActions[Tick].Add(inputActions);
         }
 
-        private void OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
+        public void OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
         {
             var bombConfig = player.Hero.BombConfig;
             var bombCoordinate = LevelModel.ToTileCoordinate(worldPosition);
@@ -44,7 +44,7 @@ namespace Level
             _playerBombs[player].Enqueue(bombItem);
         }
 
-        private void OnPlayerBombBlast(IPlayer player)
+        public void OnPlayerBombBlast(IPlayer player)
         {
             if (!_playerBombs.TryGetValue(player, out var bombsQueue))
                 return;

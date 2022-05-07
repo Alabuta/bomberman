@@ -9,9 +9,8 @@ namespace Level
 {
     public partial class World
     {
-        private const int TickRate = 60;
-
-        private readonly fix _fixedDeltaTime = fix.one / (fix) TickRate;
+        private readonly int _tickRate;
+        private readonly fix _fixedDeltaTime;
 
         private fix _simulationStartTime;
         private fix _simulationCurrentTime;
@@ -44,7 +43,7 @@ namespace Level
 
             var deltaTime = (fix) Time.fixedDeltaTime + _timeRemainder;
 
-            var targetTick = Tick + (ulong) ((fix) TickRate * deltaTime);
+            var targetTick = Tick + (ulong) ((fix) _tickRate * deltaTime);
             var tickCounts = targetTick - Tick;
             while (Tick < targetTick)
             {
@@ -58,7 +57,7 @@ namespace Level
                 ++Tick;
             }
 
-            _timeRemainder = fix.max(fix.zero, deltaTime - (fix) tickCounts / (fix) TickRate);
+            _timeRemainder = fix.max(fix.zero, deltaTime - (fix) tickCounts / (fix) _tickRate);
 
             _simulationCurrentTime += deltaTime - _timeRemainder;
         }
@@ -70,13 +69,7 @@ namespace Level
                 foreach (var inputAction in playerInputActions)
                 {
                     var player = _playerInputs[inputAction.PlayerInput];
-                    player.ApplyInputAction(inputAction);
-
-                    if (inputAction.BombPlant)
-                        OnPlayerBombPlant(player, player.Hero.WorldPosition);
-
-                    if (inputAction.BombBlast)
-                        OnPlayerBombBlast(player);
+                    player.ApplyInputAction(this, inputAction);
                 }
             }
 

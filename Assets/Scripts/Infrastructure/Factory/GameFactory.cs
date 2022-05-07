@@ -103,7 +103,8 @@ namespace Infrastructure.Factory
 
             callback?.Invoke(handle.Result);
 
-            // Addressables.ReleaseInstance(handle); :TODO:
+            // Addressables.ReleaseInstance(handle); // :TODO:
+            // Addressables.ReleaseAsset for final bundle unload
         }
 
         private void RegisterProgressWatchers(GameObject gameObject)

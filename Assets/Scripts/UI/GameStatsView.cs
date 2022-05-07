@@ -35,7 +35,6 @@ namespace UI
 
             Load<Sprite>(entityConfig.Icon, SetHeroIcon);
 
-            // SetHeroIcon(entityConfig.Icon);
             SetHeroHealth();
 
             _health.HealthChangedEvent += SetHeroHealth;
@@ -57,7 +56,7 @@ namespace UI
 
             callback?.Invoke(handle.Result);
 
-            // Addressables.Release(handle); :TODO:
+            // Addressables.Release(handle); // :TODO:
         }
 
         private void OnDestroy()

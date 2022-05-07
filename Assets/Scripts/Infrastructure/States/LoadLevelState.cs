@@ -4,6 +4,7 @@ using App;
 using Configs;
 using Configs.Game;
 using Configs.Level;
+using Configs.Singletons;
 using Data;
 using Game;
 using Game.Enemies;
@@ -70,12 +71,14 @@ namespace Infrastructure.States
 
         private void CreateWorld(LevelStage levelStage)
         {
+            var applicationConfig = ApplicationConfig.Instance;
+
             var gameModeConfig = levelStage.GameModeConfig;
             var levelStageConfig = levelStage.LevelStageConfig;
 
             Random.InitState(levelStageConfig.RandomSeed);
 
-            Game.World = new World(_gameFactory, levelStage); // :TODO: move to DI
+            Game.World = new World(applicationConfig, _gameFactory, levelStage); // :TODO: move to DI
             Game.World.GenerateLevelStage(levelStage, _gameFactory);
 
             var levelGridModel = Game.World.LevelModel;

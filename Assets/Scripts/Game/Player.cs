@@ -2,6 +2,7 @@
 using Data;
 using Infrastructure.Services.PersistentProgress;
 using Input;
+using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
@@ -19,12 +20,18 @@ namespace Game
             PlayerConfig = playerConfig;
         }
 
-        public void ApplyInputAction(PlayerInputAction inputAction)
+        public void ApplyInputAction(World world, PlayerInputAction inputAction)
         {
             if (Hero is not { IsAlive: true })
                 return;
 
             OnMove(inputAction.MovementVector);
+
+            if (inputAction.BombPlant)
+                world.OnPlayerBombPlant(this, Hero.WorldPosition);
+
+            if (inputAction.BombBlast)
+                world.OnPlayerBombBlast(this);
         }
 
         public void AttachHero(Hero.Hero hero)

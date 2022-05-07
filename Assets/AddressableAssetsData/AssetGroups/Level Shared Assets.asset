@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Level Shared Assets
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
+  m_GroupName: Level Shared Assets
   m_Data:
     m_SerializedData: []
-  m_GUID: 8b515e1ce838cbc499c1b9a3a4c64233
+  m_GUID: 5641b157ec7b94947a346d0269b52600
   m_SerializeEntries:
-  - m_GUID: 2db83539eedfa64468480e8e242f415d
-    m_Address: BootstrapScene
+  - m_GUID: 9e0eeed35f429114a96eed3463274292
+    m_Address: PortalTile
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 896cbd87d4ab9484c9a570227c2a3e79, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 09d16b4c385bf4241a183d132f072635, type: 2}
-    - {fileID: 11400000, guid: bbcc37febbb3de6418d63bf411b7f3dc, type: 2}
+    - {fileID: 11400000, guid: 46eaba1b7af5e4446996d10f04f6f88d, type: 2}
+    - {fileID: 11400000, guid: 7e1a5b851d98dad4bad06e77102aec25, type: 2}

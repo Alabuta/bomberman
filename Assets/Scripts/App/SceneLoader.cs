@@ -1,6 +1,7 @@
 using System;
-using System.Collections;
 using Infrastructure;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 
 namespace App
@@ -16,21 +17,22 @@ namespace App
 
         public void Load(string sceneName, Action callback)
         {
-            _coroutineRunner.StartCoroutine(LoadScene(sceneName, callback));
+            LoadScene(sceneName, callback);
         }
 
-        private static IEnumerator LoadScene(string sceneName, Action callback)
+        private static async void LoadScene(string sceneName, Action callback)
         {
             if (SceneManager.GetActiveScene().name == sceneName)
             {
                 callback?.Invoke();
-                yield break;
+                return;
             }
 
-            var loadOperation = SceneManager.LoadSceneAsync(sceneName);
+            var handle = Addressables.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            await handle.Task;
 
-            while (!loadOperation.isDone)
-                yield return null;
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+                return;
 
             callback?.Invoke();
         }
