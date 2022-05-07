@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93829bed80f74ab7bb88d3e5c32dfbc1, type: 3}
-  m_Name: SoftBlock.Brick
+  m_Name: Tree
   m_EditorClassIdentifier: 
   Layer: 11
   Prefab:

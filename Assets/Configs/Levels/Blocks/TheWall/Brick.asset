@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeacdf84ca5f4d6e95557c5a5f0aa020, type: 3}
-  m_Name: HardBlock.Pillar
+  m_Script: {fileID: 11500000, guid: 93829bed80f74ab7bb88d3e5c32dfbc1, type: 3}
+  m_Name: Brick
   m_EditorClassIdentifier: 
-  Layer: 12
+  Layer: 11
   Prefab:
-    m_AssetGUID: 9ad4f47c6f37d944b8881ac32603b2dd
+    m_AssetGUID: 99d74e1b57979414bb29adffad8c1765
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0

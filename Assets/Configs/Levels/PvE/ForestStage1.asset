@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf2971e3985d43fb82aacd46fc15ccce, type: 3}
-  m_Name: BorderWallStage1
+  m_Name: ForestStage1
   m_EditorClassIdentifier: 
   Index: 0
   RandomSeed: 270888

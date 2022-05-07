@@ -12,7 +12,7 @@ namespace Infrastructure.States
 {
     public class BootstrapState : IGameState
     {
-        private const string InitialSceneName = "InitialScene";
+        private const string InitialSceneName = "BootstrapScene";
         private readonly GameStateMachine _gameStateMachine;
         private readonly SceneLoader _sceneLoader;
         private readonly ServiceLocator _serviceLocator;
