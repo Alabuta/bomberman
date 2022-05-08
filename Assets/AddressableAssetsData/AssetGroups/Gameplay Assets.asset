@@ -25,6 +25,10 @@ MonoBehaviour:
     m_Address: hud
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: bc5c222b33224d24eb48d6eeed80f7ab
+    m_Address: GameStatsCanvas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 896cbd87d4ab9484c9a570227c2a3e79, type: 2}
   m_SchemaSet:

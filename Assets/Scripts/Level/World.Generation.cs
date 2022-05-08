@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Configs.Level;
 using Configs.Level.Tile;
 using Data;
@@ -10,7 +13,7 @@ namespace Level
 {
     public partial class World
     {
-        public void GenerateLevelStage(LevelStage levelStage, IGameFactory gameFactory)
+        public void GenerateLevelStage(IGameFactory gameFactory, LevelStage levelStage) // :TODO: get IGameFactory from DI
         {
             var levelConfig = levelStage.LevelConfig;
             var levelStageConfig = levelStage.LevelStageConfig;
@@ -19,15 +22,16 @@ namespace Level
 
             SpawnBlocks(levelConfig, LevelModel, gameFactory);
 
-            SpawnWalls(levelConfig, LevelModel);
+            SpawnWalls(gameFactory, levelConfig, LevelModel);
         }
 
-        private static void SpawnWalls(LevelConfig levelConfig, LevelModel levelModel)
+        private static void SpawnWalls(IGameFactory gameFactory, LevelConfig levelConfig, LevelModel levelModel)
         {
             var columnsNumber = levelModel.ColumnsNumber;
             var rowsNumber = levelModel.RowsNumber;
 
-            var walls = Object.Instantiate(levelConfig.Walls, Vector3.zero, Quaternion.identity);
+            // var walls = gameFactory.InstantiatePrefabAsync(levelConfig.Walls, Vector3.zero);
+            var walls = gameFactory.InstantiatePrefab(levelConfig.Walls, Vector3.zero);
 
             var sprite = walls.GetComponent<SpriteRenderer>();
             sprite.size += new Vector2(columnsNumber, rowsNumber);

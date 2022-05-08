@@ -29,7 +29,7 @@ namespace Game.Behaviours.MovementBehaviours
 
             _tryToSelectNewTile = config.TryToSelectNewTile;
 
-            _interactionLayerMask = entity.EntityConfig.Collider.InteractionLayerMask;
+            _interactionLayerMask = entity.Config.Collider.InteractionLayerMask;
         }
 
         [CanBeNull]

@@ -34,12 +34,12 @@ MonoBehaviour:
   m_MonoScriptBundleNaming: 0
   m_MonoScriptBundleCustomNaming: 
   m_RemoteCatalogBuildPath:
-    m_Id: 5a4e6fdcd3270064da7330afa9437e3e
+    m_Id: 68cee206cd8270249ad7cf92d2a7e103
   m_RemoteCatalogLoadPath:
-    m_Id: 5a4e6fdcd3270064da7330afa9437e3e
+    m_Id: c13e7b2da75da41408b7c1a92b903a76
   m_ContentStateBuildPath: 
-  m_BuildAddressablesWithPlayerBuild: 0
-  m_overridePlayerVersion: 
+  m_BuildAddressablesWithPlayerBuild: 1
+  m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: 676605e8578748048b2d3b205264ea3c, type: 2}
   - {fileID: 11400000, guid: 45ba099e6dda8d541a293c30aca347bc, type: 2}
@@ -68,7 +68,7 @@ MonoBehaviour:
       - m_Id: 68cee206cd8270249ad7cf92d2a7e103
         m_Value: ServerData/[BuildTarget]
       - m_Id: c13e7b2da75da41408b7c1a92b903a76
-        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+        m_Value: http://[PrivateIpAddress_1]:[HostingServicePort]
     m_ProfileEntryNames:
     - m_Id: 5a4e6fdcd3270064da7330afa9437e3e
       m_Name: BuildTarget
@@ -89,6 +89,8 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
+    - The Wall Level
+    - Forest Level
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 4bce5fd485a83524ba9f7fb5b832a083, type: 2}
@@ -104,7 +106,36 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ee6a4c97efbd1a643a79c6914c82cdc6, type: 2}
   m_ActiveProfileId: ebce0b6309ad8d4468ed11461227ab72
   m_HostingServicesManager:
-    m_HostingServiceInfos: []
+    m_HostingServiceInfos:
+    - classRef: UnityEditor.AddressableAssets.HostingServices.HttpHostingService,
+        Unity.Addressables.Editor
+      dataStore:
+        m_SerializedData:
+        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+          m_ClassName: System.Int32
+          m_Data: 55570
+          m_Key: HostingServicePort
+        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+          m_ClassName: System.Int32
+          m_Data: 0
+          m_Key: HostingServiceUploadSpeed
+        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+          m_ClassName: System.String
+          m_Data: Library/com.unity.addressables/aa/Windows/StandaloneWindows64;ServerData/StandaloneWindows64
+          m_Key: ContentRoot
+        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+          m_ClassName: System.Boolean
+          m_Data: True
+          m_Key: IsEnabled
+        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+          m_ClassName: System.String
+          m_Data: Local Hosting 2
+          m_Key: DescriptiveName
+        - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+          m_ClassName: System.Int32
+          m_Data: 2
+          m_Key: InstanceId
     m_Settings: {fileID: 11400000}
-    m_NextInstanceId: 0
-    m_RegisteredServiceTypeRefs: []
+    m_NextInstanceId: 3
+    m_RegisteredServiceTypeRefs:
+    - UnityEditor.AddressableAssets.HostingServices.HttpHostingService, Unity.Addressables.Editor

@@ -113,7 +113,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_Name
-      value: PillarTile
+      value: RockTile
       objectReference: {fileID: 0}
     - target: {fileID: 2018914125131999986, guid: 6315c176e082f7c44b1cbded8c7e8256, type: 3}
       propertyPath: m_Layer

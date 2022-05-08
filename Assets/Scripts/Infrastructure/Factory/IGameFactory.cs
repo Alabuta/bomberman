@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Configs;
 using Configs.Behaviours;
 using Configs.Entity;
@@ -50,5 +51,9 @@ namespace Infrastructure.Factory
         List<ISavedProgressReader> ProgressReaders { get; }
 
         List<ISavedProgressWriter> ProgressWriters { get; }
+
+        Task<T> LoadAssetAsync<T>(AssetReference reference);
+
+        Task<IList<T>> LoadAssetsAsync<T>(IEnumerable<AssetReference> references);
     }
 }

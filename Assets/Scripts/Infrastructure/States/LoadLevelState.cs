@@ -51,7 +51,7 @@ namespace Infrastructure.States
 
             _gameFactory.CleanUp();
 
-            _sceneLoader.Load(levelStage.LevelConfig.SceneName, () => OnLoaded(levelStage));
+            _sceneLoader.LoadSceneAsAddressable(levelStage.LevelConfig.SceneName, () => OnLoaded(levelStage));
         }
 
         public void Exit()
@@ -79,7 +79,7 @@ namespace Infrastructure.States
             Random.InitState(levelStageConfig.RandomSeed);
 
             Game.World = new World(applicationConfig, _gameFactory, levelStage); // :TODO: move to DI
-            Game.World.GenerateLevelStage(levelStage, _gameFactory);
+            Game.World.GenerateLevelStage(_gameFactory, levelStage);
 
             var levelGridModel = Game.World.LevelModel;
 
@@ -106,15 +106,17 @@ namespace Infrastructure.States
 
         private void CreateGameStatsPanel(GameModeConfig gameModeConfig)
         {
-            var gameObject = _gameFactory.InstantiatePrefab(gameModeConfig.GameStatsViewPrefab, float3.zero);
-            Game.GameStatsView = gameObject.GetComponent<GameStatsView>();
-            Assert.IsNotNull(Game.GameStatsView);
+            _gameFactory.InstantiatePrefabAsync(gameObject =>
+            {
+                Game.GameStatsView = gameObject.GetComponent<GameStatsView>();
+                Assert.IsNotNull(Game.GameStatsView);
 
-            // :TODO: extend draw logic for variable players count
-            var player = Game.World.Players.Values.FirstOrDefault();
-            Assert.IsNotNull(player);
+                // :TODO: extend draw logic for variable players count
+                var player = Game.World.Players.Values.FirstOrDefault();
+                Assert.IsNotNull(player);
 
-            gameObject.GetComponent<GameStatsView>().Construct(player.Hero);
+                gameObject.GetComponent<GameStatsView>().Construct(_gameFactory, player.Hero);
+            }, gameModeConfig.GameStatsViewPrefab, float3.zero);
         }
 
         private void InformProgressReaders()

@@ -10,7 +10,7 @@ namespace Game
         event Action<IEntity> DeathEvent;
         event Action<IEntity, int> DamageEvent;
 
-        EntityConfig EntityConfig { get; }
+        EntityConfig Config { get; }
 
         IEntityController EntityController { get; }
 

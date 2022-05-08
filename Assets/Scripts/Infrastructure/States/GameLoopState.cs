@@ -17,7 +17,7 @@ namespace Infrastructure.States
         {
             Game.World.StartSimulation();
 
-            _gameStateMachine.FixedUpdateCallback = () => { Game.World.UpdateWorldModel(); };
+            _gameStateMachine.FixedUpdateCallback = () => Game.World.UpdateWorldModel();
 
             _gameStateMachine.UpdateCallback = () =>
             {

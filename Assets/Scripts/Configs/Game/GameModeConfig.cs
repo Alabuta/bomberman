@@ -1,5 +1,5 @@
 using Configs.Level;
-using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Configs.Game
 {
@@ -7,6 +7,6 @@ namespace Configs.Game
     {
         public LevelConfig[] LevelConfigs;
 
-        public GameObject GameStatsViewPrefab;
+        public AssetReferenceGameObject GameStatsViewPrefab;
     }
 }

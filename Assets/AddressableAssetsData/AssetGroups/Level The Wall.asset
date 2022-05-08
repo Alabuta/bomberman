@@ -20,9 +20,15 @@ MonoBehaviour:
   - m_GUID: 99d74e1b57979414bb29adffad8c1765
     m_Address: BrickTile
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - The Wall Level
   - m_GUID: b2247fe479d07e34c831be32ae5a4d69
     m_Address: PillarTile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - The Wall Level
+  - m_GUID: 8c634c1303dbe3342b70fc802f196125
+    m_Address: TheWallWall
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

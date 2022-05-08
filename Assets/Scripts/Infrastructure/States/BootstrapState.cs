@@ -34,7 +34,7 @@ namespace Infrastructure.States
             QualitySettings.vSyncCount = applicationConfig.EnableVSync ? 1 : 0;
             Application.targetFrameRate = applicationConfig.TargetFrameRate;
 
-            _sceneLoader.Load(InitialSceneName, OnLoadLevel);
+            _sceneLoader.LoadSceneAsAddressable(InitialSceneName, OnLoadLevel);
         }
 
         public void Exit()

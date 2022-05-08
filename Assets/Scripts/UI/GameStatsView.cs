@@ -2,16 +2,18 @@
 using Configs.Entity;
 using Game;
 using Game.Hero;
+using Infrastructure.Factory;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 namespace UI
 {
     public class GameStatsView : MonoBehaviour
     {
+        private const string TimeFormat = "m':'ss";
+
         [Header("General")]
         [SerializeField]
         private TextMeshProUGUI LevelStageTimeText;
@@ -23,45 +25,38 @@ namespace UI
         [SerializeField]
         private TextMeshProUGUI HeroHealthText;
 
-        private Health _health;
+        private Hero _hero;
 
-        public void Construct(Hero hero)
+        public void Construct(IGameFactory gameFactory, Hero hero) // :TODO: get IGameFactory from DI
         {
             UpdateLevelStageTimer(0);
 
-            var entityConfig = (HeroConfig) hero.EntityConfig;
+            var heroConfig = (HeroConfig) hero.Config;
+            _hero = hero;
 
-            _health = hero.Health;
-
-            Load<Sprite>(entityConfig.Icon, SetHeroIcon);
-
+            OnAssetsLoad(gameFactory, heroConfig.Icon);
             SetHeroHealth();
 
-            _health.HealthChangedEvent += SetHeroHealth;
+            hero.DeathEvent += OnHeroDeathEvent;
+            _hero.Health.HealthChangedEvent += SetHeroHealth;
         }
 
         public void UpdateLevelStageTimer(double timer)
         {
             if (LevelStageTimeText != null)
-                LevelStageTimeText.SetText(TimeSpan.FromSeconds(timer).ToString("m':'ss"));
-        }
-
-        private static async void Load<T>(AssetReference reference, Action<T> callback)
-        {
-            var handle = reference.LoadAssetAsync<T>();
-            await handle.Task;
-
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-                return;
-
-            callback?.Invoke(handle.Result);
-
-            // Addressables.Release(handle); // :TODO:
+                LevelStageTimeText.SetText(TimeSpan.FromSeconds(timer).ToString(TimeFormat));
         }
 
         private void OnDestroy()
         {
-            _health.HealthChangedEvent -= SetHeroHealth;
+            if (_hero != null)
+                _hero.Health.HealthChangedEvent -= SetHeroHealth;
+        }
+
+        private async void OnAssetsLoad(IGameFactory gameFactory, AssetReferenceSprite spriteReference)
+        {
+            var sprite = await gameFactory.LoadAssetAsync<Sprite>(spriteReference);
+            SetHeroIcon(sprite);
         }
 
         private void SetHeroIcon(Sprite sprite)
@@ -73,7 +68,16 @@ namespace UI
         private void SetHeroHealth()
         {
             if (HeroHealthText != null)
-                HeroHealthText.SetText(_health.Current.ToString());
+                HeroHealthText.SetText(_hero.Health.Current.ToString());
+        }
+
+        private void OnHeroDeathEvent(IEntity hero)
+        {
+            if (_hero != hero)
+                return;
+
+            _hero.Health.HealthChangedEvent -= SetHeroHealth;
+            _hero = null;
         }
     }
 }

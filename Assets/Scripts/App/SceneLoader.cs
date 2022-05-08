@@ -1,7 +1,8 @@
 using System;
+using System.Collections;
 using Infrastructure;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 namespace App
@@ -15,12 +16,7 @@ namespace App
             _coroutineRunner = coroutineRunner;
         }
 
-        public void Load(string sceneName, Action callback)
-        {
-            LoadScene(sceneName, callback);
-        }
-
-        private static async void LoadScene(string sceneName, Action callback)
+        public async void LoadSceneAsAddressable(string sceneName, Action callback)
         {
             if (SceneManager.GetActiveScene().name == sceneName)
             {
@@ -29,10 +25,30 @@ namespace App
             }
 
             var handle = Addressables.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            Assert.IsTrue(handle.IsValid(),
+                $"invalid async operation handle {sceneName}: {handle.Status} {handle.OperationException}");
             await handle.Task;
 
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-                return;
+            callback?.Invoke();
+        }
+
+        public void LoadSceneFromBuild(string sceneName, Action callback)
+        {
+            _coroutineRunner.StartCoroutine(LoadScene(sceneName, callback));
+        }
+
+        private static IEnumerator LoadScene(string sceneName, Action callback)
+        {
+            if (SceneManager.GetActiveScene().name == sceneName)
+            {
+                callback?.Invoke();
+                yield break;
+            }
+
+            var loadOperation = SceneManager.LoadSceneAsync(sceneName);
+
+            while (!loadOperation.isDone)
+                yield return null;
 
             callback?.Invoke();
         }

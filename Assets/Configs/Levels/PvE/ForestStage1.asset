@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: ForestStage1
   m_EditorClassIdentifier: 
   Index: 0
-  RandomSeed: 270888
+  RandomSeed: 474747
   LevelStageTimer: 240
   ColumnsNumber: 13
   RowsNumber: 11
-  SoftBlocksCoverage: 30
+  SoftBlocksCoverage: 32
   Enemies:
   - EnemyConfig: {fileID: 11400000, guid: 0f62e5b375077ae4dbddddfd979c623a, type: 2}
-    Count: 3
+    Count: 2
   - EnemyConfig: {fileID: 11400000, guid: 574a4a74e41c437449c3997eac01cbf0, type: 2}
-    Count: 1
+    Count: 2
   PortalEnemies: []
   TimeIsUpEnemyConfigs: []
   PowerUpItems: []

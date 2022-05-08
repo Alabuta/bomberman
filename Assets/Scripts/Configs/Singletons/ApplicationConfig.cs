@@ -9,6 +9,7 @@ namespace Configs.Singletons
     {
         [Header("General Parameters"), Range(-1, 300)]
         public int TargetFrameRate = 30;
+        public int TickRate = 60;
 
         public bool EnableVSync;
 

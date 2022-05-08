@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Configs;
 using Configs.Behaviours;
 using Configs.Entity;
@@ -18,6 +19,7 @@ using Items;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using PlayerInput = UnityEngine.InputSystem.PlayerInput;
@@ -93,18 +95,52 @@ namespace Infrastructure.Factory
         }
 
         public async void InstantiatePrefabAsync(Action<GameObject> callback, AssetReferenceGameObject reference,
-            float3 position, Transform parent = null)
+            float3 position,
+            Transform parent = null)
         {
             var handle = Addressables.InstantiateAsync(reference, position, Quaternion.identity, parent);
+            Assert.IsTrue(handle.IsValid(),
+                $"invalid async operation handle {reference.SubObjectName}: {handle.Status} {handle.OperationException}");
+
             await handle.Task;
 
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-                return;
+            Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null,
+                $"failed to instantiate asset {reference.SubObjectName}");
 
             callback?.Invoke(handle.Result);
 
             // Addressables.ReleaseInstance(handle); // :TODO:
             // Addressables.ReleaseAsset for final bundle unload
+        }
+
+        public async Task<T> LoadAssetAsync<T>(AssetReference reference)
+        {
+            var handle = Addressables.LoadAssetAsync<T>(reference);
+            Assert.IsTrue(handle.IsValid(),
+                $"invalid async operation handle {reference.SubObjectName}: {handle.Status} {handle.OperationException}");
+
+            return await handle.Task;
+
+            /*Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null,
+                $"failed to load asset {reference.SubObjectName}");*/
+
+            // Addressables.Release(handle); // :TODO:
+        }
+
+        public async Task<IList<T>> LoadAssetsAsync<T>(IEnumerable<AssetReference> references)
+        {
+            var handle = Addressables.LoadAssetsAsync<T>(references, null, Addressables.MergeMode.Union);
+            Assert.IsTrue(handle.IsValid(),
+                $"failed to load assets {references}: {handle.Status} {handle.OperationException}");
+
+            return await handle.Task;
+            /*await handle.Task;
+
+            Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded, $"can't load asset {reference.SubObjectName}");
+
+            callback?.Invoke(handle.Result);*/
+
+            // Addressables.Release(handle); // :TODO:
         }
 
         private void RegisterProgressWatchers(GameObject gameObject)

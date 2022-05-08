@@ -13,7 +13,7 @@ namespace Game
         public event Action<IEntity> DeathEvent;
         public event Action<IEntity, int> DamageEvent;
 
-        public EntityConfig EntityConfig { get; protected set; }
+        public EntityConfig Config { get; protected set; }
 
         public IEntityController EntityController { get; protected set; }
 
@@ -43,7 +43,7 @@ namespace Game
             }
         }
 
-        public fix InitialSpeed => (fix) EntityConfig.Speed;
+        public fix InitialSpeed => (fix) Config.Speed;
 
         public fix SpeedMultiplier { get; set; }
 
@@ -70,7 +70,7 @@ namespace Game
 
         protected Entity(TConfig config, IEntityController entityController)
         {
-            EntityConfig = config;
+            Config = config;
             EntityController = entityController;
 
             LayerMask = config.LayerMask;
@@ -78,10 +78,10 @@ namespace Game
             Speed = fix.zero;
             SpeedMultiplier = fix.one;
 
-            Health = new Health(EntityConfig.Health);
+            Health = new Health(Config.Health);
             Health.HealthDamagedEvent += OnHealthDamaged;
 
-            Direction = EntityConfig.StartDirection;
+            Direction = Config.StartDirection;
 
             HitRadius = (fix) config.HitRadius;
             HurtRadius = (fix) config.HurtRadius;

@@ -12,20 +12,6 @@ namespace UI
 
         private int _currentSelectedIndex;
 
-        /*[Inject]
-        public void Construct(ISceneManager sceneManager)
-        {
-            _sceneManager = sceneManager;
-        }*/
-
-        /*
-        private void Awake()
-        {
-            Assert.IsNotNull(ApplicationHolder.Instance, "failed to initialize app holder");
-            Assert.IsTrue(ApplicationHolder.Instance.TryGet(out _sceneManager), "failed to get scene manager");
-        }
-        */
-
         private void Start()
         {
             var menuStartEntry = MenuEntryAnimators[0];

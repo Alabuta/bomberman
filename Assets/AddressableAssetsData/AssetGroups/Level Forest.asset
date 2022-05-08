@@ -20,9 +20,15 @@ MonoBehaviour:
   - m_GUID: d0fd97865f63d25439c18be72b152fd4
     m_Address: TreeTile
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Forest Level
   - m_GUID: 9ad4f47c6f37d944b8881ac32603b2dd
     m_Address: RockTile
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Forest Level
+  - m_GUID: 1d250095f4d89684184e8103f80f3427
+    m_Address: ForestWall
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
