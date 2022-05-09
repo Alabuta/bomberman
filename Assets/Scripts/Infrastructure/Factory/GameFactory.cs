@@ -133,12 +133,11 @@ namespace Infrastructure.Factory
             Assert.IsTrue(handle.IsValid(),
                 $"failed to load assets {references}: {handle.Status} {handle.OperationException}");
 
-            return await handle.Task;
-            /*await handle.Task;
+            await handle.Task;
 
-            Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded, $"can't load asset {reference.SubObjectName}");
+            Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded, $"can't load assets {references}");
 
-            callback?.Invoke(handle.Result);*/
+            return handle.Result;
 
             // Addressables.Release(handle); // :TODO:
         }

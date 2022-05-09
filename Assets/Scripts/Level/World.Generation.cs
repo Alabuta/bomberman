@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Configs.Level;
@@ -8,6 +7,7 @@ using Data;
 using Infrastructure.Factory;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Level
 {
@@ -20,7 +20,11 @@ namespace Level
 
             LevelModel = new LevelModel(levelConfig, levelStageConfig);
 
-            SpawnBlocks(levelConfig, LevelModel, gameFactory);
+            var task = SpawnBlocks(levelConfig, LevelModel, gameFactory);
+            task.Wait(TimeSpan.FromSeconds(1));
+
+            /*var task = Task.Run(async () => await SpawnBlocks(levelConfig, LevelModel, gameFactory));
+            task.Wait();*/
 
             SpawnWalls(gameFactory, levelConfig, LevelModel);
         }
@@ -52,23 +56,28 @@ namespace Level
             }
         }
 
-        private static void SpawnBlocks(LevelConfig levelConfig, LevelModel levelModel,
+        private static async Task SpawnBlocks(LevelConfig levelConfig, LevelModel levelModel,
             IGameFactory gameFactory)
         {
+            // :TODO: refactor
+            (LevelTileType type, AssetReferenceGameObject prefab)[] blocks =
+            {
+                (LevelTileType.HardBlock, levelConfig.HardBlockConfig.Prefab),
+                (LevelTileType.SoftBlock, levelConfig.SoftBlockConfig.Prefab)
+            };
+
+            Debug.LogWarning("pre");
+            var loadTasks = gameFactory.LoadAssetsAsync<GameObject>(blocks.Select(pair => pair.prefab));
+
+            var blocksGroup = new GameObject("Blocks");
+
             var columnsNumber = levelModel.ColumnsNumber;
             var rowsNumber = levelModel.RowsNumber;
 
-            var hardBlocksGroup = new GameObject("HardBlocks");
-            var softBlocksGroup = new GameObject("SoftBlocks");
-
-            // :TODO: refactor
-            var blocks = new Dictionary<LevelTileType, (GameObject, BlockConfig)>
-            {
-                { LevelTileType.HardBlock, (hardBlocksGroup, levelConfig.HardBlockConfig) },
-                { LevelTileType.SoftBlock, (softBlocksGroup, levelConfig.SoftBlockConfig) }
-            };
-
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
+
+            var assets = await loadTasks;
+            Debug.LogWarning($"post {assets.Count}");
 
             for (var i = 0; i < columnsNumber * rowsNumber; ++i)
             {
@@ -80,8 +89,44 @@ namespace Level
                 // ReSharper disable once PossibleLossOfFraction
                 var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
 
-                var (parent, blockConfig) = blocks[tileType /* & ~LevelTileType.PowerUpItem*/];
-                gameFactory.InstantiatePrefabAsync(_ => { }, blockConfig.Prefab, position, parent.transform);
+                var blockIndex = Array.FindIndex(blocks, p => p.type == tileType);
+                var blockPrefab = assets[blockIndex];
+                gameFactory.InstantiatePrefab(blockPrefab, position, blocksGroup.transform);
+            }
+        }
+
+        private static async Task SpawnBlocks(IGameFactory gameFactory, LevelConfig levelConfig, LevelModel levelModel)
+        {
+            var blocks = new (LevelTileType type, BlockConfig config)[]
+            {
+                (LevelTileType.HardBlock, levelConfig.HardBlockConfig),
+                (LevelTileType.SoftBlock, levelConfig.SoftBlockConfig)
+            };
+
+            var loadTasks = gameFactory.LoadAssetsAsync<GameObject>(blocks.Select(pair => pair.config.Prefab));
+
+            var columnsNumber = levelModel.ColumnsNumber;
+            var rowsNumber = levelModel.RowsNumber;
+
+            var blocksGroup = new GameObject("Blocks");
+
+            var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
+
+            var assets = await loadTasks;
+
+            for (var i = 0; i < columnsNumber * rowsNumber; ++i)
+            {
+                var tile = levelModel[i];
+                var tileType = tile.Type;
+                if (tileType == LevelTileType.FloorTile)
+                    continue;
+
+                // ReSharper disable once PossibleLossOfFraction
+                var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
+
+                var blockIndex = Array.FindIndex(blocks, p => p.type == tileType);
+                var blockPrefab = assets[blockIndex];
+                gameFactory.InstantiatePrefab(blockPrefab, position, blocksGroup.transform);
             }
         }
     }
