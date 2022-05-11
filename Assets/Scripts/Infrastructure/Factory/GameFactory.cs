@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Configs;
@@ -94,7 +93,7 @@ namespace Infrastructure.Factory
             return gameObject;
         }
 
-        public async void InstantiatePrefabAsync(Action<GameObject> callback, AssetReferenceGameObject reference,
+        public async Task<GameObject> InstantiatePrefabAsync(AssetReferenceGameObject reference,
             float3 position,
             Transform parent = null)
         {
@@ -107,7 +106,7 @@ namespace Infrastructure.Factory
             Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null,
                 $"failed to instantiate asset {reference.SubObjectName}");
 
-            callback?.Invoke(handle.Result);
+            return handle.Result;
 
             // Addressables.ReleaseInstance(handle); // :TODO:
             // Addressables.ReleaseAsset for final bundle unload
@@ -119,12 +118,12 @@ namespace Infrastructure.Factory
             Assert.IsTrue(handle.IsValid(),
                 $"invalid async operation handle {reference.SubObjectName}: {handle.Status} {handle.OperationException}");
 
-            return await handle.Task;
+            await handle.Task;
 
-            /*Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null,
-                $"failed to load asset {reference.SubObjectName}");*/
+            Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null,
+                $"failed to instantiate asset {reference.SubObjectName}");
 
-            // Addressables.Release(handle); // :TODO:
+            return handle.Result;
         }
 
         public async Task<IList<T>> LoadAssetsAsync<T>(IEnumerable<AssetReference> references)

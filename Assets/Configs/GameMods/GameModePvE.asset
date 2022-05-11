@@ -15,9 +15,5 @@ MonoBehaviour:
   LevelConfigs:
   - {fileID: 11400000, guid: cd1ee87706f90fd478429fa73e6c8e19, type: 2}
   - {fileID: 11400000, guid: beb94d2d5caf9a247aed01603e5b6b25, type: 2}
-  GameStatsViewPrefab:
-    m_AssetGUID: bc5c222b33224d24eb48d6eeed80f7ab
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_EditorAssetChanged: 0
+  GameStatsViewPrefab: {fileID: 7832636160285249900, guid: bc5c222b33224d24eb48d6eeed80f7ab, type: 3}
   PlayerConfig: {fileID: 11400000, guid: 40c19d944574f02408f7124102f08aa2, type: 2}

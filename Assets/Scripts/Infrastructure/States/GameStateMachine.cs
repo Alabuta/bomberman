@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using App;
 using Infrastructure.Factory;
 using Infrastructure.Services;
@@ -33,16 +34,16 @@ namespace Infrastructure.States
             };
         }
 
-        public void Enter<TState>() where TState : class, IGameState
+        public async Task Enter<TState>() where TState : class, IGameState
         {
             var newState = ChangeState<TState>();
-            newState.Enter();
+            await newState.Enter();
         }
 
-        public void Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadedState<TPayload>
+        public async Task Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadedState<TPayload>
         {
             var newState = ChangeState<TState>();
-            newState.Enter(payload);
+            await newState.Enter(payload);
         }
 
         private TState ChangeState<TState>() where TState : class, IExitableState

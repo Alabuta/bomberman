@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using Infrastructure;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Assertions;
@@ -16,20 +17,16 @@ namespace App
             _coroutineRunner = coroutineRunner;
         }
 
-        public async void LoadSceneAsAddressable(string sceneName, Action callback)
+        public static async Task LoadSceneAsAddressable(string sceneName)
         {
             if (SceneManager.GetActiveScene().name == sceneName)
-            {
-                callback?.Invoke();
                 return;
-            }
 
             var handle = Addressables.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             Assert.IsTrue(handle.IsValid(),
                 $"invalid async operation handle {sceneName}: {handle.Status} {handle.OperationException}");
-            await handle.Task;
 
-            callback?.Invoke();
+            await handle.Task;
         }
 
         public void LoadSceneFromBuild(string sceneName, Action callback)

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using App;
 using Configs.Singletons;
 using Infrastructure.AssetManagement;
@@ -27,14 +28,15 @@ namespace Infrastructure.States
             RegisterServices();
         }
 
-        public void Enter()
+        public async Task Enter()
         {
             var applicationConfig = ApplicationConfig.Instance;
 
             QualitySettings.vSyncCount = applicationConfig.EnableVSync ? 1 : 0;
             Application.targetFrameRate = applicationConfig.TargetFrameRate;
 
-            _sceneLoader.LoadSceneAsAddressable(InitialSceneName, OnLoadLevel);
+            await SceneLoader.LoadSceneAsAddressable(InitialSceneName);
+            await _gameStateMachine.Enter<LoadProgressState>();
         }
 
         public void Exit()
@@ -50,11 +52,6 @@ namespace Infrastructure.States
             _serviceLocator.RegisterSingle<ISaveLoadService>(
                 new SaveLoadService(_serviceLocator.Single<IPersistentProgressService>(),
                     _serviceLocator.Single<IGameFactory>()));
-        }
-
-        private void OnLoadLevel()
-        {
-            _gameStateMachine.Enter<LoadProgressState>();
         }
     }
 }

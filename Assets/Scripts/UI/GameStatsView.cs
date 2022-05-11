@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Configs.Entity;
 using Game;
 using Game.Hero;
 using Infrastructure.Factory;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 namespace UI
@@ -27,18 +27,21 @@ namespace UI
 
         private Hero _hero;
 
-        public void Construct(IGameFactory gameFactory, Hero hero) // :TODO: get IGameFactory from DI
+        public async Task Construct(IGameFactory gameFactory, double timer, Hero hero) // :TODO: get IGameFactory from DI
         {
-            UpdateLevelStageTimer(0);
+            UpdateLevelStageTimer(timer);
 
             var heroConfig = (HeroConfig) hero.Config;
             _hero = hero;
 
-            OnAssetsLoad(gameFactory, heroConfig.Icon);
+            var spriteLoadTask = gameFactory.LoadAssetAsync<Sprite>(heroConfig.Icon);
+
             SetHeroHealth();
 
             hero.DeathEvent += OnHeroDeathEvent;
             _hero.Health.HealthChangedEvent += SetHeroHealth;
+
+            SetHeroIcon(await spriteLoadTask);
         }
 
         public void UpdateLevelStageTimer(double timer)
@@ -51,12 +54,6 @@ namespace UI
         {
             if (_hero != null)
                 _hero.Health.HealthChangedEvent -= SetHeroHealth;
-        }
-
-        private async void OnAssetsLoad(IGameFactory gameFactory, AssetReferenceSprite spriteReference)
-        {
-            var sprite = await gameFactory.LoadAssetAsync<Sprite>(spriteReference);
-            SetHeroIcon(sprite);
         }
 
         private void SetHeroIcon(Sprite sprite)

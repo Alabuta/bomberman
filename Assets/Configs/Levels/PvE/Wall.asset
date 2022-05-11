@@ -21,7 +21,11 @@ MonoBehaviour:
     y: 42
     z: 24
     w: -18
-  Walls: {fileID: 162705767822815630, guid: 8c634c1303dbe3342b70fc802f196125, type: 3}
+  Walls:
+    m_AssetGUID: 8c634c1303dbe3342b70fc802f196125
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   TileSizeWorldUnits: 1
   HardBlockConfig: {fileID: 11400000, guid: bb2ce871e59ad11419e61453ebbe4e59, type: 2}
   SoftBlockConfig: {fileID: 11400000, guid: d6724458eb0d190478eecb58b2049449, type: 2}

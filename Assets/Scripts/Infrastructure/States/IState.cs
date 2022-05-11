@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Infrastructure.States
 {
     public interface IExitableState
@@ -7,11 +9,11 @@ namespace Infrastructure.States
 
     public interface IGameState : IExitableState
     {
-        void Enter();
+        Task Enter();
     }
 
     public interface IPayloadedState<in TPayload> : IExitableState
     {
-        void Enter(TPayload levelStage);
+        Task Enter(TPayload levelStage);
     }
 }

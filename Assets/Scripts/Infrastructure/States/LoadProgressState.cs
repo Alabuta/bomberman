@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Configs.Singletons;
 using Data;
 using Infrastructure.Services.PersistentProgress;
@@ -21,12 +22,12 @@ namespace Infrastructure.States
             _saveLoadService = saveLoadService;
         }
 
-        public void Enter()
+        public async Task Enter()
         {
             LoadOrCreateProgressState();
 
             var levelStage = _progressService.Progress.WorldData.LevelStage;
-            _gameStateMachine.Enter<LoadLevelState, LevelStage>(levelStage);
+            await _gameStateMachine.Enter<LoadLevelState, LevelStage>(levelStage);
         }
 
         public void Exit()

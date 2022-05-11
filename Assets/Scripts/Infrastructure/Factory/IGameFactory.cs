@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Configs;
@@ -43,7 +42,8 @@ namespace Infrastructure.Factory
 
         GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null);
 
-        void InstantiatePrefabAsync(Action<GameObject> callback, AssetReferenceGameObject reference, float3 position,
+        Task<GameObject> InstantiatePrefabAsync(AssetReferenceGameObject reference,
+            float3 position,
             Transform parent = null);
 
         void CleanUp();
@@ -52,8 +52,8 @@ namespace Infrastructure.Factory
 
         List<ISavedProgressWriter> ProgressWriters { get; }
 
-        Task<T> LoadAssetAsync<T>(AssetReference reference);
-
         Task<IList<T>> LoadAssetsAsync<T>(IEnumerable<AssetReference> references);
+
+        Task<T> LoadAssetAsync<T>(AssetReference reference);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using App;
 using Configs;
 using Configs.Game;
@@ -45,28 +46,34 @@ namespace Infrastructure.States
             _inputService = inputService;
         }
 
-        public void Enter(LevelStage levelStage)
+        public async Task Enter(LevelStage levelStage)
         {
             _loadingScreenController.Show();
 
             _gameFactory.CleanUp();
 
-            _sceneLoader.LoadSceneAsAddressable(levelStage.LevelConfig.SceneName, () => OnLoaded(levelStage));
+            await SceneLoader.LoadSceneAsAddressable(levelStage.LevelConfig.SceneName);
+            await OnLoaded(levelStage);
+        }
+
+        private async Task OnLoaded(LevelStage levelStage)
+        {
+            CreateWorld(levelStage);
+
+            await CreateGameStatsPanel(levelStage.GameModeConfig);
+
+            InformProgressReaders();
+
+            _loadingScreenController.Hide(() =>
+            {
+#pragma warning disable CS4014
+                _gameStateMachine.Enter<GameLoopState>();
+#pragma warning restore CS4014
+            });
         }
 
         public void Exit()
         {
-        }
-
-        private void OnLoaded(LevelStage levelStage)
-        {
-            CreateWorld(levelStage);
-
-            CreateGameStatsPanel(levelStage.GameModeConfig);
-
-            InformProgressReaders();
-
-            _loadingScreenController.Hide(() => { _gameStateMachine.Enter<GameLoopState>(); });
         }
 
         private void CreateWorld(LevelStage levelStage)
@@ -104,19 +111,22 @@ namespace Infrastructure.States
                 SetupCamera(levelStage, levelGridModel, defaultPlayer);
         }
 
-        private void CreateGameStatsPanel(GameModeConfig gameModeConfig)
+        private async Task CreateGameStatsPanel(GameModeConfig gameModeConfig)
         {
-            _gameFactory.InstantiatePrefabAsync(gameObject =>
-            {
-                Game.GameStatsView = gameObject.GetComponent<GameStatsView>();
-                Assert.IsNotNull(Game.GameStatsView);
+            var instantiateTask = _gameFactory.InstantiatePrefabAsync(gameModeConfig.GameStatsViewPrefab, float3.zero);
 
-                // :TODO: extend draw logic for variable players count
-                var player = Game.World.Players.Values.FirstOrDefault();
-                Assert.IsNotNull(player);
+            // :TODO: extend draw logic for variable players count
+            var player = Game.World.Players.Values.FirstOrDefault();
+            Assert.IsNotNull(player);
 
-                gameObject.GetComponent<GameStatsView>().Construct(_gameFactory, player.Hero);
-            }, gameModeConfig.GameStatsViewPrefab, float3.zero);
+            var gameStatsObject = await instantiateTask;
+
+            var gameStatsView = gameStatsObject.GetComponent<GameStatsView>();
+            Assert.IsNotNull(Game.GameStatsView);
+
+            await gameStatsView.Construct(_gameFactory, Game.World.StageTimer, player.Hero);
+
+            Game.GameStatsView = gameStatsView;
         }
 
         private void InformProgressReaders()

@@ -1,6 +1,7 @@
 ﻿using Configs.Level.Tile;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Configs.Level
 {
@@ -18,7 +19,7 @@ namespace Configs.Level
         public int4 ViewportPadding = int4.zero;
 
         [Header("General Prefabs")]
-        public GameObject Walls;
+        public AssetReferenceGameObject Walls;
 
         [Header("Tiles & Blocks Parameters")]
         public double TileSizeWorldUnits = 1;

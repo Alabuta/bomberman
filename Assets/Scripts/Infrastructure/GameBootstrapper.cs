@@ -10,12 +10,12 @@ namespace Infrastructure
 
         private Game _game;
 
-        private void Awake()
+        private async void Awake()
         {
-            _game = new Game(this, LoadingScreenController);
-            _game.GameStateMachine.Enter<BootstrapState>();
-
             DontDestroyOnLoad(this);
+
+            _game = new Game(this, LoadingScreenController);
+            await _game.GameStateMachine.Enter<BootstrapState>();
         }
 
         private void Update()

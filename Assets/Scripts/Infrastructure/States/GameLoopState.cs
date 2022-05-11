@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Infrastructure.States
 {
     public class GameLoopState : IGameState
@@ -13,17 +15,19 @@ namespace Infrastructure.States
         {
         }
 
-        public void Enter()
+        public Task Enter()
         {
-            Game.World.StartSimulation();
-
-            _gameStateMachine.FixedUpdateCallback = () => Game.World.UpdateWorldModel();
+            _gameStateMachine.FixedUpdateCallback = () => { Game.World.UpdateWorldModel(); };
 
             _gameStateMachine.UpdateCallback = () =>
             {
                 Game.World.UpdateWorldView();
                 Game.GameStatsView.UpdateLevelStageTimer(Game.World.StageTimer);
             };
+
+            Game.World.StartSimulation();
+
+            return Task.CompletedTask;
         }
     }
 }
