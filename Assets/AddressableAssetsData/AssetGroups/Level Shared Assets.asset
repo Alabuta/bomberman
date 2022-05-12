@@ -21,6 +21,14 @@ MonoBehaviour:
     m_Address: PortalTile
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: df1298ec1fe507441a0029313f301aa1
+    m_Address: HeroGreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: ddac8d5521b1f4d478d8b4e7b1ad3c4b
+    m_Address: HeroWhite
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 896cbd87d4ab9484c9a570227c2a3e79, type: 2}
   m_SchemaSet:

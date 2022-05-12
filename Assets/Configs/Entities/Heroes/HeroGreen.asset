@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Green
   Layer: 13
-  Prefab: {fileID: 1343022026916402644, guid: df1298ec1fe507441a0029313f301aa1, type: 3}
+  Prefab:
+    m_AssetGUID: df1298ec1fe507441a0029313f301aa1
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   Speed: 2.4
   StartDirection:
     x: 0

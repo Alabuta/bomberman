@@ -112,7 +112,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CanvasGroup: {fileID: 5959990242337487885}
   CanvasGroupAnimation: {fileID: 1660306071695472008}
-  CanvasGroupFadeInClip: {fileID: 7400000, guid: bf3178e23eada9a4584532f24f7a36c0, type: 2}
 --- !u!111 &1660306071695472008
 Animation:
   m_ObjectHideFlags: 0
@@ -126,7 +125,7 @@ Animation:
   m_Animations:
   - {fileID: 7400000, guid: bf3178e23eada9a4584532f24f7a36c0, type: 2}
   m_WrapMode: 0
-  m_PlayAutomatically: 1
+  m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
 --- !u!1 &5959990243069467857

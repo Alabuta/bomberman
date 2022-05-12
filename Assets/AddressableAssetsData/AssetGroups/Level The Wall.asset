@@ -30,7 +30,8 @@ MonoBehaviour:
   - m_GUID: 8c634c1303dbe3342b70fc802f196125
     m_Address: TheWallWall
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - The Wall Level
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 896cbd87d4ab9484c9a570227c2a3e79, type: 2}
   m_SchemaSet:
