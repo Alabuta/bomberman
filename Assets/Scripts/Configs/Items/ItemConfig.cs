@@ -1,6 +1,6 @@
 ﻿using Configs.Game.Colliders;
 using Core.Attributes;
-using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Configs.Items
 {
@@ -9,7 +9,7 @@ namespace Configs.Items
         [Layer]
         public int Layer;
 
-        public GameObject Prefab;
+        public AssetReferenceGameObject Prefab;
 
         public ColliderComponentConfig Collider;
 

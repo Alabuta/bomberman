@@ -26,20 +26,17 @@ namespace Infrastructure.States
     public class LoadLevelState : IPayloadedState<LevelStage>
     {
         private readonly GameStateMachine _gameStateMachine;
-        private readonly SceneLoader _sceneLoader;
         private readonly IGameFactory _gameFactory;
         private readonly IInputService _inputService;
         private readonly IPersistentProgressService _progressService;
         private readonly LoadingScreenController _loadingScreenController;
 
         public LoadLevelState(GameStateMachine gameStateMachine,
-            SceneLoader sceneLoader,
             IGameFactory gameFactory,
             IInputService inputService,
             IPersistentProgressService progressService, LoadingScreenController loadingScreenController)
         {
             _gameStateMachine = gameStateMachine;
-            _sceneLoader = sceneLoader;
             _gameFactory = gameFactory;
             _progressService = progressService;
             _loadingScreenController = loadingScreenController;
@@ -58,8 +55,7 @@ namespace Infrastructure.States
 
         private async Task OnLoaded(LevelStage levelStage)
         {
-            CreateWorld(levelStage);
-
+            await CreateWorld(levelStage);
             await CreateGameStatsPanel(levelStage.GameModeConfig);
 
             InformProgressReaders();
@@ -76,7 +72,7 @@ namespace Infrastructure.States
         {
         }
 
-        private void CreateWorld(LevelStage levelStage)
+        private async Task CreateWorld(LevelStage levelStage)
         {
             var applicationConfig = ApplicationConfig.Instance;
 
@@ -93,7 +89,7 @@ namespace Infrastructure.States
             switch (levelStageConfig)
             {
                 case LevelStagePvEConfig config when gameModeConfig is GameModePvEConfig gameModePvE:
-                    CreatePlayersAndSpawnHeroesPvE(gameModePvE, config, levelGridModel);
+                    await CreatePlayersAndSpawnHeroesPvE(gameModePvE, config, levelGridModel);
                     break;
 
                 case LevelStagePvPConfig config when gameModeConfig is GameModePvPConfig gameModePvP:
@@ -104,7 +100,7 @@ namespace Infrastructure.States
                     throw new ArgumentOutOfRangeException(nameof(levelStageConfig));
             }
 
-            CreateAndSpawnEnemies(levelStageConfig, levelGridModel, Game.World);
+            await CreateAndSpawnEnemies(levelStageConfig, levelGridModel, Game.World);
 
             var defaultPlayer = Game.World.Players.Values.FirstOrDefault(); // :TODO: use DefaultPlayerTag
             if (defaultPlayer != null)
@@ -122,7 +118,7 @@ namespace Infrastructure.States
             var gameStatsObject = await instantiateTask;
 
             var gameStatsView = gameStatsObject.GetComponent<GameStatsView>();
-            Assert.IsNotNull(Game.GameStatsView);
+            Assert.IsNotNull(gameStatsView);
 
             await gameStatsView.Construct(_gameFactory, Game.World.StageTimer, player.Hero);
 
@@ -135,10 +131,10 @@ namespace Infrastructure.States
                 progressReader.LoadProgress(_progressService.Progress);
         }
 
-        private void CreatePlayersAndSpawnHeroesPvE(GameModePvEConfig gameMode, LevelStagePvEConfig baseConfig,
+        private async Task CreatePlayersAndSpawnHeroesPvE(GameModePvEConfig gameMode, LevelStagePvEConfig baseConfig,
             LevelModel levelModel)
         {
-            CreatePlayerAndSpawnHero(levelModel, gameMode.PlayerConfig, baseConfig.PlayerSpawnCorner);
+            await CreatePlayerAndSpawnHero(levelModel, gameMode.PlayerConfig, baseConfig.PlayerSpawnCorner);
         }
 
         private void CreatePlayersAndSpawnHeroesPvP(GameModePvPConfig gameMode, LevelStagePvPConfig baseConfig,
@@ -148,12 +144,15 @@ namespace Infrastructure.States
             var spawnCorners = baseConfig.PlayersSpawnCorners;
             Assert.IsTrue(playerConfigs.Length <= spawnCorners.Length, "players count greater than the level spawn corners");
 
-            var zip = spawnCorners.Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig));
-            foreach (var (spawnCorner, playerConfig) in zip)
-                CreatePlayerAndSpawnHero(levelModel, playerConfig, spawnCorner);
+            var tasks = spawnCorners
+                .Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig))
+                .Select(p => CreatePlayerAndSpawnHero(levelModel, p.playerConfig, p.spawnCorner))
+                .ToArray();
+
+            Task.WhenAll(tasks);
         }
 
-        private void CreatePlayerAndSpawnHero(LevelModel levelModel, PlayerConfig playerConfig, int2 spawnCorner)
+        private async Task CreatePlayerAndSpawnHero(LevelModel levelModel, PlayerConfig playerConfig, int2 spawnCorner)
         {
             var player = _gameFactory.CreatePlayer(playerConfig);
             Assert.IsNotNull(player);
@@ -162,7 +161,8 @@ namespace Infrastructure.States
             Game.World.AttachPlayerInput(player, playerInput);
 
             var spawnCoordinate = levelModel.GetCornerWorldPosition(spawnCorner);
-            var go = _gameFactory.SpawnEntity(playerConfig.HeroConfig, fix2.ToXY(spawnCoordinate));
+            var task = _gameFactory.InstantiatePrefabAsync(playerConfig.HeroConfig.Prefab, fix2.ToXY(spawnCoordinate));
+            var go = await task;
             Assert.IsNotNull(go);
 
             var heroController = go.GetComponent<HeroController>();
@@ -174,7 +174,7 @@ namespace Infrastructure.States
             Game.World.AddPlayer(playerConfig.PlayerTagConfig, player);
         }
 
-        private void CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, LevelModel levelModel,
+        private async Task CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, LevelModel levelModel,
             World world)
         {
             var enemySpawnElements = levelStageConfig.Enemies;
@@ -196,7 +196,8 @@ namespace Infrastructure.States
             {
                 var index = (int) math.round(Random.value * (floorTiles.Count - 1));
                 var floorTile = floorTiles[index];
-                var go = _gameFactory.SpawnEntity(enemyConfig, fix2.ToXY(floorTile.WorldPosition));
+                var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(floorTile.WorldPosition));
+                var go = await task;
                 Assert.IsNotNull(go);
 
                 floorTiles.RemoveAt(index);

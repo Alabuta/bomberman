@@ -2,6 +2,7 @@ using Configs.Game.Colliders;
 using Core.Attributes;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Configs.Entity
 {
@@ -13,7 +14,7 @@ namespace Configs.Entity
         [Layer]
         public int Layer;
 
-        public GameObject Prefab;
+        public AssetReferenceGameObject Prefab;
 
         [Header("Movement Parameters"), Range(.01f, 10f)]
         public float Speed;

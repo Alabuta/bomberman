@@ -37,9 +37,6 @@ namespace Infrastructure.Factory
         IReadOnlyList<IBehaviourAgent>
             CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs, IEntity entity);
 
-        [CanBeNull]
-        GameObject SpawnEntity(EntityConfig heroConfig, float3 position);
-
         GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null);
 
         Task<GameObject> InstantiatePrefabAsync(AssetReferenceGameObject reference,

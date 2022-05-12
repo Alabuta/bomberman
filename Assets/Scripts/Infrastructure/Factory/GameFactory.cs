@@ -79,11 +79,6 @@ namespace Infrastructure.Factory
                 .ToArray();
         }
 
-        public GameObject SpawnEntity(EntityConfig heroConfig, float3 position)
-        {
-            return InstantiatePrefab(heroConfig.Prefab, position);
-        }
-
         public GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null)
         {
             var gameObject = _assetProvider.Instantiate(prefab, position, parent);
@@ -105,6 +100,9 @@ namespace Infrastructure.Factory
 
             Assert.IsTrue(handle.Status == AsyncOperationStatus.Succeeded && handle.Result != null,
                 $"failed to instantiate asset {reference.SubObjectName}");
+
+            var gameObject = handle.Result;
+            RegisterProgressWatchers(gameObject);
 
             return handle.Result;
 

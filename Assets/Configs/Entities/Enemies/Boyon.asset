@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Boyon
   Layer: 7
-  Prefab: {fileID: 3584087449942931273, guid: fad79860e118cac469e68cf58a34733a, type: 3}
+  Prefab:
+    m_AssetGUID: fad79860e118cac469e68cf58a34733a
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   Speed: 1.5
   StartDirection:
     x: 0

@@ -30,7 +30,8 @@ MonoBehaviour:
   - m_GUID: 1d250095f4d89684184e8103f80f3427
     m_Address: ForestWall
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Forest Level
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 896cbd87d4ab9484c9a570227c2a3e79, type: 2}
   m_SchemaSet:
