@@ -24,7 +24,7 @@ namespace Level
             _timeRemainder = fix.zero;
             Tick = 0;
 
-            _simulationStartTime = (fix) Time.timeAsDouble;
+            _simulationStartTime = (fix) Time.fixedDeltaTime;
         }
 
         public void UpdateWorldView()
