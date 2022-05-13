@@ -22,7 +22,7 @@ namespace App
             if (SceneManager.GetActiveScene().name == sceneName)
                 return;
 
-            var handle = Addressables.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            var handle = Addressables.LoadSceneAsync(sceneName);
             Assert.IsTrue(handle.IsValid(),
                 $"invalid async operation handle {sceneName}: {handle.Status} {handle.OperationException}");
 

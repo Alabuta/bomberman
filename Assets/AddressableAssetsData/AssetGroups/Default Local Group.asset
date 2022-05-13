@@ -17,8 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 8b515e1ce838cbc499c1b9a3a4c64233
   m_SerializeEntries:
-  - m_GUID: 2db83539eedfa64468480e8e242f415d
-    m_Address: BootstrapScene
+  - m_GUID: 4b00e3630b8249c43bc9d54c1539a44e
+    m_Address: BattleScene
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0

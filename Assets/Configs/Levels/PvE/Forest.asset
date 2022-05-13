@@ -15,7 +15,7 @@ MonoBehaviour:
   Index: 3
   Name: Forest
   SceneName: BattleScene
-  OriginalPixelsPerUnits: 32
+  OriginalPixelsPerUnits: 16
   ViewportPadding:
     x: -24
     y: 42

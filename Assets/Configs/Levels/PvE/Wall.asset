@@ -15,7 +15,7 @@ MonoBehaviour:
   Index: 0
   Name: The Wall
   SceneName: BattleScene
-  OriginalPixelsPerUnits: 32
+  OriginalPixelsPerUnits: 16
   ViewportPadding:
     x: -24
     y: 42

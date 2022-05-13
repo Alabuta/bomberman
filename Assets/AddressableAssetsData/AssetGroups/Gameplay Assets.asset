@@ -17,16 +17,16 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 1033dda76142fdd4eb7c5c4f73ea63c5
   m_SerializeEntries:
-  - m_GUID: 4b00e3630b8249c43bc9d54c1539a44e
-    m_Address: BattleScene
-    m_ReadOnly: 0
-    m_SerializedLabels: []
   - m_GUID: 4a6cef6fa7f02df4795bfca7789746a7
     m_Address: hud
     m_ReadOnly: 0
     m_SerializedLabels: []
   - m_GUID: bc5c222b33224d24eb48d6eeed80f7ab
     m_Address: GameStatsCanvas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2db83539eedfa64468480e8e242f415d
+    m_Address: BootstrapScene
     m_ReadOnly: 0
     m_SerializedLabels: []
   m_ReadOnly: 0
