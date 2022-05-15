@@ -25,7 +25,7 @@ namespace Configs.Entity
 
         public double HitRadius = .1;
         public double HurtRadius = .1;
-        public double ColliderRadius = .45;
+        public double ColliderRadius = .47;
 
         public ColliderComponentConfig Collider;
 

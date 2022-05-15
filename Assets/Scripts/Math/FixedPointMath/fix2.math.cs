@@ -79,5 +79,17 @@ namespace Math.FixedPointMath
         {
             return max(a, min(b, x));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool all(fix2 vec)
+        {
+            return vec.x != fix.zero && vec.y != fix.zero;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fix2 abs(fix2 vec)
+        {
+            return new fix2(fix.abs(vec.x), fix.abs(vec.y));
+        }
     }
 }

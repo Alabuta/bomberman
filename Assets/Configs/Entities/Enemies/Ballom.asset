@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ballom
   m_EditorClassIdentifier: 
   Name: Ballom
-  Layer: 7
+  Layer: 0
   Prefab:
     m_AssetGUID: 05808de62001e784dae2b41d43471351
     m_SubObjectName: 
@@ -26,7 +26,7 @@ MonoBehaviour:
   Health: 1
   HitRadius: 0.4
   HurtRadius: 0
-  ColliderRadius: 0.45
+  ColliderRadius: 0.47
   Collider: {fileID: 11400000, guid: 6cab3d149becc194d8dd440f66a46ede, type: 2}
   BehaviourConfig:
   - {fileID: 11400000, guid: 01cfe548a7a7e254b8f2e9f0819f9d94, type: 2}

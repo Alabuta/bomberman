@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Dahl
   Layer: 0
-  Prefab: {fileID: 0}
+  Prefab:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   Speed: 0
   StartDirection:
     x: 0
@@ -22,6 +26,6 @@ MonoBehaviour:
   Health: 0
   HitRadius: 0.1
   HurtRadius: 0.1
-  ColliderRadius: 0.45
+  ColliderRadius: 0.47
   Collider: {fileID: 0}
   BehaviourConfig: []

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boyon
   m_EditorClassIdentifier: 
   Name: Boyon
-  Layer: 7
+  Layer: 0
   Prefab:
     m_AssetGUID: fad79860e118cac469e68cf58a34733a
     m_SubObjectName: 
@@ -26,7 +26,7 @@ MonoBehaviour:
   Health: 1
   HitRadius: 0.4
   HurtRadius: 0
-  ColliderRadius: 0.45
+  ColliderRadius: 0.47
   Collider: {fileID: 11400000, guid: 6cab3d149becc194d8dd440f66a46ede, type: 2}
   BehaviourConfig:
   - {fileID: 11400000, guid: 7708f79e7adc0044b9a814b8334dc0c5, type: 2}

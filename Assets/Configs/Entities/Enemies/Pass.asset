@@ -13,8 +13,19 @@ MonoBehaviour:
   m_Name: Pass
   m_EditorClassIdentifier: 
   Name: 
-  MaxHealth: 0
-  MovementSpeed: 0
-  AILevel: 0
-  FordableTiles: []
-  Prefab: {fileID: 0}
+  Layer: 0
+  Prefab:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  Speed: 0
+  StartDirection:
+    x: 0
+    y: 0
+  Health: 0
+  HitRadius: 0.1
+  HurtRadius: 0.1
+  ColliderRadius: 0.47
+  Collider: {fileID: 0}
+  BehaviourConfig: []
