@@ -122,18 +122,13 @@ namespace Level
 
                     // fix2.abs(prevPosition - tilePosition);
                     var prevDistance = fix2.distance(prevPosition, tilePosition);
-                    var r = new fix(0.5);
+                    var r = new fix(0.49);
                     var minDistance = r + playerHero.ColliderRadius; // :TODO: use actual radius playerHero.ColliderRadius
                     if (minDistance < prevDistance)
                     {
-                        /*var theta = travelledPath / r;
-                        var v1 = heroPosition - tilePosition;
-                        var vector = fix2.normalize_safe(v1, fix2.zero);
-                        playerHero.WorldPosition = playerHero.WorldPosition + vector * (minDistance - fix2.length(v1));*/
-
                         var vector = fix2.normalize_safe(heroPosition - intersectionPoint, fix2.zero);
                         playerHero.WorldPosition =
-                            intersectionPoint + vector * (playerHero.ColliderRadius); // :TODO: use actual radius
+                            intersectionPoint + vector * playerHero.ColliderRadius; // :TODO: use actual radius
                     }
                 }
             }

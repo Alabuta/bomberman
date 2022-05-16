@@ -26,6 +26,6 @@ MonoBehaviour:
   Health: 0
   HitRadius: 0.1
   HurtRadius: 0.1
-  ColliderRadius: 0.47
+  ColliderRadius: 0.5
   Collider: {fileID: 0}
   BehaviourConfig: []
