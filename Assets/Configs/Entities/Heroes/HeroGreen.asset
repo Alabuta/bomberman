@@ -26,7 +26,7 @@ MonoBehaviour:
   Health: 1
   HitRadius: 0
   HurtRadius: 0.2
-  ColliderRadius: 0.47
+  ColliderRadius: 0.49
   Collider: {fileID: 11400000, guid: e911884e32db2ba468e442651285f4f3, type: 2}
   Icon:
     m_AssetGUID: 4a6cef6fa7f02df4795bfca7789746a7
