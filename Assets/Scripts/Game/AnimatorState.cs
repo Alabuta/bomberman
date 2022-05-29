@@ -5,6 +5,7 @@ namespace Game
         Unknown,
         Idle,
         Movement,
-        Death
+        Death,
+        Finished
     }
 }

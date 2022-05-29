@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: BombItem
   m_EditorClassIdentifier: 
   Layer: 9
-  GameTag: {fileID: 0}
-  Prefab: {fileID: 8352911379006920328, guid: 3b1548050419d0f49a7da257cb5fdc9d, type: 3}
+  Prefab:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
   Collider: {fileID: 11400000, guid: 35b9b66de5a5fea4cb4074966e989ed0, type: 2}
+  BlastEffectConfig: {fileID: 11400000, guid: b92f23978af6e78438477fb1ce9139f7, type: 2}

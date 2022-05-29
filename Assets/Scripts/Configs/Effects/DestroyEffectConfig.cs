@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Configs.Effects
 {
-    [CreateAssetMenu(menuName = "Configs/Effects/Destroy Behind Effect", fileName = "DestroyEffect", order = 0)]
+    [CreateAssetMenu(menuName = "Configs/Effects/Destroy Behind Effect", fileName = "DestroyEffect")]
     public class DestroyEffectConfig : ConfigBase
     {
         public GameObject Effect;

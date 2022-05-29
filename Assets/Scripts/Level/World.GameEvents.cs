@@ -52,9 +52,24 @@ namespace Level
             if (!bombsQueue.TryDequeue(out var bombItem))
                 return;
 
-            LevelModel.RemoveItem(LevelModel.ToTileCoordinate(bombItem.Controller.WorldPosition));
+            var bombCoordinate = LevelModel.ToTileCoordinate(bombItem.Controller.WorldPosition);
+            LevelModel.RemoveItem(bombCoordinate);
+
+            var position = LevelModel.ToWorldPosition(bombCoordinate);
 
             bombItem.Controller.DestroyItem();
+
+            var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
+            Assert.IsNotNull(go);
+
+            var effectAnimator = go.GetComponent<EffectAnimator>();
+            Assert.IsNotNull(effectAnimator);
+
+            effectAnimator.OnAnimationStateEnter += state =>
+            {
+                if (state == AnimatorState.Finished)
+                    go.SetActive(false);
+            };
         }
 
         // :TODO: add an item pick up event handler
