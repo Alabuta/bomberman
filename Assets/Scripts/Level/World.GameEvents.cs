@@ -4,6 +4,7 @@ using Game.Items;
 using Input;
 using Items;
 using Math.FixedPointMath;
+using Unity.Mathematics;
 using UnityEngine.Assertions;
 
 namespace Level
@@ -61,6 +62,11 @@ namespace Level
 
             var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
             Assert.IsNotNull(go);
+
+            var effectController = go.GetComponent<EffectController>();
+            Assert.IsNotNull(effectController);
+
+            effectController.SetSize(new int4(2, 1, 2, 1));
 
             var effectAnimator = go.GetComponent<EffectAnimator>();
             Assert.IsNotNull(effectAnimator);

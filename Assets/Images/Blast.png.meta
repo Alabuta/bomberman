@@ -44,7 +44,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 16
@@ -194,7 +194,7 @@ TextureImporter:
       name: Blast_Center3
       rect:
         serializedVersion: 2
-        x: 51
+        x: 95
         y: 48
         width: 16
         height: 16
@@ -215,7 +215,7 @@ TextureImporter:
       name: Blast_Center4
       rect:
         serializedVersion: 2
-        x: 68
+        x: 112
         y: 48
         width: 16
         height: 16
@@ -233,16 +233,16 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blast_End0
+      name: Blast_X1
       rect:
         serializedVersion: 2
         x: 0
         y: 31
-        width: 16
+        width: 32
         height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      alignment: 4
+      pivot: {x: 0, y: 0.5}
+      border: {x: 0, y: 0, z: 16, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -254,37 +254,16 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blast_End1
+      name: Blast_X3
       rect:
         serializedVersion: 2
-        x: 17
+        x: 33
         y: 31
-        width: 16
+        width: 32
         height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 89a69e18829d8454ca8cb4ea9495a837
-      internalID: 394521733
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Blast_End2
-      rect:
-        serializedVersion: 2
-        x: 34
-        y: 31
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      alignment: 4
+      pivot: {x: 0, y: 0.5}
+      border: {x: 0, y: 0, z: 16, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -296,37 +275,16 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blast_End3
-      rect:
-        serializedVersion: 2
-        x: 51
-        y: 31
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 681891e58bba94e419f0f98f3ce82217
-      internalID: -534696736
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Blast_Middle0
+      name: Blast_X0
       rect:
         serializedVersion: 2
         x: 0
         y: 14
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+        width: 32
+        height: 17
+      alignment: 4
+      pivot: {x: 0, y: 0.5}
+      border: {x: 0, y: 0, z: 16, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -338,37 +296,16 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blast_Middle1
+      name: Blast_X2
       rect:
         serializedVersion: 2
-        x: 17
+        x: 33
         y: 14
-        width: 16
+        width: 32
         height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0151b7a270bc0fe4ab9767b87403a867
-      internalID: -446080422
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Blast_Middle2
-      rect:
-        serializedVersion: 2
-        x: 34
-        y: 14
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      alignment: 4
+      pivot: {x: 0, y: 0.5}
+      border: {x: 0, y: 0, z: 16, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -380,58 +317,16 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blast_Middle3
-      rect:
-        serializedVersion: 2
-        x: 51
-        y: 14
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bf8457691c9895445a6d0d5e3a08c961
-      internalID: 1509684804
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Blast_EndY0
-      rect:
-        serializedVersion: 2
-        x: 95
-        y: 48
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c8770b831945d4e478728c02f761605d
-      internalID: -1521334743
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Blast_EndY1
+      name: Blast_Y0
       rect:
         serializedVersion: 2
         x: 112
-        y: 13
+        y: 0
         width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 16}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -443,58 +338,16 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blast_EndY2
-      rect:
-        serializedVersion: 2
-        x: 112
-        y: 30
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 926d775a4ecd6f64a99b2c272672d913
-      internalID: -391961447
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Blast_EndY3
-      rect:
-        serializedVersion: 2
-        x: 112
-        y: 48
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2be21110e5110a84abfa62ee24c98452
-      internalID: 648545188
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Blast_MiddleY0
+      name: Blast_Y1
       rect:
         serializedVersion: 2
         x: 95
         y: 0
         width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 16}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -506,37 +359,16 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blast_MiddleY1
-      rect:
-        serializedVersion: 2
-        x: 95
-        y: 17
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f3149e90a092f774285bbd011c56bbf0
-      internalID: 987373178
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Blast_MiddleY2
+      name: Blast_Y2
       rect:
         serializedVersion: 2
         x: 78
         y: 0
         width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 16}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -548,22 +380,22 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Blast_MiddleY3
+      name: Blast_Y3
       rect:
         serializedVersion: 2
-        x: 78
-        y: 17
+        x: 66
+        y: 32
         width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+        height: 32
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 16}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 137547ec343d8cc459f908ac9159bfd1
-      internalID: -1517956594
+      spriteID: d134c53d0220df547acab8580acefa13
+      internalID: 669986074
       vertices: []
       indices: 
       edges: []
@@ -582,22 +414,23 @@ TextureImporter:
       Blast_EndY2: -391961447
       Blast_Middle3: 1509684804
       Blast_EndY3: 648545188
-      Blast_Middle2: 1071104375
+      Blast_Y0: 656272827
       Blast_Center4: 181325224
       Blast_MiddleY3: -1517956594
       Blast_Center2: -419132897
-      Blast_MiddleY2: 916315006
-      Blast_End2: 1252165152
+      Blast_X1: 579488764
+      Blast_X0: 1453916919
+      Blast_X3: 1252165152
       Blast_MiddleY1: 987373178
       Blast_Center3: -1207422796
+      Blast_Y2: 916315006
       Blast_EndY0: -1521334743
-      Blast_EndY1: 656272827
       Blast_End3: -534696736
       Blast_Center1: 1793751747
-      Blast_Middle0: 1453916919
-      Blast_MiddleY0: -1710214765
+      Blast_X2: 1071104375
       Blast_Center0: 1655481754
-      Blast_End0: 579488764
+      Blast_Y3: 669986074
+      Blast_Y1: -1710214765
       Blast_End1: 394521733
       Blast_Middle1: -446080422
   spritePackingTag: 
