@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game;
 using Game.Items;
 using Input;
@@ -66,7 +67,35 @@ namespace Level
             var effectController = go.GetComponent<EffectController>();
             Assert.IsNotNull(effectController);
 
-            effectController.SetSize(new int4(2, 1, 2, 1));
+            const int blastRadius = 2;
+
+            int2[] offsets =
+            {
+                new(1, 0),
+                new(-1, 0),
+                new(0, 1),
+                new(0, -1)
+            };
+
+            var sizes = offsets
+                .Select(v =>
+                {
+                    return Enumerable
+                        .Range(1, blastRadius)
+                        .Select(o => bombCoordinate + v * o)
+                        .TakeWhile(c =>
+                        {
+                            if (!LevelModel.IsCoordinateInField(c))
+                                return false;
+
+                            var tile = LevelModel[c];
+                            return tile.TileLoad == null;
+                        })
+                        .Count();
+                })
+                .ToArray();
+
+            effectController.SetSize(new int4(sizes[0], sizes[1], sizes[2], sizes[3]));
 
             var effectAnimator = go.GetComponent<EffectAnimator>();
             Assert.IsNotNull(effectAnimator);
