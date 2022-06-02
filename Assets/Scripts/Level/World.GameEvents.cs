@@ -95,7 +95,7 @@ namespace Level
                 })
                 .ToArray();
 
-            effectController.SetSize(new int4(sizes[0], sizes[1], sizes[2], sizes[3]));
+            effectController.SetSize(blastRadius, new int4(sizes[0], sizes[1], sizes[2], sizes[3]));
 
             var effectAnimator = go.GetComponent<EffectAnimator>();
             Assert.IsNotNull(effectAnimator);
