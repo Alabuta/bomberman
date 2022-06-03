@@ -425,23 +425,35 @@ MonoBehaviour:
     Flip:
       x: 0
       y: 0
-    Position: {x: 0.5, y: 0, z: 0}
+    PositionOffset: {x: 0.5, y: 0, z: 0}
+    PositionOffsetVector:
+      x: 0
+      y: 0
   - Renderer: {fileID: 7421055611215070967}
     Flip:
       x: 1
       y: 1
-    Position: {x: -0.5, y: 0, z: 0}
+    PositionOffset: {x: -0.5, y: 0, z: 0}
+    PositionOffsetVector:
+      x: 0
+      y: 0
   VerticalSettings:
   - Renderer: {fileID: 5690854171517452854}
     Flip:
       x: 0
       y: 0
-    Position: {x: 0, y: 0, z: 0}
+    PositionOffset: {x: 0, y: 0, z: 0}
+    PositionOffsetVector:
+      x: 0
+      y: 0
   - Renderer: {fileID: 4187871749297810916}
     Flip:
       x: 0
       y: 0
-    Position: {x: 0, y: 0, z: 0}
+    PositionOffset: {x: 0, y: 0, z: 0}
+    PositionOffsetVector:
+      x: 0
+      y: 0
 --- !u!1 &8639559867033334951
 GameObject:
   m_ObjectHideFlags: 0

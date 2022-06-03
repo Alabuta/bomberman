@@ -16,7 +16,10 @@ namespace Game
             public bool2 Flip;
 
             [SerializeField, HideInInspector]
-            public Vector3 Position;
+            public Vector3 PositionOffset;
+
+            [SerializeField, HideInInspector]
+            public int2 PositionOffsetVector;
         }
 
         [SerializeField]
@@ -33,13 +36,14 @@ namespace Game
                 var s = size[index];
                 if (s != 0 && s != blastRadius)
                 {
-                    sprite.gameObject.transform.position = settings.Position + new Vector3(1.5f, 0, 0);
+                    sprite.gameObject.transform.position = transform.position + settings.PositionOffset +
+                                                           settings.PositionOffset.normalized;
                     sprite.flipX = !settings.Flip.x;
                     sprite.size = new Vector2(s + 1, sprite.size.y);
                 }
                 else
                 {
-                    sprite.gameObject.transform.position = settings.Position + new Vector3(0.5f, 0, 0);
+                    sprite.gameObject.transform.position = transform.position + settings.PositionOffset;
                     sprite.flipX = settings.Flip.x;
                     sprite.size = new Vector2(s, sprite.size.y);
                 }
@@ -51,14 +55,15 @@ namespace Game
                 var s = size[index + 2];
                 if (s != 0 && s != blastRadius)
                 {
-                    sprite.gameObject.transform.position = settings.Position + new Vector3(0, 1.5f, 0);
-                    sprite.flipX = !settings.Flip.y;
+                    sprite.gameObject.transform.position = transform.position + settings.PositionOffset +
+                                                           settings.PositionOffset.normalized;
+                    sprite.flipY = !settings.Flip.y;
                     sprite.size = new Vector2(sprite.size.x, s + 1);
                 }
                 else
                 {
-                    sprite.gameObject.transform.position = settings.Position + new Vector3(0, 0.5f, 0);
-                    sprite.flipX = settings.Flip.y;
+                    sprite.gameObject.transform.position = transform.position + settings.PositionOffset;
+                    sprite.flipY = settings.Flip.y;
                     sprite.size = new Vector2(sprite.size.x, s);
                 }
             }
@@ -68,7 +73,7 @@ namespace Game
         {
             foreach (var settings in HorizontalSettings)
             {
-                settings.Position = settings.Renderer.transform.position;
+                settings.PositionOffset = settings.Renderer.transform.position - transform.position;
 
                 settings.Flip.x = settings.Renderer.flipX;
                 settings.Flip.y = settings.Renderer.flipY;
