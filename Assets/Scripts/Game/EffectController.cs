@@ -17,9 +17,6 @@ namespace Game
 
             [SerializeField, HideInInspector]
             public Vector3 PositionOffset;
-
-            [SerializeField, HideInInspector]
-            public int2 PositionOffsetVector;
         }
 
         [SerializeField]
@@ -28,50 +25,66 @@ namespace Game
         [SerializeField]
         private Settings[] VerticalSettings;
 
-        public void SetSize(int blastRadius, int4 size)
+        public void SetSize(int blastRadius, int4 sizes)
         {
+            var masks = new[]
+            {
+                new Vector2(1, 0),
+                new Vector2(0, 1)
+            };
+
             foreach (var (settings, index) in HorizontalSettings.Select((s, i) => (s, i)))
             {
                 var sprite = settings.Renderer;
-                var s = size[index];
-                if (s != 0 && s != blastRadius)
-                {
-                    sprite.gameObject.transform.position = transform.position + settings.PositionOffset +
-                                                           settings.PositionOffset.normalized;
-                    sprite.flipX = !settings.Flip.x;
-                    sprite.size = new Vector2(s + 1, sprite.size.y);
-                }
-                else
-                {
-                    sprite.gameObject.transform.position = transform.position + settings.PositionOffset;
-                    sprite.flipX = settings.Flip.x;
-                    sprite.size = new Vector2(s, sprite.size.y);
-                }
+
+                var size = sizes[index];
+                var isSizeRestricted = size != 0 && size != blastRadius;
+
+                sprite.flipX = isSizeRestricted ? !settings.Flip.x : settings.Flip.x;
+                sprite.size = sprite.size * masks[1] + new Vector2(size, size) * masks[0];
+
+                var spriteTransform = sprite.gameObject.transform;
+                spriteTransform.position = transform.position + settings.PositionOffset;
+
+                if (!isSizeRestricted)
+                    continue;
+
+                sprite.size += masks[0];
+                spriteTransform.position += settings.PositionOffset.normalized;
             }
 
-            foreach (var (settings, index) in VerticalSettings.Select((go, i) => (go, i)))
+            foreach (var (settings, index) in VerticalSettings.Select((s, i) => (s, i)))
             {
                 var sprite = settings.Renderer;
-                var s = size[index + 2];
-                if (s != 0 && s != blastRadius)
-                {
-                    sprite.gameObject.transform.position = transform.position + settings.PositionOffset +
-                                                           settings.PositionOffset.normalized;
-                    sprite.flipY = !settings.Flip.y;
-                    sprite.size = new Vector2(sprite.size.x, s + 1);
-                }
-                else
-                {
-                    sprite.gameObject.transform.position = transform.position + settings.PositionOffset;
-                    sprite.flipY = settings.Flip.y;
-                    sprite.size = new Vector2(sprite.size.x, s);
-                }
+
+                var size = sizes[index + 2];
+                var isSizeRestricted = size != 0 && size != blastRadius;
+
+                sprite.flipY = isSizeRestricted ? !settings.Flip.y : settings.Flip.y;
+                sprite.size = sprite.size * masks[0] + new Vector2(size, size) * masks[1];
+
+                var spriteTransform = sprite.gameObject.transform;
+                spriteTransform.position = transform.position + settings.PositionOffset;
+
+                if (!isSizeRestricted)
+                    continue;
+
+                sprite.size += masks[1];
+                spriteTransform.position += settings.PositionOffset.normalized;
             }
         }
 
         private void OnValidate()
         {
             foreach (var settings in HorizontalSettings)
+            {
+                settings.PositionOffset = settings.Renderer.transform.position - transform.position;
+
+                settings.Flip.x = settings.Renderer.flipX;
+                settings.Flip.y = settings.Renderer.flipY;
+            }
+
+            foreach (var settings in VerticalSettings)
             {
                 settings.PositionOffset = settings.Renderer.transform.position - transform.position;
 
