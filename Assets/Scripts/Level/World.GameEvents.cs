@@ -64,7 +64,7 @@ namespace Level
             var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
             Assert.IsNotNull(go);
 
-            var effectController = go.GetComponent<EffectController>();
+            var effectController = go.GetComponent<BlastEffectController>();
             Assert.IsNotNull(effectController);
 
             const int blastRadius = 2;
@@ -88,14 +88,12 @@ namespace Level
                             if (!LevelModel.IsCoordinateInField(c))
                                 return false;
 
-                            var tile = LevelModel[c];
-                            return tile.TileLoad == null;
+                            return LevelModel[c].TileLoad == null;
                         })
                         .Count();
-                })
-                .ToArray();
+                });
 
-            effectController.SetSize(blastRadius, new int4(sizes[0], sizes[1], sizes[2], sizes[3]));
+            effectController.Construct(blastRadius, sizes);
 
             var effectAnimator = go.GetComponent<EffectAnimator>();
             Assert.IsNotNull(effectAnimator);

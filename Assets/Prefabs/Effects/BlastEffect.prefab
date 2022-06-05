@@ -346,7 +346,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8352911379006920330}
   - component: {fileID: 7420124108345588293}
-  - component: {fileID: 8070919792554095437}
   - component: {fileID: 3124494178553377497}
   m_Layer: 0
   m_Name: BlastEffect
@@ -385,7 +384,7 @@ Animator:
   m_GameObject: {fileID: 8352911379006920328}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 49322269baf273b4cba08c4d43ccb96f, type: 2}
+  m_Controller: {fileID: 22100000, guid: 9e489dabd500c664fbb59bbc07d75a93, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -395,19 +394,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &8070919792554095437
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8352911379006920328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0f648b7a1884857aad727b8e1ffc59c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Animator: {fileID: 7420124108345588293}
 --- !u!114 &3124494178553377497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,40 +406,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec898743f11a4c968f4d5894bcbd83cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HorizontalSettings:
+  Settings:
   - Renderer: {fileID: 3558796896215753580}
     Flip:
       x: 0
       y: 0
     PositionOffset: {x: 0.5, y: 0, z: 0}
-    PositionOffsetVector:
-      x: 0
-      y: 0
+    OffsetVectors:
+    - {x: 1, y: 0}
+    - {x: 0, y: 1}
   - Renderer: {fileID: 7421055611215070967}
     Flip:
       x: 1
       y: 1
     PositionOffset: {x: -0.5, y: 0, z: 0}
-    PositionOffsetVector:
-      x: 0
-      y: 0
-  VerticalSettings:
+    OffsetVectors:
+    - {x: 1, y: 0}
+    - {x: 0, y: 1}
   - Renderer: {fileID: 5690854171517452854}
     Flip:
       x: 0
       y: 0
-    PositionOffset: {x: 0, y: 0, z: 0}
-    PositionOffsetVector:
-      x: 0
-      y: 0
+    PositionOffset: {x: 0, y: 0.5, z: 0}
+    OffsetVectors:
+    - {x: 0, y: 1}
+    - {x: 1, y: 0}
   - Renderer: {fileID: 4187871749297810916}
     Flip:
-      x: 0
-      y: 0
-    PositionOffset: {x: 0, y: 0, z: 0}
-    PositionOffsetVector:
-      x: 0
-      y: 0
+      x: 1
+      y: 1
+    PositionOffset: {x: 0, y: -0.5, z: 0}
+    OffsetVectors:
+    - {x: 0, y: 1}
+    - {x: 1, y: 0}
 --- !u!1 &8639559867033334951
 GameObject:
   m_ObjectHideFlags: 0
