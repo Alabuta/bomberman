@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Configs.Level;
 using Data;
 using Infrastructure.Factory;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -12,6 +14,8 @@ namespace Level
 {
     public partial class World
     {
+        private readonly Dictionary<int2, GameObject> _blocks = new();
+
         public void GenerateLevelStage(IGameFactory gameFactory, LevelStage levelStage) // :TODO: get IGameFactory from DI
         {
             var levelConfig = levelStage.LevelConfig;
@@ -32,13 +36,13 @@ namespace Level
             var columnsNumber = levelModel.ColumnsNumber;
             var rowsNumber = levelModel.RowsNumber;
 
-            var offsetsAndSize = new[]
+            /*var offsetsAndSize = new[]
             {
                 (math.float2(+columnsNumber / 2f + 1, 0), math.float2(2, rowsNumber)),
                 (math.float2(-columnsNumber / 2f - 1, 0), math.float2(2, rowsNumber)),
                 (math.float2(0, +rowsNumber / 2f + 1), math.float2(columnsNumber, 2)),
                 (math.float2(0, -rowsNumber / 2f - 1), math.float2(columnsNumber, 2))
-            };
+            };*/
 
             var walls = await loadTask;
 
@@ -53,7 +57,7 @@ namespace Level
             }*/
         }
 
-        private static async Task SpawnBlocks(LevelConfig levelConfig, LevelModel levelModel,
+        private async Task SpawnBlocks(LevelConfig levelConfig, LevelModel levelModel,
             IGameFactory gameFactory)
         {
             // :TODO: refactor
@@ -83,11 +87,25 @@ namespace Level
 
                 // ReSharper disable once PossibleLossOfFraction
                 var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
+                var coordinate = levelModel.ToTileCoordinate(new fix2((fix) position.x, (fix) position.y));
 
                 var blockIndex = Array.FindIndex(blocks, p => p.type == tileType);
                 var blockPrefab = assets[blockIndex];
-                gameFactory.InstantiatePrefab(blockPrefab, position, blocksGroup.transform);
+                var gameObject = gameFactory.InstantiatePrefab(blockPrefab, position, blocksGroup.transform);
+
+                AddBlockPrefab(coordinate, gameObject);
             }
+        }
+
+        private void AddBlockPrefab(int2 coordinate, GameObject gameObject)
+        {
+            _blocks.TryAdd(coordinate, gameObject);
+        }
+
+        private void DestroyBlockPrefab(int2 coordinate)
+        {
+            if (_blocks.TryGetValue(coordinate, out var gameObject))
+                gameObject.SetActive(false);
         }
     }
 }

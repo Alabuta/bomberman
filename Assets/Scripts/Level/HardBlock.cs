@@ -2,7 +2,8 @@ using System.Linq;
 using Configs.Game.Colliders;
 using Configs.Level.Tile;
 using Game.Colliders;
-using Game.Components;
+using UnityEngine;
+using Component = Game.Components.Component;
 
 namespace Level
 {
@@ -11,6 +12,7 @@ namespace Level
         public int LayerMask { get; }
 
         public Component[] Components { get; protected set; }
+        public GameObject DestroyEffectPrefab => null;
 
         public HardBlock(HardBlockConfig config)
         {

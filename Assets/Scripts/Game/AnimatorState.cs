@@ -6,6 +6,6 @@ namespace Game
         Idle,
         Movement,
         Death,
-        Finished
+        Finish
     }
 }

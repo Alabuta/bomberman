@@ -346,6 +346,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8352911379006920330}
   - component: {fileID: 7420124108345588293}
+  - component: {fileID: 6169234060797222884}
   - component: {fileID: 3124494178553377497}
   m_Layer: 0
   m_Name: BlastEffect
@@ -394,6 +395,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6169234060797222884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8352911379006920328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0f648b7a1884857aad727b8e1ffc59c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animator: {fileID: 7420124108345588293}
 --- !u!114 &3124494178553377497
 MonoBehaviour:
   m_ObjectHideFlags: 0

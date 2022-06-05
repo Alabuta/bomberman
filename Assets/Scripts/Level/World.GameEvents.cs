@@ -100,9 +100,48 @@ namespace Level
 
             effectAnimator.OnAnimationStateEnter += state =>
             {
-                if (state == AnimatorState.Finished)
+                if (state == AnimatorState.Finish)
                     go.SetActive(false);
             };
+
+            var blocksToDestroy = offsets
+                .SelectMany(v =>
+                {
+                    return Enumerable
+                        .Range(1, blastRadius)
+                        .Select(o => bombCoordinate + v * o)
+                        .TakeWhile(c =>
+                        {
+                            if (!LevelModel.IsCoordinateInField(c))
+                                return false;
+
+                            var tileLoad = LevelModel[c].TileLoad;
+                            return tileLoad is SoftBlock;
+                        });
+                });
+
+            foreach (var blockCoordinate in blocksToDestroy)
+            {
+                var effectPosition = LevelModel.ToWorldPosition(blockCoordinate);
+
+                var levelTile = LevelModel[blockCoordinate];
+                var destroyEffectPrefab = levelTile.TileLoad.DestroyEffectPrefab;
+
+                DestroyBlockPrefab(blockCoordinate);
+                LevelModel.ClearTile(blockCoordinate);
+
+                var effectGameObject = _gameFactory.InstantiatePrefab(destroyEffectPrefab, fix2.ToXY(effectPosition));
+                Assert.IsNotNull(effectGameObject);
+
+                var effectAnimator2 = effectGameObject.GetComponent<EffectAnimator>();
+                Assert.IsNotNull(effectAnimator2);
+
+                effectAnimator2.OnAnimationStateEnter += state =>
+                {
+                    if (state == AnimatorState.Finish)
+                        effectGameObject.SetActive(false);
+                };
+            }
         }
 
         // :TODO: add an item pick up event handler

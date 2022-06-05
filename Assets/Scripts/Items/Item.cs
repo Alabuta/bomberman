@@ -2,9 +2,10 @@ using System.Linq;
 using Configs.Game.Colliders;
 using Configs.Items;
 using Game.Colliders;
-using Game.Components;
 using Game.Items;
 using Level;
+using UnityEngine;
+using Component = Game.Components.Component;
 
 namespace Items
 {
@@ -17,6 +18,7 @@ namespace Items
         public int LayerMask { get; }
 
         public Component[] Components { get; protected set; }
+        public GameObject DestroyEffectPrefab => null;
 
         protected Item(TConfig itemConfig, ItemController controller)
         {

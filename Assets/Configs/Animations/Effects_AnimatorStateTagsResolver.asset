@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Effects_AnimatorStateTagsResolver
   m_EditorClassIdentifier: 
   Tags:
-  - TagName: Finished
+  - TagName: Finish
     State: 4

@@ -80,6 +80,14 @@ namespace Level
             _tiles = GenerateLevelGrid(levelConfig, spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
         }
 
+        public void ClearTile(int2 coordinate)
+        {
+            var index = GetFlattenTileCoordinate(coordinate);
+            var worldPosition = ToWorldPosition(coordinate);
+
+            _tiles[index] = new LevelTile(LevelTileType.FloorTile, coordinate, worldPosition);
+        }
+
         private static IEnumerable<int2> GetPlayersSpawnCorners(LevelStageConfig levelStageConfig)
         {
             return levelStageConfig switch

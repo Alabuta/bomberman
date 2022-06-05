@@ -2,7 +2,8 @@
 using Configs.Game.Colliders;
 using Configs.Level.Tile;
 using Game.Colliders;
-using Game.Components;
+using UnityEngine;
+using Component = Game.Components.Component;
 
 namespace Level
 {
@@ -12,9 +13,13 @@ namespace Level
 
         public Component[] Components { get; protected set; }
 
+        public GameObject DestroyEffectPrefab { get; }
+
         public SoftBlock(SoftBlockConfig config)
         {
             LayerMask = config.LayerMask;
+
+            DestroyEffectPrefab = config.DestroyEffectPrefab;
 
             var collider = new BoxColliderComponent(config.Collider as BoxColliderComponentConfig);
             Components = new Component[]
