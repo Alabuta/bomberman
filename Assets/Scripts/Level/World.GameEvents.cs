@@ -105,23 +105,26 @@ namespace Level
             };
 
             var blocksToDestroy = offsets
-                .SelectMany(v =>
+                .Select(v =>
                 {
                     return Enumerable
                         .Range(1, blastRadius)
                         .Select(o => bombCoordinate + v * o)
-                        .TakeWhile(c =>
+                        .Select(c =>
                         {
                             if (!LevelModel.IsCoordinateInField(c))
-                                return false;
+                                return null;
 
                             var tileLoad = LevelModel[c].TileLoad;
-                            return tileLoad is SoftBlock;
-                        });
-                });
+                            return tileLoad is SoftBlock ? LevelModel[c] : null;
+                        })
+                        .FirstOrDefault(c => c != null);
+                })
+                .Where(b => b != null);
 
-            foreach (var blockCoordinate in blocksToDestroy)
+            foreach (var tileLoad in blocksToDestroy)
             {
+                var blockCoordinate = tileLoad.Coordinate;
                 var effectPosition = LevelModel.ToWorldPosition(blockCoordinate);
 
                 var levelTile = LevelModel[blockCoordinate];
