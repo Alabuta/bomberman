@@ -110,11 +110,15 @@ namespace Level
                     return Enumerable
                         .Range(1, blastRadius)
                         .Select(o => bombCoordinate + v * o)
-                        .Select(c =>
+                        .TakeWhile(c =>
                         {
                             if (!LevelModel.IsCoordinateInField(c))
-                                return null;
+                                return false;
 
+                            return LevelModel[c].TileLoad is not HardBlock;
+                        })
+                        .Select(c =>
+                        {
                             var tileLoad = LevelModel[c].TileLoad;
                             return tileLoad is SoftBlock ? LevelModel[c] : null;
                         })
@@ -144,6 +148,31 @@ namespace Level
                     if (state == AnimatorState.Finish)
                         effectGameObject.SetActive(false);
                 };
+            }
+
+            var entitiesToKill = offsets
+                .SelectMany(v =>
+                {
+                    return Enumerable
+                        .Range(1, blastRadius)
+                        .Select(o => bombCoordinate + v * o)
+                        .TakeWhile(c =>
+                        {
+                            if (!LevelModel.IsCoordinateInField(c))
+                                return false;
+
+                            return LevelModel[c].TileLoad is not HardBlock;
+                        })
+                        .SelectMany(c =>
+                        {
+                            return _enemies
+                                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
+                        });
+                });
+
+            foreach (var entity in entitiesToKill)
+            {
+                entity.Die();
             }
         }
 
