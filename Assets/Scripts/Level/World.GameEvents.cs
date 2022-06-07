@@ -104,6 +104,33 @@ namespace Level
                     go.SetActive(false);
             };
 
+            var entitiesToKill = offsets
+                .SelectMany(v =>
+                {
+                    return Enumerable
+                        .Range(1, blastRadius)
+                        .Select(o => bombCoordinate + v * o)
+                        .TakeWhile(c =>
+                        {
+                            if (!LevelModel.IsCoordinateInField(c))
+                                return false;
+
+                            var tileLoad = LevelModel[c].TileLoad;
+                            return tileLoad is not (HardBlock or SoftBlock);
+                        })
+                        .SelectMany(c =>
+                        {
+                            return _enemies
+                                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
+                        });
+                });
+
+            foreach (var entity in entitiesToKill)
+            {
+                _behaviourAgents.Remove(entity);
+                entity.Die();
+            }
+
             var blocksToDestroy = offsets
                 .Select(v =>
                 {
@@ -148,31 +175,6 @@ namespace Level
                     if (state == AnimatorState.Finish)
                         effectGameObject.SetActive(false);
                 };
-            }
-
-            var entitiesToKill = offsets
-                .SelectMany(v =>
-                {
-                    return Enumerable
-                        .Range(1, blastRadius)
-                        .Select(o => bombCoordinate + v * o)
-                        .TakeWhile(c =>
-                        {
-                            if (!LevelModel.IsCoordinateInField(c))
-                                return false;
-
-                            return LevelModel[c].TileLoad is not HardBlock;
-                        })
-                        .SelectMany(c =>
-                        {
-                            return _enemies
-                                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
-                        });
-                });
-
-            foreach (var entity in entitiesToKill)
-            {
-                entity.Die();
             }
         }
 
