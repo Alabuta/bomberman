@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: GameModePvE
   m_EditorClassIdentifier: 
   LevelConfigs:
-  - {fileID: 11400000, guid: cd1ee87706f90fd478429fa73e6c8e19, type: 2}
   - {fileID: 11400000, guid: beb94d2d5caf9a247aed01603e5b6b25, type: 2}
+  - {fileID: 11400000, guid: cd1ee87706f90fd478429fa73e6c8e19, type: 2}
   GameStatsViewPrefab:
     m_AssetGUID: bc5c222b33224d24eb48d6eeed80f7ab
     m_SubObjectName: 
