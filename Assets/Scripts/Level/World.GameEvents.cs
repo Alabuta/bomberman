@@ -68,8 +68,9 @@ namespace Level
             Assert.IsNotNull(effectController);
 
             const int blastRadius = 2;
+            const int bombBlastDamage = 1;
 
-            int2[] offsets =
+            int2[] blastDirections =
             {
                 new(1, 0),
                 new(-1, 0),
@@ -77,7 +78,7 @@ namespace Level
                 new(0, -1)
             };
 
-            var sizes = offsets
+            var blastRadiusInDirections = blastDirections
                 .Select(v =>
                 {
                     return Enumerable
@@ -93,7 +94,7 @@ namespace Level
                         .Count();
                 });
 
-            effectController.Construct(blastRadius, sizes);
+            effectController.Construct(blastRadius, blastRadiusInDirections);
 
             var effectAnimator = go.GetComponent<EffectAnimator>();
             Assert.IsNotNull(effectAnimator);
@@ -104,34 +105,34 @@ namespace Level
                     go.SetActive(false);
             };
 
-            var entitiesToKill = offsets
+            var coordinates = blastDirections
                 .SelectMany(v =>
                 {
                     return Enumerable
                         .Range(1, blastRadius)
-                        .Select(o => bombCoordinate + v * o)
-                        .TakeWhile(c =>
-                        {
-                            if (!LevelModel.IsCoordinateInField(c))
-                                return false;
+                        .Select(o => bombCoordinate + v * o);
+                })
+                .Append(bombCoordinate);
 
-                            var tileLoad = LevelModel[c].TileLoad;
-                            return tileLoad is not (HardBlock or SoftBlock);
-                        })
-                        .SelectMany(c =>
-                        {
-                            return _enemies
-                                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
-                        });
+            var entitiesToKill = coordinates
+                .TakeWhile(c =>
+                {
+                    if (!LevelModel.IsCoordinateInField(c))
+                        return false;
+
+                    var tileLoad = LevelModel[c].TileLoad;
+                    return tileLoad is not (HardBlock or SoftBlock);
+                })
+                .SelectMany(c =>
+                {
+                    return _enemies
+                        .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
                 });
 
             foreach (var entity in entitiesToKill)
-            {
-                _behaviourAgents.Remove(entity);
-                entity.Die();
-            }
+                entity.Health.ApplyDamage(bombBlastDamage);
 
-            var blocksToDestroy = offsets
+            var blocksToDestroy = blastDirections
                 .Select(v =>
                 {
                     return Enumerable

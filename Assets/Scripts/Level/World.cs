@@ -55,6 +55,13 @@ namespace Level
         public void AddEnemy(Enemy enemy)
         {
             _enemies.Add(enemy);
+
+            enemy.Health.HealthChangedEvent += () => OnEntityHealthChangedEvent(enemy);
+        }
+
+        private void OnEntityHealthChangedEvent(IEntity entity)
+        {
+            _behaviourAgents.Remove(entity);
         }
 
         public void AddBehaviourAgent(IEntity entity, IBehaviourAgent behaviourAgent)
