@@ -46,7 +46,7 @@ namespace Game
                     continue;
 
                 sprite.size += settings.OffsetVectors[0];
-                spriteTransform.position += settings.PositionOffset.normalized;
+                spriteTransform.position += settings.PositionOffset.normalized * size;
             }
         }
 
