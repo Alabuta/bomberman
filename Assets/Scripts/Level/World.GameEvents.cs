@@ -6,6 +6,7 @@ using Input;
 using Items;
 using Math.FixedPointMath;
 using Unity.Mathematics;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Level
@@ -56,18 +57,9 @@ namespace Level
 
             var bombCoordinate = LevelModel.ToTileCoordinate(bombItem.Controller.WorldPosition);
             LevelModel.RemoveItem(bombCoordinate);
-
-            var position = LevelModel.ToWorldPosition(bombCoordinate);
-
             bombItem.Controller.DestroyItem();
 
-            var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
-            Assert.IsNotNull(go);
-
-            var effectController = go.GetComponent<BlastEffectController>();
-            Assert.IsNotNull(effectController);
-
-            const int blastRadius = 2;
+            const int blastRadius = 5;
             const int bombBlastDamage = 1;
 
             int2[] blastDirections =
@@ -78,66 +70,45 @@ namespace Level
                 new(0, -1)
             };
 
-            var blastRadiusInDirections = blastDirections
-                .Select(v =>
+            var blastLines = blastDirections
+                .Select(direction =>
                 {
                     return Enumerable
                         .Range(1, blastRadius)
-                        .Select(o => bombCoordinate + v * o)
+                        .Select(o => bombCoordinate + direction * o)
+                        .ToArray();
+                })
+                .Append(new[] { bombCoordinate })
+                .ToArray();
+
+            InstantiateBlastEffect(blastLines, blastRadius, bombCoordinate, bombItem);
+
+            var entitiesToKill = blastLines
+                .SelectMany(blastLine =>
+                {
+                    return blastLine
                         .TakeWhile(c =>
                         {
                             if (!LevelModel.IsCoordinateInField(c))
                                 return false;
 
-                            return LevelModel[c].TileLoad == null;
+                            var tileLoad = LevelModel[c].TileLoad;
+                            return tileLoad is not (HardBlock or SoftBlock);
                         })
-                        .Count();
-                });
-
-            effectController.Construct(blastRadius, blastRadiusInDirections);
-
-            var effectAnimator = go.GetComponent<EffectAnimator>();
-            Assert.IsNotNull(effectAnimator);
-
-            effectAnimator.OnAnimationStateEnter += state =>
-            {
-                if (state == AnimatorState.Finish)
-                    go.SetActive(false);
-            };
-
-            var coordinates = blastDirections
-                .SelectMany(v =>
-                {
-                    return Enumerable
-                        .Range(1, blastRadius)
-                        .Select(o => bombCoordinate + v * o);
-                })
-                .Append(bombCoordinate);
-
-            var entitiesToKill = coordinates
-                .TakeWhile(c =>
-                {
-                    if (!LevelModel.IsCoordinateInField(c))
-                        return false;
-
-                    var tileLoad = LevelModel[c].TileLoad;
-                    return tileLoad is not (HardBlock or SoftBlock);
-                })
-                .SelectMany(c =>
-                {
-                    return _enemies
-                        .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
+                        .SelectMany(c =>
+                        {
+                            return _enemies
+                                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
+                        });
                 });
 
             foreach (var entity in entitiesToKill)
                 entity.Health.ApplyDamage(bombBlastDamage);
 
-            var blocksToDestroy = blastDirections
-                .Select(v =>
+            var blocksToDestroy = blastLines
+                .Select(blastLine =>
                 {
-                    return Enumerable
-                        .Range(1, blastRadius)
-                        .Select(o => bombCoordinate + v * o)
+                    return blastLine
                         .TakeWhile(c =>
                         {
                             if (!LevelModel.IsCoordinateInField(c))
@@ -177,6 +148,42 @@ namespace Level
                         effectGameObject.SetActive(false);
                 };
             }
+        }
+
+        private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, int2 bombCoordinate, BombItem bombItem)
+        {
+            var position = LevelModel.ToWorldPosition(bombCoordinate);
+
+            var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
+            Assert.IsNotNull(go);
+
+            var effectController = go.GetComponent<BlastEffectController>();
+            Assert.IsNotNull(effectController);
+
+            var blastRadiusInDirections = blastLines
+                .Select(blastLine =>
+                {
+                    return blastLine
+                        .TakeWhile(c =>
+                        {
+                            if (!LevelModel.IsCoordinateInField(c))
+                                return false;
+
+                            return LevelModel[c].TileLoad == null;
+                        })
+                        .Count();
+                });
+
+            effectController.Construct(blastRadius, blastRadiusInDirections);
+
+            var effectAnimator = go.GetComponent<EffectAnimator>();
+            Assert.IsNotNull(effectAnimator);
+
+            effectAnimator.OnAnimationStateEnter += state =>
+            {
+                if (state == AnimatorState.Finish)
+                    go.SetActive(false);
+            };
         }
 
         // :TODO: add an item pick up event handler

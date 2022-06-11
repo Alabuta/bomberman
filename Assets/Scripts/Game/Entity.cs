@@ -108,6 +108,9 @@ namespace Game
 
         private void OnHealthDamaged(int damage)
         {
+            if (damage == 0) // :TODO: maybe it's not a good idea?
+                return;
+
             if (Health.Current < 1)
                 Die();
 
