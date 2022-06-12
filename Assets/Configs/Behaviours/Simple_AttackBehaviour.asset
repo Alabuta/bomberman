@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 200e503299524d6c99f5749bf54d0f82, type: 3}
   m_Name: Simple_AttackBehaviour
   m_EditorClassIdentifier: 
-  AttackThreshold: 0.001
-  DamageValue: 1
+  DamageValue: 0

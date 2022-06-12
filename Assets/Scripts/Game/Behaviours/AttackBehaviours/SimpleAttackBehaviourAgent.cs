@@ -13,7 +13,7 @@ namespace Game.Behaviours.AttackBehaviours
 
         public SimpleAttackBehaviourAgent(SimpleAttackBehaviourConfig config, IEntity entity)
         {
-            _damageValue = config.DamageValue;
+            _damageValue = config.DamageValue; // :TODO: get damage value from actual entity
 
             _overlappedHeroes = Array.Empty<Hero.Hero>();
         }

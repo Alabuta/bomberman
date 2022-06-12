@@ -56,32 +56,27 @@ namespace Level
                 return;
 
             var bombCoordinate = LevelModel.ToTileCoordinate(bombItem.Controller.WorldPosition);
+
             LevelModel.RemoveItem(bombCoordinate);
             bombItem.Controller.DestroyItem();
 
-            const int blastRadius = 5;
-            const int bombBlastDamage = 1;
+            var bombBlastDamage = player.Hero.BombBlastDamage;
+            var bombBlastRadius = player.Hero.BombBlastRadius;
 
-            int2[] blastDirections =
-            {
-                new(1, 0),
-                new(-1, 0),
-                new(0, 1),
-                new(0, -1)
-            };
+            var blastDirections = player.Hero.BombBlastDirections;
 
             var blastLines = blastDirections
                 .Select(direction =>
                 {
                     return Enumerable
-                        .Range(1, blastRadius)
+                        .Range(1, bombBlastRadius)
                         .Select(o => bombCoordinate + direction * o)
                         .ToArray();
                 })
                 .Append(new[] { bombCoordinate })
                 .ToArray();
 
-            InstantiateBlastEffect(blastLines, blastRadius, bombCoordinate, bombItem);
+            InstantiateBlastEffect(blastLines, bombBlastRadius, bombCoordinate, bombItem);
 
             var entitiesToKill = blastLines
                 .SelectMany(blastLine =>

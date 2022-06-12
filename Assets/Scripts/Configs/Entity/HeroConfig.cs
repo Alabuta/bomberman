@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace Configs.Entity
@@ -9,5 +10,15 @@ namespace Configs.Entity
         public AssetReferenceSprite Icon;
 
         public BombConfig BombConfig;
+
+        public int BombBlastDamage = 1;
+        public int BombBlastRadius = 1;
+
+        public int2[] BombBlastDirections = {
+            new(1, 0),
+            new(-1, 0),
+            new(0, 1),
+            new(0, -1)
+        };
     }
 }
