@@ -78,28 +78,13 @@ namespace Level
 
             InstantiateBlastEffect(blastLines, bombBlastRadius, bombCoordinate, bombItem);
 
-            var entitiesToKill = blastLines
-                .SelectMany(blastLine =>
-                {
-                    return blastLine
-                        .TakeWhile(c =>
-                        {
-                            if (!LevelModel.IsCoordinateInField(c))
-                                return false;
+            ApplyDamageToEntities(blastLines, bombBlastDamage);
 
-                            var tileLoad = LevelModel[c].TileLoad;
-                            return tileLoad is not (HardBlock or SoftBlock);
-                        })
-                        .SelectMany(c =>
-                        {
-                            return _enemies
-                                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
-                        });
-                });
+            ApplyDamageToBlocks(blastLines);
+        }
 
-            foreach (var entity in entitiesToKill)
-                entity.Health.ApplyDamage(bombBlastDamage);
-
+        private void ApplyDamageToBlocks(int2[][] blastLines)
+        {
             var blocksToDestroy = blastLines
                 .Select(blastLine =>
                 {
@@ -134,15 +119,40 @@ namespace Level
                 var effectGameObject = _gameFactory.InstantiatePrefab(destroyEffectPrefab, fix2.ToXY(effectPosition));
                 Assert.IsNotNull(effectGameObject);
 
-                var effectAnimator2 = effectGameObject.GetComponent<EffectAnimator>();
-                Assert.IsNotNull(effectAnimator2);
+                var effectAnimator = effectGameObject.GetComponent<EffectAnimator>();
+                Assert.IsNotNull(effectAnimator);
 
-                effectAnimator2.OnAnimationStateEnter += state =>
+                effectAnimator.OnAnimationStateEnter += state =>
                 {
                     if (state == AnimatorState.Finish)
                         effectGameObject.SetActive(false);
                 };
             }
+        }
+
+        private void ApplyDamageToEntities(int2[][] blastLines, int bombBlastDamage)
+        {
+            var entitiesToKill = blastLines
+                .SelectMany(blastLine =>
+                {
+                    return blastLine
+                        .TakeWhile(c =>
+                        {
+                            if (!LevelModel.IsCoordinateInField(c))
+                                return false;
+
+                            var tileLoad = LevelModel[c].TileLoad;
+                            return tileLoad is not (HardBlock or SoftBlock);
+                        })
+                        .SelectMany(c =>
+                        {
+                            return _enemies
+                                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
+                        });
+                });
+
+            foreach (var entity in entitiesToKill)
+                entity.Health.ApplyDamage(bombBlastDamage);
         }
 
         private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, int2 bombCoordinate, BombItem bombItem)
