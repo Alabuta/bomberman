@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using Game.Behaviours;
 using Game.Colliders;
 using Math.FixedPointMath;
+using Unity.Mathematics;
 using UnityEngine;
 using Component = Game.Components.Component;
 
@@ -155,6 +157,20 @@ namespace Level
                 foreach (var behaviourAgent in behaviourAgents)
                     behaviourAgent.Update(gameContext, entity, _fixedDeltaTime);
             }
+        }
+
+        private static IEnumerable<int2[]> GetBombBlastTileLines(int2[] blastDirections, int blastRadius,
+            int2 blastCoordinate)
+        {
+            return blastDirections
+                .Select(blastDirection =>
+                {
+                    return Enumerable
+                        .Range(1, blastRadius)
+                        .Select(offset => blastCoordinate + blastDirection * offset)
+                        .ToArray();
+                })
+                .Append(new[] { blastCoordinate });
         }
     }
 }

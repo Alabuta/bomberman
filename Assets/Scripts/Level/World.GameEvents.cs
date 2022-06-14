@@ -6,7 +6,6 @@ using Input;
 using Items;
 using Math.FixedPointMath;
 using Unity.Mathematics;
-using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Level
@@ -64,19 +63,10 @@ namespace Level
             var bombBlastRadius = player.Hero.BombBlastRadius;
 
             var blastDirections = player.Hero.BombBlastDirections;
+            var blastLines = GetBombBlastTileLines(blastDirections, bombBlastRadius, bombCoordinate).ToArray();
 
-            var blastLines = blastDirections
-                .Select(direction =>
-                {
-                    return Enumerable
-                        .Range(1, bombBlastRadius)
-                        .Select(o => bombCoordinate + direction * o)
-                        .ToArray();
-                })
-                .Append(new[] { bombCoordinate })
-                .ToArray();
-
-            InstantiateBlastEffect(blastLines, bombBlastRadius, bombCoordinate, bombItem);
+            var bombPosition = LevelModel.ToWorldPosition(bombCoordinate);
+            InstantiateBlastEffect(blastLines, bombBlastRadius, bombPosition, bombItem);
 
             ApplyDamageToEntities(blastLines, bombBlastDamage);
 
@@ -155,10 +145,8 @@ namespace Level
                 entity.Health.ApplyDamage(bombBlastDamage);
         }
 
-        private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, int2 bombCoordinate, BombItem bombItem)
+        private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, fix2 position, BombItem bombItem)
         {
-            var position = LevelModel.ToWorldPosition(bombCoordinate);
-
             var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
             Assert.IsNotNull(go);
 
