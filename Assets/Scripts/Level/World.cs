@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Configs.Game;
 using Configs.Singletons;
 using Data;
@@ -80,6 +81,12 @@ namespace Level
             _playerInputs.Add(playerInput, player);
 
             playerInput.OnInputActionEvent += OnPlayerInputAction; // :TODO: unsubscribe when player is dead
+        }
+
+        public IEnumerable<Enemy> GetEnemiesByCoordinate(int2 coordinate)
+        {
+            return _enemies
+                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == coordinate));
         }
     }
 }

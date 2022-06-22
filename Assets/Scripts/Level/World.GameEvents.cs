@@ -122,7 +122,7 @@ namespace Level
 
         private void ApplyDamageToEntities(int2[][] blastLines, int bombBlastDamage)
         {
-            var entitiesToKill = blastLines
+            var entitiesToBeDamaged = blastLines
                 .SelectMany(blastLine =>
                 {
                     return blastLine
@@ -134,14 +134,10 @@ namespace Level
                             var tileLoad = LevelModel[c].TileLoad;
                             return tileLoad is not (HardBlock or SoftBlock);
                         })
-                        .SelectMany(c =>
-                        {
-                            return _enemies
-                                .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == c));
-                        });
+                        .SelectMany(GetEnemiesByCoordinate);
                 });
 
-            foreach (var entity in entitiesToKill)
+            foreach (var entity in entitiesToBeDamaged)
                 entity.Health.ApplyDamage(bombBlastDamage);
         }
 
