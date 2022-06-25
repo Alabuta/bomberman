@@ -1,5 +1,23 @@
 {
   "dependencies": {
+    "com.leopotam.ecs": {
+      "version": "file:../ThirdParty/ecs-master",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.leopotam.ecs-ui": {
+      "version": "file:../ThirdParty/ecs-ui-master",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.leopotam.ecs-unityintegration": {
+      "version": "file:../ThirdParty/ecs-unityintegration-master",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "7.0.6",
       "depth": 0,
@@ -56,7 +74,7 @@
       "dependencies": {}
     },
     "com.unity.2d.spriteshape": {
-      "version": "7.0.4",
+      "version": "7.0.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {
