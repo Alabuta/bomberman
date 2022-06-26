@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using UnityEngine.Assertions;
 
 namespace Math
 {
@@ -14,25 +13,22 @@ namespace Math
         private const uint XxhPrime32_5 = 374761393U;
         // ReSharper restore InconsistentNaming
 
-        public static unsafe uint ComputeHash(uint seed, int[] data)
+        public static uint ComputeHash(uint seed, params int[] input)
         {
-            Assert.IsNotNull(data);
-
-            fixed ( int* pData = &data[0] )
-            {
-                return __inline__XXH32(seed, pData, data.Length);
-            }
+            return __inline__XXH32(seed, input);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe uint __inline__XXH32(uint seed, int* input, int len)
+        private static uint __inline__XXH32(uint seed, params int[] input)
         {
             uint h32;
 
+            var index = 0;
+            var len = input.Length;
+
             if (len >= 4)
             {
-                var end = input + len;
-                var limit = end - 3;
+                var limit = len - 3;
 
                 var v1 = seed + XxhPrime32_1 + XxhPrime32_2;
                 var v2 = seed + XxhPrime32_2;
@@ -41,18 +37,18 @@ namespace Math
 
                 do
                 {
-                    v1 = XXH32_round(v1, *(uint*) input);
-                    ++input;
+                    v1 = XXH32_round(v1, (uint) input[index]);
+                    ++index;
 
-                    v2 = XXH32_round(v2, *(uint*) input);
-                    ++input;
+                    v2 = XXH32_round(v2, (uint) input[index]);
+                    ++index;
 
-                    v3 = XXH32_round(v3, *(uint*) input);
-                    ++input;
+                    v3 = XXH32_round(v3, (uint) input[index]);
+                    ++index;
 
-                    v4 = XXH32_round(v4, *(uint*) input);
-                    ++input;
-                } while (input < limit);
+                    v4 = XXH32_round(v4, (uint) input[index]);
+                    ++index;
+                } while (index < limit);
 
                 h32 = XXH_left_rotation(v1, 1) + XXH_left_rotation(v2, 7) + XXH_left_rotation(v3, 12) +
                       XXH_left_rotation(v4, 18);
@@ -68,10 +64,10 @@ namespace Math
             len &= 3;
             while (len > 0)
             {
-                h32 += *(uint*) input * XxhPrime32_3;
+                h32 += (uint) input[index] * XxhPrime32_3;
                 h32 = XXH_left_rotation(h32, 17) * XxhPrime32_4;
 
-                ++input;
+                ++index;
                 --len;
             }
 
