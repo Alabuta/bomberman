@@ -19,7 +19,6 @@ using UI;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Random = UnityEngine.Random;
 
 namespace Infrastructure.States
 {
@@ -79,10 +78,8 @@ namespace Infrastructure.States
             var gameModeConfig = levelStage.GameModeConfig;
             var levelStageConfig = levelStage.LevelStageConfig;
 
-            Random.InitState(levelStageConfig.RandomSeed);
-
             Game.World = new World(applicationConfig, _gameFactory, levelStage); // :TODO: move to DI
-            Game.World.GenerateLevelStage(_gameFactory, levelStage);
+            Game.World.GenerateLevelStage(Game.World, _gameFactory, levelStage);
 
             var levelGridModel = Game.World.LevelModel;
 
@@ -194,7 +191,7 @@ namespace Infrastructure.States
 
             foreach (var enemyConfig in enemyConfigs)
             {
-                var index = (int) math.round(Random.value * (floorTiles.Count - 1));
+                var index = world.RandomGenerator.Range(0, floorTiles.Count - 1);
                 var floorTile = floorTiles[index];
                 var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(floorTile.WorldPosition));
                 var go = await task;

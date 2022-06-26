@@ -34,13 +34,14 @@ namespace Game.Behaviours.MovementBehaviours
 
             if (!levelGridModel.IsCoordinateInField(targetTileCoordinate))
                 targetTileCoordinate =
-                    GetRandomNeighborTile(levelGridModel, currentTileCoordinate, entityDirection)?.Coordinate ??
+                    GetRandomNeighborTile(gameContext.World, levelGridModel, currentTileCoordinate, entityDirection)
+                        ?.Coordinate ??
                     currentTileCoordinate;
 
             var targetTile = levelGridModel[targetTileCoordinate];
             targetTile = IsTileCanBeAsMovementTarget(targetTile)
                 ? targetTile
-                : GetRandomNeighborTile(levelGridModel, currentTileCoordinate, entityDirection);
+                : GetRandomNeighborTile(gameContext.World, levelGridModel, currentTileCoordinate, entityDirection);
 
             if (targetTile == null)
             {

@@ -9,7 +9,6 @@ using JetBrains.Annotations;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine.Assertions;
-using Random = UnityEngine.Random;
 
 namespace Level
 {
@@ -47,7 +46,7 @@ namespace Level
         public ILevelTileView this[int index] => _tiles[index];
         public ILevelTileView this[int2 coordinate] => _tiles[GetFlattenTileCoordinate(coordinate)];
 
-        public LevelModel(LevelConfig levelConfig, LevelStageConfig levelStageConfig)
+        public LevelModel(World world, LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
             _tileSizeWorldUnits = (fix) levelConfig.TileSizeWorldUnits;
 
@@ -77,7 +76,8 @@ namespace Level
                     .Select(i => Random.Range(i * softBlocksPerPowerUpItem, (i + 1) * softBlocksPerPowerUpItem))
             );*/
 
-            _tiles = GenerateLevelGrid(levelConfig, spawnTilesIndices, totalTilesCount, floorTilesCount, softBlocksCount);
+            _tiles = GenerateLevelGrid(world, levelConfig, spawnTilesIndices, totalTilesCount, floorTilesCount,
+                softBlocksCount);
         }
 
         public void ClearTile(int2 coordinate)
@@ -119,7 +119,8 @@ namespace Level
             );
         }
 
-        private LevelTile[] GenerateLevelGrid(LevelConfig levelConfig, ICollection<int> spawnTilesIndices, int totalTilesCount,
+        private LevelTile[] GenerateLevelGrid(World world, LevelConfig levelConfig, ICollection<int> spawnTilesIndices,
+            int totalTilesCount,
             int floorTilesCount, int softBlocksCount)
         {
             var tileTypeCount = math.int2(floorTilesCount, softBlocksCount);
@@ -150,9 +151,10 @@ namespace Level
 
                         var range = (int2) (tileTypeCount == int2.zero);
 
-                        var softBlockOdds = (int) (tileTypeCount.y * 100.0f / (tileTypeCount.x + tileTypeCount.y));
+                        var softBlockOdds = (float) tileTypeCount.y / (tileTypeCount.x + tileTypeCount.y);
 
-                        var typeIndex = Convert.ToInt32(Random.Range(0, 100) < softBlockOdds);
+                        var rndNumber = world.RandomGenerator.Range(0, 99, levelConfig.Index, index);
+                        var typeIndex = Convert.ToInt32(rndNumber * 0.01f < softBlockOdds);
                         typeIndex = math.clamp(typeIndex, range.x, 2 - range.y);
 
                         var tileType = typeIndex == 0 ? LevelTileType.FloorTile : LevelTileType.SoftBlock;

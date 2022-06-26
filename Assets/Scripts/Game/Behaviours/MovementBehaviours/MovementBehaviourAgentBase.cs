@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
-using Random = UnityEngine.Random;
 
 namespace Game.Behaviours.MovementBehaviours
 {
@@ -33,7 +32,7 @@ namespace Game.Behaviours.MovementBehaviours
         }
 
         [CanBeNull]
-        protected ILevelTileView GetRandomNeighborTile(LevelModel levelModel, int2 tileCoordinate,
+        protected ILevelTileView GetRandomNeighborTile(World world, LevelModel levelModel, int2 tileCoordinate,
             int2 entityDirection)
         {
             var tileCoordinates = MovementDirections
@@ -59,7 +58,7 @@ namespace Game.Behaviours.MovementBehaviours
                     .ToArray();
             }
 
-            var index = (int) math.round(Random.value * (tileCoordinates.Length - 1));
+            var index = world.RandomGenerator.Range(0, tileCoordinates.Length - 1);
             return tileCoordinates[index];
         }
 

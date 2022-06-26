@@ -16,12 +16,13 @@ namespace Level
     {
         private readonly Dictionary<int2, GameObject> _blocks = new();
 
-        public void GenerateLevelStage(IGameFactory gameFactory, LevelStage levelStage) // :TODO: get IGameFactory from DI
+        public void GenerateLevelStage(World world, IGameFactory gameFactory,
+            LevelStage levelStage) // :TODO: get IGameFactory from DI
         {
             var levelConfig = levelStage.LevelConfig;
             var levelStageConfig = levelStage.LevelStageConfig;
 
-            LevelModel = new LevelModel(levelConfig, levelStageConfig);
+            LevelModel = new LevelModel(world, levelConfig, levelStageConfig);
 
             var spawnBlocksTask = SpawnBlocks(levelConfig, LevelModel, gameFactory);
             var spawnWallsTask = SpawnWalls(gameFactory, levelConfig, LevelModel);

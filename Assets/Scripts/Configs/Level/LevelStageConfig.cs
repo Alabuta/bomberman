@@ -10,7 +10,7 @@ namespace Configs.Level
         [Header("General Parameters")]
         public int Index;
 
-        public int RandomSeed;
+        public uint RandomSeed;
 
         public int LevelStageTimer = 4 * 60;
 

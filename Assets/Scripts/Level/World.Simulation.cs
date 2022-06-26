@@ -41,7 +41,7 @@ namespace Level
         public void UpdateWorldModel()
         {
             var heroes = Players.Values.Select(p => p.Hero).ToArray();
-            var gameContext = new GameContext(LevelModel, heroes);
+            var gameContext = new GameContext(this, LevelModel, heroes);
 
             var deltaTime = (fix) Time.fixedDeltaTime + _timeRemainder;
 

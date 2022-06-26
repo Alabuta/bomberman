@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Core.Attributes;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Audio
 {
@@ -26,7 +25,7 @@ namespace Audio
             if (!AudioClips.Any())
                 return;
 
-            source.clip = AudioClips[Random.Range(0, AudioClips.Length)];
+            source.clip = AudioClips[Random.Range(0, AudioClips.Length)]; // :TODO: replace by RandomGenerator
             source.volume = Volume;
             source.pitch = Pitch;
 

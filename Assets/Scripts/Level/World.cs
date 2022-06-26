@@ -8,6 +8,7 @@ using Game.Behaviours;
 using Game.Enemies;
 using Infrastructure.Factory;
 using Input;
+using Math;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 
@@ -27,6 +28,8 @@ namespace Level
 
         private readonly double _stageTimer;
 
+        public RandomGenerator RandomGenerator { get; }
+
         public LevelModel LevelModel { get; private set; }
 
         public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
@@ -41,6 +44,8 @@ namespace Level
 
             _gameFactory = gameFactory;
             _stageTimer = levelStage.LevelStageConfig.LevelStageTimer;
+
+            RandomGenerator = new RandomGenerator(levelStage.RandomSeed);
         }
 
         public void AddPlayer(PlayerTagConfig playerTagConfig, IPlayer player)

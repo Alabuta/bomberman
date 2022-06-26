@@ -2,7 +2,6 @@ using System.Linq;
 using Configs.Behaviours;
 using Math.FixedPointMath;
 using Unity.Mathematics;
-using Random = UnityEngine.Random;
 
 namespace Game.Behaviours.MovementBehaviours
 {
@@ -38,8 +37,8 @@ namespace Game.Behaviours.MovementBehaviours
 
             if (--_directionChangesCount < 1)
             {
-                var range = _changeFrequencyUpperBound - _changeFrequencyLowerBound;
-                _directionChangesCount = (int) math.round(Random.value * range) + _changeFrequencyLowerBound;
+                _directionChangesCount = gameContext.World.RandomGenerator.Range(_changeFrequencyLowerBound,
+                    _changeFrequencyUpperBound) + _changeFrequencyLowerBound;
 
                 var neighborTiles = MovementDirections
                     .Select(d => currentTileCoordinate + d)
@@ -56,7 +55,7 @@ namespace Game.Behaviours.MovementBehaviours
                     return;
                 }
 
-                var index = (int) math.round(Random.value * (neighborTiles.Length - 1));
+                var index = gameContext.World.RandomGenerator.Range(0, neighborTiles.Length - 1);
                 targetTileCoordinate = neighborTiles[index].Coordinate;
 
                 entity.Direction = targetTileCoordinate - currentTileCoordinate;
@@ -70,7 +69,8 @@ namespace Game.Behaviours.MovementBehaviours
 
                 if (!levelGridModel.IsCoordinateInField(targetTileCoordinate))
                     targetTileCoordinate =
-                        GetRandomNeighborTile(levelGridModel, currentTileCoordinate, entity.Direction)?.Coordinate ??
+                        GetRandomNeighborTile(gameContext.World, levelGridModel, currentTileCoordinate, entity.Direction)
+                            ?.Coordinate ??
                         currentTileCoordinate;
             }
 
@@ -79,7 +79,7 @@ namespace Game.Behaviours.MovementBehaviours
             var targetTile = levelGridModel[targetTileCoordinate];
             targetTile = IsTileCanBeAsMovementTarget(targetTile)
                 ? targetTile
-                : GetRandomNeighborTile(levelGridModel, currentTileCoordinate, entity.Direction);
+                : GetRandomNeighborTile(gameContext.World, levelGridModel, currentTileCoordinate, entity.Direction);
 
             if (targetTile == null)
             {

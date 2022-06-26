@@ -19,12 +19,14 @@ namespace Game.Behaviours
 
     public class GameContext
     {
+        public World World { get; }
         public LevelModel LevelModel { get; }
 
         public IReadOnlyCollection<Hero.Hero> Heroes { get; }
 
-        public GameContext(LevelModel levelModel, IReadOnlyCollection<Hero.Hero> heroes)
+        public GameContext(World world, LevelModel levelModel, IReadOnlyCollection<Hero.Hero> heroes)
         {
+            World = world;
             LevelModel = levelModel;
             Heroes = heroes;
         }

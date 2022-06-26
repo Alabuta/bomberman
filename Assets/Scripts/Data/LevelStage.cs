@@ -12,11 +12,14 @@ namespace Data
         public LevelConfig LevelConfig;
         public LevelStageConfig LevelStageConfig;
 
+        public uint RandomSeed { get; }
+
         public LevelStage(GameModeConfig gameModeConfig, LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
             GameModeConfig = gameModeConfig;
             LevelConfig = levelConfig;
             LevelStageConfig = levelStageConfig;
+            RandomSeed = levelStageConfig.RandomSeed;
         }
     }
 }
