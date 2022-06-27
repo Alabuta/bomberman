@@ -37,17 +37,10 @@ namespace Math
 
                 do
                 {
-                    v1 = XXH32_round(v1, (uint) input[index]);
-                    ++index;
-
-                    v2 = XXH32_round(v2, (uint) input[index]);
-                    ++index;
-
-                    v3 = XXH32_round(v3, (uint) input[index]);
-                    ++index;
-
-                    v4 = XXH32_round(v4, (uint) input[index]);
-                    ++index;
+                    v1 = XXH32_round(v1, (uint) input[index++]);
+                    v2 = XXH32_round(v2, (uint) input[index++]);
+                    v3 = XXH32_round(v3, (uint) input[index++]);
+                    v4 = XXH32_round(v4, (uint) input[index++]);
                 } while (index < limit);
 
                 h32 = XXH_left_rotation(v1, 1) + XXH_left_rotation(v2, 7) + XXH_left_rotation(v3, 12) +

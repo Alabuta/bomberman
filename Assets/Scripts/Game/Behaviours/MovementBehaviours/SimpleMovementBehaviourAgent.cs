@@ -11,9 +11,9 @@ namespace Game.Behaviours.MovementBehaviours
         {
         }
 
-        public override void Update(GameContext gameContext, IEntity entity, fix deltaTime)
+        public override void Update(GameContext2 gameContext2, IEntity entity, fix deltaTime)
         {
-            var levelGridModel = gameContext.LevelModel;
+            var levelGridModel = gameContext2.LevelModel;
 
             var path = entity.Speed * deltaTime;
             var worldPosition = entity.WorldPosition + (fix2) entity.Direction * path;
@@ -34,14 +34,14 @@ namespace Game.Behaviours.MovementBehaviours
 
             if (!levelGridModel.IsCoordinateInField(targetTileCoordinate))
                 targetTileCoordinate =
-                    GetRandomNeighborTile(gameContext.World, levelGridModel, currentTileCoordinate, entityDirection)
+                    GetRandomNeighborTile(gameContext2.World, levelGridModel, currentTileCoordinate, entityDirection)
                         ?.Coordinate ??
                     currentTileCoordinate;
 
             var targetTile = levelGridModel[targetTileCoordinate];
             targetTile = IsTileCanBeAsMovementTarget(targetTile)
                 ? targetTile
-                : GetRandomNeighborTile(gameContext.World, levelGridModel, currentTileCoordinate, entityDirection);
+                : GetRandomNeighborTile(gameContext2.World, levelGridModel, currentTileCoordinate, entityDirection);
 
             if (targetTile == null)
             {

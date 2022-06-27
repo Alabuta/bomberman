@@ -19,9 +19,9 @@ namespace Game.Behaviours.MovementBehaviours
             _changeFrequencyUpperBound = config.DirectionChangeFrequency.Max;
         }
 
-        public override void Update(GameContext gameContext, IEntity entity, fix deltaTime)
+        public override void Update(GameContext2 gameContext2, IEntity entity, fix deltaTime)
         {
-            var levelGridModel = gameContext.LevelModel;
+            var levelGridModel = gameContext2.LevelModel;
 
             var path = entity.Speed * deltaTime;
             var worldPosition = entity.WorldPosition + (fix2) entity.Direction * path;
@@ -37,7 +37,7 @@ namespace Game.Behaviours.MovementBehaviours
 
             if (--_directionChangesCount < 1)
             {
-                _directionChangesCount = gameContext.World.RandomGenerator.Range(_changeFrequencyLowerBound,
+                _directionChangesCount = gameContext2.World.RandomGenerator.Range(_changeFrequencyLowerBound,
                     _changeFrequencyUpperBound) + _changeFrequencyLowerBound;
 
                 var neighborTiles = MovementDirections
@@ -55,7 +55,7 @@ namespace Game.Behaviours.MovementBehaviours
                     return;
                 }
 
-                var index = gameContext.World.RandomGenerator.Range(0, neighborTiles.Length - 1);
+                var index = gameContext2.World.RandomGenerator.Range(0, neighborTiles.Length - 1);
                 targetTileCoordinate = neighborTiles[index].Coordinate;
 
                 entity.Direction = targetTileCoordinate - currentTileCoordinate;
@@ -69,7 +69,7 @@ namespace Game.Behaviours.MovementBehaviours
 
                 if (!levelGridModel.IsCoordinateInField(targetTileCoordinate))
                     targetTileCoordinate =
-                        GetRandomNeighborTile(gameContext.World, levelGridModel, currentTileCoordinate, entity.Direction)
+                        GetRandomNeighborTile(gameContext2.World, levelGridModel, currentTileCoordinate, entity.Direction)
                             ?.Coordinate ??
                         currentTileCoordinate;
             }
@@ -79,7 +79,7 @@ namespace Game.Behaviours.MovementBehaviours
             var targetTile = levelGridModel[targetTileCoordinate];
             targetTile = IsTileCanBeAsMovementTarget(targetTile)
                 ? targetTile
-                : GetRandomNeighborTile(gameContext.World, levelGridModel, currentTileCoordinate, entity.Direction);
+                : GetRandomNeighborTile(gameContext2.World, levelGridModel, currentTileCoordinate, entity.Direction);
 
             if (targetTile == null)
             {

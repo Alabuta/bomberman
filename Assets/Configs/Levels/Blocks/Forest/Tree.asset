@@ -11,11 +11,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93829bed80f74ab7bb88d3e5c32dfbc1, type: 3}
   m_Name: Tree
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   Layer: 11
   Prefab:
     m_AssetGUID: d0fd97865f63d25439c18be72b152fd4
-    m_SubObjectName: 
-    m_SubObjectType: 
+    m_SubObjectName:
+    m_SubObjectType:
     m_EditorAssetChanged: 0
   Collider: {fileID: 11400000, guid: 992c630ce5e01774d8e7a1a43957a2ec, type: 2}
+  DestroyEffectPrefab: {fileID: 8352911379006920328, guid: 90c3a535410bf38489cf1d80cbea13ad, type: 3}

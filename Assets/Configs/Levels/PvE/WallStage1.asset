@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WallStage1
   m_EditorClassIdentifier: 
   Index: 0
-  RandomSeed: 270888
+  RandomSeed: 4727
   LevelStageTimer: 240
   ColumnsNumber: 13
   RowsNumber: 11

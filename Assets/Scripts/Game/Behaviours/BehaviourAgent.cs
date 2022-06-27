@@ -14,17 +14,17 @@ namespace Game.Behaviours
             Config = config;
         }*/
 
-        public abstract void Update(GameContext gameContext, IEntity entity, fix deltaTime);
+        public abstract void Update(GameContext2 gameContext2, IEntity entity, fix deltaTime);
     }
 
-    public class GameContext
+    public class GameContext2
     {
         public World World { get; }
         public LevelModel LevelModel { get; }
 
         public IReadOnlyCollection<Hero.Hero> Heroes { get; }
 
-        public GameContext(World world, LevelModel levelModel, IReadOnlyCollection<Hero.Hero> heroes)
+        public GameContext2(World world, LevelModel levelModel, IReadOnlyCollection<Hero.Hero> heroes)
         {
             World = world;
             LevelModel = levelModel;

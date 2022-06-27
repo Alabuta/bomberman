@@ -41,7 +41,7 @@ namespace Level
         public void UpdateWorldModel()
         {
             var heroes = Players.Values.Select(p => p.Hero).ToArray();
-            var gameContext = new GameContext(this, LevelModel, heroes);
+            var gameContext = new GameContext2(this, LevelModel, heroes);
 
             var deltaTime = (fix) Time.fixedDeltaTime + _timeRemainder;
 
@@ -150,7 +150,7 @@ namespace Level
             };
         }
 
-        private void UpdateBehaviourAgents(GameContext gameContext)
+        private void UpdateBehaviourAgents(GameContext2 gameContext)
         {
             foreach (var (entity, behaviourAgents) in _behaviourAgents)
             {
