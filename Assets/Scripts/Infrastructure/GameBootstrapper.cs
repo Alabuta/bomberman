@@ -20,12 +20,12 @@ namespace Infrastructure
 
         private void Update()
         {
-            _game.GameStateMachine.Update();
+            _game.Update();
         }
 
         private void FixedUpdate()
         {
-            _game.GameStateMachine.FixedUpdate();
+            _game.FixedUpdate();
         }
     }
 }

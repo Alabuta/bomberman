@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using App;
 using Infrastructure.Factory;
 using Infrastructure.Services;
 using Infrastructure.Services.Input;
@@ -19,12 +18,12 @@ namespace Infrastructure.States
         public Action UpdateCallback;
         public Action FixedUpdateCallback;
 
-        public GameStateMachine(SceneLoader sceneLoader, ServiceLocator serviceLocator,
+        public GameStateMachine(ServiceLocator serviceLocator,
             LoadingScreenController loadingScreenController)
         {
             _states = new Dictionary<Type, IExitableState>
             {
-                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator),
+                [typeof(BootstrapState)] = new BootstrapState(this, serviceLocator),
                 [typeof(LoadLevelState)] = new LoadLevelState(this, serviceLocator.Single<IGameFactory>(),
                     serviceLocator.Single<IInputService>(), serviceLocator.Single<IPersistentProgressService>(),
                     loadingScreenController),

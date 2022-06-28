@@ -1,4 +1,4 @@
-using App;
+using Game.Behaviours.MovementBehaviours;
 using Infrastructure.Services;
 using Infrastructure.States;
 using Level;
@@ -9,7 +9,6 @@ namespace Infrastructure
     public class Game
     {
         public static World World;
-
         public static GameStatsView GameStatsView;
 
         public readonly GameStateMachine GameStateMachine;
@@ -18,6 +17,16 @@ namespace Infrastructure
         {
             GameStateMachine = new GameStateMachine(new SceneLoader(coroutineRunner), ServiceLocator.Container,
                 loadingScreenController);
+        }
+
+        public void Update()
+        {
+            GameStateMachine.Update();
+        }
+
+        public void FixedUpdate()
+        {
+            GameStateMachine.FixedUpdate();
         }
     }
 }
