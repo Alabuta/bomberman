@@ -5,9 +5,11 @@ using Configs.Singletons;
 using Data;
 using Game;
 using Game.Behaviours;
+using Game.Behaviours.MovementBehaviours;
 using Game.Enemies;
 using Infrastructure.Factory;
 using Input;
+using Leopotam.Ecs;
 using Math;
 using Math.FixedPointMath;
 using Unity.Mathematics;
@@ -46,6 +48,25 @@ namespace Level
             _stageTimer = levelStage.LevelStageConfig.LevelStageTimer;
 
             RandomGenerator = new RandomGenerator(levelStage.RandomSeed);
+
+            _ecsWorld = new EcsWorld();
+            _ecsSystems = new EcsSystems(_ecsWorld);
+            _ecsFixedSystems = new EcsSystems(_ecsWorld);
+
+#if UNITY_EDITOR
+            Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create(_ecsWorld);
+            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_ecsSystems);
+            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_ecsFixedSystems);
+#endif
+
+            _ecsSystems
+                .Init();
+
+            _ecsFixedSystems
+                .Add(new MovementBehaviourSystem())
+                .Add(new AdvancedMovementBehaviourSystem())
+                .Inject(this)
+                .Init();
         }
 
         public void AddPlayer(PlayerTagConfig playerTagConfig, IPlayer player)

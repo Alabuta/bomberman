@@ -1,4 +1,3 @@
-using Game.Behaviours.MovementBehaviours;
 using Infrastructure.Services;
 using Infrastructure.States;
 using Level;
@@ -15,8 +14,7 @@ namespace Infrastructure
 
         public Game(ICoroutineRunner coroutineRunner, LoadingScreenController loadingScreenController)
         {
-            GameStateMachine = new GameStateMachine(new SceneLoader(coroutineRunner), ServiceLocator.Container,
-                loadingScreenController);
+            GameStateMachine = new GameStateMachine(ServiceLocator.Container, loadingScreenController);
         }
 
         public void Update()

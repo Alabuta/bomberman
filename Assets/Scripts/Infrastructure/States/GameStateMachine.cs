@@ -18,8 +18,7 @@ namespace Infrastructure.States
         public Action UpdateCallback;
         public Action FixedUpdateCallback;
 
-        public GameStateMachine(ServiceLocator serviceLocator,
-            LoadingScreenController loadingScreenController)
+        public GameStateMachine(ServiceLocator serviceLocator, LoadingScreenController loadingScreenController)
         {
             _states = new Dictionary<Type, IExitableState>
             {

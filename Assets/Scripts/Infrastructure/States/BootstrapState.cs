@@ -15,15 +15,12 @@ namespace Infrastructure.States
     {
         private const string InitialSceneName = "BootstrapScene";
         private readonly GameStateMachine _gameStateMachine;
-        private readonly SceneLoader _sceneLoader;
         private readonly ServiceLocator _serviceLocator;
 
-        public BootstrapState(GameStateMachine gameStateMachine, SceneLoader sceneLoader, ServiceLocator serviceLocator)
+        public BootstrapState(GameStateMachine gameStateMachine, ServiceLocator serviceLocator)
         {
             _serviceLocator = serviceLocator;
-
             _gameStateMachine = gameStateMachine;
-            _sceneLoader = sceneLoader;
 
             RegisterServices();
         }

@@ -11,6 +11,10 @@ namespace Level
 {
     public partial class World
     {
+        private readonly EcsWorld _ecsWorld;
+        private readonly EcsSystems _ecsSystems;
+        private readonly EcsSystems _ecsFixedSystems;
+
         private readonly int _tickRate;
         private readonly fix _fixedDeltaTime;
 
@@ -31,6 +35,8 @@ namespace Level
 
         public void UpdateWorldView()
         {
+            _ecsSystems.Run();
+
             foreach (var (_, player) in _players)
                 player.Hero.EntityController.WorldPosition = player.Hero.WorldPosition;
 
@@ -40,6 +46,8 @@ namespace Level
 
         public void UpdateWorldModel()
         {
+            _ecsFixedSystems.Run();
+
             var heroes = Players.Values.Select(p => p.Hero).ToArray();
             var gameContext = new GameContext2(this, LevelModel, heroes);
 
