@@ -153,7 +153,7 @@ namespace Level
 
                         var softBlockOdds = (float) tileTypeCount.y / (tileTypeCount.x + tileTypeCount.y);
 
-                        var rndNumber = world.RandomGenerator.Range(0, 99, levelConfig.Index, index);
+                        var rndNumber = world.RandomGenerator.Range(0, 100, levelConfig.Index, index);
                         var typeIndex = Convert.ToInt32(rndNumber * 0.01f < softBlockOdds);
                         typeIndex = math.clamp(typeIndex, range.x, 2 - range.y);
 

@@ -191,7 +191,7 @@ namespace Infrastructure.States
 
             foreach (var enemyConfig in enemyConfigs)
             {
-                var index = world.RandomGenerator.Range(0, floorTiles.Count - 1);
+                var index = world.RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index);
                 var floorTile = floorTiles[index];
                 var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(floorTile.WorldPosition));
                 var go = await task;

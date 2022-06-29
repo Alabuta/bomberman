@@ -11,19 +11,19 @@ namespace Math
             Seed = seed;
         }
 
-        public int Range(int minInclusive, int maxInclusive, params int[] ps)
+        public int Range(int minInclusive, int maxExclusive, params int[] ps)
         {
             var hash = XxHash32.ComputeHash(Seed, ps);
 
-            var range = (uint) (maxInclusive - minInclusive);
-            return (int) (hash * (ulong) range >> 32) + minInclusive;
+            var range = (uint) (maxExclusive - minInclusive);
+            return (int) ((hash * (ulong) range) >> 32) + minInclusive;
         }
 
-        public fix Range(fix minInclusive, fix maxInclusive, params int[] ps)
+        public fix Range(fix minInclusive, fix maxExclusive, params int[] ps)
         {
             var hash = XxHash32.ComputeHash(Seed, ps);
 
-            var range = maxInclusive - minInclusive;
+            var range = maxExclusive - minInclusive;
             return fix.from_raw(hash) * range + minInclusive;
         }
     }

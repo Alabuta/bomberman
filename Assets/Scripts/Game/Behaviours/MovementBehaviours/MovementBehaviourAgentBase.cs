@@ -58,7 +58,7 @@ namespace Game.Behaviours.MovementBehaviours
                     .ToArray();
             }
 
-            var index = world.RandomGenerator.Range(0, tileCoordinates.Length - 1);
+            var index = world.RandomGenerator.Range(0, tileCoordinates.Length, (int) world.Tick);
             return tileCoordinates[index];
         }
 

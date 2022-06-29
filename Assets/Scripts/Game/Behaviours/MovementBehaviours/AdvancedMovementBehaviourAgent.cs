@@ -38,7 +38,7 @@ namespace Game.Behaviours.MovementBehaviours
             if (--_directionChangesCount < 1)
             {
                 _directionChangesCount = gameContext2.World.RandomGenerator.Range(_changeFrequencyLowerBound,
-                    _changeFrequencyUpperBound) + _changeFrequencyLowerBound;
+                    _changeFrequencyUpperBound + 1, (int) gameContext2.World.Tick);
 
                 var neighborTiles = MovementDirections
                     .Select(d => currentTileCoordinate + d)
@@ -55,7 +55,7 @@ namespace Game.Behaviours.MovementBehaviours
                     return;
                 }
 
-                var index = gameContext2.World.RandomGenerator.Range(0, neighborTiles.Length - 1);
+                var index = gameContext2.World.RandomGenerator.Range(0, neighborTiles.Length, (int) gameContext2.World.Tick);
                 targetTileCoordinate = neighborTiles[index].Coordinate;
 
                 entity.Direction = targetTileCoordinate - currentTileCoordinate;
