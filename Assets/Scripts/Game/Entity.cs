@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using Configs.Entity;
+using Game.Enemies;
+using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
@@ -9,6 +11,82 @@ using Component = Game.Components.Component;
 
 namespace Game
 {
+    public struct TransformComponent
+    {
+        public fix2 WorldPosition;
+        public int2 Direction;
+    }
+
+    public struct EnemyComponent
+    {
+        public EnemyConfig Config { get; }
+        public EnemyAnimator Animator;
+        public EnemyController Controller;
+
+        public fix HitRadius { get; }
+        public fix HurtRadius { get; }
+    }
+
+    /*public class EnemyCreateSystem : IEcsInitSystem
+    {
+        private EcsWorld _ecsWorld;
+
+        private IGameFactory _gameFactory;
+        private World _levelWorld;
+        private LevelStageConfig _levelStageConfig;
+
+        public async Task Init()
+        {
+            // var entity = _ecsWorld.NewEntity();
+            await CreateAndSpawnEnemies();
+        }
+
+        private async Task CreateAndSpawnEnemies()
+        {
+            var levelModel = _levelWorld.LevelModel;
+
+            var enemySpawnElements = _levelStageConfig.Enemies;
+            var enemyConfigs = enemySpawnElements
+                .SelectMany(e => Enumerable.Range(0, e.Count).Select(_ => e.EnemyConfig))
+                .ToArray();
+
+            var playersCoordinates = _levelWorld.Players.Values
+                .Select(p => levelModel.ToTileCoordinate(p.Hero.WorldPosition))
+                .ToArray();
+
+            var floorTiles = levelModel.GetTilesByType(LevelTileType.FloorTile)
+                .Where(t => !playersCoordinates.Contains(t.Coordinate))
+                .ToList();
+
+            Assert.IsTrue(enemyConfigs.Length <= floorTiles.Count, "enemies to spawn count greater than the floor tiles count");
+
+            foreach (var enemyConfig in enemyConfigs)
+            {
+                var index = _levelWorld.RandomGenerator.Range(0, floorTiles.Count, _levelStageConfig.Index);
+                var floorTile = floorTiles[index];
+                var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(floorTile.WorldPosition));
+                var go = await task;
+                Assert.IsNotNull(go);
+
+                floorTiles.RemoveAt(index);
+
+                var entityController = go.GetComponent<EnemyController>();
+                Assert.IsNotNull(entityController);
+
+                var enemy = _gameFactory.CreateEnemy(enemyConfig, entityController, _levelWorld.NewEntity());
+                Assert.IsNotNull(enemy);
+
+                _levelWorld.AddEnemy(enemy);
+
+                var behaviourAgents = _gameFactory.CreateBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
+                foreach (var behaviourAgent in behaviourAgents)
+                    _levelWorld.AddBehaviourAgent(enemy, behaviourAgent);
+
+                _gameFactory.AddBehaviourComponents(enemyConfig.BehaviourConfig, enemy, enemy.Id);
+            }
+        }
+    }*/
+
     public abstract class Entity<TConfig> : ITileLoad, IEntity where TConfig : EntityConfig
     {
         public event Action<IEntity> DeathEvent;

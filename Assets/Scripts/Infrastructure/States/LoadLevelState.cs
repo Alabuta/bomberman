@@ -165,7 +165,7 @@ namespace Infrastructure.States
             var heroController = go.GetComponent<HeroController>();
             Assert.IsNotNull(heroController);
 
-            var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController);
+            var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController, Game.World.NewEntity());
             player.AttachHero(hero);
 
             Game.World.AddPlayer(playerConfig.PlayerTagConfig, player);
@@ -202,14 +202,16 @@ namespace Infrastructure.States
                 var entityController = go.GetComponent<EnemyController>();
                 Assert.IsNotNull(entityController);
 
-                var enemy = _gameFactory.CreateEnemy(enemyConfig, entityController);
+                var enemy = _gameFactory.CreateEnemy(enemyConfig, entityController, world.NewEntity());
                 Assert.IsNotNull(enemy);
 
-                Game.World.AddEnemy(enemy);
+                world.AddEnemy(enemy);
 
                 var behaviourAgents = _gameFactory.CreateBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
                 foreach (var behaviourAgent in behaviourAgents)
-                    Game.World.AddBehaviourAgent(enemy, behaviourAgent);
+                    world.AddBehaviourAgent(enemy, behaviourAgent);
+
+                _gameFactory.AddBehaviourComponents(enemyConfig.BehaviourConfig, enemy, enemy.Id);
             }
         }
 
