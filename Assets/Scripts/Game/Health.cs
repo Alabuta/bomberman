@@ -11,6 +11,8 @@ namespace Game
         public Action HealthChangedEvent;
         public Action<int> HealthDamagedEvent;
 
+        public bool IsAlive => Current > 0;
+
         public Health(int health)
         {
             _healthState = new HealthState

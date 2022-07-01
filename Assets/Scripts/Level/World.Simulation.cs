@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Behaviours;
 using Game.Colliders;
+using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
@@ -24,6 +25,8 @@ namespace Level
         private fix _timeRemainder;
 
         public ulong Tick { get; private set; }
+
+        public fix FixedDeltaTime => _fixedDeltaTime;
 
         public void StartSimulation()
         {

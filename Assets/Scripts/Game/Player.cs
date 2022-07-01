@@ -22,7 +22,7 @@ namespace Game
 
         public void ApplyInputAction(World world, PlayerInputAction inputAction)
         {
-            if (Hero is not { IsAlive: true })
+            if (Hero != null && !Hero.Health.IsAlive)
                 return;
 
             OnMove(inputAction.MovementVector);

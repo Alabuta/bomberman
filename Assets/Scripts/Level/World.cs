@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Configs.Game;
+using Configs.Level;
 using Configs.Singletons;
 using Data;
 using Game;
@@ -8,6 +11,7 @@ using Game.Behaviours;
 using Game.Behaviours.MovementBehaviours;
 using Game.Enemies;
 using Infrastructure.Factory;
+using Infrastructure.Services.Input;
 using Input;
 using Leopotam.Ecs;
 using Math;
@@ -69,6 +73,35 @@ namespace Level
                 .Init();
         }
 
+        public async Task InitWorld(IInputService inputService, LevelStage levelStage)
+        {
+            var gameModeConfig = levelStage.GameModeConfig;
+            var levelStageConfig = levelStage.LevelStageConfig;
+
+            GenerateLevelStage(levelStage);
+
+            switch (levelStageConfig)
+            {
+                case LevelStagePvEConfig config when gameModeConfig is GameModePvEConfig gameModePvE:
+                    await CreatePlayersAndSpawnHeroesPvE(gameModePvE, config, inputService);
+                    break;
+
+                case LevelStagePvPConfig config when gameModeConfig is GameModePvPConfig gameModePvP:
+                    CreatePlayersAndSpawnHeroesPvP(gameModePvP, config, inputService);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(levelStageConfig));
+            }
+
+            await CreateAndSpawnEnemies(levelStageConfig);
+        }
+
+        public EcsEntity NewEntity()
+        {
+            return _ecsWorld.NewEntity();
+        }
+
         public void AddPlayer(PlayerTagConfig playerTagConfig, IPlayer player)
         {
             _players.Add(playerTagConfig, player); // :TODO: refactor
@@ -113,6 +146,13 @@ namespace Level
         {
             return _enemies
                 .Where(e => math.all(LevelModel.ToTileCoordinate(e.WorldPosition) == coordinate));
+        }
+
+        public void Destroy()
+        {
+            _ecsFixedSystems.Destroy();
+            _ecsSystems.Destroy();
+            _ecsWorld.Destroy();
         }
     }
 }

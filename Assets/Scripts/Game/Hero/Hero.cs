@@ -37,7 +37,7 @@ namespace Game.Hero
 
         public void UpdatePosition(fix deltaTime)
         {
-            WorldPosition += (fix2)Direction * Speed * deltaTime;
+            WorldPosition += (fix2) Direction * Speed * deltaTime;
         }
     }
 }

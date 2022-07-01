@@ -1,20 +1,14 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using App;
-using Configs;
 using Configs.Game;
-using Configs.Level;
 using Configs.Singletons;
 using Data;
 using Game;
-using Game.Enemies;
-using Game.Hero;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Level;
-using Math.FixedPointMath;
 using UI;
 using Unity.Mathematics;
 using UnityEngine;
@@ -75,33 +69,16 @@ namespace Infrastructure.States
         {
             var applicationConfig = ApplicationConfig.Instance;
 
-            var gameModeConfig = levelStage.GameModeConfig;
-            var levelStageConfig = levelStage.LevelStageConfig;
+            Game.World?.Destroy();
 
-            Game.World = new World(applicationConfig, _gameFactory, levelStage); // :TODO: move to DI
-            Game.World.GenerateLevelStage(Game.World, _gameFactory, levelStage);
+            var gameWorld = new World(applicationConfig, _gameFactory, levelStage); // :TODO: move to DI
+            await gameWorld.InitWorld(_inputService, levelStage);
 
-            var levelGridModel = Game.World.LevelModel;
-
-            switch (levelStageConfig)
-            {
-                case LevelStagePvEConfig config when gameModeConfig is GameModePvEConfig gameModePvE:
-                    await CreatePlayersAndSpawnHeroesPvE(gameModePvE, config, levelGridModel);
-                    break;
-
-                case LevelStagePvPConfig config when gameModeConfig is GameModePvPConfig gameModePvP:
-                    CreatePlayersAndSpawnHeroesPvP(gameModePvP, config, levelGridModel);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(levelStageConfig));
-            }
-
-            await CreateAndSpawnEnemies(levelStageConfig, levelGridModel, Game.World);
-
-            var defaultPlayer = Game.World.Players.Values.FirstOrDefault(); // :TODO: use DefaultPlayerTag
+            var defaultPlayer = gameWorld.Players.Values.FirstOrDefault(); // :TODO: use DefaultPlayerTag
             if (defaultPlayer != null)
-                SetupCamera(levelStage, levelGridModel, defaultPlayer);
+                SetupCamera(levelStage, gameWorld.LevelModel, defaultPlayer);
+
+            Game.World = gameWorld;
         }
 
         private async Task CreateGameStatsPanel(GameModeConfig gameModeConfig)
@@ -126,93 +103,6 @@ namespace Infrastructure.States
         {
             foreach (var progressReader in _gameFactory.ProgressReaders)
                 progressReader.LoadProgress(_progressService.Progress);
-        }
-
-        private async Task CreatePlayersAndSpawnHeroesPvE(GameModePvEConfig gameMode, LevelStagePvEConfig baseConfig,
-            LevelModel levelModel)
-        {
-            await CreatePlayerAndSpawnHero(levelModel, gameMode.PlayerConfig, baseConfig.PlayerSpawnCorner);
-        }
-
-        private void CreatePlayersAndSpawnHeroesPvP(GameModePvPConfig gameMode, LevelStagePvPConfig baseConfig,
-            LevelModel levelModel)
-        {
-            var playerConfigs = gameMode.PlayerConfigs;
-            var spawnCorners = baseConfig.PlayersSpawnCorners;
-            Assert.IsTrue(playerConfigs.Length <= spawnCorners.Length, "players count greater than the level spawn corners");
-
-            var tasks = spawnCorners
-                .Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig))
-                .Select(p => CreatePlayerAndSpawnHero(levelModel, p.playerConfig, p.spawnCorner))
-                .ToArray();
-
-            Task.WhenAll(tasks);
-        }
-
-        private async Task CreatePlayerAndSpawnHero(LevelModel levelModel, PlayerConfig playerConfig, int2 spawnCorner)
-        {
-            var player = _gameFactory.CreatePlayer(playerConfig);
-            Assert.IsNotNull(player);
-
-            var playerInput = _inputService.RegisterPlayerInput(player);
-            Game.World.AttachPlayerInput(player, playerInput);
-
-            var spawnCoordinate = levelModel.GetCornerWorldPosition(spawnCorner);
-            var task = _gameFactory.InstantiatePrefabAsync(playerConfig.HeroConfig.Prefab, fix2.ToXY(spawnCoordinate));
-            var go = await task;
-            Assert.IsNotNull(go);
-
-            var heroController = go.GetComponent<HeroController>();
-            Assert.IsNotNull(heroController);
-
-            var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController, Game.World.NewEntity());
-            player.AttachHero(hero);
-
-            Game.World.AddPlayer(playerConfig.PlayerTagConfig, player);
-        }
-
-        private async Task CreateAndSpawnEnemies(LevelStageConfig levelStageConfig, LevelModel levelModel,
-            World world)
-        {
-            var enemySpawnElements = levelStageConfig.Enemies;
-            var enemyConfigs = enemySpawnElements
-                .SelectMany(e => Enumerable.Range(0, e.Count).Select(_ => e.EnemyConfig))
-                .ToArray();
-
-            var playersCoordinates = world.Players.Values
-                .Select(p => levelModel.ToTileCoordinate(p.Hero.WorldPosition))
-                .ToArray();
-
-            var floorTiles = levelModel.GetTilesByType(LevelTileType.FloorTile)
-                .Where(t => !playersCoordinates.Contains(t.Coordinate))
-                .ToList();
-
-            Assert.IsTrue(enemyConfigs.Length <= floorTiles.Count, "enemies to spawn count greater than the floor tiles count");
-
-            foreach (var enemyConfig in enemyConfigs)
-            {
-                var index = world.RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index);
-                var floorTile = floorTiles[index];
-                var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(floorTile.WorldPosition));
-                var go = await task;
-                Assert.IsNotNull(go);
-
-                floorTiles.RemoveAt(index);
-
-                var entityController = go.GetComponent<EnemyController>();
-                Assert.IsNotNull(entityController);
-
-                var enemy = _gameFactory.CreateEnemy(enemyConfig, entityController, world.NewEntity());
-                Assert.IsNotNull(enemy);
-
-                world.AddEnemy(enemy);
-
-                var behaviourAgents = _gameFactory.CreateBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
-                foreach (var behaviourAgent in behaviourAgents)
-                    world.AddBehaviourAgent(enemy, behaviourAgent);
-
-                _gameFactory.AddBehaviourComponents(enemyConfig.BehaviourConfig, enemy, enemy.Id);
-            }
         }
 
         private static void SetupCamera(LevelStage levelStage, LevelModel levelModel, IPlayer player)
