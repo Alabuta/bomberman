@@ -7,16 +7,12 @@ namespace Game.Behaviours.MovementBehaviours
 {
     public class AdvancedMovementBehaviourAgent : MovementBehaviourAgentBase
     {
-        private readonly int _changeFrequencyLowerBound;
-        private readonly int _changeFrequencyUpperBound;
-
-        private int _directionChangesCount;
+        private readonly fix _directionChangeChance;
 
         public AdvancedMovementBehaviourAgent(AdvancedMovementBehaviourConfig config, IEntity entity)
             : base(config, entity)
         {
-            _changeFrequencyLowerBound = config.DirectionChangeFrequency.Min;
-            _changeFrequencyUpperBound = config.DirectionChangeFrequency.Max;
+            _directionChangeChance = (fix) config.DirectionChangeChance;
         }
 
         public override void Update(GameContext2 gameContext2, IEntity entity, fix deltaTime)
@@ -35,11 +31,9 @@ namespace Game.Behaviours.MovementBehaviours
             var currentTileCoordinate = levelGridModel.ToTileCoordinate(ToWorldPosition);
             int2 targetTileCoordinate;
 
-            if (--_directionChangesCount < 1)
+            var randomValue = gameContext2.World.RandomGenerator.Range(fix.zero, fix.one, (int) gameContext2.World.Tick);
+            if (randomValue < _directionChangeChance)
             {
-                _directionChangesCount = gameContext2.World.RandomGenerator.Range(_changeFrequencyLowerBound,
-                    _changeFrequencyUpperBound + 1, (int) gameContext2.World.Tick);
-
                 var neighborTiles = MovementDirections
                     .Select(d => currentTileCoordinate + d)
                     .Where(levelGridModel.IsCoordinateInField)

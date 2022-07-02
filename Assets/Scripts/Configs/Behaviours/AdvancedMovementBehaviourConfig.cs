@@ -10,8 +10,8 @@ namespace Configs.Behaviours
     [CreateAssetMenu(fileName = "AdvancedMovementBehaviour", menuName = "Configs/Behaviour/Advanced Movement Behaviour")]
     public class AdvancedMovementBehaviourConfig : MovementBehaviourBaseConfig
     {
-        [RangeIntAttribute(1, 10)]
-        public RangeInt DirectionChangeFrequency;
+        [Range(0f, 1f)]
+        public float DirectionChangeChance;
 
         public override IBehaviourAgent Make(IEntity entity) =>
             new AdvancedMovementBehaviourAgent(this, entity);
