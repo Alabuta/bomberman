@@ -10,7 +10,7 @@ namespace Configs.Behaviours
     {
         public int DamageValue = 1;
 
-        public override IBehaviourAgent Make(IEntity entity) =>
+        public IBehaviourAgent Make(IEntity entity) =>
             new SimpleAttackBehaviourAgent(this, entity);
     }
 }

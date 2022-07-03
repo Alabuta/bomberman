@@ -49,7 +49,7 @@ namespace Infrastructure.States
         private async Task OnLoaded(LevelStage levelStage)
         {
             await CreateWorld(levelStage);
-            await CreateGameStatsPanel(levelStage.GameModeConfig);
+            await CreateGameStatsPanel(levelStage.GameModeConfig, Game.World);
 
             InformProgressReaders();
 
@@ -81,12 +81,12 @@ namespace Infrastructure.States
             Game.World = gameWorld;
         }
 
-        private async Task CreateGameStatsPanel(GameModeConfig gameModeConfig)
+        private async Task CreateGameStatsPanel(GameModeConfig gameModeConfig, World world)
         {
             var instantiateTask = _gameFactory.InstantiatePrefabAsync(gameModeConfig.GameStatsViewPrefab, float3.zero);
 
             // :TODO: extend draw logic for variable players count
-            var player = Game.World.Players.Values.FirstOrDefault();
+            var player = world.Players.Values.FirstOrDefault();
             Assert.IsNotNull(player);
 
             var gameStatsObject = await instantiateTask;
@@ -94,7 +94,7 @@ namespace Infrastructure.States
             var gameStatsView = gameStatsObject.GetComponent<GameStatsView>();
             Assert.IsNotNull(gameStatsView);
 
-            await gameStatsView.Construct(_gameFactory, Game.World.StageTimer, player.Hero);
+            await gameStatsView.Construct(_gameFactory, world.StageTimer, player.Hero);
 
             Game.GameStatsView = gameStatsView;
         }

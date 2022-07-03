@@ -43,8 +43,8 @@ namespace Level
             foreach (var (_, player) in _players)
                 player.Hero.EntityController.WorldPosition = player.Hero.WorldPosition;
 
-            foreach (var enemy in _enemies)
-                enemy.EntityController.WorldPosition = enemy.WorldPosition;
+            /*foreach (var enemy in _enemies)
+                enemy.EntityController.WorldPosition = enemy.WorldPosition;*/
         }
 
         public void UpdateWorldModel()

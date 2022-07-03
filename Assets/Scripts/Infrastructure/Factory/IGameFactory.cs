@@ -5,7 +5,6 @@ using Configs.Behaviours;
 using Configs.Entity;
 using Configs.Items;
 using Game;
-using Game.Behaviours;
 using Game.Enemies;
 using Game.Hero;
 using Game.Items;
@@ -14,6 +13,7 @@ using Infrastructure.Services.PersistentProgress;
 using Input;
 using Items;
 using JetBrains.Annotations;
+using Leopotam.Ecs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -34,9 +34,6 @@ namespace Infrastructure.Factory
 
         BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller);
 
-        IReadOnlyList<IBehaviourAgent>
-            CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs, IEntity entity);
-
         GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null);
 
         Task<GameObject> InstantiatePrefabAsync(AssetReferenceGameObject reference,
@@ -52,5 +49,7 @@ namespace Infrastructure.Factory
         Task<IList<T>> LoadAssetsAsync<T>(IEnumerable<AssetReference> references);
 
         Task<T> LoadAssetAsync<T>(AssetReference reference);
+
+        void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity entity);
     }
 }

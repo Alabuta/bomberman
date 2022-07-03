@@ -6,7 +6,6 @@ using Configs;
 using Configs.Game;
 using Configs.Level;
 using Data;
-using Game.Enemies;
 using Game.Hero;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
@@ -135,25 +134,13 @@ namespace Level
             {
                 var index = RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index);
                 var floorTile = floorTiles[index];
-                var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(floorTile.WorldPosition));
-                var go = await task;
-                Assert.IsNotNull(go);
 
-                floorTiles.RemoveAt(index);
-
-                var entityController = go.GetComponent<EnemyController>();
-                Assert.IsNotNull(entityController);
-
-                var enemy = _gameFactory.CreateEnemy(enemyConfig, entityController, NewEntity());
-                Assert.IsNotNull(enemy);
+                var task = CreateEnemy(enemyConfig, enemyConfig.BehaviourConfigs, floorTile.WorldPosition);
+                var enemy = await task;
 
                 AddEnemy(enemy);
 
-                var behaviourAgents = _gameFactory.CreateBehaviourAgent(enemyConfig.BehaviourConfig, enemy);
-                foreach (var behaviourAgent in behaviourAgents)
-                    AddBehaviourAgent(enemy, behaviourAgent);
-
-                _gameFactory.AddBehaviourComponents(enemyConfig.BehaviourConfig, enemy, enemy.Id);
+                floorTiles.RemoveAt(index);
             }
         }
 

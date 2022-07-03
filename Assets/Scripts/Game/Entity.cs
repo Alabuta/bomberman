@@ -15,16 +15,37 @@ namespace Game
     {
         public fix2 WorldPosition;
         public int2 Direction;
+        public fix Speed;
+    }
+
+    public struct SimpleAttackBehaviourComponent
+    {
+        public int DamageValue; // :TODO: get damage value from actual entity parameters
+    }
+
+    public struct SimpleMovementBehaviourComponent
+    {
+        public int2[] MovementDirections;
+        public bool TryToSelectNewTile;
+        public fix DirectionChangeChance;
+
+        public fix2 FromWorldPosition;
+        public fix2 ToWorldPosition;
     }
 
     public struct EnemyComponent
     {
-        public EnemyConfig Config { get; }
-        public EnemyAnimator Animator;
+        public EnemyConfig Config;
         public EnemyController Controller;
 
-        public fix HitRadius { get; }
-        public fix HurtRadius { get; }
+        public fix HitRadius;
+        public fix HurtRadius;
+
+        // public fix CurrentSpeed;
+        public fix InitialSpeed;
+        public fix SpeedMultiplier;
+
+        public int InteractionLayerMask;
     }
 
     /*public class EnemyCreateSystem : IEcsInitSystem

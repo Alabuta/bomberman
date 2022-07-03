@@ -137,8 +137,8 @@ namespace Level
                         .SelectMany(GetEnemiesByCoordinate);
                 });
 
-            foreach (var entity in entitiesToBeDamaged)
-                entity.Health.ApplyDamage(bombBlastDamage);
+            /*foreach (var entity in entitiesToBeDamaged) :TODO: refactor
+                entity.Health.ApplyDamage(bombBlastDamage);*/
         }
 
         private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, fix2 position, BombItem bombItem)

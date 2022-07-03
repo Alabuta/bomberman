@@ -6,6 +6,6 @@ namespace Configs.Entity
     [CreateAssetMenu(fileName = "Enemy", menuName = "Configs/Entity/Enemy")]
     public sealed class EnemyConfig : EntityConfig
     {
-        public BehaviourConfig[] BehaviourConfig;
+        public BehaviourConfig[] BehaviourConfigs;
     }
 }

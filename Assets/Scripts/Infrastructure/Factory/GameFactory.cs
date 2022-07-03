@@ -6,7 +6,7 @@ using Configs.Behaviours;
 using Configs.Entity;
 using Configs.Items;
 using Game;
-using Game.Behaviours;
+using Game.Components;
 using Game.Enemies;
 using Game.Hero;
 using Game.Items;
@@ -15,6 +15,8 @@ using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Input;
 using Items;
+using Leopotam.Ecs;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -27,7 +29,7 @@ namespace Infrastructure.Factory
 {
     public class GameFactory : IGameFactory
     {
-        private readonly InputDevice[] _inputDevices = { Keyboard.current };
+        private readonly InputDevice[] _inputDevices = { Keyboard.current }; // :TODO: make it configurable
 
         private readonly IAssetProvider _assetProvider;
 
@@ -77,6 +79,36 @@ namespace Infrastructure.Factory
             return behaviourConfigs
                 .Select(c => c.Make(entity))
                 .ToArray();
+        }
+
+        public void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity entity)
+        {
+            foreach (var behaviourConfig in behaviourConfigs)
+            {
+                switch (behaviourConfig)
+                {
+                    case SimpleMovementBehaviourConfig config:
+                        var transformComponent = entity.Get<TransformComponent>();
+
+                        var component = new SimpleMovementBehaviourComponent
+                        {
+                            MovementDirections = config.MovementDirections,
+
+                            TryToSelectNewTile = config.TryToSelectNewTile,
+                            DirectionChangeChance = (fix) config.DirectionChangeChance,
+
+                            FromWorldPosition = transformComponent.WorldPosition,
+                            ToWorldPosition = transformComponent.WorldPosition
+                        };
+
+                        entity.Replace(component);
+                        break;
+
+                    case SimpleAttackBehaviourConfig config:
+                        // :TODO:
+                        break;
+                }
+            }
         }
 
         public GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null)
