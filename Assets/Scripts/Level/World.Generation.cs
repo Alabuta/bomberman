@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Configs;
+using Configs.Behaviours;
+using Configs.Entity;
 using Configs.Game;
 using Configs.Level;
 using Data;
+using Game.Components;
+using Game.Enemies;
 using Game.Hero;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
+using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
@@ -135,7 +140,7 @@ namespace Level
                 var index = RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index);
                 var floorTile = floorTiles[index];
 
-                var task = CreateEnemy(enemyConfig, enemyConfig.BehaviourConfigs, floorTile.WorldPosition);
+                var task = CreateAndSpawnEnemy(enemyConfig, enemyConfig.BehaviourConfigs, floorTile.WorldPosition);
                 var enemy = await task;
 
                 AddEnemy(enemy);
@@ -152,8 +157,9 @@ namespace Level
             Assert.IsTrue(playerConfigs.Length <= spawnCorners.Length, "players count greater than the level spawn corners");
 
             var tasks = spawnCorners
-                .Zip(playerConfigs, (spawnCorner, playerConfig) => (spawnCorner, playerConfig))
-                .Select(p => CreatePlayerAndSpawnHero(p.playerConfig, p.spawnCorner, inputService))
+                .Zip(playerConfigs,
+                    (spawnCorner, playerConfig) => (LevelModel.GetCornerWorldPosition(spawnCorner), playerConfig))
+                .Select(p => CreatePlayerAndSpawnHero(inputService, p.playerConfig, p.Item1))
                 .ToArray();
 
             Task.WhenAll(tasks);
@@ -162,7 +168,8 @@ namespace Level
         private async Task CreatePlayersAndSpawnHeroesPvE(GameModePvEConfig gameMode,
             LevelStagePvEConfig levelStageConfig, IInputService inputService)
         {
-            await CreatePlayerAndSpawnHero(gameMode.PlayerConfig, levelStageConfig.PlayerSpawnCorner, inputService);
+            var spawnCoordinate = LevelModel.GetCornerWorldPosition(levelStageConfig.PlayerSpawnCorner);
+            await CreatePlayerAndSpawnHero(inputService, gameMode.PlayerConfig, spawnCoordinate);
         }
 
         private async Task CreatePlayerAndSpawnHero(PlayerConfig playerConfig, int2 spawnCorner, IInputService inputService)
@@ -185,6 +192,103 @@ namespace Level
             player.AttachHero(hero);
 
             AddPlayer(playerConfig.PlayerTagConfig, player);
+        }
+
+        private async Task<EcsEntity> CreatePlayerAndSpawnHero(IInputService inputService, PlayerConfig playerConfig,
+            fix2 position)
+        {
+            var heroConfig = playerConfig.HeroConfig;
+            var task = _gameFactory.InstantiatePrefabAsync(heroConfig.Prefab, fix2.ToXY(position));
+
+            var player = _gameFactory.CreatePlayer(playerConfig);
+            Assert.IsNotNull(player);
+
+            var playerInput = inputService.RegisterPlayerInput(player);
+            AttachPlayerInput(player, playerInput);
+
+            var entity = _ecsWorld.NewEntity();
+
+            entity.Replace(new TransformComponent
+            {
+                WorldPosition = position,
+                Direction = heroConfig.StartDirection,
+                Speed = fix.zero
+            });
+
+            entity.Replace(new HealthComponent
+            {
+                CurrentHealth = heroConfig.Health,
+                MaxHealth = heroConfig.Health
+            });
+
+            var go = await task;
+            Assert.IsNotNull(go);
+
+            var heroController = go.GetComponent<HeroController>();
+            Assert.IsNotNull(heroController);
+
+            entity.Replace(new HeroComponent
+            {
+                Config = heroConfig,
+                Controller = heroController,
+
+                HitRadius = (fix) heroConfig.HitRadius,
+                HurtRadius = (fix) heroConfig.HurtRadius,
+
+                InitialSpeed = (fix) heroConfig.Speed,
+                SpeedMultiplier = fix.one,
+
+                InteractionLayerMask = heroConfig.Collider.InteractionLayerMask
+            });
+
+            player.AttachHero(entity);
+            AddPlayer(playerConfig.PlayerTagConfig, player);
+
+            return entity;
+        }
+
+        private async Task<EcsEntity> CreateAndSpawnEnemy(EnemyConfig config, IEnumerable<BehaviourConfig> behaviourConfigs,
+            fix2 position)
+        {
+            var entity = _ecsWorld.NewEntity();
+
+            var task = _gameFactory.InstantiatePrefabAsync(config.Prefab, fix2.ToXY(position));
+            var go = await task;
+            Assert.IsNotNull(go);
+
+            var enemyController = go.GetComponent<EnemyController>();
+            Assert.IsNotNull(enemyController);
+
+            entity.Replace(new TransformComponent
+            {
+                WorldPosition = position,
+                Direction = config.StartDirection,
+                Speed = fix.zero
+            });
+
+            entity.Replace(new HealthComponent
+            {
+                CurrentHealth = config.Health,
+                MaxHealth = config.Health
+            });
+
+            _gameFactory.AddBehaviourComponents(behaviourConfigs, entity);
+
+            entity.Replace(new EnemyComponent
+            {
+                Config = config,
+                Controller = enemyController,
+
+                HitRadius = (fix) config.HitRadius,
+                HurtRadius = (fix) config.HurtRadius,
+
+                InitialSpeed = (fix) config.Speed,
+                SpeedMultiplier = fix.one,
+
+                InteractionLayerMask = config.Collider.InteractionLayerMask
+            });
+
+            return entity;
         }
     }
 }

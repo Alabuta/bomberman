@@ -28,9 +28,9 @@ namespace Infrastructure.Factory
         [CanBeNull]
         IPlayer CreatePlayer(PlayerConfig playerConfig);
 
-        Hero CreateHero(HeroConfig heroConfig, HeroController entityController);
+        Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity);
 
-        Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController);
+        Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController, EcsEntity ecsEntity);
 
         BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller);
 

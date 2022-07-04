@@ -40,8 +40,8 @@ namespace Level
         {
             _ecsSystems.Run();
 
-            foreach (var (_, player) in _players)
-                player.Hero.EntityController.WorldPosition = player.Hero.WorldPosition;
+            /*foreach (var (_, player) in _players)
+                player.Hero.EntityController.WorldPosition = player.Hero.WorldPosition;*/
 
             /*foreach (var enemy in _enemies)
                 enemy.EntityController.WorldPosition = enemy.WorldPosition;*/
@@ -49,8 +49,6 @@ namespace Level
 
         public void UpdateWorldModel()
         {
-            _ecsFixedSystems.Run();
-
             var heroes = Players.Values.Select(p => p.Hero).ToArray();
             var gameContext = new GameContext2(this, LevelModel, heroes);
 
@@ -62,11 +60,12 @@ namespace Level
             {
                 ProcessPlayersInput();
 
-                UpdateHeroesPositions();
-                ResolveHeroesCollisions();
+                _ecsFixedSystems.Run();
 
-                UpdateBehaviourAgents(gameContext);
+                // UpdateHeroesPositions();
+                // ResolveHeroesCollisions();
 
+                // UpdateBehaviourAgents(gameContext);
                 ++Tick;
             }
 
@@ -89,14 +88,14 @@ namespace Level
             _playersInputActions.Remove(Tick);
         }
 
-        private void UpdateHeroesPositions()
+        /*private void UpdateHeroesPositions()
         {
             foreach (var (_, player) in _players)
             {
                 var playerHero = player.Hero;
                 playerHero.UpdatePosition(_fixedDeltaTime);
             }
-        }
+        }*/
 
         private void ResolveHeroesCollisions()
         {

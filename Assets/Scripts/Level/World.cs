@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Configs.Behaviours;
-using Configs.Entity;
 using Configs.Game;
 using Configs.Level;
 using Configs.Singletons;
@@ -22,7 +20,6 @@ using Leopotam.Ecs;
 using Math;
 using Math.FixedPointMath;
 using Unity.Mathematics;
-using UnityEngine.Assertions;
 
 namespace Level
 {
@@ -77,7 +74,7 @@ namespace Level
             _ecsFixedSystems
                 .OneFrame<DamageComponent>()
                 .Add(new MovementBehaviourSystem())
-                // .Add(new HealthSystem())
+                .Add(new HealthSystem())
                 .Inject(this)
                 .Init();
         }
@@ -170,51 +167,6 @@ namespace Level
             return _enemies
                 .Where(e => math.all(LevelModel.ToTileCoordinate(e.Get<TransformComponent>().WorldPosition) ==
                                      coordinate)); // :TODO: refactor
-        }
-
-        private async Task<EcsEntity> CreateEnemy(EnemyConfig config, IEnumerable<BehaviourConfig> behaviourConfigs,
-            fix2 position)
-        {
-            var entity = _ecsWorld.NewEntity();
-
-            var task = _gameFactory.InstantiatePrefabAsync(config.Prefab, fix2.ToXY(position));
-            var go = await task;
-            Assert.IsNotNull(go);
-
-            var enemyController = go.GetComponent<EnemyController>();
-            Assert.IsNotNull(enemyController);
-
-            entity.Replace(new TransformComponent
-            {
-                WorldPosition = position,
-                Direction = config.StartDirection,
-                Speed = fix.zero
-            });
-
-            entity.Replace(new HealthComponent
-            {
-                CurrentHealth = config.Health,
-                MaxHealth = config.Health
-            });
-
-            _gameFactory.AddBehaviourComponents(behaviourConfigs, entity);
-
-            entity.Replace(new EnemyComponent
-            {
-                Config = config,
-                Controller = enemyController,
-
-                HitRadius = (fix) config.HitRadius,
-                HurtRadius = (fix) config.HurtRadius,
-
-                // CurrentSpeed = fix.zero,
-                InitialSpeed = (fix) config.Speed,
-                SpeedMultiplier = fix.one,
-
-                InteractionLayerMask = config.Collider.InteractionLayerMask
-            });
-
-            return entity;
         }
     }
 }

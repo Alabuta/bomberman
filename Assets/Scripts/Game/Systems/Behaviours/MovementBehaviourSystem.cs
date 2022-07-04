@@ -1,5 +1,8 @@
 ﻿using System.Linq;
 using Game.Colliders;
+using Game.Components;
+using Game.Components.Behaviours;
+using Game.Hero;
 using JetBrains.Annotations;
 using Leopotam.Ecs;
 using Level;
@@ -10,38 +13,41 @@ namespace Game.Systems.Behaviours
 {
     public sealed class MovementBehaviourSystem : IEcsRunSystem
     {
-        private EcsWorld _ecsWorld;
-        private EcsFilter<EnemyComponent, TransformComponent, SimpleMovementBehaviourComponent> _filter;
+        private readonly EcsWorld _ecsWorld;
+        private readonly World _world;
+
+        private EcsFilter<EnemyComponent, TransformComponent, SimpleMovementBehaviourComponent> _filterEnemies;
+        private EcsFilter<HeroComponent, TransformComponent> _filterHeroes;
 
         public void Run()
         {
-            if (_filter.IsEmpty())
-                return;
+            if (!_filterEnemies.IsEmpty())
+                foreach (var index in _filterEnemies)
+                    UpdateEnemy(index);
 
-            foreach (var index in _filter)
-                Update(index);
+            if (!_filterHeroes.IsEmpty())
+                foreach (var index in _filterHeroes)
+                    UpdateHero(index);
         }
 
-        private void Update(int entityIndex)
+        private void UpdateEnemy(int entityIndex)
         {
-            ref var enemyComponent = ref _filter.Get1(entityIndex);
-            ref var movementComponent = ref _filter.Get2(entityIndex);
-            ref var movementBehaviourComponent = ref _filter.Get3(entityIndex);
+            ref var enemyComponent = ref _filterEnemies.Get1(entityIndex);
+            ref var transformComponent = ref _filterEnemies.Get2(entityIndex);
+            ref var movementBehaviourComponent = ref _filterEnemies.Get3(entityIndex);
 
-            var world = Infrastructure.Game.World;
-            var levelModel = world.LevelModel;
+            var levelModel = _world.LevelModel;
+            var deltaTime = _world.FixedDeltaTime;
 
-            var deltaTime = world.FixedDeltaTime;
+            ref var worldPosition = ref transformComponent.WorldPosition;
+            ref var direction = ref transformComponent.Direction;
 
-            ref var worldPosition = ref movementComponent.WorldPosition;
-            ref var direction = ref movementComponent.Direction;
-
-            var path = movementComponent.Speed * deltaTime;
+            var path = transformComponent.Speed * deltaTime;
             var currentWorldPosition = worldPosition + (fix2) direction * path;
 
             if (!IsNeedToUpdate(ref currentWorldPosition, ref movementBehaviourComponent))
             {
-                movementComponent.WorldPosition = currentWorldPosition;
+                transformComponent.WorldPosition = currentWorldPosition;
                 return;
             }
 
@@ -51,7 +57,7 @@ namespace Game.Systems.Behaviours
 
             var interactionLayerMask = enemyComponent.InteractionLayerMask;
 
-            var randomValue = world.RandomGenerator.Range(fix.zero, fix.one, (int) world.Tick);
+            var randomValue = _world.RandomGenerator.Range(fix.zero, fix.one, (int) _world.Tick);
             if (randomValue < movementBehaviourComponent.DirectionChangeChance)
             {
                 var neighborTiles2 = movementBehaviourComponent.MovementDirections
@@ -65,63 +71,71 @@ namespace Game.Systems.Behaviours
 
                 if (neighborTiles.Length == 0)
                 {
-                    movementComponent.Direction = int2.zero;
-                    movementComponent.Speed = fix.zero;
+                    transformComponent.Direction = int2.zero;
+                    transformComponent.Speed = fix.zero;
 
                     return;
                 }
 
-                var index = world.RandomGenerator.Range(0, neighborTiles.Length, (int) world.Tick);
+                var index = _world.RandomGenerator.Range(0, neighborTiles.Length, (int) _world.Tick);
                 targetTileCoordinate = neighborTiles[index].Coordinate;
 
-                movementComponent.Direction = targetTileCoordinate - currentTileCoordinate;
+                transformComponent.Direction = targetTileCoordinate - currentTileCoordinate;
             }
             else
             {
                 if (math.all(direction == int2.zero))
-                    movementComponent.Direction = math.int2(1, 0);
+                    transformComponent.Direction = math.int2(1, 0);
 
                 targetTileCoordinate = currentTileCoordinate + direction;
 
                 if (!levelModel.IsCoordinateInField(targetTileCoordinate))
                     targetTileCoordinate = GetRandomNeighborTile(
-                        world,
+                        _world,
                         currentTileCoordinate,
-                        ref movementComponent,
+                        ref transformComponent,
                         ref movementBehaviourComponent,
                         interactionLayerMask)?.Coordinate ?? currentTileCoordinate;
             }
 
-            movementComponent.Direction = (int2) math.normalize(direction);
+            transformComponent.Direction = (int2) math.normalize(direction);
 
             var targetTile = levelModel[targetTileCoordinate];
             targetTile = IsTileCanBeAsMovementTarget(targetTile, interactionLayerMask)
                 ? targetTile
-                : GetRandomNeighborTile(world,
+                : GetRandomNeighborTile(_world,
                     currentTileCoordinate,
-                    ref movementComponent,
+                    ref transformComponent,
                     ref movementBehaviourComponent,
                     interactionLayerMask);
 
             if (targetTile == null)
             {
-                movementComponent.Direction = int2.zero;
-                movementComponent.Speed = fix.zero;
+                transformComponent.Direction = int2.zero;
+                transformComponent.Speed = fix.zero;
 
                 return;
             }
 
             targetTileCoordinate = targetTile.Coordinate;
 
-            movementComponent.Direction = (int2) math.normalize(targetTileCoordinate - currentTileCoordinate);
-            movementComponent.Speed = fix.one;
+            transformComponent.Direction = (int2) math.normalize(targetTileCoordinate - currentTileCoordinate);
+            transformComponent.Speed = fix.one;
 
-            movementComponent.WorldPosition =
+            transformComponent.WorldPosition =
                 movementBehaviourComponent.ToWorldPosition + (fix2) direction * fix2.distance(worldPosition,
                     movementBehaviourComponent.ToWorldPosition);
 
             movementBehaviourComponent.FromWorldPosition = movementBehaviourComponent.ToWorldPosition;
             movementBehaviourComponent.ToWorldPosition = levelModel.ToWorldPosition(targetTileCoordinate);
+        }
+
+        private void UpdateHero(int entityIndex)
+        {
+            ref var transformComponent = ref _filterEnemies.Get2(entityIndex);
+            var deltaTime = _world.FixedDeltaTime;
+
+            transformComponent.WorldPosition += (fix2) transformComponent.Direction * transformComponent.Speed * deltaTime;
         }
 
         private static bool IsNeedToUpdate(ref fix2 currentWorldPosition,

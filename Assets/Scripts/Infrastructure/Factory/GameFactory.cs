@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Configs;
 using Configs.Behaviours;
@@ -7,6 +6,7 @@ using Configs.Entity;
 using Configs.Items;
 using Game;
 using Game.Components;
+using Game.Components.Behaviours;
 using Game.Enemies;
 using Game.Hero;
 using Game.Items;
@@ -54,31 +54,24 @@ namespace Infrastructure.Factory
             return new Player(playerConfig);
         }
 
-        public Hero CreateHero(HeroConfig heroConfig, HeroController entityController)
+        public Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity)
         {
-            var hero = new Hero(heroConfig, entityController);
+            var hero = new Hero(heroConfig, entityController, ecsEntity);
+            hero.Id.Replace(new HealthComponent()); // :TODO: ???
 
             // RegisterProgressReader(hero.HeroHealth); :TODO: remove?
 
             return hero;
         }
 
-        public Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController)
+        public Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController, EcsEntity ecsEntity)
         {
-            return new Enemy(enemyConfig, entityController);
+            return new Enemy(enemyConfig, entityController, ecsEntity);
         }
 
         public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller)
         {
             return new BombItem(bobItemConfig, controller);
-        }
-
-        public IReadOnlyList<IBehaviourAgent> CreateBehaviourAgent(IEnumerable<BehaviourConfig> behaviourConfigs,
-            IEntity entity)
-        {
-            return behaviourConfigs
-                .Select(c => c.Make(entity))
-                .ToArray();
         }
 
         public void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity entity)

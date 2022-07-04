@@ -1,18 +1,28 @@
 ﻿using Configs;
 using Data;
+using Game.Components;
+using Game.Hero;
 using Infrastructure.Services.PersistentProgress;
 using Input;
+using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
+using UnityEngine.Assertions;
 
 namespace Game
 {
+    public struct PlayerComponent
+    {
+        public PlayerConfig Config { get; }
+    }
+
     public class Player : IPlayer, ISavedProgressWriter
     {
         public PlayerConfig PlayerConfig { get; }
-        public Hero.Hero Hero { get; private set; }
 
+        // public Hero.Hero Hero { get; private set; }
+        public EcsEntity HeroEntity { get; private set; }
         private Score _score;
 
         public Player(PlayerConfig playerConfig)
@@ -22,22 +32,37 @@ namespace Game
 
         public void ApplyInputAction(World world, PlayerInputAction inputAction)
         {
-            if (Hero != null && !Hero.Health.IsAlive)
+            ref var healthComponent = ref HeroEntity.Get<HealthComponent>();
+            if (healthComponent.CurrentHealth > 0) // :TODO: refactor
                 return;
 
             OnMove(inputAction.MovementVector);
 
             if (inputAction.BombPlant)
-                world.OnPlayerBombPlant(this, Hero.WorldPosition);
+            {
+                ref var transformComponent = ref HeroEntity.Get<TransformComponent>();
+                world.OnPlayerBombPlant(this, transformComponent.WorldPosition);
+            }
 
             if (inputAction.BombBlast)
                 world.OnPlayerBombBlast(this);
         }
 
+        /*
         public void AttachHero(Hero.Hero hero)
         {
             Hero = hero;
             Hero.DeathEvent += OnHeroDeath;
+        }*/
+
+        public void AttachHero(EcsEntity entity)
+        {
+            HeroEntity = entity;
+            Assert.IsTrue(entity.Has<TransformComponent>());
+            Assert.IsTrue(entity.Has<HealthComponent>());
+            Assert.IsTrue(entity.Has<HeroComponent>());
+
+            // Hero.DeathEvent += OnHeroDeath; :TODO:
         }
 
         public void LoadProgress(PlayerProgress progress)
@@ -52,18 +77,20 @@ namespace Game
 
         private void OnMove(float2 value)
         {
+            ref var transformComponent = ref HeroEntity.Get<TransformComponent>();
+            ref var heroComponent = ref HeroEntity.Get<HeroComponent>();
             if (math.lengthsq(value) > 0)
             {
-                Hero.Direction = (int2) math.round(value);
-                Hero.Speed = Hero.InitialSpeed * Hero.SpeedMultiplier;
+                transformComponent.Direction = (int2) math.round(value);
+                transformComponent.Speed = heroComponent.InitialSpeed * heroComponent.SpeedMultiplier;
             }
             else
-                Hero.Speed = fix.zero;
+                transformComponent.Speed = fix.zero;
         }
 
-        private void OnHeroDeath(IEntity entity)
+        /*private void OnHeroDeath(IEntity entity)
         {
             Hero.DeathEvent -= OnHeroDeath;
-        }
+        }*/
     }
 }
