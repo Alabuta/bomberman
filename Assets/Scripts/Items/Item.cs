@@ -2,6 +2,7 @@ using System.Linq;
 using Configs.Game.Colliders;
 using Configs.Items;
 using Game.Colliders;
+using Game.Components.Colliders;
 using Game.Items;
 using Level;
 using UnityEngine;

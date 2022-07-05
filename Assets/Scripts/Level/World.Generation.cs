@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Configs;
-using Configs.Behaviours;
 using Configs.Entity;
 using Configs.Game;
+using Configs.Game.Colliders;
 using Configs.Level;
 using Data;
+using Game.Colliders;
 using Game.Components;
+using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Enemies;
 using Game.Hero;
@@ -141,7 +143,7 @@ namespace Level
                 var index = RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index);
                 var floorTile = floorTiles[index];
 
-                var task = CreateAndSpawnEnemy(enemyConfig, enemyConfig.BehaviourConfigs, floorTile.WorldPosition);
+                var task = CreateAndSpawnEnemy(enemyConfig, floorTile.WorldPosition);
                 var enemy = await task;
 
                 AddEnemy(enemy);
@@ -173,28 +175,6 @@ namespace Level
             await CreatePlayerAndSpawnHero(inputService, gameMode.PlayerConfig, spawnCoordinate);
         }
 
-        private async Task CreatePlayerAndSpawnHero(PlayerConfig playerConfig, int2 spawnCorner, IInputService inputService)
-        {
-            var player = _gameFactory.CreatePlayer(playerConfig);
-            Assert.IsNotNull(player);
-
-            var playerInput = inputService.RegisterPlayerInput(player);
-            AttachPlayerInput(player, playerInput);
-
-            var spawnCoordinate = LevelModel.GetCornerWorldPosition(spawnCorner);
-            var task = _gameFactory.InstantiatePrefabAsync(playerConfig.HeroConfig.Prefab, fix2.ToXY(spawnCoordinate));
-            var go = await task;
-            Assert.IsNotNull(go);
-
-            var heroController = go.GetComponent<HeroController>();
-            Assert.IsNotNull(heroController);
-
-            /*var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController, NewEntity());
-            player.AttachHero(hero);*/
-
-            AddPlayer(playerConfig.PlayerTagConfig, player);
-        }
-
         private async Task<EcsEntity> CreatePlayerAndSpawnHero(IInputService inputService, PlayerConfig playerConfig,
             fix2 position)
         {
@@ -224,6 +204,8 @@ namespace Level
                 MaxHealth = heroConfig.Health
             });
 
+            AddColliderComponent(heroConfig, entity);
+
             var go = await task;
             Assert.IsNotNull(go);
 
@@ -250,29 +232,30 @@ namespace Level
             return entity;
         }
 
-        private async Task<EcsEntity> CreateAndSpawnEnemy(EnemyConfig config, IEnumerable<BehaviourConfig> behaviourConfigs,
-            fix2 position)
+        private async Task<EcsEntity> CreateAndSpawnEnemy(EnemyConfig enemyConfig, fix2 position)
         {
             var entity = _ecsWorld.NewEntity();
 
-            var task = _gameFactory.InstantiatePrefabAsync(config.Prefab, fix2.ToXY(position));
+            var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(position));
 
             entity.Replace(new EnemyTag());
 
             entity.Replace(new TransformComponent
             {
                 WorldPosition = position,
-                Direction = config.StartDirection,
+                Direction = enemyConfig.StartDirection,
                 Speed = fix.zero
             });
 
             entity.Replace(new HealthComponent
             {
-                CurrentHealth = config.Health,
-                MaxHealth = config.Health
+                CurrentHealth = enemyConfig.Health,
+                MaxHealth = enemyConfig.Health
             });
 
-            _gameFactory.AddBehaviourComponents(behaviourConfigs, entity);
+            AddColliderComponent(enemyConfig, entity);
+
+            _gameFactory.AddBehaviourComponents(enemyConfig.BehaviourConfigs, entity);
 
             var go = await task;
             Assert.IsNotNull(go);
@@ -282,19 +265,46 @@ namespace Level
 
             entity.Replace(new EntityComponent
             {
-                Config = config,
+                Config = enemyConfig,
                 Controller = enemyController,
 
-                HitRadius = (fix) config.HitRadius,
-                HurtRadius = (fix) config.HurtRadius,
+                HitRadius = (fix) enemyConfig.HitRadius,
+                HurtRadius = (fix) enemyConfig.HurtRadius,
 
-                InitialSpeed = (fix) config.Speed,
+                InitialSpeed = (fix) enemyConfig.Speed,
                 SpeedMultiplier = fix.one,
 
-                InteractionLayerMask = config.Collider.InteractionLayerMask
+                InteractionLayerMask = enemyConfig.Collider.InteractionLayerMask
             });
 
             return entity;
+        }
+
+        private static void AddColliderComponent(EntityConfig entityConfig, EcsEntity entity)
+        {
+            switch (entityConfig.Collider)
+            {
+                case BoxColliderComponentConfig colliderConfig:
+                    entity.Replace(new BoxColliderComponent
+                    {
+                        InteractionLayerMask = colliderConfig.InteractionLayerMask,
+                        InnerRadius = (fix) colliderConfig.InnerRadius
+                    });
+                    entity.Replace(new HasColliderTag());
+                    break;
+
+                case CircleColliderComponentConfig colliderConfig:
+                    entity.Replace(new CircleColliderComponent
+                    {
+                        InteractionLayerMask = colliderConfig.InteractionLayerMask,
+                        Radius = (fix) colliderConfig.Radius
+                    });
+                    entity.Replace(new HasColliderTag());
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

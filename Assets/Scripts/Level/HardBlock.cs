@@ -1,7 +1,7 @@
 using System.Linq;
 using Configs.Game.Colliders;
 using Configs.Level.Tile;
-using Game.Colliders;
+using Game.Components.Colliders;
 using UnityEngine;
 using Component = Game.Components.Component;
 

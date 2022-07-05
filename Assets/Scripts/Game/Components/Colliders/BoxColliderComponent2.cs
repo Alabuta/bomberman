@@ -1,8 +1,16 @@
 ﻿using Configs.Game.Colliders;
+using Game.Colliders;
 using Math.FixedPointMath;
+using UnityEngine;
 
-namespace Game.Colliders
+namespace Game.Components.Colliders
 {
+    public struct BoxColliderComponent
+    {
+        public LayerMask InteractionLayerMask;
+        public fix InnerRadius;
+    }
+
     public class BoxColliderComponent2 : ColliderComponent2
     {
         public fix InnerRadius { get; }

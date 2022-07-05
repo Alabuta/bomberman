@@ -1,20 +1,12 @@
 using System;
 using Configs.Game.Colliders;
-using Leopotam.Ecs;
+using Game.Components.Colliders;
 using Math.FixedPointMath;
 using UnityEngine;
 using Component = Game.Components.Component;
 
 namespace Game.Colliders
 {
-    public struct ColliderComponent
-    {
-    }
-
-    public struct HasColliderTag : IEcsIgnoreInFilter
-    {
-    }
-
     public abstract class ColliderComponent2 : Component
     {
         public LayerMask InteractionLayerMask;
