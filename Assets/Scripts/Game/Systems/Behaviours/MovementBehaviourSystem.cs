@@ -2,7 +2,7 @@
 using Game.Colliders;
 using Game.Components;
 using Game.Components.Behaviours;
-using Game.Hero;
+using Game.Components.Entities;
 using JetBrains.Annotations;
 using Leopotam.Ecs;
 using Level;
@@ -16,8 +16,8 @@ namespace Game.Systems.Behaviours
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private EcsFilter<EnemyComponent, TransformComponent, SimpleMovementBehaviourComponent> _filterEnemies;
-        private EcsFilter<HeroComponent, TransformComponent> _filterHeroes;
+        private EcsFilter<EntityComponent, TransformComponent, SimpleMovementBehaviourComponent> _filterEnemies;
+        private EcsFilter<HeroTag, TransformComponent> _filterHeroes;
 
         public void Run()
         {
@@ -32,7 +32,7 @@ namespace Game.Systems.Behaviours
 
         private void UpdateEnemy(int entityIndex)
         {
-            ref var enemyComponent = ref _filterEnemies.Get1(entityIndex);
+            ref var entityComponent = ref _filterEnemies.Get1(entityIndex); // :TODO: get rid of EntityComponent
             ref var transformComponent = ref _filterEnemies.Get2(entityIndex);
             ref var movementBehaviourComponent = ref _filterEnemies.Get3(entityIndex);
 
@@ -55,7 +55,7 @@ namespace Game.Systems.Behaviours
             var currentTileCoordinate = levelModel.ToTileCoordinate(toWorldPosition);
             int2 targetTileCoordinate;
 
-            var interactionLayerMask = enemyComponent.InteractionLayerMask;
+            var interactionLayerMask = entityComponent.InteractionLayerMask;
 
             var randomValue = _world.RandomGenerator.Range(fix.zero, fix.one, (int) _world.Tick);
             if (randomValue < movementBehaviourComponent.DirectionChangeChance)
@@ -132,8 +132,9 @@ namespace Game.Systems.Behaviours
 
         private void UpdateHero(int entityIndex)
         {
-            ref var transformComponent = ref _filterEnemies.Get2(entityIndex);
             var deltaTime = _world.FixedDeltaTime;
+
+            ref var transformComponent = ref _filterHeroes.Get2(entityIndex);
 
             transformComponent.WorldPosition += (fix2) transformComponent.Direction * transformComponent.Speed * deltaTime;
         }
@@ -162,7 +163,7 @@ namespace Game.Systems.Behaviours
             if (tileLoad == null || (interactionLayerMask & tileLoad.LayerMask) == 0)
                 return true;
 
-            return !(tileLoad.Components?.OfType<ColliderComponent>().Any() ?? false);
+            return !(tileLoad.Components?.OfType<ColliderComponent2>().Any() ?? false);
         }
 
         [CanBeNull]

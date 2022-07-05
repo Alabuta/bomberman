@@ -2,11 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Configs;
 using Configs.Behaviours;
-using Configs.Entity;
 using Configs.Items;
 using Game;
-using Game.Enemies;
-using Game.Hero;
 using Game.Items;
 using Infrastructure.Services;
 using Infrastructure.Services.PersistentProgress;
@@ -28,9 +25,9 @@ namespace Infrastructure.Factory
         [CanBeNull]
         IPlayer CreatePlayer(PlayerConfig playerConfig);
 
-        Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity);
+        /*Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity);
 
-        Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController, EcsEntity ecsEntity);
+        Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController, EcsEntity ecsEntity);*/
 
         BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller);
 

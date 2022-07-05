@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using Configs.Entity;
 using Game;
+using Game.Components.Entities;
 using Game.Items;
 using Input;
 using Items;
+using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine.Assertions;
@@ -25,7 +28,12 @@ namespace Level
 
         public void OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
         {
-            var bombConfig = player.Hero.BombConfig;
+            var heroEntity = player.HeroEntity;
+            Assert.IsTrue(heroEntity.Has<HeroTag>());
+
+            ref var heroComponent = ref heroEntity.Get<EntityComponent>();
+
+            var bombConfig = ((HeroConfig) heroComponent.Config).BombConfig;
             var bombCoordinate = LevelModel.ToTileCoordinate(worldPosition);
             var position = LevelModel.ToWorldPosition(bombCoordinate);
 
@@ -59,10 +67,16 @@ namespace Level
             LevelModel.RemoveItem(bombCoordinate);
             bombItem.Controller.DestroyItem();
 
-            var bombBlastDamage = player.Hero.BombBlastDamage;
-            var bombBlastRadius = player.Hero.BombBlastRadius;
+            var heroEntity = player.HeroEntity;
+            Assert.IsTrue(heroEntity.Has<HeroTag>());
 
-            var blastDirections = player.Hero.BombBlastDirections;
+            ref var heroComponent = ref heroEntity.Get<EntityComponent>();
+
+            var heroConfig = (HeroConfig) heroComponent.Config;
+            var bombBlastDamage = heroConfig.BombBlastDamage; // :TODO: use hero parameters
+            var bombBlastRadius = heroConfig.BombBlastRadius;
+            var blastDirections = heroConfig.BombBlastDirections;
+
             var blastLines = GetBombBlastTileLines(blastDirections, bombBlastRadius, bombCoordinate).ToArray();
 
             var bombPosition = LevelModel.ToWorldPosition(bombCoordinate);

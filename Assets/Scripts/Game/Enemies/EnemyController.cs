@@ -9,9 +9,9 @@ namespace Game.Enemies
         [SerializeField]
         private EnemyAnimator EnemyAnimator;
 
-        public override fix Speed { get; set; }
+        public override fix Speed { protected get; set; }
 
-        public override int2 Direction { get; set; }
+        public override int2 Direction { protected get; set; }
 
         protected override EntityAnimator EntityAnimator =>
             EnemyAnimator;

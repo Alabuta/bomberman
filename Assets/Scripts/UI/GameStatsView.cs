@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using Configs.Entity;
 using Game;
-using Game.Hero;
+using Game.Components.Entities;
 using Infrastructure.Factory;
+using Leopotam.Ecs;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 namespace UI
@@ -25,21 +27,25 @@ namespace UI
         [SerializeField]
         private TextMeshProUGUI HeroHealthText;
 
-        private Hero _hero;
+        private EcsEntity _heroEntity;
 
-        public async Task Construct(IGameFactory gameFactory, double timer, Hero hero) // :TODO: get IGameFactory from DI
+        public async Task
+            Construct(IGameFactory gameFactory, double timer, EcsEntity heroEntity) // :TODO: get IGameFactory from DI
         {
             UpdateLevelStageTimer(timer);
 
-            var heroConfig = (HeroConfig) hero.Config;
-            _hero = hero;
+            Assert.IsTrue(heroEntity.Has<HeroTag>());
+            var heroComponent = heroEntity.Get<EntityComponent>();
+
+            var heroConfig = (HeroConfig) heroComponent.Config;
+            _heroEntity = heroEntity;
 
             var spriteLoadTask = gameFactory.LoadAssetAsync<Sprite>(heroConfig.Icon);
 
             SetHeroHealth();
 
-            hero.DeathEvent += OnHeroDeathEvent;
-            _hero.Health.HealthChangedEvent += SetHeroHealth;
+            /*hero.DeathEvent += OnHeroDeathEvent; :TODO: fix
+            _heroEntity.Health.HealthChangedEvent += SetHeroHealth;*/
 
             SetHeroIcon(await spriteLoadTask);
         }
@@ -52,8 +58,8 @@ namespace UI
 
         private void OnDestroy()
         {
-            if (_hero != null)
-                _hero.Health.HealthChangedEvent -= SetHeroHealth;
+            /*if (_heroEntity != null) :TODO: fix
+                _heroEntity.Health.HealthChangedEvent -= SetHeroHealth;*/
         }
 
         private void SetHeroIcon(Sprite sprite)
@@ -64,17 +70,17 @@ namespace UI
 
         private void SetHeroHealth()
         {
-            if (HeroHealthText != null)
-                HeroHealthText.SetText(_hero.Health.Current.ToString());
+            /*if (HeroHealthText != null) :TODO: fix
+                HeroHealthText.SetText(_heroEntity.Health.Current.ToString());*/
         }
 
         private void OnHeroDeathEvent(IEntity hero)
         {
-            if (_hero != hero)
+            /*if (_heroEntity != hero) :TODO: fix
                 return;
 
-            _hero.Health.HealthChangedEvent -= SetHeroHealth;
-            _hero = null;
+            _heroEntity.Health.HealthChangedEvent -= SetHeroHealth;
+            _heroEntity = null;*/
         }
     }
 }

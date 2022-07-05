@@ -9,14 +9,14 @@ namespace Game
         [SerializeField]
         protected Transform Transform;
 
-        public abstract fix Speed { get; set; }
+        public abstract fix Speed { protected get; set; }
         public float PlaybackSpeed => EntityAnimator.PlaybackSpeed;
 
-        public abstract int2 Direction { get; set; }
+        public abstract int2 Direction { protected get; set; }
 
         public fix2 WorldPosition
         {
-            get => (fix2) Transform.position;
+            // protected get => (fix2) Transform.position;
             set => Transform.position = fix2.ToXY(value);
         }
 
@@ -33,7 +33,7 @@ namespace Game
             EntityAnimator.PlaybackSpeed = 1;
             EntityAnimator.SetDead();
 
-            // :TODO: call Destroy() after while
+            // :TODO: call Destroy() after a while
         }
 
         public void TakeDamage(int damage)

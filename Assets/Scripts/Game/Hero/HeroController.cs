@@ -10,16 +10,16 @@ namespace Game.Hero
         private HeroAnimator HeroAnimator;
 
         private fix _speed;
-        private int2 _direction;
+        private int2 _direction = new(0, -1);
 
         public override fix Speed
         {
-            get => _speed;
+            protected get => _speed;
             set
             {
                 _speed = value;
 
-                if (Speed > fix.zero)
+                if (_speed > fix.zero)
                     HeroAnimator.Move();
                 else
                     HeroAnimator.StopMovement();
@@ -30,12 +30,12 @@ namespace Game.Hero
 
         public override int2 Direction
         {
-            get => _direction;
+            protected get => _direction;
             set
             {
                 _direction = value;
 
-                HeroAnimator.UpdateDirection(Direction);
+                HeroAnimator.UpdateDirection(_direction);
             }
         }
 
@@ -46,7 +46,7 @@ namespace Game.Hero
         {
             base.Start();
 
-            HeroAnimator.UpdateDirection(Direction);
+            HeroAnimator.UpdateDirection(_direction);
             HeroAnimator.StopMovement();
         }
     }

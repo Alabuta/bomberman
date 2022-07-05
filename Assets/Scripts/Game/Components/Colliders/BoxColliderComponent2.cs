@@ -3,11 +3,11 @@ using Math.FixedPointMath;
 
 namespace Game.Colliders
 {
-    public class BoxColliderComponent : ColliderComponent
+    public class BoxColliderComponent2 : ColliderComponent2
     {
         public fix InnerRadius { get; }
 
-        public BoxColliderComponent(BoxColliderComponentConfig config)
+        public BoxColliderComponent2(BoxColliderComponentConfig config)
             : base(config)
         {
             InnerRadius = (fix) config.InnerRadius;

@@ -9,6 +9,7 @@ using Configs.Game;
 using Configs.Level;
 using Data;
 using Game.Components;
+using Game.Components.Entities;
 using Game.Enemies;
 using Game.Hero;
 using Infrastructure.Factory;
@@ -126,7 +127,7 @@ namespace Level
                 .ToArray();
 
             var playersCoordinates = Players.Values
-                .Select(p => LevelModel.ToTileCoordinate(p.Hero.WorldPosition))
+                .Select(p => LevelModel.ToTileCoordinate(p.HeroEntity.Get<TransformComponent>().WorldPosition))
                 .ToArray();
 
             var floorTiles = LevelModel.GetTilesByType(LevelTileType.FloorTile)
@@ -188,8 +189,8 @@ namespace Level
             var heroController = go.GetComponent<HeroController>();
             Assert.IsNotNull(heroController);
 
-            var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController, NewEntity());
-            player.AttachHero(hero);
+            /*var hero = _gameFactory.CreateHero(playerConfig.HeroConfig, heroController, NewEntity());
+            player.AttachHero(hero);*/
 
             AddPlayer(playerConfig.PlayerTagConfig, player);
         }
@@ -207,6 +208,8 @@ namespace Level
             AttachPlayerInput(player, playerInput);
 
             var entity = _ecsWorld.NewEntity();
+
+            entity.Replace(new HeroTag());
 
             entity.Replace(new TransformComponent
             {
@@ -227,7 +230,7 @@ namespace Level
             var heroController = go.GetComponent<HeroController>();
             Assert.IsNotNull(heroController);
 
-            entity.Replace(new HeroComponent
+            entity.Replace(new EntityComponent
             {
                 Config = heroConfig,
                 Controller = heroController,
@@ -253,11 +256,8 @@ namespace Level
             var entity = _ecsWorld.NewEntity();
 
             var task = _gameFactory.InstantiatePrefabAsync(config.Prefab, fix2.ToXY(position));
-            var go = await task;
-            Assert.IsNotNull(go);
 
-            var enemyController = go.GetComponent<EnemyController>();
-            Assert.IsNotNull(enemyController);
+            entity.Replace(new EnemyTag());
 
             entity.Replace(new TransformComponent
             {
@@ -274,7 +274,13 @@ namespace Level
 
             _gameFactory.AddBehaviourComponents(behaviourConfigs, entity);
 
-            entity.Replace(new EnemyComponent
+            var go = await task;
+            Assert.IsNotNull(go);
+
+            var enemyController = go.GetComponent<EnemyController>();
+            Assert.IsNotNull(enemyController);
+
+            entity.Replace(new EntityComponent
             {
                 Config = config,
                 Controller = enemyController,

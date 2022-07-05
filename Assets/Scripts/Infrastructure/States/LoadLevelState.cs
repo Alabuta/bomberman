@@ -5,9 +5,11 @@ using Configs.Game;
 using Configs.Singletons;
 using Data;
 using Game;
+using Game.Components;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
+using Leopotam.Ecs;
 using Level;
 using UI;
 using Unity.Mathematics;
@@ -94,7 +96,7 @@ namespace Infrastructure.States
             var gameStatsView = gameStatsObject.GetComponent<GameStatsView>();
             Assert.IsNotNull(gameStatsView);
 
-            await gameStatsView.Construct(_gameFactory, world.StageTimer, player.Hero);
+            await gameStatsView.Construct(_gameFactory, world.StageTimer, player.HeroEntity);
 
             Game.GameStatsView = gameStatsView;
         }
@@ -111,7 +113,8 @@ namespace Infrastructure.States
             if (mainCamera == null)
                 return;
 
-            var playerPosition = player.Hero.WorldPosition;
+            var heroEntity = player.HeroEntity;
+            var playerPosition = heroEntity.Get<TransformComponent>().WorldPosition;
             var levelSize = levelModel.Size;
 
             var levelConfig = levelStage.LevelConfig;

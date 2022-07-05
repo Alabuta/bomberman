@@ -1,47 +1,33 @@
 ﻿using Game.Components;
-using Game.Hero;
+using Game.Components.Entities;
 using Leopotam.Ecs;
 
 namespace Game.Systems
 {
     public sealed class WorldViewUpdateSystem : IEcsRunSystem
     {
-        private EcsWorld _ecsWorld;
+        private readonly EcsWorld _ecsWorld;
 
-        private EcsFilter<EnemyComponent, TransformComponent> _enemiesFilter;
-        private EcsFilter<HeroComponent, TransformComponent> _heroesFilter;
+        private EcsFilter<EntityComponent, TransformComponent> _entitiesFilter;
 
         public void Run()
         {
-            UpdateHeroes();
-            UpdateEnemies();
+            UpdateEntities();
         }
 
-        private void UpdateHeroes()
+        private void UpdateEntities()
         {
-            if (_heroesFilter.IsEmpty())
+            if (_entitiesFilter.IsEmpty())
                 return;
 
-            foreach (var entityIndex in _heroesFilter)
+            foreach (var entityIndex in _entitiesFilter)
             {
-                ref var heroComponent = ref _heroesFilter.Get1(entityIndex);
-                ref var movementComponent = ref _heroesFilter.Get2(entityIndex);
+                ref var entityComponent = ref _entitiesFilter.Get1(entityIndex);
+                ref var transformComponent = ref _entitiesFilter.Get2(entityIndex);
 
-                heroComponent.Controller.WorldPosition = movementComponent.WorldPosition;
-            }
-        }
-
-        private void UpdateEnemies()
-        {
-            if (_enemiesFilter.IsEmpty())
-                return;
-
-            foreach (var entityIndex in _enemiesFilter)
-            {
-                ref var enemyComponent = ref _enemiesFilter.Get1(entityIndex);
-                ref var movementComponent = ref _enemiesFilter.Get2(entityIndex);
-
-                enemyComponent.Controller.WorldPosition = movementComponent.WorldPosition;
+                entityComponent.Controller.Direction = transformComponent.Direction;
+                entityComponent.Controller.Speed = transformComponent.Speed;
+                entityComponent.Controller.WorldPosition = transformComponent.WorldPosition;
             }
         }
     }

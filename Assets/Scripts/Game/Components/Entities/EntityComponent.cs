@@ -1,13 +1,12 @@
 ﻿using Configs.Entity;
-using Game.Enemies;
 using Math.FixedPointMath;
 
-namespace Game.Components
+namespace Game.Components.Entities
 {
-    public struct EnemyComponent
+    public struct EntityComponent
     {
-        public EnemyConfig Config;
-        public EnemyController Controller;
+        public EntityConfig Config;
+        public EntityController Controller;
 
         public fix HitRadius;
         public fix HurtRadius;

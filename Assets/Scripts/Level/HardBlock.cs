@@ -18,7 +18,7 @@ namespace Level
         {
             LayerMask = config.LayerMask;
 
-            var collider = new BoxColliderComponent(config.Collider as BoxColliderComponentConfig);
+            var collider = new BoxColliderComponent2(config.Collider as BoxColliderComponentConfig);
             Components = new Component[]
             {
                 collider

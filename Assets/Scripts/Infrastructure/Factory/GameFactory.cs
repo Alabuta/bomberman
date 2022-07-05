@@ -2,13 +2,10 @@
 using System.Threading.Tasks;
 using Configs;
 using Configs.Behaviours;
-using Configs.Entity;
 using Configs.Items;
 using Game;
 using Game.Components;
 using Game.Components.Behaviours;
-using Game.Enemies;
-using Game.Hero;
 using Game.Items;
 using Infrastructure.AssetManagement;
 using Infrastructure.Services.Input;
@@ -54,7 +51,12 @@ namespace Infrastructure.Factory
             return new Player(playerConfig);
         }
 
-        public Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity)
+        /*public Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity)
+        {
+            throw new System.NotImplementedException();
+        }*/
+
+        /*public Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity)
         {
             var hero = new Hero(heroConfig, entityController, ecsEntity);
             hero.Id.Replace(new HealthComponent()); // :TODO: ???
@@ -62,12 +64,12 @@ namespace Infrastructure.Factory
             // RegisterProgressReader(hero.HeroHealth); :TODO: remove?
 
             return hero;
-        }
+        }*/
 
-        public Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController, EcsEntity ecsEntity)
+        /*public Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController, EcsEntity ecsEntity)
         {
             return new Enemy(enemyConfig, entityController, ecsEntity);
-        }
+        }*/
 
         public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller)
         {

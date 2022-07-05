@@ -5,11 +5,12 @@ namespace Game
 {
     public interface IEntityController
     {
-        fix Speed { get; set; }
-        float PlaybackSpeed { get; }
-        int2 Direction { get; set; }
+        fix Speed { set; }
+        int2 Direction { set; }
 
-        fix2 WorldPosition { get; set; }
+        fix2 WorldPosition { set; }
+
+        float PlaybackSpeed { get; }
 
         void Die();
 

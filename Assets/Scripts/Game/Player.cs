@@ -1,7 +1,7 @@
 ﻿using Configs;
 using Data;
 using Game.Components;
-using Game.Hero;
+using Game.Components.Entities;
 using Infrastructure.Services.PersistentProgress;
 using Input;
 using Leopotam.Ecs;
@@ -33,7 +33,7 @@ namespace Game
         public void ApplyInputAction(World world, PlayerInputAction inputAction)
         {
             ref var healthComponent = ref HeroEntity.Get<HealthComponent>();
-            if (healthComponent.CurrentHealth > 0) // :TODO: refactor
+            if (healthComponent.CurrentHealth < 1) // :TODO: refactor
                 return;
 
             OnMove(inputAction.MovementVector);
@@ -60,7 +60,8 @@ namespace Game
             HeroEntity = entity;
             Assert.IsTrue(entity.Has<TransformComponent>());
             Assert.IsTrue(entity.Has<HealthComponent>());
-            Assert.IsTrue(entity.Has<HeroComponent>());
+            Assert.IsTrue(entity.Has<EntityComponent>());
+            Assert.IsTrue(entity.Has<HeroTag>());
 
             // Hero.DeathEvent += OnHeroDeath; :TODO:
         }
@@ -78,11 +79,12 @@ namespace Game
         private void OnMove(float2 value)
         {
             ref var transformComponent = ref HeroEntity.Get<TransformComponent>();
-            ref var heroComponent = ref HeroEntity.Get<HeroComponent>();
+            ref var entityComponent = ref HeroEntity.Get<EntityComponent>();
+
             if (math.lengthsq(value) > 0)
             {
                 transformComponent.Direction = (int2) math.round(value);
-                transformComponent.Speed = heroComponent.InitialSpeed * heroComponent.SpeedMultiplier;
+                transformComponent.Speed = entityComponent.InitialSpeed * entityComponent.SpeedMultiplier;
             }
             else
                 transformComponent.Speed = fix.zero;

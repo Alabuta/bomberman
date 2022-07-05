@@ -49,8 +49,8 @@ namespace Level
 
         public void UpdateWorldModel()
         {
-            var heroes = Players.Values.Select(p => p.Hero).ToArray();
-            var gameContext = new GameContext2(this, LevelModel, heroes);
+            /*var heroes = Players.Values.Select(p => p.HeroEntity).ToArray();
+            var gameContext = new GameContext2(this, LevelModel, heroes);*/
 
             var deltaTime = (fix) Time.fixedDeltaTime + _timeRemainder;
 
@@ -97,25 +97,29 @@ namespace Level
             }
         }*/
 
-        private void ResolveHeroesCollisions()
+        /*private void ResolveHeroesCollisions()
         {
             foreach (var (_, player) in _players)
             {
-                var playerHero = player.Hero;
+                var playerHero = player.HeroEntity;
 
-                if (!playerHero.TryGetComponent<ColliderComponent>(out var heroCollider))
+                if (!playerHero.Has<HasColliderTag>())
                     continue;
 
-                var heroPosition = playerHero.WorldPosition;
+                ref var transformComponent = ref playerHero.Get<TransformComponent>();
+
+                playerHero.Get<ColliderComponent>();
+
+                var heroPosition = transformComponent.WorldPosition;
                 var heroTileCoordinate = LevelModel.ToTileCoordinate(heroPosition);
 
                 var neighborTiles = LevelModel
                     .GetNeighborTiles(heroTileCoordinate)
-                    .Where(t => t.TileLoad?.Components?.Any(c => c is ColliderComponent) ?? false);
+                    .Where(t => t.TileLoad?.Components?.Any(c => c is ColliderComponent2) ?? false);
 
                 foreach (var neighborTile in neighborTiles)
                 {
-                    if (!neighborTile.TileLoad.TryGetComponent<ColliderComponent>(out var tileCollider))
+                    if (!neighborTile.TileLoad.TryGetComponent<ColliderComponent2>(out var tileCollider))
                         continue;
 
                     if ((heroCollider.InteractionLayerMask & neighborTile.TileLoad.LayerMask) == 0)
@@ -129,8 +133,8 @@ namespace Level
                     if (!isIntersected)
                         continue;
 
-                    var travelledPath = playerHero.Speed / (fix2) _tickRate;
-                    var prevPosition = heroPosition - (fix2) playerHero.Direction * travelledPath;
+                    var travelledPath = transformComponent.Speed / (fix2) _tickRate;
+                    var prevPosition = heroPosition - (fix2) transformComponent.Direction * travelledPath;
 
                     var prevDistance = fix2.distance(prevPosition, tilePosition);
                     var r = new fix(0.49);
@@ -139,22 +143,22 @@ namespace Level
                     if (minDistance < prevDistance)
                     {
                         var vector = fix2.normalize_safe(heroPosition - intersectionPoint, fix2.zero);
-                        playerHero.WorldPosition = intersectionPoint + vector * R; // :TODO: use actual radius
+                        transformComponent.WorldPosition = intersectionPoint + vector * R; // :TODO: use actual radius
                     }
                 }
             }
-        }
+        }*/
 
-        private static bool IntersectionPoint(ColliderComponent colliderA, fix2 centerA, Component colliderB, fix2 centerB,
+        private static bool IntersectionPoint(ColliderComponent2 colliderA, fix2 centerA, Component colliderB, fix2 centerB,
             out fix2 intersection)
         {
             intersection = default;
 
             return colliderA switch
             {
-                CircleColliderComponent circleCollider => circleCollider.CircleIntersectionPoint(centerA, colliderB, centerB,
+                CircleColliderComponent2 circleCollider => circleCollider.CircleIntersectionPoint(centerA, colliderB, centerB,
                     out intersection),
-                BoxColliderComponent boxCollider => boxCollider.BoxIntersectionPoint(centerA, colliderB, centerB,
+                BoxColliderComponent2 boxCollider => boxCollider.BoxIntersectionPoint(centerA, colliderB, centerB,
                     out intersection),
                 _ => false
             };

@@ -95,7 +95,7 @@ namespace Game
 
             ColliderRadius = (fix) config.ColliderRadius;
 
-            WorldPosition = entityController.WorldPosition;
+            // WorldPosition = entityController.WorldPosition;
         }
 
         public void Die()

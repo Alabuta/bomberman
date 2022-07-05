@@ -27,10 +27,10 @@ namespace Items
 
             LayerMask = itemConfig.LayerMask;
 
-            ColliderComponent collider = itemConfig.Collider switch
+            ColliderComponent2 collider = itemConfig.Collider switch
             {
-                BoxColliderComponentConfig config => new BoxColliderComponent(config),
-                CircleColliderComponentConfig config => new CircleColliderComponent(config),
+                BoxColliderComponentConfig config => new BoxColliderComponent2(config),
+                CircleColliderComponentConfig config => new CircleColliderComponent2(config),
                 _ => null
             };
 

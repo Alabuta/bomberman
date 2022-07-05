@@ -2,6 +2,7 @@
 using Game.Components;
 using Game.Components.Behaviours;
 using Leopotam.Ecs;
+using Level;
 using Unity.Mathematics;
 
 namespace Game.Systems
@@ -10,7 +11,8 @@ namespace Game.Systems
     {
         public Action<EcsEntity> HealthChangedEvent;
 
-        private EcsWorld _ecsWorld;
+        private readonly EcsWorld _ecsWorld;
+        private readonly World _world;
 
         private EcsFilter<DamageComponent> _filter;
 
