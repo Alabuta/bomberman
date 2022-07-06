@@ -10,7 +10,6 @@ using Game;
 using Game.Behaviours;
 using Game.Components;
 using Game.Components.Behaviours;
-using Game.Enemies;
 using Game.Systems;
 using Game.Systems.Behaviours;
 using Infrastructure.Factory;
@@ -124,13 +123,6 @@ namespace Level
         private void AddPlayer(PlayerTagConfig playerTagConfig, IPlayer player)
         {
             _players.Add(playerTagConfig, player); // :TODO: refactor
-        }
-
-        private void AddEnemy(Enemy enemy)
-        {
-            // _enemies.Add(enemy);
-
-            // enemy.Health.HealthChangedEvent += () => OnEntityHealthChangedEvent(enemy);
         }
 
         private void AddEnemy(EcsEntity enemy)

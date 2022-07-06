@@ -2,7 +2,7 @@ using System;
 using Game;
 using UnityEngine;
 
-namespace Configs
+namespace Configs.Animations
 {
     [CreateAssetMenu(menuName = "Configs/Animator State Tags Resolver", fileName = "AnimatorStateTagsResolver")]
     public sealed class AnimatorStateTagsResolverConfig : ConfigBase

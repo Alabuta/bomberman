@@ -1,9 +1,6 @@
-using Configs.Items;
-using Game.Items;
-
 namespace Items
 {
-    public class BombItem : Item<BombItemConfig>
+    /*public class BombItem : Item<BombItemConfig>
     {
         public BombItemConfig Config { get; }
 
@@ -12,5 +9,5 @@ namespace Items
         {
             Config = itemConfig;
         }
-    }
+    }*/
 }

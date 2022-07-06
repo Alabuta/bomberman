@@ -5,7 +5,6 @@ using System.Linq;
 using Configs.Level;
 using Game;
 using Game.Components.Entities;
-using Items;
 using JetBrains.Annotations;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
@@ -279,14 +278,14 @@ namespace Level
             return GetEnumerator();
         }
 
-        public void AddItem(BombItem item, int2 coordinate)
+        /*public void AddItem(BombItem item, int2 coordinate)
         {
-            // _tiles[GetFlattenTileCoordinate(coordinate)].SetLoad(item); // :TODO: refactor
-        }
+            _tiles[GetFlattenTileCoordinate(coordinate)].SetLoad(item); // :TODO: refactor
+        }*/
 
-        public void RemoveItem(int2 coordinate)
+        /*public void RemoveItem(int2 coordinate)
         {
-            // _tiles[GetFlattenTileCoordinate(coordinate)].RemoveLoad(); // :TODO: refactor
-        }
+            _tiles[GetFlattenTileCoordinate(coordinate)].RemoveLoad(); // :TODO: refactor
+        }*/
     }
 }

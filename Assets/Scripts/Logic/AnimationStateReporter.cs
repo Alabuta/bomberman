@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Configs;
+using Configs.Animations;
 using Game;
 using UnityEngine;
 

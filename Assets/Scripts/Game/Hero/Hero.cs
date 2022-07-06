@@ -1,14 +1,6 @@
-﻿using System.Collections.Generic;
-using Configs.Entity;
-using Configs.Game.Colliders;
-using Game.Colliders;
-using Game.Components;
-using Math.FixedPointMath;
-using Unity.Mathematics;
-
-namespace Game.Hero
+﻿namespace Game.Hero
 {
-    public class Hero : Entity<HeroConfig>
+    /*public class Hero : Entity<HeroConfig>
     {
         public BombConfig BombConfig { get; }
 
@@ -39,5 +31,5 @@ namespace Game.Hero
         {
             WorldPosition += (fix2) Direction * Speed * deltaTime;
         }
-    }
+    }*/
 }

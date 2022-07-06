@@ -1,13 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Behaviours;
-using Game.Colliders;
-using Game.Components.Colliders;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
-using Component = Game.Components.Component;
 
 namespace Level
 {
@@ -150,7 +147,7 @@ namespace Level
             }
         }*/
 
-        private static bool IntersectionPoint(ColliderComponent2 colliderA, fix2 centerA, Component colliderB, fix2 centerB,
+        /*private static bool IntersectionPoint(ColliderComponent2 colliderA, fix2 centerA, Component colliderB, fix2 centerB, :TODO: fix
             out fix2 intersection)
         {
             intersection = default;
@@ -163,7 +160,7 @@ namespace Level
                     out intersection),
                 _ => false
             };
-        }
+        }*/
 
         private void UpdateBehaviourAgents(GameContext2 gameContext)
         {

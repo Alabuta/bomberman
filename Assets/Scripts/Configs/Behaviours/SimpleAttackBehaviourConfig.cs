@@ -1,6 +1,3 @@
-using Game;
-using Game.Behaviours;
-using Game.Behaviours.AttackBehaviours;
 using UnityEngine;
 
 namespace Configs.Behaviours
@@ -9,8 +6,5 @@ namespace Configs.Behaviours
     public class SimpleAttackBehaviourConfig : BehaviourConfig
     {
         public int DamageValue = 1;
-
-        public IBehaviourAgent Make(IEntity entity) =>
-            new SimpleAttackBehaviourAgent(this, entity);
     }
 }

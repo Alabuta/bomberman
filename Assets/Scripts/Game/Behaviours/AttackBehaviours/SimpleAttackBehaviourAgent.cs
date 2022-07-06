@@ -1,11 +1,6 @@
-﻿using System;
-using System.Linq;
-using Configs.Behaviours;
-using Math.FixedPointMath;
-
-namespace Game.Behaviours.AttackBehaviours
+﻿namespace Game.Behaviours.AttackBehaviours
 {
-    public class SimpleAttackBehaviourAgent : BehaviourAgent
+    /*public class SimpleAttackBehaviourAgent : BehaviourAgent :TODO: fix
     {
         private readonly int _damageValue;
 
@@ -34,5 +29,5 @@ namespace Game.Behaviours.AttackBehaviours
         {
             return fix2.distance(entityA.WorldPosition, entityB.WorldPosition) < entityA.HitRadius + entityB.HurtRadius;
         }
-    }
+    }*/
 }

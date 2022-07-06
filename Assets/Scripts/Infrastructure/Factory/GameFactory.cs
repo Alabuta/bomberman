@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Configs;
 using Configs.Behaviours;
-using Configs.Items;
+using Configs.Game;
 using Game;
 using Game.Components;
 using Game.Components.Behaviours;
-using Game.Items;
 using Infrastructure.AssetManagement;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Input;
-using Items;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
@@ -71,10 +68,10 @@ namespace Infrastructure.Factory
             return new Enemy(enemyConfig, entityController, ecsEntity);
         }*/
 
-        public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller)
+        /*public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller) :TODO: fix
         {
             return new BombItem(bobItemConfig, controller);
-        }
+        }*/
 
         public void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity entity)
         {

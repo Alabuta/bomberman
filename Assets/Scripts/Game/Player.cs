@@ -1,4 +1,4 @@
-﻿using Configs;
+﻿using Configs.Game;
 using Data;
 using Game.Components;
 using Game.Components.Entities;

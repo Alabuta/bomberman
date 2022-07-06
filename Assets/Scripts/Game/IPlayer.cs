@@ -1,4 +1,4 @@
-﻿using Configs;
+﻿using Configs.Game;
 using Input;
 using Leopotam.Ecs;
 using Level;

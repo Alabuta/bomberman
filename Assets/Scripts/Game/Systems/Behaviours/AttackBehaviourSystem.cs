@@ -1,22 +1,22 @@
 ﻿using Game.Components;
+using Game.Components.Behaviours;
 using Leopotam.Ecs;
+using Level;
 using Math.FixedPointMath;
 
 namespace Game.Systems.Behaviours
 {
     public sealed class AttackBehaviourSystem : IEcsRunSystem
     {
-        private EcsWorld _ecsWorld;
+        private readonly EcsWorld _ecsWorld;
+        private readonly World _world;
 
-        private EcsFilter<HealthComponent> _targetsFilter;
-        private EcsFilter<SimpleAttackBehaviourComponent> _attackersFilter;
+        private EcsFilter<TransformComponent, HealthComponent> _targetsFilter;
+        private EcsFilter<TransformComponent, SimpleAttackBehaviourComponent> _attackersFilter;
 
         public void Run()
         {
-            if (_targetsFilter.IsEmpty())
-                return;
-
-            if (_attackersFilter.IsEmpty())
+            if (_attackersFilter.IsEmpty() || _targetsFilter.IsEmpty())
                 return;
 
             foreach (var index in _attackersFilter)
@@ -25,10 +25,10 @@ namespace Game.Systems.Behaviours
 
         private void Update(int attackerIndex)
         {
-            ref var attackBehaviourComponent = ref _attackersFilter.Get1(attackerIndex);
+            ref var attackerTransform = ref _attackersFilter.Get1(attackerIndex);
+            ref var attackComponent = ref _attackersFilter.Get2(attackerIndex);
 
-            var world = Infrastructure.Game.World;
-            var levelModel = world.LevelModel;
+            var levelModel = _world.LevelModel;
 
             /*var overlappedHeroes = world.Players.Values
                 .Select(p => p.Hero)

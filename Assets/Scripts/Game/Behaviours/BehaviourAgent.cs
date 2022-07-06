@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
@@ -22,13 +21,13 @@ namespace Game.Behaviours
         public World World { get; }
         public LevelModel LevelModel { get; }
 
-        public IReadOnlyCollection<Hero.Hero> Heroes { get; }
+        // public IReadOnlyCollection<Hero.Hero> Heroes { get; } :TODO: fix
 
-        public GameContext2(World world, LevelModel levelModel, IReadOnlyCollection<Hero.Hero> heroes)
+        public GameContext2(World world, LevelModel levelModel /*, IReadOnlyCollection<Hero.Hero> heroes*/) // :TODO: fix
         {
             World = world;
             LevelModel = levelModel;
-            Heroes = heroes;
+            // Heroes = heroes;
         }
     }
 

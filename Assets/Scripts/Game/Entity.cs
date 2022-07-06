@@ -1,16 +1,6 @@
-using System;
-using System.Linq;
-using Configs.Entity;
-using Leopotam.Ecs;
-using Level;
-using Math.FixedPointMath;
-using Unity.Mathematics;
-using UnityEngine;
-using Component = Game.Components.Component;
-
 namespace Game
 {
-    public abstract class Entity<TConfig> : ITileLoad, IEntity where TConfig : EntityConfig
+    /*public abstract class Entity<TConfig> : IEntity where TConfig : EntityConfig
     {
         public event Action<IEntity> DeathEvent;
         public event Action<IEntity, int> DamageEvent;
@@ -129,5 +119,5 @@ namespace Game
 
             DamageEvent?.Invoke(this, damage);
         }
-    }
+    }*/
 }

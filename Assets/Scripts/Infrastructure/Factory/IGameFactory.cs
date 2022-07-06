@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Configs;
 using Configs.Behaviours;
-using Configs.Items;
+using Configs.Game;
 using Game;
-using Game.Items;
 using Infrastructure.Services;
 using Infrastructure.Services.PersistentProgress;
 using Input;
-using Items;
 using JetBrains.Annotations;
 using Leopotam.Ecs;
 using Unity.Mathematics;
@@ -29,7 +26,7 @@ namespace Infrastructure.Factory
 
         Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController, EcsEntity ecsEntity);*/
 
-        BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller);
+        // BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller);
 
         GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null);
 

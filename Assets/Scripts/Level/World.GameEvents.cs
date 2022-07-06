@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using Configs.Entity;
 using Game;
 using Game.Components.Entities;
 using Game.Items;
 using Input;
-using Items;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
@@ -16,7 +14,7 @@ namespace Level
     public partial class World
     {
         private readonly Dictionary<ulong, List<PlayerInputAction>> _playersInputActions = new();
-        private readonly Dictionary<IPlayer, Queue<BombItem>> _playerBombs = new();
+        private readonly Dictionary<IPlayer, Queue<EcsEntity>> _playerBombs = new();
 
         private void OnPlayerInputAction(PlayerInputAction inputActions)
         {
@@ -43,13 +41,13 @@ namespace Level
             var itemController = go.GetComponent<ItemController>();
             Assert.IsNotNull(itemController);
 
-            var bombItem = _gameFactory.CreateItem(bombConfig.ItemConfig, itemController);
-            Assert.IsNotNull(bombItem);
+            var bombItem = _ecsWorld.NewEntity(); // _gameFactory.CreateItem(bombConfig.ItemConfig, itemController); :TODO: fix
+            Assert.AreNotEqual(bombItem, EcsEntity.Null);
 
-            LevelModel.AddItem(bombItem, bombCoordinate);
+            // LevelModel.AddItem(bombItem, bombCoordinate);
 
             if (!_playerBombs.ContainsKey(player))
-                _playerBombs.Add(player, new Queue<BombItem>());
+                _playerBombs.Add(player, new Queue<EcsEntity>());
 
             _playerBombs[player].Enqueue(bombItem);
         }
@@ -62,7 +60,7 @@ namespace Level
             if (!bombsQueue.TryDequeue(out var bombItem))
                 return;
 
-            var bombCoordinate = LevelModel.ToTileCoordinate(bombItem.Controller.WorldPosition);
+            /*var bombCoordinate = LevelModel.ToTileCoordinate(bombItem.Controller.WorldPosition); :TODO: fix
 
             LevelModel.RemoveItem(bombCoordinate);
             bombItem.Controller.DestroyItem();
@@ -84,7 +82,7 @@ namespace Level
 
             ApplyDamageToEntities(blastLines, bombBlastDamage);
 
-            ApplyDamageToBlocks(blastLines);
+            ApplyDamageToBlocks(blastLines);*/
         }
 
         private void ApplyDamageToBlocks(int2[][] blastLines)
@@ -155,7 +153,7 @@ namespace Level
                 entity.Health.ApplyDamage(bombBlastDamage);*/
         }
 
-        private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, fix2 position, BombItem bombItem)
+        /*private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, fix2 position, BombItem bombItem) :TODO: fix
         {
             var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
             Assert.IsNotNull(go);
@@ -177,7 +175,7 @@ namespace Level
                         .Count();
                 });
 
-            effectController.Construct(blastRadius, blastRadiusInDirections);*/
+            effectController.Construct(blastRadius, blastRadiusInDirections);#1#
 
             var effectAnimator = go.GetComponent<EffectAnimator>();
             Assert.IsNotNull(effectAnimator);
@@ -187,7 +185,7 @@ namespace Level
                 if (state == AnimatorState.Finish)
                     go.SetActive(false);
             };
-        }
+        }*/
 
         // :TODO: add an item pick up event handler
         // :TODO: add an entity death event handler

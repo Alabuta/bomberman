@@ -1,16 +1,6 @@
-using System.Linq;
-using Configs.Game.Colliders;
-using Configs.Items;
-using Game.Colliders;
-using Game.Components.Colliders;
-using Game.Items;
-using Level;
-using UnityEngine;
-using Component = Game.Components.Component;
-
 namespace Items
 {
-    public abstract class Item<TConfig> : ITileLoad, IItem where TConfig : ItemConfig
+    /*public abstract class Item<TConfig> : IItem where TConfig : ItemConfig
     {
         public ItemConfig ItemConfig { get; }
 
@@ -46,5 +36,5 @@ namespace Items
             component = Components.OfType<T>().FirstOrDefault();
             return component != default;
         }
-    }
+    }*/
 }
