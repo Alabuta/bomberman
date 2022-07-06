@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Behaviours;
 using Game.Colliders;
+using Game.Components.Colliders;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;

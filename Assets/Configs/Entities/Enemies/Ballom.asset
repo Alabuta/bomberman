@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ballom
   m_EditorClassIdentifier: 
   Name: Ballom
-  Layer: 0
+  Layer: 7
   Prefab:
     m_AssetGUID: 05808de62001e784dae2b41d43471351
     m_SubObjectName: 

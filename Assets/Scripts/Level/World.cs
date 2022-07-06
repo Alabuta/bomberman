@@ -74,6 +74,7 @@ namespace Level
             _ecsFixedSystems
                 .OneFrame<DamageComponent>()
                 .Add(new MovementBehaviourSystem())
+                .Add(new CollisionsResolverSystem())
                 .Add(new HealthSystem())
                 .Inject(this)
                 .Init();
@@ -115,7 +116,7 @@ namespace Level
             _ecsWorld.Destroy();
         }
 
-        private EcsEntity NewEntity()
+        public EcsEntity NewEntity()
         {
             return _ecsWorld.NewEntity();
         }

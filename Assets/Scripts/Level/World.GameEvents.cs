@@ -89,7 +89,7 @@ namespace Level
 
         private void ApplyDamageToBlocks(int2[][] blastLines)
         {
-            var blocksToDestroy = blastLines
+            /*var blocksToDestroy = blastLines //:TODO: fix
                 .Select(blastLine =>
                 {
                     return blastLine
@@ -131,12 +131,12 @@ namespace Level
                     if (state == AnimatorState.Finish)
                         effectGameObject.SetActive(false);
                 };
-            }
+            }*/
         }
 
         private void ApplyDamageToEntities(int2[][] blastLines, int bombBlastDamage)
         {
-            var entitiesToBeDamaged = blastLines
+            /*var entitiesToBeDamaged = blastLines // :TODO: fix
                 .SelectMany(blastLine =>
                 {
                     return blastLine
@@ -149,7 +149,7 @@ namespace Level
                             return tileLoad is not (HardBlock or SoftBlock);
                         })
                         .SelectMany(GetEnemiesByCoordinate);
-                });
+                });*/
 
             /*foreach (var entity in entitiesToBeDamaged) :TODO: refactor
                 entity.Health.ApplyDamage(bombBlastDamage);*/
@@ -163,7 +163,7 @@ namespace Level
             var effectController = go.GetComponent<BlastEffectController>();
             Assert.IsNotNull(effectController);
 
-            var blastRadiusInDirections = blastLines
+            /*var blastRadiusInDirections = blastLines // :TODO: fix
                 .Select(blastLine =>
                 {
                     return blastLine
@@ -177,7 +177,7 @@ namespace Level
                         .Count();
                 });
 
-            effectController.Construct(blastRadius, blastRadiusInDirections);
+            effectController.Construct(blastRadius, blastRadiusInDirections);*/
 
             var effectAnimator = go.GetComponent<EffectAnimator>();
             Assert.IsNotNull(effectAnimator);

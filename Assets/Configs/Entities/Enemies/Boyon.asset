@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boyon
   m_EditorClassIdentifier: 
   Name: Boyon
-  Layer: 0
+  Layer: 7
   Prefab:
     m_AssetGUID: fad79860e118cac469e68cf58a34733a
     m_SubObjectName: 

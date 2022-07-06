@@ -3,16 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Configs.Level;
-using Configs.Level.Tile;
+using Game;
+using Game.Components.Entities;
 using Items;
 using JetBrains.Annotations;
+using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine.Assertions;
 
 namespace Level
 {
-    public sealed class LevelModel : IEnumerable<ILevelTileView>
+    public sealed class LevelModel : IEnumerable<EcsEntity>
     {
         private static readonly int2[] NeighborTilesOffsets =
         {
@@ -28,7 +30,7 @@ namespace Level
         };
 
         [NotNull]
-        private readonly LevelTile[] _tiles;
+        private readonly EcsEntity[] _tiles;
 
         private readonly int2 _size;
         private readonly fix _tileSizeWorldUnits;
@@ -43,8 +45,8 @@ namespace Level
         public fix TileInnerRadius => _tileSizeWorldUnits / new fix(2);
         public fix TileOuterRadius => TileInnerRadius * fix.sqrt(new fix(2));
 
-        public ILevelTileView this[int index] => _tiles[index];
-        public ILevelTileView this[int2 coordinate] => _tiles[GetFlattenTileCoordinate(coordinate)];
+        public EcsEntity this[int index] => _tiles[index];
+        public EcsEntity this[int2 coordinate] => _tiles[GetFlattenTileCoordinate(coordinate)];
 
         public LevelModel(World world, LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
@@ -85,7 +87,13 @@ namespace Level
             var index = GetFlattenTileCoordinate(coordinate);
             var worldPosition = ToWorldPosition(coordinate);
 
-            _tiles[index] = new LevelTile(LevelTileType.FloorTile, coordinate, worldPosition);
+            var ecsEntity = _tiles[index];
+            ecsEntity.Replace(new LevelTileComponent
+            {
+                Type = LevelTileType.FloorTile,
+                Coordinate = coordinate,
+                WorldPosition = worldPosition
+            });
         }
 
         private static IEnumerable<int2> GetPlayersSpawnCorners(LevelStageConfig levelStageConfig)
@@ -119,7 +127,7 @@ namespace Level
             );
         }
 
-        private LevelTile[] GenerateLevelGrid(World world, LevelConfig levelConfig, ICollection<int> spawnTilesIndices,
+        private EcsEntity[] GenerateLevelGrid(World world, LevelConfig levelConfig, ICollection<int> spawnTilesIndices,
             int totalTilesCount,
             int floorTilesCount, int softBlocksCount)
         {
@@ -134,20 +142,36 @@ namespace Level
                 .Select(
                     index =>
                     {
+                        var ecsEntity = world.NewEntity();
+
                         var coordinate = math.int2(index % _size.x, index / _size.x);
                         var worldPosition = ToWorldPosition(coordinate);
 
                         if (spawnTilesIndices.Contains(index))
-                            return new LevelTile(LevelTileType.FloorTile, coordinate, worldPosition);
-                        // return new LevelTile(LevelTileType.FloorTile, coordinate, worldPosition);
+                        {
+                            ecsEntity.Replace(new LevelTileComponent
+                            {
+                                Type = LevelTileType.FloorTile,
+                                Coordinate = coordinate,
+                                WorldPosition = worldPosition
+                            });
+
+                            return ecsEntity;
+                        }
 
                         if (IsHardBlockTileCoordinate(coordinate))
                         {
-                            var levelTile = new LevelTile(LevelTileType.HardBlock, coordinate, worldPosition);
-                            levelTile.SetLoad(CreateBlock(hardBlockConfig));
-                            return levelTile;
+                            ecsEntity.Replace(new LevelTileComponent
+                            {
+                                Type = LevelTileType.HardBlock,
+                                Coordinate = coordinate,
+                                WorldPosition = worldPosition
+                            });
+
+                            ecsEntity.AddColliderComponent(hardBlockConfig.Collider);
+
+                            return ecsEntity;
                         }
-                        // return new LevelTile(LevelTileType.HardBlock, coordinate, worldPosition);
 
                         var range = (int2) (tileTypeCount == int2.zero);
 
@@ -158,20 +182,26 @@ namespace Level
                         typeIndex = math.clamp(typeIndex, range.x, 2 - range.y);
 
                         var tileType = typeIndex == 0 ? LevelTileType.FloorTile : LevelTileType.SoftBlock;
-                        var tile = new LevelTile(tileType, coordinate, worldPosition);
+
+                        ecsEntity.Replace(new LevelTileComponent
+                        {
+                            Type = tileType,
+                            Coordinate = coordinate,
+                            WorldPosition = worldPosition
+                        });
 
                         if (tileType == LevelTileType.SoftBlock)
-                            tile.SetLoad(CreateBlock(softBlockConfig));
+                            ecsEntity.AddColliderComponent(softBlockConfig.Collider);
 
                         --tileTypeCount[typeIndex];
 
-                        return tile;
+                        return ecsEntity;
                     }
                 )
                 .ToArray();
         }
 
-        private static ITileLoad CreateBlock(BlockConfig blockConfig)
+        /*private static ITileLoad CreateBlock(BlockConfig blockConfig)
         {
             return blockConfig switch
             {
@@ -179,7 +209,7 @@ namespace Level
                 SoftBlockConfig config => new SoftBlock(config),
                 _ => null
             };
-        }
+        }*/
 
         public fix2 GetCornerWorldPosition(int2 corner)
         {
@@ -225,7 +255,7 @@ namespace Level
             return math.all(coordinate >= 0) && math.all(coordinate < _size);
         }
 
-        public IEnumerable<ILevelTileView> GetNeighborTiles(int2 coordinate)
+        public IEnumerable<EcsEntity> GetNeighborTiles(int2 coordinate)
         {
             return NeighborTilesOffsets
                 .Select(o => coordinate + o)
@@ -233,12 +263,13 @@ namespace Level
                 .Select(c => this[c]);
         }
 
-        public IEnumerable<LevelTile> GetTilesByType(LevelTileType type)
+        public IEnumerable<EcsEntity> GetTilesByType(LevelTileType type)
         {
-            return _tiles.Where(t => t.Type == type);
+            var tilesByType = _tiles.Where(t => t.Get<LevelTileComponent>().Type == type).ToArray();
+            return tilesByType; // :TODO: refactor
         }
 
-        public IEnumerator<ILevelTileView> GetEnumerator()
+        public IEnumerator<EcsEntity> GetEnumerator()
         {
             return _tiles.AsEnumerable().GetEnumerator();
         }
@@ -250,12 +281,12 @@ namespace Level
 
         public void AddItem(BombItem item, int2 coordinate)
         {
-            _tiles[GetFlattenTileCoordinate(coordinate)].SetLoad(item);
+            // _tiles[GetFlattenTileCoordinate(coordinate)].SetLoad(item); // :TODO: refactor
         }
 
         public void RemoveItem(int2 coordinate)
         {
-            _tiles[GetFlattenTileCoordinate(coordinate)].RemoveLoad();
+            // _tiles[GetFlattenTileCoordinate(coordinate)].RemoveLoad(); // :TODO: refactor
         }
     }
 }

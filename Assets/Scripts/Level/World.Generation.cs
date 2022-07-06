@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 using Configs;
 using Configs.Entity;
 using Configs.Game;
-using Configs.Game.Colliders;
 using Configs.Level;
 using Data;
-using Game.Colliders;
+using Game;
 using Game.Components;
-using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Enemies;
 using Game.Hero;
@@ -94,7 +92,7 @@ namespace Level
             for (var i = 0; i < columnsNumber * rowsNumber; ++i)
             {
                 var tile = levelModel[i];
-                var tileType = tile.Type;
+                var tileType = tile.Get<LevelTileComponent>().Type;
                 if (tileType == LevelTileType.FloorTile)
                     continue;
 
@@ -132,18 +130,19 @@ namespace Level
                 .Select(p => LevelModel.ToTileCoordinate(p.HeroEntity.Get<TransformComponent>().WorldPosition))
                 .ToArray();
 
-            var floorTiles = LevelModel.GetTilesByType(LevelTileType.FloorTile)
-                .Where(t => !playersCoordinates.Contains(t.Coordinate))
+            var floorTiles = LevelModel
+                .GetTilesByType(LevelTileType.FloorTile)
+                .Where(t => !playersCoordinates.Contains(t.Get<LevelTileComponent>().Coordinate))
                 .ToList();
 
             Assert.IsTrue(enemyConfigs.Length <= floorTiles.Count, "enemies to spawn count greater than the floor tiles count");
 
-            foreach (var enemyConfig in enemyConfigs)
+            foreach (var (enemyConfigIndex, enemyConfig) in enemyConfigs.Select((c, i) => (i, c)))
             {
-                var index = RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index);
+                var index = RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index, enemyConfigIndex);
                 var floorTile = floorTiles[index];
 
-                var task = CreateAndSpawnEnemy(enemyConfig, floorTile.WorldPosition);
+                var task = CreateAndSpawnEnemy(enemyConfig, floorTile.Get<LevelTileComponent>().WorldPosition);
                 var enemy = await task;
 
                 AddEnemy(enemy);
@@ -204,7 +203,7 @@ namespace Level
                 MaxHealth = heroConfig.Health
             });
 
-            AddColliderComponent(heroConfig, entity);
+            entity.AddColliderComponent(heroConfig.Collider);
 
             var go = await task;
             Assert.IsNotNull(go);
@@ -223,7 +222,7 @@ namespace Level
                 InitialSpeed = (fix) heroConfig.Speed,
                 SpeedMultiplier = fix.one,
 
-                InteractionLayerMask = heroConfig.Collider.InteractionLayerMask
+                LayerMask = heroConfig.LayerMask
             });
 
             player.AttachHero(entity);
@@ -253,7 +252,7 @@ namespace Level
                 MaxHealth = enemyConfig.Health
             });
 
-            AddColliderComponent(enemyConfig, entity);
+            entity.AddColliderComponent(enemyConfig.Collider);
 
             _gameFactory.AddBehaviourComponents(enemyConfig.BehaviourConfigs, entity);
 
@@ -274,37 +273,10 @@ namespace Level
                 InitialSpeed = (fix) enemyConfig.Speed,
                 SpeedMultiplier = fix.one,
 
-                InteractionLayerMask = enemyConfig.Collider.InteractionLayerMask
+                LayerMask = enemyConfig.LayerMask
             });
 
             return entity;
-        }
-
-        private static void AddColliderComponent(EntityConfig entityConfig, EcsEntity entity)
-        {
-            switch (entityConfig.Collider)
-            {
-                case BoxColliderComponentConfig colliderConfig:
-                    entity.Replace(new BoxColliderComponent
-                    {
-                        InteractionLayerMask = colliderConfig.InteractionLayerMask,
-                        InnerRadius = (fix) colliderConfig.InnerRadius
-                    });
-                    entity.Replace(new HasColliderTag());
-                    break;
-
-                case CircleColliderComponentConfig colliderConfig:
-                    entity.Replace(new CircleColliderComponent
-                    {
-                        InteractionLayerMask = colliderConfig.InteractionLayerMask,
-                        Radius = (fix) colliderConfig.Radius
-                    });
-                    entity.Replace(new HasColliderTag());
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }

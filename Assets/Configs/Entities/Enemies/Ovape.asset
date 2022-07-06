@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ovape
   m_EditorClassIdentifier: 
   Name: 
-  Layer: 0
+  Layer: 7
   Prefab:
     m_AssetGUID: 
     m_SubObjectName: 
@@ -28,4 +28,4 @@ MonoBehaviour:
   HurtRadius: 0.1
   ColliderRadius: 0.5
   Collider: {fileID: 0}
-  BehaviourConfig: []
+  BehaviourConfigs: []
