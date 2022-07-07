@@ -148,7 +148,7 @@ namespace Level
 
                         if (spawnTilesIndices.Contains(index))
                         {
-                            ecsEntity.Replace(new LevelTileComponent
+                            ecsEntity.Replace(new LevelTileComponent // :TODO: refactor
                             {
                                 Type = LevelTileType.FloorTile,
                                 Coordinate = coordinate,

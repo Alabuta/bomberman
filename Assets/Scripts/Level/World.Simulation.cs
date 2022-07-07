@@ -24,6 +24,8 @@ namespace Level
 
         public ulong Tick { get; private set; }
 
+        public int TickRate => _tickRate;
+
         public fix FixedDeltaTime => _fixedDeltaTime;
 
         public void StartSimulation()
