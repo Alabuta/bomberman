@@ -2,6 +2,7 @@
 using Configs.Game.Colliders;
 using Game.Colliders;
 using Game.Components.Colliders;
+using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 

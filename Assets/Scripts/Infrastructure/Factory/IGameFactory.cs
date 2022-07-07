@@ -44,6 +44,6 @@ namespace Infrastructure.Factory
 
         Task<T> LoadAssetAsync<T>(AssetReference reference);
 
-        void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity entity);
+        void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity ecsEntity);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Leopotam.Ecs;
 
-namespace Game.Components.Entities
+namespace Game.Components.Tags
 {
     public struct EnemyTag : IEcsIgnoreInFilter
     {

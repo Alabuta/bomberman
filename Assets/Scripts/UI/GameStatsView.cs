@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Configs.Entity;
 using Game;
 using Game.Components.Entities;
+using Game.Components.Tags;
 using Infrastructure.Factory;
 using Leopotam.Ecs;
 using TMPro;

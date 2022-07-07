@@ -3,6 +3,7 @@ using Game.Colliders;
 using Game.Components;
 using Game.Components.Colliders;
 using Game.Components.Entities;
+using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
@@ -14,7 +15,7 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private EcsFilter<TransformComponent, HasColliderTag, HeroTag> _filter;
+        private EcsFilter<TransformComponent, LayerMaskComponent, HasColliderTag>.Exclude<PositionExternalControlTag> _filter;
 
         public void Run()
         {
@@ -39,10 +40,9 @@ namespace Game.Systems
 
             var ecsEntityA = _filter.GetEntity(index);
 
-            ref var entityComponentA = ref ecsEntityA.Get<EntityComponent>();
-            var entityLayerMaskA = entityComponentA.LayerMask;
-
             ref var transformComponentA = ref _filter.Get1(index);
+            var entityLayerMaskA = _filter.Get2(index).Value;
+
             ref var colliderComponentA = ref ecsEntityA.Get<CircleColliderComponent>();
 
             var entityPositionA = transformComponentA.WorldPosition;

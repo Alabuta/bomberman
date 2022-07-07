@@ -2,6 +2,7 @@
 using Game.Components;
 using Game.Components.Behaviours;
 using Game.Components.Entities;
+using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
@@ -14,8 +15,8 @@ namespace Game.Systems.Behaviours
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private EcsFilter<EntityComponent, TransformComponent, SimpleMovementBehaviourComponent> _filterEnemies;
-        private EcsFilter<HeroTag, TransformComponent> _filterHeroes;
+        private readonly EcsFilter<LayerMaskComponent, TransformComponent, SimpleMovementBehaviourComponent> _filterEnemies;
+        private readonly EcsFilter<HeroTag, TransformComponent> _filterHeroes;
 
         public void Run()
         {
@@ -30,7 +31,7 @@ namespace Game.Systems.Behaviours
 
         private void UpdateEnemy(int entityIndex)
         {
-            ref var entityComponent = ref _filterEnemies.Get1(entityIndex); // :TODO: get rid of EntityComponent
+            var entityLayerMask = _filterEnemies.Get1(entityIndex).Value;
             ref var transformComponent = ref _filterEnemies.Get2(entityIndex);
             ref var movementBehaviourComponent = ref _filterEnemies.Get3(entityIndex);
 
@@ -52,8 +53,6 @@ namespace Game.Systems.Behaviours
             var toWorldPosition = movementBehaviourComponent.ToWorldPosition;
             var currentTileCoordinate = levelModel.ToTileCoordinate(toWorldPosition);
             int2 targetTileCoordinate;
-
-            var entityLayerMask = entityComponent.LayerMask;
 
             var randomValue = _world.RandomGenerator.Range(fix.zero, fix.one, (int) _world.Tick);
             if (randomValue < movementBehaviourComponent.DirectionChangeChance)

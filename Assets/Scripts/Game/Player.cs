@@ -2,6 +2,7 @@
 using Data;
 using Game.Components;
 using Game.Components.Entities;
+using Game.Components.Tags;
 using Infrastructure.Services.PersistentProgress;
 using Input;
 using Leopotam.Ecs;

@@ -9,6 +9,7 @@ using Data;
 using Game;
 using Game.Components;
 using Game.Components.Entities;
+using Game.Components.Tags;
 using Game.Enemies;
 using Game.Hero;
 using Infrastructure.Factory;
@@ -219,9 +220,12 @@ namespace Level
                 HurtRadius = (fix) heroConfig.HurtRadius,
 
                 InitialSpeed = (fix) heroConfig.Speed,
-                SpeedMultiplier = fix.one,
+                SpeedMultiplier = fix.one
+            });
 
-                LayerMask = heroConfig.LayerMask
+            entity.Replace(new LayerMaskComponent
+            {
+                Value = heroConfig.LayerMask
             });
 
             player.AttachHero(entity);
@@ -270,9 +274,12 @@ namespace Level
                 HurtRadius = (fix) enemyConfig.HurtRadius,
 
                 InitialSpeed = (fix) enemyConfig.Speed,
-                SpeedMultiplier = fix.one,
+                SpeedMultiplier = fix.one
+            });
 
-                LayerMask = enemyConfig.LayerMask
+            entity.Replace(new LayerMaskComponent
+            {
+                Value = enemyConfig.LayerMask
             });
 
             return entity;

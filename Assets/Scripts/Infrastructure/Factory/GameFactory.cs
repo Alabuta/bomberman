@@ -5,6 +5,7 @@ using Configs.Game;
 using Game;
 using Game.Components;
 using Game.Components.Behaviours;
+using Game.Components.Tags;
 using Infrastructure.AssetManagement;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
@@ -73,14 +74,14 @@ namespace Infrastructure.Factory
             return new BombItem(bobItemConfig, controller);
         }*/
 
-        public void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity entity)
+        public void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity ecsEntity)
         {
             foreach (var behaviourConfig in behaviourConfigs)
             {
                 switch (behaviourConfig)
                 {
                     case SimpleMovementBehaviourConfig config:
-                        var transformComponent = entity.Get<TransformComponent>();
+                        var transformComponent = ecsEntity.Get<TransformComponent>();
 
                         var component = new SimpleMovementBehaviourComponent
                         {
@@ -93,7 +94,8 @@ namespace Infrastructure.Factory
                             ToWorldPosition = transformComponent.WorldPosition
                         };
 
-                        entity.Replace(component);
+                        ecsEntity.Replace(component);
+                        ecsEntity.Replace(new PositionExternalControlTag());
                         break;
 
                     case SimpleAttackBehaviourConfig config:

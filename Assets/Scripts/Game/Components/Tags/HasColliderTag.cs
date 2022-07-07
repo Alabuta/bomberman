@@ -1,6 +1,6 @@
 ﻿using Leopotam.Ecs;
 
-namespace Game.Components.Colliders
+namespace Game.Components.Tags
 {
     public struct HasColliderTag : IEcsIgnoreInFilter
     {

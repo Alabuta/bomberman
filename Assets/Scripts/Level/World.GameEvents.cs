@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Configs.Entity;
 using Game;
 using Game.Components.Entities;
+using Game.Components.Tags;
 using Game.Items;
 using Input;
 using Leopotam.Ecs;

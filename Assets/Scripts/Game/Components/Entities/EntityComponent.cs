@@ -11,7 +11,6 @@ namespace Game.Components.Entities
         public fix HitRadius;
         public fix HurtRadius;
 
-        // public fix CurrentSpeed;
         public fix InitialSpeed;
         public fix SpeedMultiplier;
 
