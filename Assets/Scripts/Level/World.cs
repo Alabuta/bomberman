@@ -9,6 +9,8 @@ using Data;
 using Game;
 using Game.Components;
 using Game.Components.Behaviours;
+using Game.Components.Entities;
+using Game.Components.Tags;
 using Game.Systems;
 using Game.Systems.Behaviours;
 using Infrastructure.Factory;
@@ -71,7 +73,7 @@ namespace Level
             healthSystem.HealthChangedEvent += OnEntityHealthChangedEvent;
 
             _ecsFixedSystems
-                .OneFrame<AttackComponent>()
+                .OneFrame<AttackEventComponent>()
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsResolverSystem())
                 .Add(new AttackBehaviourSystem())
@@ -129,14 +131,50 @@ namespace Level
         private void AddEnemy(EcsEntity enemy)
         {
             _enemies.Add(enemy);
-
-            // enemy.Health.HealthChangedEvent += () => OnEntityHealthChangedEvent(enemy); :TODO:
         }
 
         private void OnEntityHealthChangedEvent(EcsEntity ecsEntity)
         {
-            /*if (ecsEntity.Has<>())
-            _behaviourAgents.Remove(ecsEntity);*/
+            if (ecsEntity.Has<HealthComponent>())
+            {
+                ref var healthComponent = ref ecsEntity.Get<HealthComponent>();
+                if (healthComponent.IsAlive()) // :TODO: refactor
+                {
+                    if (ecsEntity.Has<EntityComponent>())
+                    {
+                        ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
+                        entityComponent.Controller.Die();
+                    }
+
+                    if (ecsEntity.Has<TransformComponent>())
+                    {
+                        ref var transformComponent = ref ecsEntity.Get<TransformComponent>();
+                        transformComponent.Speed = fix.zero;
+                    }
+
+                    if (ecsEntity.Has<HeroTag>())
+                    {
+                        var (playerInput, _) = _playerInputs.FirstOrDefault(pi => pi.Value.HeroEntity == ecsEntity);
+
+                        if (playerInput != null)
+                            playerInput.OnInputActionEvent -= OnPlayerInputAction;
+                    }
+
+                    // DeathEvent?.Invoke(this); // :TODO:
+
+                    ecsEntity.Replace(new DeadTag());
+                }
+                else
+                {
+                    if (ecsEntity.Has<EntityComponent>())
+                    {
+                        ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
+                        entityComponent.Controller.TakeDamage();
+                    }
+
+                    // DamageEvent?.Invoke(this, damage); // :TODO:
+                }
+            }
         }
 
         private void AttachPlayerInput(IPlayer player, IPlayerInput playerInput)

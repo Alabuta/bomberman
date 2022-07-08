@@ -46,7 +46,7 @@ namespace Game.Systems.Behaviours
                 if (!areEntitiesOverlapped)
                     continue;
 
-                targetEntity.Replace(new AttackComponent
+                targetEntity.Replace(new AttackEventComponent
                 {
                     DamageValue = attackComponent.DamageValue
                 });

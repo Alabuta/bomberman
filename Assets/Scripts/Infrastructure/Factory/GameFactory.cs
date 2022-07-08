@@ -46,12 +46,12 @@ namespace Infrastructure.Factory
         /*public Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity)
         {
             var hero = new Hero(heroConfig, entityController, ecsEntity);
-            // RegisterProgressReader(hero.HeroHealth); :TODO: remove?
+            // RegisterProgressReader(hero.HeroHealth);
 
             return hero;
         }*/
 
-        /*public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller) :TODO: fix
+        /*public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller)
         {
             return new BombItem(bobItemConfig, controller);
         }*/

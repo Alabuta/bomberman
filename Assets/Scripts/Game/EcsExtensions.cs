@@ -95,5 +95,10 @@ namespace Game
 
             return interactionMask;
         }
+
+        public static bool IsAlive(this ref HealthComponent healthComponent)
+        {
+            return healthComponent.CurrentHealth < 1;
+        }
     }
 }

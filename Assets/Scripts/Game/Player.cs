@@ -13,11 +13,6 @@ using UnityEngine.Assertions;
 
 namespace Game
 {
-    public struct PlayerComponent
-    {
-        public PlayerConfig Config { get; }
-    }
-
     public class Player : IPlayer, ISavedProgressWriter
     {
         public PlayerConfig PlayerConfig { get; }
@@ -33,10 +28,6 @@ namespace Game
 
         public void ApplyInputAction(World world, PlayerInputAction inputAction)
         {
-            ref var healthComponent = ref HeroEntity.Get<HealthComponent>();
-            if (healthComponent.CurrentHealth < 1) // :TODO: refactor
-                return;
-
             OnMove(inputAction.MovementVector);
 
             if (inputAction.BombPlant)
@@ -49,22 +40,14 @@ namespace Game
                 world.OnPlayerBombBlast(this);
         }
 
-        /*
-        public void AttachHero(Hero.Hero hero)
-        {
-            Hero = hero;
-            Hero.DeathEvent += OnHeroDeath;
-        }*/
-
         public void AttachHero(EcsEntity entity)
         {
             HeroEntity = entity;
-            Assert.IsTrue(entity.Has<TransformComponent>());
-            Assert.IsTrue(entity.Has<HealthComponent>());
-            Assert.IsTrue(entity.Has<EntityComponent>());
-            Assert.IsTrue(entity.Has<HeroTag>());
 
-            // Hero.DeathEvent += OnHeroDeath; :TODO:
+            Assert.IsTrue(HeroEntity.Has<TransformComponent>());
+            Assert.IsTrue(HeroEntity.Has<HealthComponent>());
+            Assert.IsTrue(HeroEntity.Has<EntityComponent>());
+            Assert.IsTrue(HeroEntity.Has<HeroTag>());
         }
 
         public void LoadProgress(PlayerProgress progress)
@@ -90,10 +73,5 @@ namespace Game
             else
                 transformComponent.Speed = fix.zero;
         }
-
-        /*private void OnHeroDeath(IEntity entity)
-        {
-            Hero.DeathEvent -= OnHeroDeath;
-        }*/
     }
 }

@@ -88,7 +88,7 @@ namespace Game.Systems
                 if (minDistance < prevDistance)
                 {
                     var vector = fix2.normalize_safe(entityPositionA - intersectionPoint, fix2.zero);
-                    transformComponentA.WorldPosition = intersectionPoint + vector * R; // :TODO: use actual radius
+                    transformComponentA.WorldPosition = intersectionPoint + vector * R;
                 }
             }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Configs.Entity;
-using Game;
 using Game.Components.Entities;
 using Game.Components.Tags;
 using Infrastructure.Factory;
@@ -75,13 +74,13 @@ namespace UI
                 HeroHealthText.SetText(_heroEntity.Health.Current.ToString());*/
         }
 
-        private void OnHeroDeathEvent(IEntity hero)
+        /*private void OnHeroDeathEvent(IEntity hero)
         {
-            /*if (_heroEntity != hero) :TODO: fix
+            if (_heroEntity != hero) :TODO: fix
                 return;
 
             _heroEntity.Health.HealthChangedEvent -= SetHeroHealth;
-            _heroEntity = null;*/
-        }
+            _heroEntity = null;
+        }*/
     }
 }

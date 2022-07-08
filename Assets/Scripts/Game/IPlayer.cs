@@ -9,13 +9,10 @@ namespace Game
     {
         PlayerConfig PlayerConfig { get; }
 
-        // Hero.Hero Hero { get; }
         EcsEntity HeroEntity { get; }
 
-        // void AttachHero(Hero.Hero hero);
+        void AttachHero(EcsEntity entity);
 
         void ApplyInputAction(World world, PlayerInputAction inputAction);
-
-        void AttachHero(EcsEntity entity);
     }
 }

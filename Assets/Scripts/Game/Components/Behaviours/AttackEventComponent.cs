@@ -1,6 +1,6 @@
 ﻿namespace Game.Components.Behaviours
 {
-    public struct AttackComponent
+    public struct AttackEventComponent
     {
         public int DamageValue;
     }

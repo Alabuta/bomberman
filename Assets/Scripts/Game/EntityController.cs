@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public abstract class EntityController : MonoBehaviour, IEntityController
+    public abstract class EntityController : MonoBehaviour
     {
         [SerializeField]
         protected Transform Transform;
@@ -36,7 +36,7 @@ namespace Game
             // :TODO: call Destroy() after a while
         }
 
-        public void TakeDamage(int damage)
+        public void TakeDamage()
         {
             EntityAnimator.PlayHit();
         }

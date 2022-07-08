@@ -15,7 +15,7 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<AttackComponent, HealthComponent>.Exclude<DeadTag> _entitiesWithHealth;
+        private readonly EcsFilter<AttackEventComponent, HealthComponent>.Exclude<DeadTag> _entitiesWithHealth;
 
         public void Run()
         {
@@ -34,12 +34,7 @@ namespace Game.Systems
                 ApplyDamage(ref healthComponent, attackComponent.DamageValue);
 
                 if (health != healthComponent.CurrentHealth)
-                {
-                    if (health < 1) // :TODO: refactor
-                        targetEntity.Replace(new DeadTag());
-
                     HealthChangedEvent?.Invoke(targetEntity);
-                }
             }
         }
 
