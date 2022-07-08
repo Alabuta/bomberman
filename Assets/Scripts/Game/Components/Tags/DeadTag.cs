@@ -2,7 +2,8 @@
 
 namespace Game.Components.Tags
 {
-    public struct PositionExternalControlTag : IEcsIgnoreInFilter
+    public struct DeadTag : IEcsIgnoreInFilter
+
     {
     }
 }

@@ -133,7 +133,11 @@ namespace Level
 
             var floorTiles = LevelModel
                 .GetTilesByType(LevelTileType.FloorTile)
-                .Where(t => !playersCoordinates.Contains(t.Get<LevelTileComponent>().Coordinate))
+                .Where(t =>
+                {
+                    var coordinate = LevelModel.ToTileCoordinate(t.Get<TransformComponent>().WorldPosition);
+                    return !playersCoordinates.Contains(coordinate);
+                })
                 .ToList();
 
             Assert.IsTrue(enemyConfigs.Length <= floorTiles.Count, "enemies to spawn count greater than the floor tiles count");
@@ -142,7 +146,7 @@ namespace Level
             {
                 var index = RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index, enemyConfigIndex);
                 var floorTile = floorTiles[index];
-                var levelTileComponent = floorTile.Get<LevelTileComponent>();
+                var levelTileComponent = floorTile.Get<TransformComponent>();
 
                 var task = CreateAndSpawnEnemy(enemyConfig, levelTileComponent.WorldPosition);
                 var enemy = await task;
@@ -191,6 +195,7 @@ namespace Level
             var entity = _ecsWorld.NewEntity();
 
             entity.Replace(new HeroTag());
+            entity.Replace(new PlayerPositionControlTag());
 
             entity.Replace(new TransformComponent
             {
@@ -222,11 +227,13 @@ namespace Level
                 Config = heroConfig,
                 Controller = heroController,
 
-                HitRadius = (fix) heroConfig.HitRadius,
-                HurtRadius = (fix) heroConfig.HurtRadius,
-
                 InitialSpeed = (fix) heroConfig.Speed,
                 SpeedMultiplier = fix.one
+            });
+
+            entity.Replace(new DamageableComponent
+            {
+                HurtRadius = (fix) heroConfig.HurtRadius
             });
 
             entity.Replace(new LayerMaskComponent
@@ -280,11 +287,13 @@ namespace Level
                 Config = enemyConfig,
                 Controller = enemyController,
 
-                HitRadius = (fix) enemyConfig.HitRadius,
-                HurtRadius = (fix) enemyConfig.HurtRadius,
-
                 InitialSpeed = (fix) enemyConfig.Speed,
                 SpeedMultiplier = fix.one
+            });
+
+            entity.Replace(new DamageableComponent
+            {
+                HurtRadius = (fix) enemyConfig.HurtRadius
             });
 
             entity.Replace(new LayerMaskComponent

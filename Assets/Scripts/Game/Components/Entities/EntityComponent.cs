@@ -8,9 +8,6 @@ namespace Game.Components.Entities
         public EntityConfig Config;
         public EntityController Controller;
 
-        public fix HitRadius;
-        public fix HurtRadius;
-
         public fix InitialSpeed;
         public fix SpeedMultiplier;
     }

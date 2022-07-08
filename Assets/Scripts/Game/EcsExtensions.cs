@@ -36,7 +36,7 @@ namespace Game
                             ToWorldPosition = transformComponent.WorldPosition
                         });
 
-                        ecsEntity.Replace(new PositionExternalControlTag());
+                        ecsEntity.Replace(new NonPlayerPositionControlTag());
 
                         break;
 

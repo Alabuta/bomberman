@@ -5,6 +5,7 @@ using System.Linq;
 using Configs.Game.Colliders;
 using Configs.Level;
 using Game;
+using Game.Components;
 using Game.Components.Entities;
 using JetBrains.Annotations;
 using Leopotam.Ecs;
@@ -88,10 +89,14 @@ namespace Level
             var worldPosition = ToWorldPosition(coordinate);
 
             var ecsEntity = _tiles[index];
+
             ecsEntity.Replace(new LevelTileComponent
             {
-                Type = LevelTileType.FloorTile,
-                Coordinate = coordinate,
+                Type = LevelTileType.FloorTile
+            });
+
+            ecsEntity.Replace(new TransformComponent
+            {
                 WorldPosition = worldPosition
             });
         }
@@ -146,13 +151,16 @@ namespace Level
                         var coordinate = math.int2(index % _size.x, index / _size.x);
                         var worldPosition = ToWorldPosition(coordinate);
 
+                        ecsEntity.Replace(new TransformComponent
+                        {
+                            WorldPosition = worldPosition
+                        });
+
                         if (spawnTilesIndices.Contains(index))
                         {
                             ecsEntity.Replace(new LevelTileComponent // :TODO: refactor
                             {
-                                Type = LevelTileType.FloorTile,
-                                Coordinate = coordinate,
-                                WorldPosition = worldPosition
+                                Type = LevelTileType.FloorTile
                             });
 
                             return ecsEntity;
@@ -162,9 +170,7 @@ namespace Level
                         {
                             ecsEntity.Replace(new LevelTileComponent
                             {
-                                Type = LevelTileType.HardBlock,
-                                Coordinate = coordinate,
-                                WorldPosition = worldPosition
+                                Type = LevelTileType.HardBlock
                             });
 
                             var colliderComponentConfigs = hardBlockConfig.Components
@@ -188,9 +194,7 @@ namespace Level
 
                         ecsEntity.Replace(new LevelTileComponent
                         {
-                            Type = tileType,
-                            Coordinate = coordinate,
-                            WorldPosition = worldPosition
+                            Type = tileType
                         });
 
                         if (tileType == LevelTileType.SoftBlock)

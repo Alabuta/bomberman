@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Game.Components;
 using Game.Components.Behaviours;
-using Game.Components.Entities;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
@@ -15,25 +14,26 @@ namespace Game.Systems.Behaviours
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<LayerMaskComponent, TransformComponent, SimpleMovementBehaviourComponent> _filterEnemies;
-        private readonly EcsFilter<HeroTag, TransformComponent> _filterHeroes;
+        private readonly EcsFilter<LayerMaskComponent, TransformComponent, SimpleMovementBehaviourComponent>.Exclude<DeadTag>
+            _steeredEntities;
+        private readonly EcsFilter<PlayerPositionControlTag, TransformComponent> _playerControlledEntities;
 
         public void Run()
         {
-            if (!_filterEnemies.IsEmpty())
-                foreach (var index in _filterEnemies)
-                    UpdateEnemy(index);
+            if (!_steeredEntities.IsEmpty())
+                foreach (var index in _steeredEntities)
+                    UpdateSteeredEntities(index);
 
-            if (!_filterHeroes.IsEmpty())
-                foreach (var index in _filterHeroes)
-                    UpdateHero(index);
+            if (!_playerControlledEntities.IsEmpty())
+                foreach (var index in _playerControlledEntities)
+                    UpdatePlayerControlledEntities(index);
         }
 
-        private void UpdateEnemy(int entityIndex)
+        private void UpdateSteeredEntities(int entityIndex)
         {
-            var entityLayerMask = _filterEnemies.Get1(entityIndex).Value;
-            ref var transformComponent = ref _filterEnemies.Get2(entityIndex);
-            ref var movementBehaviourComponent = ref _filterEnemies.Get3(entityIndex);
+            var entityLayerMask = _steeredEntities.Get1(entityIndex).Value;
+            ref var transformComponent = ref _steeredEntities.Get2(entityIndex);
+            ref var movementBehaviourComponent = ref _steeredEntities.Get3(entityIndex);
 
             var levelModel = _world.LevelModel;
             var deltaTime = _world.FixedDeltaTime;
@@ -73,7 +73,8 @@ namespace Game.Systems.Behaviours
                 }
 
                 var index = _world.RandomGenerator.Range(0, neighborTiles.Length, (int) _world.Tick);
-                targetTileCoordinate = neighborTiles[index].Get<LevelTileComponent>().Coordinate;
+                var neighborTile = neighborTiles[index];
+                targetTileCoordinate = levelModel.ToTileCoordinate(neighborTile.Get<TransformComponent>().WorldPosition);
 
                 transformComponent.Direction = targetTileCoordinate - currentTileCoordinate;
             }
@@ -94,7 +95,7 @@ namespace Game.Systems.Behaviours
                         entityLayerMask);
 
                     targetTileCoordinate = neighborTile != EcsEntity.Null
-                        ? neighborTile.Get<LevelTileComponent>().Coordinate
+                        ? levelModel.ToTileCoordinate(neighborTile.Get<TransformComponent>().WorldPosition)
                         : currentTileCoordinate;
                 }
             }
@@ -119,7 +120,7 @@ namespace Game.Systems.Behaviours
                 return;
             }
 
-            targetTileCoordinate = targetTile.Get<LevelTileComponent>().Coordinate;
+            targetTileCoordinate = levelModel.ToTileCoordinate(targetTile.Get<TransformComponent>().WorldPosition);
 
             transformComponent.Direction = (int2) math.normalize(targetTileCoordinate - currentTileCoordinate);
             transformComponent.Speed = fix.one;
@@ -132,11 +133,11 @@ namespace Game.Systems.Behaviours
             movementBehaviourComponent.ToWorldPosition = levelModel.ToWorldPosition(targetTileCoordinate);
         }
 
-        private void UpdateHero(int entityIndex)
+        private void UpdatePlayerControlledEntities(int entityIndex)
         {
             var deltaTime = _world.FixedDeltaTime;
 
-            ref var transformComponent = ref _filterHeroes.Get2(entityIndex);
+            ref var transformComponent = ref _playerControlledEntities.Get2(entityIndex);
 
             transformComponent.WorldPosition += (fix2) transformComponent.Direction * transformComponent.Speed * deltaTime;
         }
@@ -191,7 +192,11 @@ namespace Game.Systems.Behaviours
             {
                 var entityDirection = component.Direction;
                 tileCoordinates = tileCoordinates
-                    .Where(c => math.all(c.Get<LevelTileComponent>().Coordinate != tileCoordinate - entityDirection))
+                    .Where(c =>
+                    {
+                        var coordinate = levelModel.ToTileCoordinate(c.Get<TransformComponent>().WorldPosition);
+                        return math.all(coordinate != tileCoordinate - entityDirection);
+                    })
                     .ToArray();
             }
 

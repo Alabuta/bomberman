@@ -1,6 +1,7 @@
 ﻿using System;
 using Game.Components;
 using Game.Components.Behaviours;
+using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Unity.Mathematics;
@@ -14,28 +15,31 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private EcsFilter<DamageComponent> _filter;
+        private readonly EcsFilter<AttackComponent, HealthComponent>.Exclude<DeadTag> _entitiesWithHealth;
 
         public void Run()
         {
-            if (_filter.IsEmpty())
+            if (_entitiesWithHealth.IsEmpty())
                 return;
 
-            foreach (var index in _filter)
+            foreach (var index in _entitiesWithHealth)
             {
-                ref var damageComponent = ref _filter.Get1(index);
-                ref var entity = ref damageComponent.Entity;
+                ref var targetEntity = ref _entitiesWithHealth.GetEntity(index);
 
-                if (!entity.Has<HealthComponent>())
-                    continue;
+                ref var attackComponent = ref _entitiesWithHealth.Get1(index);
+                ref var healthComponent = ref _entitiesWithHealth.Get2(index);
 
-                ref var healthComponent = ref entity.Get<HealthComponent>();
                 var health = healthComponent.CurrentHealth;
 
-                ApplyDamage(ref healthComponent, damageComponent.DamageValue);
+                ApplyDamage(ref healthComponent, attackComponent.DamageValue);
 
                 if (health != healthComponent.CurrentHealth)
-                    HealthChangedEvent?.Invoke(entity);
+                {
+                    if (health < 1) // :TODO: refactor
+                        targetEntity.Replace(new DeadTag());
+
+                    HealthChangedEvent?.Invoke(targetEntity);
+                }
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Game.Components;
 using Game.Components.Behaviours;
+using Game.Components.Entities;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
@@ -11,8 +12,8 @@ namespace Game.Systems.Behaviours
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private EcsFilter<TransformComponent, HealthComponent> _targetsFilter;
-        private EcsFilter<TransformComponent, SimpleAttackBehaviourComponent> _attackersFilter;
+        private readonly EcsFilter<TransformComponent, SimpleAttackBehaviourComponent> _attackersFilter;
+        private readonly EcsFilter<TransformComponent, DamageableComponent> _targetsFilter;
 
         public void Run()
         {
@@ -28,19 +29,30 @@ namespace Game.Systems.Behaviours
             ref var attackerTransform = ref _attackersFilter.Get1(attackerIndex);
             ref var attackComponent = ref _attackersFilter.Get2(attackerIndex);
 
-            var levelModel = _world.LevelModel;
+            foreach (var targetEntityIndex in _targetsFilter)
+            {
+                ref var targetEntity = ref _targetsFilter.GetEntity(targetEntityIndex);
+                ref var targetTransform = ref _targetsFilter.Get1(attackerIndex);
+                ref var damageableComponent = ref _targetsFilter.Get2(attackerIndex);
 
-            /*var overlappedHeroes = world.Players.Values
-                .Select(p => p.Hero)
-                .Where(h => AreEntitiesOverlapped(entity, h))
-                .ToArray();*/
+                var areEntitiesOverlapped = AreEntitiesOverlapped(ref attackerTransform, attackComponent.HitRadius,
+                    ref targetTransform,
+                    damageableComponent.HurtRadius);
 
-            // ref var target = _filter.GetEntity(index);
+                if (!areEntitiesOverlapped)
+                    continue;
+
+                targetEntity.Replace(new AttackComponent
+                {
+                    DamageValue = attackComponent.DamageValue
+                });
+            }
         }
 
-        private static bool AreEntitiesOverlapped(IEntity entityA, IEntity entityB)
+        private static bool AreEntitiesOverlapped(ref TransformComponent transformComponentA, fix hitRadius,
+            ref TransformComponent transformComponentB, fix hurtRadius)
         {
-            return fix2.distance(entityA.WorldPosition, entityB.WorldPosition) < entityA.HitRadius + entityB.HurtRadius;
+            return fix2.distance(transformComponentA.WorldPosition, transformComponentB.WorldPosition) < hitRadius + hurtRadius;
         }
     }
 }

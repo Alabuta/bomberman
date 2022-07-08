@@ -15,50 +15,39 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private EcsFilter<TransformComponent, LayerMaskComponent, HasColliderTag>.Exclude<PositionExternalControlTag> _filter;
+        private EcsFilter<TransformComponent, LayerMaskComponent, CircleColliderComponent>.Exclude<NonPlayerPositionControlTag>
+            _circleColliders;
+        private EcsFilter<TransformComponent, LayerMaskComponent, BoxColliderComponent>.Exclude<NonPlayerPositionControlTag>
+            _boxColliders;
 
         public void Run()
         {
-            if (_filter.IsEmpty())
-                return;
-
-            foreach (var index in _filter)
-            {
-                var ecsEntity = _filter.GetEntity(index);
-
-                if (ecsEntity.Has<CircleColliderComponent>())
+            if (!_circleColliders.IsEmpty())
+                foreach (var index in _circleColliders)
                     ResolveCircleColliderCollisions(index);
 
-                else if (ecsEntity.Has<BoxColliderComponent>())
+            if (!_boxColliders.IsEmpty())
+                foreach (var index in _boxColliders)
                     ResolveBoxColliderCollisions(index);
-            }
         }
 
         private void ResolveCircleColliderCollisions(int index)
         {
             var levelModel = _world.LevelModel;
 
-            var ecsEntityA = _filter.GetEntity(index);
-
-            ref var transformComponentA = ref _filter.Get1(index);
-            var entityLayerMaskA = _filter.Get2(index).Value;
-
-            ref var colliderComponentA = ref ecsEntityA.Get<CircleColliderComponent>();
+            ref var transformComponentA = ref _circleColliders.Get1(index);
+            var entityLayerMaskA = _circleColliders.Get2(index).Value;
+            ref var colliderComponentA = ref _circleColliders.Get3(index);
 
             var entityPositionA = transformComponentA.WorldPosition;
             var entityCoordinateA = levelModel.ToTileCoordinate(entityPositionA);
 
             var neighborTiles = levelModel
                 .GetNeighborTiles(entityCoordinateA)
-                .Where(t => t.Has<HasColliderTag>());
+                .Where(t => t.Has<LevelTileComponent>());
 
             foreach (var neighborTile in neighborTiles)
             {
-                /*if (!neighborTile.Has<TransformComponent>()) :TODO: refactor
-                    continue;*/
-                if (!neighborTile.Has<LevelTileComponent>())
-                    continue;
-
                 if ((entityLayerMaskA & neighborTile.GetCollidersInteractionMask()) == 0)
                     continue;
 
@@ -66,11 +55,11 @@ namespace Game.Systems
                 var isIntersected = false;
 
                 if (neighborTile.Has<CircleColliderComponent>())
-                    isIntersected = CircleCircleIntersectionPoint(ecsEntityA, ref transformComponentA, neighborTile,
+                    isIntersected = CircleCircleIntersectionPoint(ref transformComponentA, ref colliderComponentA, neighborTile,
                         out intersectionPoint);
 
                 else if (neighborTile.Has<BoxColliderComponent>())
-                    isIntersected = CircleBoxIntersectionPoint(ecsEntityA, ref transformComponentA, neighborTile,
+                    isIntersected = CircleBoxIntersectionPoint(ref transformComponentA, ref colliderComponentA, neighborTile,
                         out intersectionPoint);
 
                 if (!isIntersected)
@@ -92,17 +81,20 @@ namespace Game.Systems
             }
         }
 
-        public static bool
-            CircleCircleIntersectionPoint(EcsEntity ecsEntity, ref TransformComponent transformComponent,
-                EcsEntity neighborTile,
-                out fix2 intersection)
+        private void ResolveBoxColliderCollisions(int index)
         {
-            var positionA = transformComponent.WorldPosition;
-            ref var colliderA = ref ecsEntity.Get<CircleColliderComponent>();
+            throw new System.NotImplementedException(); // :TODO: implement
+        }
 
-            ref var entityB = ref neighborTile.Get<LevelTileComponent>();
-            var positionB = entityB.WorldPosition; // :TODO: get position from TransformComponent
-            ref var colliderB = ref neighborTile.Get<CircleColliderComponent>();
+        private static bool CircleCircleIntersectionPoint(ref TransformComponent transformA,
+            ref CircleColliderComponent colliderA, EcsEntity entityB, out fix2 intersection)
+        {
+            var positionA = transformA.WorldPosition;
+
+            ref var transformB = ref entityB.Get<TransformComponent>();
+            var positionB = transformB.WorldPosition;
+
+            ref var colliderB = ref entityB.Get<CircleColliderComponent>();
 
             return fix.circle_and_circle_intersection_point(
                 positionA, colliderA.Radius,
@@ -110,26 +102,29 @@ namespace Game.Systems
                 out intersection);
         }
 
-        public static bool
-            CircleBoxIntersectionPoint(EcsEntity ecsEntity, ref TransformComponent transformComponent, EcsEntity neighborTile,
-                out fix2 intersection)
+        private static bool BoxBoxIntersectionPoint(ref TransformComponent transformA, ref BoxColliderComponent colliderA,
+            EcsEntity entityB, out fix2 intersection)
         {
-            var positionA = transformComponent.WorldPosition;
-            ref var colliderA = ref ecsEntity.Get<CircleColliderComponent>();
+            throw new System.NotImplementedException(); // :TODO: implement
 
-            ref var entityB = ref neighborTile.Get<LevelTileComponent>();
-            var positionB = entityB.WorldPosition; // :TODO: get position from TransformComponent
-            ref var colliderB = ref neighborTile.Get<BoxColliderComponent>();
+            /*return fix.box_and_box_intersection_point(centerA, colliderA.InnerRadius, centerB, boxCollider.InnerRadius,
+                out intersection);*/
+        }
+
+        private static bool CircleBoxIntersectionPoint(ref TransformComponent transformA, ref CircleColliderComponent colliderA,
+            EcsEntity entityB, out fix2 intersection)
+        {
+            var positionA = transformA.WorldPosition;
+
+            ref var transformB = ref entityB.Get<TransformComponent>();
+            var positionB = transformB.WorldPosition;
+
+            ref var colliderB = ref entityB.Get<BoxColliderComponent>();
 
             return fix.circle_and_box_intersection_point(
                 positionA, colliderA.Radius,
                 positionB, colliderB.InnerRadius,
                 out intersection);
-        }
-
-        private void ResolveBoxColliderCollisions(int index)
-        {
-            ref var transformComponent = ref _filter.Get1(index);
         }
     }
 }

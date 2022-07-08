@@ -7,7 +7,6 @@ using Configs.Level;
 using Configs.Singletons;
 using Data;
 using Game;
-using Game.Behaviours;
 using Game.Components;
 using Game.Components.Behaviours;
 using Game.Systems;
@@ -32,8 +31,6 @@ namespace Level
 
         private readonly HashSet<EcsEntity> _enemies = new();
 
-        private readonly Dictionary<IEntity, List<IBehaviourAgent>> _behaviourAgents = new();
-
         private readonly double _stageTimer;
 
         public RandomGenerator RandomGenerator { get; }
@@ -48,7 +45,7 @@ namespace Level
         public World(ApplicationConfig applicationConfig, IGameFactory gameFactory, LevelStage levelStage)
         {
             TickRate = applicationConfig.TickRate;
-            _fixedDeltaTime = fix.one / (fix) TickRate;
+            FixedDeltaTime = fix.one / (fix) TickRate;
 
             _gameFactory = gameFactory;
             _stageTimer = levelStage.LevelStageConfig.LevelStageTimer;
@@ -70,11 +67,15 @@ namespace Level
                 .Inject(this)
                 .Init();
 
+            var healthSystem = new HealthSystem();
+            healthSystem.HealthChangedEvent += OnEntityHealthChangedEvent;
+
             _ecsFixedSystems
-                .OneFrame<DamageComponent>()
+                .OneFrame<AttackComponent>()
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsResolverSystem())
-                .Add(new HealthSystem())
+                .Add(new AttackBehaviourSystem())
+                .Add(healthSystem)
                 .Inject(this)
                 .Init();
         }
@@ -132,20 +133,10 @@ namespace Level
             // enemy.Health.HealthChangedEvent += () => OnEntityHealthChangedEvent(enemy); :TODO:
         }
 
-        private void OnEntityHealthChangedEvent(IEntity entity)
+        private void OnEntityHealthChangedEvent(EcsEntity ecsEntity)
         {
-            _behaviourAgents.Remove(entity);
-        }
-
-        private void AddBehaviourAgent(IEntity entity, IBehaviourAgent behaviourAgent)
-        {
-            if (!_behaviourAgents.TryGetValue(entity, out var agents))
-            {
-                agents = new List<IBehaviourAgent>();
-                _behaviourAgents.Add(entity, agents);
-            }
-
-            agents.Add(behaviourAgent);
+            /*if (ecsEntity.Has<>())
+            _behaviourAgents.Remove(ecsEntity);*/
         }
 
         private void AttachPlayerInput(IPlayer player, IPlayerInput playerInput)
