@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Configs.Game.Colliders;
 using Configs.Level;
 using Game;
 using Game.Components.Entities;
@@ -127,8 +128,7 @@ namespace Level
         }
 
         private EcsEntity[] GenerateLevelGrid(World world, LevelConfig levelConfig, ICollection<int> spawnTilesIndices,
-            int totalTilesCount,
-            int floorTilesCount, int softBlocksCount)
+            int totalTilesCount, int floorTilesCount, int softBlocksCount)
         {
             var tileTypeCount = math.int2(floorTilesCount, softBlocksCount);
             var spawnTilesIndicesCount = spawnTilesIndices.Count;
@@ -167,7 +167,11 @@ namespace Level
                                 WorldPosition = worldPosition
                             });
 
-                            ecsEntity.AddColliderComponent(hardBlockConfig.Collider);
+                            var colliderComponentConfigs = hardBlockConfig.Components
+                                .Where(c => c is ColliderComponentConfig)
+                                .Cast<ColliderComponentConfig>();
+
+                            ecsEntity.AddColliderComponents(colliderComponentConfigs);
 
                             return ecsEntity;
                         }
@@ -190,7 +194,13 @@ namespace Level
                         });
 
                         if (tileType == LevelTileType.SoftBlock)
-                            ecsEntity.AddColliderComponent(softBlockConfig.Collider);
+                        {
+                            var colliderComponentConfigs = softBlockConfig.Components
+                                .Where(c => c is ColliderComponentConfig)
+                                .Cast<ColliderComponentConfig>();
+
+                            ecsEntity.AddColliderComponents(colliderComponentConfigs);
+                        }
 
                         --tileTypeCount[typeIndex];
 

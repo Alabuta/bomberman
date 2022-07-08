@@ -19,3 +19,5 @@ MonoBehaviour:
     m_SubObjectType: 
     m_EditorAssetChanged: 0
   Collider: {fileID: 11400000, guid: 992c630ce5e01774d8e7a1a43957a2ec, type: 2}
+  Components:
+  - {fileID: 11400000, guid: 992c630ce5e01774d8e7a1a43957a2ec, type: 2}

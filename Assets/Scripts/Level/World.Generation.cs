@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Configs.Entity;
 using Configs.Game;
+using Configs.Game.Colliders;
 using Configs.Level;
 using Data;
 using Game;
@@ -141,8 +142,9 @@ namespace Level
             {
                 var index = RandomGenerator.Range(0, floorTiles.Count, levelStageConfig.Index, enemyConfigIndex);
                 var floorTile = floorTiles[index];
+                var levelTileComponent = floorTile.Get<LevelTileComponent>();
 
-                var task = CreateAndSpawnEnemy(enemyConfig, floorTile.Get<LevelTileComponent>().WorldPosition);
+                var task = CreateAndSpawnEnemy(enemyConfig, levelTileComponent.WorldPosition);
                 var enemy = await task;
 
                 AddEnemy(enemy);
@@ -203,7 +205,11 @@ namespace Level
                 MaxHealth = heroConfig.Health
             });
 
-            entity.AddColliderComponent(heroConfig.Collider);
+            var colliderComponentConfigs = heroConfig.Components
+                .Where(c => c is ColliderComponentConfig)
+                .Cast<ColliderComponentConfig>();
+
+            entity.AddColliderComponents(colliderComponentConfigs);
 
             var go = await task;
             Assert.IsNotNull(go);
@@ -255,9 +261,13 @@ namespace Level
                 MaxHealth = enemyConfig.Health
             });
 
-            entity.AddColliderComponent(enemyConfig.Collider);
+            var colliderComponentConfigs = enemyConfig.Components
+                .Where(c => c is ColliderComponentConfig)
+                .Cast<ColliderComponentConfig>();
 
-            _gameFactory.AddBehaviourComponents(enemyConfig.BehaviourConfigs, entity);
+            entity.AddColliderComponents(colliderComponentConfigs);
+
+            entity.AddBehaviourComponents(enemyConfig, enemyConfig.BehaviourConfigs);
 
             var go = await task;
             Assert.IsNotNull(go);

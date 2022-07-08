@@ -13,7 +13,5 @@ namespace Game.Components.Entities
 
         public fix InitialSpeed;
         public fix SpeedMultiplier;
-
-        public int LayerMask;
     }
 }

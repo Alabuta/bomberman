@@ -1,17 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Configs.Behaviours;
 using Configs.Game;
 using Game;
-using Game.Components;
-using Game.Components.Behaviours;
-using Game.Components.Tags;
 using Infrastructure.AssetManagement;
 using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
 using Input;
-using Leopotam.Ecs;
-using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -51,59 +45,16 @@ namespace Infrastructure.Factory
 
         /*public Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity)
         {
-            throw new System.NotImplementedException();
-        }*/
-
-        /*public Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity)
-        {
             var hero = new Hero(heroConfig, entityController, ecsEntity);
-            hero.Id.Replace(new HealthComponent()); // :TODO: ???
-
             // RegisterProgressReader(hero.HeroHealth); :TODO: remove?
 
             return hero;
-        }*/
-
-        /*public Enemy CreateEnemy(EnemyConfig enemyConfig, EnemyController entityController, EcsEntity ecsEntity)
-        {
-            return new Enemy(enemyConfig, entityController, ecsEntity);
         }*/
 
         /*public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller) :TODO: fix
         {
             return new BombItem(bobItemConfig, controller);
         }*/
-
-        public void AddBehaviourComponents(IEnumerable<BehaviourConfig> behaviourConfigs, EcsEntity ecsEntity)
-        {
-            foreach (var behaviourConfig in behaviourConfigs)
-            {
-                switch (behaviourConfig)
-                {
-                    case SimpleMovementBehaviourConfig config:
-                        var transformComponent = ecsEntity.Get<TransformComponent>();
-
-                        var component = new SimpleMovementBehaviourComponent
-                        {
-                            MovementDirections = config.MovementDirections,
-
-                            TryToSelectNewTile = config.TryToSelectNewTile,
-                            DirectionChangeChance = (fix) config.DirectionChangeChance,
-
-                            FromWorldPosition = transformComponent.WorldPosition,
-                            ToWorldPosition = transformComponent.WorldPosition
-                        };
-
-                        ecsEntity.Replace(component);
-                        ecsEntity.Replace(new PositionExternalControlTag());
-                        break;
-
-                    case SimpleAttackBehaviourConfig config:
-                        // :TODO:
-                        break;
-                }
-            }
-        }
 
         public GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null)
         {

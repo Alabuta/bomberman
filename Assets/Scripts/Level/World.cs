@@ -47,8 +47,8 @@ namespace Level
 
         public World(ApplicationConfig applicationConfig, IGameFactory gameFactory, LevelStage levelStage)
         {
-            _tickRate = applicationConfig.TickRate;
-            _fixedDeltaTime = fix.one / (fix) _tickRate;
+            TickRate = applicationConfig.TickRate;
+            _fixedDeltaTime = fix.one / (fix) TickRate;
 
             _gameFactory = gameFactory;
             _stageTimer = levelStage.LevelStageConfig.LevelStageTimer;

@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using Configs.Behaviours;
+using Configs.Entity;
 using Configs.Game.Colliders;
 using Game.Colliders;
+using Game.Components;
+using Game.Components.Behaviours;
 using Game.Components.Colliders;
 using Game.Components.Tags;
 using Leopotam.Ecs;
@@ -10,30 +15,70 @@ namespace Game
 {
     public static class EcsExtensions
     {
-        public static void AddColliderComponent(this EcsEntity entity, ColliderComponentConfig colliderConfig)
+        public static void AddBehaviourComponents(this EcsEntity ecsEntity,
+            EnemyConfig enemyConfig, IEnumerable<BehaviourConfig> behaviourConfigs)
         {
-            switch (colliderConfig)
+            foreach (var behaviourConfig in behaviourConfigs)
             {
-                case BoxColliderComponentConfig config:
-                    entity.Replace(new BoxColliderComponent
-                    {
-                        InteractionLayerMask = config.InteractionLayerMask,
-                        InnerRadius = (fix) config.InnerRadius
-                    });
-                    entity.Replace(new HasColliderTag());
-                    break;
+                switch (behaviourConfig)
+                {
+                    case SimpleMovementBehaviourConfig config:
+                        var transformComponent = ecsEntity.Get<TransformComponent>();
 
-                case CircleColliderComponentConfig config:
-                    entity.Replace(new CircleColliderComponent
-                    {
-                        InteractionLayerMask = config.InteractionLayerMask,
-                        Radius = (fix) config.Radius
-                    });
-                    entity.Replace(new HasColliderTag());
-                    break;
+                        ecsEntity.Replace(new SimpleMovementBehaviourComponent
+                        {
+                            MovementDirections = config.MovementDirections,
 
-                default:
-                    throw new ArgumentOutOfRangeException();
+                            TryToSelectNewTile = config.TryToSelectNewTile,
+                            DirectionChangeChance = (fix) config.DirectionChangeChance,
+
+                            FromWorldPosition = transformComponent.WorldPosition,
+                            ToWorldPosition = transformComponent.WorldPosition
+                        });
+
+                        ecsEntity.Replace(new PositionExternalControlTag());
+
+                        break;
+
+                    case SimpleAttackBehaviourConfig config:
+                        ecsEntity.Replace(new SimpleAttackBehaviourComponent
+                        {
+                            DamageValue = config.DamageValue,
+                            HitRadius = (fix) enemyConfig.HitRadius // :TODO: refactor
+                        });
+                        break;
+                }
+            }
+        }
+
+        public static void AddColliderComponents(this EcsEntity entity,
+            IEnumerable<ColliderComponentConfig> colliderComponentConfigs)
+        {
+            foreach (var colliderComponentConfig in colliderComponentConfigs)
+            {
+                switch (colliderComponentConfig)
+                {
+                    case BoxColliderComponentConfig config:
+                        entity.Replace(new BoxColliderComponent
+                        {
+                            InteractionLayerMask = config.InteractionLayerMask,
+                            InnerRadius = (fix) config.InnerRadius
+                        });
+                        entity.Replace(new HasColliderTag());
+                        break;
+
+                    case CircleColliderComponentConfig config:
+                        entity.Replace(new CircleColliderComponent
+                        {
+                            InteractionLayerMask = config.InteractionLayerMask,
+                            Radius = (fix) config.Radius
+                        });
+                        entity.Replace(new HasColliderTag());
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 

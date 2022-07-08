@@ -25,9 +25,8 @@ namespace Configs.Entity
 
         public double HitRadius = .1;
         public double HurtRadius = .1;
-        public double ColliderRadius = .5;
 
-        public ColliderComponentConfig Collider;
+        public ComponentConfig[] Components;
 
         public int LayerMask => 1 << Layer;
     }

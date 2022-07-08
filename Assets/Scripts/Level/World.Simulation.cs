@@ -14,7 +14,6 @@ namespace Level
         private readonly EcsSystems _ecsSystems;
         private readonly EcsSystems _ecsFixedSystems;
 
-        private readonly int _tickRate;
         private readonly fix _fixedDeltaTime;
 
         private fix _simulationStartTime;
@@ -23,9 +22,7 @@ namespace Level
         private fix _timeRemainder;
 
         public ulong Tick { get; private set; }
-
-        public int TickRate => _tickRate;
-
+        public int TickRate { get; }
         public fix FixedDeltaTime => _fixedDeltaTime;
 
         public void StartSimulation()
@@ -54,7 +51,7 @@ namespace Level
 
             var deltaTime = (fix) Time.fixedDeltaTime + _timeRemainder;
 
-            var targetTick = Tick + (ulong) ((fix) _tickRate * deltaTime);
+            var targetTick = Tick + (ulong) ((fix) TickRate * deltaTime);
             var tickCounts = targetTick - Tick;
             while (Tick < targetTick)
             {
@@ -69,7 +66,7 @@ namespace Level
                 ++Tick;
             }
 
-            _timeRemainder = fix.max(fix.zero, deltaTime - (fix) tickCounts / (fix) _tickRate);
+            _timeRemainder = fix.max(fix.zero, deltaTime - (fix) tickCounts / (fix) TickRate);
 
             _simulationCurrentTime += deltaTime - _timeRemainder;
         }
