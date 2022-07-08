@@ -13,7 +13,7 @@ namespace Game.Systems.Behaviours
         private readonly World _world;
 
         private readonly EcsFilter<TransformComponent, SimpleAttackBehaviourComponent> _attackersFilter;
-        private readonly EcsFilter<TransformComponent, DamageableComponent> _targetsFilter;
+        private readonly EcsFilter<LayerMaskComponent, TransformComponent, DamageableComponent> _targetsFilter;
 
         public void Run()
         {
@@ -32,12 +32,16 @@ namespace Game.Systems.Behaviours
             foreach (var targetEntityIndex in _targetsFilter)
             {
                 ref var targetEntity = ref _targetsFilter.GetEntity(targetEntityIndex);
-                ref var targetTransform = ref _targetsFilter.Get1(attackerIndex);
-                ref var damageableComponent = ref _targetsFilter.Get2(attackerIndex);
+
+                ref var layerMaskComponent = ref _targetsFilter.Get1(targetEntityIndex);
+                if ((layerMaskComponent.Value & attackComponent.InteractionLayerMask.value) == 0)
+                    continue;
+
+                ref var targetTransform = ref _targetsFilter.Get2(targetEntityIndex);
+                ref var damageableComponent = ref _targetsFilter.Get3(targetEntityIndex);
 
                 var areEntitiesOverlapped = AreEntitiesOverlapped(ref attackerTransform, attackComponent.HitRadius,
-                    ref targetTransform,
-                    damageableComponent.HurtRadius);
+                    ref targetTransform, damageableComponent.HurtRadius);
 
                 if (!areEntitiesOverlapped)
                     continue;

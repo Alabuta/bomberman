@@ -43,6 +43,7 @@ namespace Game
                     case SimpleAttackBehaviourConfig config:
                         ecsEntity.Replace(new SimpleAttackBehaviourComponent
                         {
+                            InteractionLayerMask = config.InteractionLayerMask,
                             DamageValue = config.DamageValue,
                             HitRadius = (fix) enemyConfig.HitRadius // :TODO: refactor
                         });

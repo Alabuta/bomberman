@@ -15,4 +15,4 @@ MonoBehaviour:
   InteractionLayerMask:
     serializedVersion: 2
     m_Bits: 6656
-  Radius: 0.5
+  Radius: 0.49

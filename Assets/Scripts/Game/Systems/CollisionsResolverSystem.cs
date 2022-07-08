@@ -70,9 +70,21 @@ namespace Game.Systems
 
                 ref var transformComponentB = ref neighborTile.Get<TransformComponent>();
                 var prevDistance = fix2.distance(prevPosition, transformComponentB.WorldPosition);
-                var r = new fix(0.49);
+
                 var R = colliderComponentA.Radius;
-                var minDistance = r + R; // :TODO: use actual radius playerHero.ColliderRadius
+                var minDistance = R;
+
+                if (neighborTile.Has<CircleColliderComponent>())
+                {
+                    ref var colliderB = ref neighborTile.Get<CircleColliderComponent>();
+                    minDistance += colliderB.Radius;
+                }
+                else if (neighborTile.Has<BoxColliderComponent>())
+                {
+                    ref var colliderB = ref neighborTile.Get<BoxColliderComponent>();
+                    minDistance += colliderB.InnerRadius;
+                }
+
                 if (minDistance < prevDistance)
                 {
                     var vector = fix2.normalize_safe(entityPositionA - intersectionPoint, fix2.zero);
