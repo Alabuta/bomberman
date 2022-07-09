@@ -195,7 +195,7 @@ namespace Level
             var entity = _ecsWorld.NewEntity();
 
             entity.Replace(new HeroTag());
-            entity.Replace(new PlayerPositionControlTag());
+            entity.Replace(new PositionControlledByResolverTag());
 
             entity.Replace(new TransformComponent
             {

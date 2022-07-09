@@ -8,8 +8,8 @@ using Configs.Singletons;
 using Data;
 using Game;
 using Game.Components;
-using Game.Components.Behaviours;
 using Game.Components.Entities;
+using Game.Components.Events;
 using Game.Components.Tags;
 using Game.Systems;
 using Game.Systems.Behaviours;
@@ -74,6 +74,7 @@ namespace Level
 
             _ecsFixedSystems
                 .OneFrame<AttackEventComponent>()
+                .OneFrame<OnCollisionEnterEventComponent>()
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsResolverSystem())
                 .Add(new AttackBehaviourSystem())

@@ -1,6 +1,6 @@
 ﻿using System;
 using Game.Components;
-using Game.Components.Behaviours;
+using Game.Components.Events;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;

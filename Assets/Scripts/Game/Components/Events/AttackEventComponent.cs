@@ -1,4 +1,4 @@
-﻿namespace Game.Components.Behaviours
+﻿namespace Game.Components.Events
 {
     public struct AttackEventComponent
     {

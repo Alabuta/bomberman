@@ -2,7 +2,7 @@
 
 namespace Game.Components.Tags
 {
-    public struct NonPlayerPositionControlTag : IEcsIgnoreInFilter
+    public struct PositionControlledByResolverTag : IEcsIgnoreInFilter
     {
     }
 }

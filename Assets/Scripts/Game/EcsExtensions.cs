@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Configs.Behaviours;
 using Configs.Entity;
 using Configs.Game.Colliders;
-using Game.Colliders;
 using Game.Components;
 using Game.Components.Behaviours;
 using Game.Components.Colliders;
@@ -36,7 +35,7 @@ namespace Game
                             ToWorldPosition = transformComponent.WorldPosition
                         });
 
-                        ecsEntity.Replace(new NonPlayerPositionControlTag());
+                        ecsEntity.Replace(new PositionControlledBySystemsTag());
 
                         break;
 

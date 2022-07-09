@@ -1,6 +1,7 @@
 ﻿using Game.Components;
 using Game.Components.Behaviours;
 using Game.Components.Entities;
+using Game.Components.Events;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;

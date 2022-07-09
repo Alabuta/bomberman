@@ -16,7 +16,7 @@ namespace Game.Systems.Behaviours
 
         private readonly EcsFilter<LayerMaskComponent, TransformComponent, SimpleMovementBehaviourComponent>.Exclude<DeadTag>
             _steeredEntities;
-        private readonly EcsFilter<PlayerPositionControlTag, TransformComponent> _playerControlledEntities;
+        private readonly EcsFilter<PositionControlledByResolverTag, TransformComponent> _playerControlledEntities;
 
         public void Run()
         {

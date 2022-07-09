@@ -1,7 +1,7 @@
 using Math.FixedPointMath;
 using UnityEngine;
 
-namespace Game.Colliders
+namespace Game.Components.Colliders
 {
     public struct CircleColliderComponent
     {
