@@ -11,7 +11,7 @@ namespace Configs.Items
 
         public AssetReferenceGameObject Prefab;
 
-        public ColliderComponentConfig Collider;
+        public ColliderConfig Collider;
 
         public int LayerMask => 1 << Layer;
     }

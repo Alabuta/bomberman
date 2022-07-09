@@ -144,7 +144,7 @@ namespace Level
                     if (ecsEntity.Has<EntityComponent>())
                     {
                         ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
-                        entityComponent.Controller.Die();
+                        entityComponent.Controller.Kill();
                     }
 
                     if (ecsEntity.Has<TransformComponent>())

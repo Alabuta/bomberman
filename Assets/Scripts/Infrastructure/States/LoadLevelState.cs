@@ -80,6 +80,8 @@ namespace Infrastructure.States
             if (defaultPlayer != null)
                 SetupCamera(levelStage, gameWorld.LevelModel, defaultPlayer);
 
+            gameWorld.UpdateWorldView();
+
             Game.World = gameWorld;
         }
 

@@ -44,41 +44,37 @@ namespace Game
                         {
                             InteractionLayerMask = config.InteractionLayerMask,
                             DamageValue = config.DamageValue,
-                            HitRadius = (fix) enemyConfig.HitRadius // :TODO: refactor
+                            HitRadius = (fix) enemyConfig.DamageParameters.HitRadius // :TODO: refactor
                         });
                         break;
                 }
             }
         }
 
-        public static void AddColliderComponents(this EcsEntity entity,
-            IEnumerable<ColliderComponentConfig> colliderComponentConfigs)
+        public static void AddCollider(this EcsEntity entity, ColliderConfig colliderConfig)
         {
-            foreach (var colliderComponentConfig in colliderComponentConfigs)
+            switch (colliderConfig)
             {
-                switch (colliderComponentConfig)
-                {
-                    case BoxColliderComponentConfig config:
-                        entity.Replace(new BoxColliderComponent
-                        {
-                            InteractionLayerMask = config.InteractionLayerMask,
-                            InnerRadius = (fix) config.InnerRadius
-                        });
-                        entity.Replace(new HasColliderTag());
-                        break;
+                case QuadColliderConfig config:
+                    entity.Replace(new QuadColliderComponent
+                    {
+                        InteractionLayerMask = config.InteractionLayerMask,
+                        InnerRadius = (fix) config.InnerRadius
+                    });
+                    entity.Replace(new HasColliderTag());
+                    break;
 
-                    case CircleColliderComponentConfig config:
-                        entity.Replace(new CircleColliderComponent
-                        {
-                            InteractionLayerMask = config.InteractionLayerMask,
-                            Radius = (fix) config.Radius
-                        });
-                        entity.Replace(new HasColliderTag());
-                        break;
+                case CircleColliderConfig config:
+                    entity.Replace(new CircleColliderComponent
+                    {
+                        InteractionLayerMask = config.InteractionLayerMask,
+                        Radius = (fix) config.Radius
+                    });
+                    entity.Replace(new HasColliderTag());
+                    break;
 
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -89,8 +85,8 @@ namespace Game
             if (ecsEntity.Has<CircleColliderComponent>())
                 interactionMask = ecsEntity.Get<CircleColliderComponent>().InteractionLayerMask;
 
-            else if (ecsEntity.Has<BoxColliderComponent>())
-                interactionMask = ecsEntity.Get<BoxColliderComponent>().InteractionLayerMask;
+            else if (ecsEntity.Has<QuadColliderComponent>())
+                interactionMask = ecsEntity.Get<QuadColliderComponent>().InteractionLayerMask;
 
             return interactionMask;
         }

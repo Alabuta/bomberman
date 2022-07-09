@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Configs.Entity;
 using Configs.Game;
-using Configs.Game.Colliders;
 using Configs.Level;
 using Data;
 using Game;
@@ -13,6 +12,7 @@ using Game.Components.Entities;
 using Game.Components.Tags;
 using Game.Enemies;
 using Game.Hero;
+using Game.Items;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
 using Leopotam.Ecs;
@@ -157,6 +157,58 @@ namespace Level
             }
         }
 
+        private async Task<EcsEntity> CreateAndSpawnEnemy(EnemyConfig enemyConfig, fix2 position)
+        {
+            var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(position));
+
+            var entity = _ecsWorld.NewEntity();
+
+            entity.Replace(new EnemyTag());
+
+            entity.Replace(new TransformComponent
+            {
+                WorldPosition = position,
+                Direction = enemyConfig.StartDirection,
+                Speed = fix.zero
+            });
+
+            entity.Replace(new HealthComponent
+            {
+                CurrentHealth = enemyConfig.HealthParameters.Health,
+                MaxHealth = enemyConfig.HealthParameters.Health
+            });
+
+            entity.AddCollider(enemyConfig.Collider);
+            entity.AddBehaviourComponents(enemyConfig, enemyConfig.BehaviourConfigs);
+
+            var go = await task;
+            Assert.IsNotNull(go);
+
+            var enemyController = go.GetComponent<EnemyController>();
+            Assert.IsNotNull(enemyController);
+
+            entity.Replace(new EntityComponent
+            {
+                Config = enemyConfig,
+                Controller = enemyController,
+
+                InitialSpeed = (fix) enemyConfig.MovementParameters.Speed,
+                SpeedMultiplier = fix.one
+            });
+
+            entity.Replace(new DamageableComponent
+            {
+                HurtRadius = (fix) enemyConfig.DamageParameters.HurtRadius
+            });
+
+            entity.Replace(new LayerMaskComponent
+            {
+                Value = enemyConfig.LayerMask
+            });
+
+            return entity;
+        }
+
         private void CreatePlayersAndSpawnHeroesPvP(GameModePvPConfig gameMode, LevelStagePvPConfig levelStageConfig,
             IInputService inputService)
         {
@@ -206,15 +258,11 @@ namespace Level
 
             entity.Replace(new HealthComponent
             {
-                CurrentHealth = heroConfig.Health,
-                MaxHealth = heroConfig.Health
+                CurrentHealth = heroConfig.HealthParameters.Health,
+                MaxHealth = heroConfig.HealthParameters.Health
             });
 
-            var colliderComponentConfigs = heroConfig.Components
-                .Where(c => c is ColliderComponentConfig)
-                .Cast<ColliderComponentConfig>();
-
-            entity.AddColliderComponents(colliderComponentConfigs);
+            entity.AddCollider(heroConfig.Collider);
 
             var go = await task;
             Assert.IsNotNull(go);
@@ -227,13 +275,13 @@ namespace Level
                 Config = heroConfig,
                 Controller = heroController,
 
-                InitialSpeed = (fix) heroConfig.Speed,
+                InitialSpeed = (fix) heroConfig.MovementParameters.Speed,
                 SpeedMultiplier = fix.one
             });
 
             entity.Replace(new DamageableComponent
             {
-                HurtRadius = (fix) heroConfig.HurtRadius
+                HurtRadius = (fix) heroConfig.DamageParameters.HurtRadius
             });
 
             entity.Replace(new LayerMaskComponent
@@ -247,59 +295,26 @@ namespace Level
             return entity;
         }
 
-        private async Task<EcsEntity> CreateAndSpawnEnemy(EnemyConfig enemyConfig, fix2 position)
+        private async Task<EcsEntity> CreateAndSpawnBomb(BombConfig bombConfig, fix2 position)
         {
+            var task = _gameFactory.InstantiatePrefabAsync(bombConfig.Prefab, fix2.ToXY(position));
+
             var entity = _ecsWorld.NewEntity();
 
-            var task = _gameFactory.InstantiatePrefabAsync(enemyConfig.Prefab, fix2.ToXY(position));
-
-            entity.Replace(new EnemyTag());
+            entity.Replace(new BombTag());
 
             entity.Replace(new TransformComponent
             {
                 WorldPosition = position,
-                Direction = enemyConfig.StartDirection,
+                Direction = bombConfig.StartDirection,
                 Speed = fix.zero
             });
-
-            entity.Replace(new HealthComponent
-            {
-                CurrentHealth = enemyConfig.Health,
-                MaxHealth = enemyConfig.Health
-            });
-
-            var colliderComponentConfigs = enemyConfig.Components
-                .Where(c => c is ColliderComponentConfig)
-                .Cast<ColliderComponentConfig>();
-
-            entity.AddColliderComponents(colliderComponentConfigs);
-
-            entity.AddBehaviourComponents(enemyConfig, enemyConfig.BehaviourConfigs);
 
             var go = await task;
             Assert.IsNotNull(go);
 
-            var enemyController = go.GetComponent<EnemyController>();
+            var enemyController = go.GetComponent<ItemController>();
             Assert.IsNotNull(enemyController);
-
-            entity.Replace(new EntityComponent
-            {
-                Config = enemyConfig,
-                Controller = enemyController,
-
-                InitialSpeed = (fix) enemyConfig.Speed,
-                SpeedMultiplier = fix.one
-            });
-
-            entity.Replace(new DamageableComponent
-            {
-                HurtRadius = (fix) enemyConfig.HurtRadius
-            });
-
-            entity.Replace(new LayerMaskComponent
-            {
-                Value = enemyConfig.LayerMask
-            });
 
             return entity;
         }

@@ -7,6 +7,14 @@ namespace Configs.Entity
     [CreateAssetMenu(fileName = "Hero", menuName = "Configs/Entity/Hero")]
     public sealed class HeroConfig : EntityConfig
     {
+        [Space]
+        public DamageParameters DamageParameters;
+        [Space]
+        public MovementParameters MovementParameters;
+        [Space]
+        public HealthParameters HealthParameters;
+
+        [Header("Hero Parameters")]
         public AssetReferenceSprite Icon;
 
         public BombConfig BombConfig;
@@ -14,7 +22,8 @@ namespace Configs.Entity
         public int BombBlastDamage = 1;
         public int BombBlastRadius = 1;
 
-        public int2[] BombBlastDirections = {
+        public int2[] BombBlastDirections =
+        {
             new(1, 0),
             new(-1, 0),
             new(0, 1),

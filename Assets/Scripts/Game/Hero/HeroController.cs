@@ -10,7 +10,7 @@ namespace Game.Hero
         private HeroAnimator HeroAnimator;
 
         private fix _speed;
-        private int2 _direction = new(0, -1);
+        private int2 _direction;
 
         public override fix Speed
         {

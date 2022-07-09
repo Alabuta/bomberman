@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Components.Colliders
 {
-    public struct BoxColliderComponent
+    public struct QuadColliderComponent
     {
         public LayerMask InteractionLayerMask;
         public fix InnerRadius;

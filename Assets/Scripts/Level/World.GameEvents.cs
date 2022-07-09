@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using Configs.Entity;
 using Game;
 using Game.Components.Entities;
 using Game.Components.Tags;
-using Game.Items;
 using Input;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
@@ -32,7 +30,7 @@ namespace Level
 
             ref var heroComponent = ref heroEntity.Get<EntityComponent>();
 
-            var bombConfig = ((HeroConfig) heroComponent.Config).BombConfig;
+            /*var bombConfig = ((HeroConfig) heroComponent.Config).BombConfig;
             var bombCoordinate = LevelModel.ToTileCoordinate(worldPosition);
             var position = LevelModel.ToWorldPosition(bombCoordinate);
 
@@ -43,14 +41,13 @@ namespace Level
             Assert.IsNotNull(itemController);
 
             var bombItem = _ecsWorld.NewEntity(); // _gameFactory.CreateItem(bombConfig.ItemConfig, itemController); :TODO: fix
-            Assert.AreNotEqual(bombItem, EcsEntity.Null);
 
             // LevelModel.AddItem(bombItem, bombCoordinate);
 
             if (!_playerBombs.ContainsKey(player))
                 _playerBombs.Add(player, new Queue<EcsEntity>());
 
-            _playerBombs[player].Enqueue(bombItem);
+            _playerBombs[player].Enqueue(bombItem);*/
         }
 
         public void OnPlayerBombBlast(IPlayer player)

@@ -11,7 +11,7 @@ namespace Configs.Level.Tile
 
         public AssetReferenceGameObject Prefab;
 
-        public ComponentConfig[] Components;
+        public ColliderConfig Collider;
 
         public int LayerMask => 1 << Layer;
     }

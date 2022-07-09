@@ -1,36 +1,19 @@
 ﻿using Math.FixedPointMath;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Game.Items
 {
-    public class ItemController : MonoBehaviour
+    public sealed class ItemController : EntityController
     {
-        [SerializeField, HideInInspector]
-        private int IsAliveId = Animator.StringToHash("IsAlive");
-
         [SerializeField]
-        protected Transform Transform;
+        private ItemAnimator ItemAnimator;
 
-        [SerializeField]
-        protected Animator Animator;
+        public override fix Speed { protected get; set; }
 
-        public fix2 WorldPosition
-        {
-            get => (fix2) Transform.position;
-            set => Transform.position = fix2.ToXY(value);
-        }
+        public override int2 Direction { protected get; set; }
 
-        public void DestroyItem()
-        {
-            PlayDestroyAnimation();
-            /*gameObject.SetActive(false);
-            Destroy(this);*/
-        }
-
-        public void PlayDestroyAnimation()
-        {
-            Animator.SetBool(IsAliveId, false);
-            Animator.speed = 1;
-        }
+        protected override EntityAnimator EntityAnimator =>
+            ItemAnimator;
     }
 }

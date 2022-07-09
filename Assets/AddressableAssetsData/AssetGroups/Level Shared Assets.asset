@@ -29,6 +29,10 @@ MonoBehaviour:
     m_Address: HeroWhite
     m_ReadOnly: 0
     m_SerializedLabels: []
+  - m_GUID: 3b1548050419d0f49a7da257cb5fdc9d
+    m_Address: DefaultBomb
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 896cbd87d4ab9484c9a570227c2a3e79, type: 2}
   m_SchemaSet:

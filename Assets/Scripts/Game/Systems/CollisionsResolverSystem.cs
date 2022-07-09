@@ -16,7 +16,7 @@ namespace Game.Systems
         private readonly World _world;
 
         private readonly EcsFilter<TransformComponent, LayerMaskComponent, CircleColliderComponent> _circleColliders;
-        private readonly EcsFilter<TransformComponent, LayerMaskComponent, BoxColliderComponent> _boxColliders;
+        private readonly EcsFilter<TransformComponent, LayerMaskComponent, QuadColliderComponent> _boxColliders;
 
         public void Run()
         {
@@ -81,7 +81,7 @@ namespace Game.Systems
                 var colliderRadiusA = colliderComponentA switch
                 {
                     CircleColliderComponent component => component.Radius,
-                    BoxColliderComponent component => component.InnerRadius,
+                    QuadColliderComponent component => component.InnerRadius,
                     _ => fix.zero
                 };
 
@@ -92,9 +92,9 @@ namespace Game.Systems
                     ref var colliderB = ref entityB.Get<CircleColliderComponent>();
                     minDistance += colliderB.Radius;
                 }
-                else if (entityB.Has<BoxColliderComponent>())
+                else if (entityB.Has<QuadColliderComponent>())
                 {
-                    ref var colliderB = ref entityB.Get<BoxColliderComponent>();
+                    ref var colliderB = ref entityB.Get<QuadColliderComponent>();
                     minDistance += colliderB.InnerRadius;
                 }
 
@@ -122,16 +122,16 @@ namespace Game.Systems
                         ref circleColliderComponentA, entityPositionB, ref colliderComponentB,
                         out intersectionPoint),
 
-                    BoxColliderComponent boxColliderComponentA => CircleBoxIntersectionPoint(
+                    QuadColliderComponent boxColliderComponentA => CircleBoxIntersectionPoint(
                         entityPositionB, ref colliderComponentB, entityPositionA,
                         ref boxColliderComponentA, out intersectionPoint),
 
                     _ => false
                 };
             }
-            else if (entityB.Has<BoxColliderComponent>())
+            else if (entityB.Has<QuadColliderComponent>())
             {
-                ref var colliderComponentB = ref entityB.Get<BoxColliderComponent>();
+                ref var colliderComponentB = ref entityB.Get<QuadColliderComponent>();
 
                 hasIntersection = colliderComponentA switch
                 {
@@ -139,7 +139,7 @@ namespace Game.Systems
                         ref circleColliderComponentA, entityPositionB, ref colliderComponentB,
                         out intersectionPoint),
 
-                    BoxColliderComponent boxColliderComponentA => BoxBoxIntersectionPoint(entityPositionB,
+                    QuadColliderComponent boxColliderComponentA => BoxBoxIntersectionPoint(entityPositionB,
                         ref colliderComponentB, entityPositionA, ref boxColliderComponentA, out intersectionPoint),
 
                     _ => false
@@ -158,8 +158,8 @@ namespace Game.Systems
                 out intersection);
         }
 
-        private static bool BoxBoxIntersectionPoint(fix2 positionA, ref BoxColliderComponent colliderA,
-            fix2 positionB, ref BoxColliderComponent colliderB, out fix2 intersection)
+        private static bool BoxBoxIntersectionPoint(fix2 positionA, ref QuadColliderComponent colliderA,
+            fix2 positionB, ref QuadColliderComponent colliderB, out fix2 intersection)
         {
             throw new System.NotImplementedException(); // :TODO: implement
 
@@ -168,7 +168,7 @@ namespace Game.Systems
         }
 
         private static bool CircleBoxIntersectionPoint(fix2 positionA, ref CircleColliderComponent colliderA,
-            fix2 positionB, ref BoxColliderComponent colliderB, out fix2 intersection)
+            fix2 positionB, ref QuadColliderComponent colliderB, out fix2 intersection)
         {
             return fix.circle_and_box_intersection_point(
                 positionA, colliderA.Radius,

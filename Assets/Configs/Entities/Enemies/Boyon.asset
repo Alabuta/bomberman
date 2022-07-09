@@ -19,16 +19,17 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_EditorAssetChanged: 0
-  Speed: 1.5
   StartDirection:
     x: 0
     y: -1
-  Health: 1
-  HitRadius: 0.4
-  HurtRadius: 0
-  Components:
-  - {fileID: 11400000, guid: 6cab3d149becc194d8dd440f66a46ede, type: 2}
   Collider: {fileID: 11400000, guid: 6cab3d149becc194d8dd440f66a46ede, type: 2}
+  DamageParameters:
+    HitRadius: 0.25
+    HurtRadius: 0.25
+  MovementParameters:
+    Speed: 1.5
+  HealthParameters:
+    Health: 1
   BehaviourConfigs:
   - {fileID: 11400000, guid: 7708f79e7adc0044b9a814b8334dc0c5, type: 2}
   - {fileID: 11400000, guid: 8842cef8766b1f54b8c43a352698648c, type: 2}

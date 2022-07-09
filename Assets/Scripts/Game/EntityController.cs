@@ -10,15 +10,14 @@ namespace Game
         protected Transform Transform;
 
         public abstract fix Speed { protected get; set; }
-        public float PlaybackSpeed => EntityAnimator.PlaybackSpeed;
-
         public abstract int2 Direction { protected get; set; }
 
         public fix2 WorldPosition
         {
-            // protected get => (fix2) Transform.position;
             set => Transform.position = fix2.ToXY(value);
         }
+
+        public float PlaybackSpeed => EntityAnimator.PlaybackSpeed;
 
         protected abstract EntityAnimator EntityAnimator { get; }
 
@@ -28,7 +27,7 @@ namespace Game
             EntityAnimator.SetAlive();
         }
 
-        public void Die()
+        public void Kill()
         {
             EntityAnimator.PlaybackSpeed = 1;
             EntityAnimator.SetDead();

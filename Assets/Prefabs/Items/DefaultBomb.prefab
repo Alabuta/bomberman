@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 8352911379006920330}
   - component: {fileID: 8352911379006920331}
   - component: {fileID: 908286854}
-  - component: {fileID: 5894507425330670346}
+  - component: {fileID: 4132054419272732586}
+  - component: {fileID: 4002918116156821806}
   m_Layer: 0
   m_Name: DefaultBomb
   m_TagString: Explosive
@@ -73,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1280446707
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_Sprite: {fileID: 6762111988558556734, guid: 2cb4234e504af064ea4749df32a5b89c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -106,7 +107,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5894507425330670346
+--- !u!114 &4132054419272732586
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,9 +116,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 8352911379006920328}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81daa2efe9ef4f08a177c4df492daf07, type: 3}
+  m_Script: {fileID: 11500000, guid: 068cfb0df02a4fa48e1b0cc60ae508ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   IsAliveId: -695135503
-  Transform: {fileID: 8352911379006920330}
   Animator: {fileID: 908286854}
+--- !u!114 &4002918116156821806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8352911379006920328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7f24ac2852b4c0f906b60f446147e81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Transform: {fileID: 8352911379006920330}
+  ItemAnimator: {fileID: 4132054419272732586}

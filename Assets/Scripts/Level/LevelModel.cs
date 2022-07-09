@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Configs.Game.Colliders;
 using Configs.Level;
 using Game;
 using Game.Components;
@@ -43,8 +42,6 @@ namespace Level
         public int RowsNumber => _size.y;
 
         public fix TileSize => _tileSizeWorldUnits;
-        public fix TileInnerRadius => _tileSizeWorldUnits / new fix(2);
-        public fix TileOuterRadius => TileInnerRadius * fix.sqrt(new fix(2));
 
         public EcsEntity this[int index] => _tiles[index];
         public EcsEntity this[int2 coordinate] => _tiles[GetFlattenTileCoordinate(coordinate)];
@@ -173,11 +170,7 @@ namespace Level
                                 Type = LevelTileType.HardBlock
                             });
 
-                            var colliderComponentConfigs = hardBlockConfig.Components
-                                .Where(c => c is ColliderComponentConfig)
-                                .Cast<ColliderComponentConfig>();
-
-                            ecsEntity.AddColliderComponents(colliderComponentConfigs);
+                            ecsEntity.AddCollider(hardBlockConfig.Collider);
 
                             return ecsEntity;
                         }
@@ -198,13 +191,7 @@ namespace Level
                         });
 
                         if (tileType == LevelTileType.SoftBlock)
-                        {
-                            var colliderComponentConfigs = softBlockConfig.Components
-                                .Where(c => c is ColliderComponentConfig)
-                                .Cast<ColliderComponentConfig>();
-
-                            ecsEntity.AddColliderComponents(colliderComponentConfigs);
-                        }
+                            ecsEntity.AddCollider(softBlockConfig.Collider);
 
                         --tileTypeCount[typeIndex];
 
@@ -213,16 +200,6 @@ namespace Level
                 )
                 .ToArray();
         }
-
-        /*private static ITileLoad CreateBlock(BlockConfig blockConfig)
-        {
-            return blockConfig switch
-            {
-                HardBlockConfig config => new HardBlock(config),
-                SoftBlockConfig config => new SoftBlock(config),
-                _ => null
-            };
-        }*/
 
         public fix2 GetCornerWorldPosition(int2 corner)
         {
