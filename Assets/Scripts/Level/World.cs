@@ -184,14 +184,14 @@ namespace Level
         {
             _playerInputs.Add(playerInput, player);
 
-            playerInput.OnInputActionEvent += OnPlayerInputAction; // :TODO: unsubscribe when player is dead
+            playerInput.OnInputActionEvent += OnPlayerInputAction;
         }
 
         private IEnumerable<EcsEntity> GetEnemiesByCoordinate(int2 coordinate)
         {
+            // :TODO: refactor
             return _enemies
-                .Where(e => math.all(LevelTiles.ToTileCoordinate(e.Get<TransformComponent>().WorldPosition) ==
-                                     coordinate)); // :TODO: refactor
+                .Where(e => math.all(LevelTiles.ToTileCoordinate(e.Get<TransformComponent>().WorldPosition) == coordinate));
         }
     }
 }

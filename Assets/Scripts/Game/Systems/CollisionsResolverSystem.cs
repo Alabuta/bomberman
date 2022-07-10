@@ -24,19 +24,17 @@ namespace Game.Systems
 
         public void Run()
         {
-            if (!_circleColliders.IsEmpty())
-                foreach (var index in _circleColliders)
-                    ResolveCollisions(_circleColliders, index);
+            foreach (var index in _circleColliders)
+                ResolveCollisions(_circleColliders, index);
 
-            if (!_boxColliders.IsEmpty())
-                foreach (var index in _boxColliders)
-                    ResolveCollisions(_boxColliders, index);
+            foreach (var index in _boxColliders)
+                ResolveCollisions(_boxColliders, index);
 
             _processedPairs.Clear();
         }
 
-        private void ResolveCollisions<T1>(EcsFilter<TransformComponent, LayerMaskComponent, T1> filter, int index)
-            where T1 : struct
+        private void ResolveCollisions<T>(EcsFilter<TransformComponent, LayerMaskComponent, T> filter, int index)
+            where T : struct
         {
             var levelTiles = _world.LevelTiles;
 
@@ -82,30 +80,27 @@ namespace Game.Systems
                     continue;
                 }
 
-                /*var wasCollided = _collidedPairs.Contains(hashedPair);
-                if (wasCollided)
-                    continue;*/
-
                 if (!transformComponentA.IsStatic && !entityA.Has<IsKinematicTag>())
-                {
-                    PopOutEntity(ref transformComponentA, ref colliderComponentA, intersectionPoint);
-                }
+                    PopOutEntity(entityA, ref transformComponentA, intersectionPoint);
 
                 if (!transformComponentB.IsStatic && !entityB.Has<IsKinematicTag>())
-                {
-                    if (entityB.Has<CircleColliderComponent>())
-                    {
-                        ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
-                        PopOutEntity(ref transformComponentB, ref colliderComponentB, intersectionPoint);
-                    }
-                    else if (entityB.Has<QuadColliderComponent>())
-                    {
-                        ref var colliderComponentB = ref entityB.Get<QuadColliderComponent>();
-                        PopOutEntity(ref transformComponentB, ref colliderComponentB, intersectionPoint);
-                    }
-                }
+                    PopOutEntity(entityB, ref transformComponentB, intersectionPoint);
 
                 _collidedPairs.Add(hashedPair);
+            }
+        }
+
+        private void PopOutEntity(EcsEntity entity, ref TransformComponent transformComponentB, fix2 intersectionPoint)
+        {
+            if (entity.Has<CircleColliderComponent>())
+            {
+                ref var colliderComponentB = ref entity.Get<CircleColliderComponent>();
+                PopOutEntity(ref transformComponentB, ref colliderComponentB, intersectionPoint);
+            }
+            else if (entity.Has<QuadColliderComponent>())
+            {
+                ref var colliderComponentB = ref entity.Get<QuadColliderComponent>();
+                PopOutEntity(ref transformComponentB, ref colliderComponentB, intersectionPoint);
             }
         }
 
@@ -160,8 +155,8 @@ namespace Game.Systems
             }
         }
 
-        private static bool GetIntersection<T1>(T1 colliderComponentA, fix2 entityPositionA,
-            EcsEntity entityB, fix2 entityPositionB, out fix2 intersectionPoint) where T1 : struct
+        private static bool GetIntersection<T>(T colliderComponentA, fix2 entityPositionA,
+            EcsEntity entityB, fix2 entityPositionB, out fix2 intersectionPoint) where T : struct
         {
             var hasIntersection = false;
             intersectionPoint = default;
@@ -212,15 +207,6 @@ namespace Game.Systems
                 out intersection);
         }
 
-        private static bool BoxBoxIntersectionPoint(fix2 positionA, ref QuadColliderComponent colliderA,
-            fix2 positionB, ref QuadColliderComponent colliderB, out fix2 intersection)
-        {
-            throw new System.NotImplementedException(); // :TODO: implement
-
-            /*return fix.box_and_box_intersection_point(centerA, colliderA.InnerRadius, centerB, boxCollider.InnerRadius,
-                out intersection);*/
-        }
-
         private static bool CircleBoxIntersectionPoint(fix2 positionA, ref CircleColliderComponent colliderA,
             fix2 positionB, ref QuadColliderComponent colliderB, out fix2 intersection)
         {
@@ -228,6 +214,15 @@ namespace Game.Systems
                 positionA, colliderA.Radius,
                 positionB, colliderB.InnerRadius,
                 out intersection);
+        }
+
+        private static bool BoxBoxIntersectionPoint(fix2 positionA, ref QuadColliderComponent colliderA,
+            fix2 positionB, ref QuadColliderComponent colliderB, out fix2 intersection)
+        {
+            throw new System.NotImplementedException(); // :TODO: implement
+
+            /*return fix.box_and_box_intersection_point(centerA, colliderA.InnerRadius, centerB, boxCollider.InnerRadius,
+                out intersection);*/
         }
     }
 }

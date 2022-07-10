@@ -12,16 +12,16 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<TransformComponent, OnCollisionExitEventComponent, BombTag> _filter;
+        private readonly EcsFilter<TransformComponent, OnCollisionExitEventComponent, BombTag> _bombs;
 
         public void Run()
         {
             var levelTiles = _world.LevelTiles;
 
-            foreach (var index in _filter)
+            foreach (var index in _bombs)
             {
-                ref var bombEntity = ref _filter.GetEntity(index);
-                ref var transformComponent = ref _filter.Get1(index);
+                ref var bombEntity = ref _bombs.GetEntity(index);
+                ref var transformComponent = ref _bombs.Get1(index);
 
                 var worldPosition = transformComponent.WorldPosition;
                 var coordinate = levelTiles.ToTileCoordinate(worldPosition);

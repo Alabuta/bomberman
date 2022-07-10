@@ -203,11 +203,8 @@ namespace Level
                 .ToArray();
         }
 
-        public fix2 GetCornerWorldPosition(int2 corner)
-        {
-            var position = (fix2) (corner * 2 - 1) * (WorldSize - fix2.one) / new fix2(2);
-            return position;
-        }
+        public fix2 GetCornerWorldPosition(int2 corner) =>
+            (fix2) (corner * 2 - 1) * (WorldSize - fix2.one) / new fix2(2);
 
         public int2 ToTileCoordinate(fix2 position)
         {
@@ -216,11 +213,8 @@ namespace Level
             return ClampCoordinate((int2) fix2.round(coordinate));
         }
 
-        public fix2 ToWorldPosition(int2 coordinate)
-        {
-            var position = (fix2) (coordinate - (_size - 1) / 2) * _tileSizeWorldUnits;
-            return position;
-        }
+        public fix2 ToWorldPosition(int2 coordinate) =>
+            (fix2) (coordinate - (_size - 1) / 2) * _tileSizeWorldUnits;
 
         private static bool IsHardBlockTileCoordinate(int2 coordinate) =>
             math.all(coordinate % 2 == 1);
@@ -237,15 +231,11 @@ namespace Level
             return math.select(c, c + _size, c < int2.zero);
         }*/
 
-        public int2 ClampCoordinate(int2 coordinate)
-        {
-            return math.clamp(coordinate, int2.zero, _size);
-        }
+        public int2 ClampCoordinate(int2 coordinate) =>
+            math.clamp(coordinate, int2.zero, _size);
 
-        public bool IsCoordinateInField(int2 coordinate)
-        {
-            return math.all(coordinate >= 0) && math.all(coordinate < _size);
-        }
+        public bool IsCoordinateInField(int2 coordinate) =>
+            math.all(coordinate >= 0) && math.all(coordinate < _size);
 
         public IEnumerable<EcsEntity> GetNeighborTiles(int2 coordinate)
         {
@@ -255,21 +245,14 @@ namespace Level
                 .Select(c => this[c]);
         }
 
-        public IEnumerable<EcsEntity> GetTilesByType(LevelTileType type)
-        {
-            var tilesByType = _tiles.Where(t => t.Get<LevelTileComponent>().Type == type).ToArray();
-            return tilesByType; // :TODO: refactor
-        }
+        public IEnumerable<EcsEntity> GetTilesByType(LevelTileType type) =>
+            _tiles.Where(t => t.Get<LevelTileComponent>().Type == type);
 
-        public IEnumerator<EcsEntity> GetEnumerator()
-        {
-            return _tiles.AsEnumerable().GetEnumerator();
-        }
+        public IEnumerator<EcsEntity> GetEnumerator() =>
+            _tiles.AsEnumerable().GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() =>
+            GetEnumerator();
 
         /*public void AddItem(BombItem item, int2 coordinate)
         {
