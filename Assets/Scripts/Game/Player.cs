@@ -63,15 +63,16 @@ namespace Game
         private void OnMove(float2 value)
         {
             ref var transformComponent = ref HeroEntity.Get<TransformComponent>();
+            ref var movementComponent = ref HeroEntity.Get<MovementComponent>();
             ref var entityComponent = ref HeroEntity.Get<EntityComponent>();
 
             if (math.lengthsq(value) > 0)
             {
                 transformComponent.Direction = (int2) math.round(value);
-                transformComponent.Speed = entityComponent.InitialSpeed * entityComponent.SpeedMultiplier;
+                movementComponent.Speed = entityComponent.InitialSpeed * entityComponent.SpeedMultiplier;
             }
             else
-                transformComponent.Speed = fix.zero;
+                movementComponent.Speed = fix.zero;
         }
     }
 }

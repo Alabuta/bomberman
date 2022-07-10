@@ -8,7 +8,8 @@ namespace Game.Systems
     {
         private readonly EcsWorld _ecsWorld;
 
-        private EcsFilter<EntityComponent, TransformComponent> _entitiesFilter;
+        private EcsFilter<EntityComponent, TransformComponent> _transformFilter;
+        private EcsFilter<EntityComponent, MovementComponent> _movementFilter;
 
         public void Run()
         {
@@ -17,17 +18,21 @@ namespace Game.Systems
 
         private void UpdateEntities()
         {
-            if (_entitiesFilter.IsEmpty())
-                return;
-
-            foreach (var entityIndex in _entitiesFilter)
+            foreach (var entityIndex in _transformFilter)
             {
-                ref var entityComponent = ref _entitiesFilter.Get1(entityIndex);
-                ref var transformComponent = ref _entitiesFilter.Get2(entityIndex);
+                ref var entityComponent = ref _transformFilter.Get1(entityIndex);
+                ref var transformComponent = ref _transformFilter.Get2(entityIndex);
 
                 entityComponent.Controller.Direction = transformComponent.Direction;
-                entityComponent.Controller.Speed = transformComponent.Speed;
                 entityComponent.Controller.WorldPosition = transformComponent.WorldPosition;
+            }
+
+            foreach (var entityIndex in _movementFilter)
+            {
+                ref var entityComponent = ref _movementFilter.Get1(entityIndex);
+                ref var movementComponent = ref _movementFilter.Get2(entityIndex);
+
+                entityComponent.Controller.Speed = movementComponent.Speed;
             }
         }
     }

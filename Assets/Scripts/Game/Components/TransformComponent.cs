@@ -7,6 +7,6 @@ namespace Game.Components
     {
         public fix2 WorldPosition;
         public int2 Direction;
-        public fix Speed;
+        public bool IsStatic;
     }
 }

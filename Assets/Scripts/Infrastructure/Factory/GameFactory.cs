@@ -43,19 +43,6 @@ namespace Infrastructure.Factory
             return new Player(playerConfig);
         }
 
-        /*public Hero CreateHero(HeroConfig heroConfig, HeroController entityController, EcsEntity ecsEntity)
-        {
-            var hero = new Hero(heroConfig, entityController, ecsEntity);
-            // RegisterProgressReader(hero.HeroHealth);
-
-            return hero;
-        }*/
-
-        /*public BombItem CreateItem(BombItemConfig bobItemConfig, ItemController controller)
-        {
-            return new BombItem(bobItemConfig, controller);
-        }*/
-
         public GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null)
         {
             var gameObject = _assetProvider.Instantiate(prefab, position, parent);

@@ -33,20 +33,20 @@ namespace Level
             var levelConfig = levelStage.LevelConfig;
             var levelStageConfig = levelStage.LevelStageConfig;
 
-            LevelModel = new LevelModel(this, levelConfig, levelStageConfig);
+            LevelTiles = new LevelTiles(this, levelConfig, levelStageConfig);
 
-            var spawnBlocksTask = SpawnBlocks(levelConfig, LevelModel, _gameFactory);
-            var spawnWallsTask = SpawnWalls(_gameFactory, levelConfig, LevelModel);
+            var spawnBlocksTask = SpawnBlocks(levelConfig, LevelTiles, _gameFactory);
+            var spawnWallsTask = SpawnWalls(_gameFactory, levelConfig, LevelTiles);
 
             Task.WhenAll(spawnBlocksTask, spawnWallsTask);
         }
 
-        private static async Task SpawnWalls(IGameFactory gameFactory, LevelConfig levelConfig, LevelModel levelModel)
+        private static async Task SpawnWalls(IGameFactory gameFactory, LevelConfig levelConfig, LevelTiles levelTiles)
         {
             var loadTask = gameFactory.InstantiatePrefabAsync(levelConfig.Walls, Vector3.zero);
 
-            var columnsNumber = levelModel.ColumnsNumber;
-            var rowsNumber = levelModel.RowsNumber;
+            var columnsNumber = levelTiles.ColumnsNumber;
+            var rowsNumber = levelTiles.RowsNumber;
 
             /*var offsetsAndSize = new[]
             {
@@ -69,7 +69,7 @@ namespace Level
             }*/
         }
 
-        private async Task SpawnBlocks(LevelConfig levelConfig, LevelModel levelModel,
+        private async Task SpawnBlocks(LevelConfig levelConfig, LevelTiles levelTiles,
             IGameFactory gameFactory)
         {
             // :TODO: refactor
@@ -83,8 +83,8 @@ namespace Level
 
             var blocksGroup = new GameObject("Blocks");
 
-            var columnsNumber = levelModel.ColumnsNumber;
-            var rowsNumber = levelModel.RowsNumber;
+            var columnsNumber = levelTiles.ColumnsNumber;
+            var rowsNumber = levelTiles.RowsNumber;
 
             var startPosition = (math.float3(1) - math.float3(columnsNumber, rowsNumber, 0)) / 2;
 
@@ -92,14 +92,14 @@ namespace Level
 
             for (var i = 0; i < columnsNumber * rowsNumber; ++i)
             {
-                var tile = levelModel[i];
+                var tile = levelTiles[i];
                 var tileType = tile.Get<LevelTileComponent>().Type;
                 if (tileType == LevelTileType.FloorTile)
                     continue;
 
                 // ReSharper disable once PossibleLossOfFraction
                 var position = startPosition + math.float3(i % columnsNumber, i / columnsNumber, 0);
-                var coordinate = levelModel.ToTileCoordinate(new fix2((fix) position.x, (fix) position.y));
+                var coordinate = levelTiles.ToTileCoordinate(new fix2((fix) position.x, (fix) position.y));
 
                 var blockIndex = Array.FindIndex(blocks, p => p.type == tileType);
                 var blockPrefab = assets[blockIndex];
@@ -128,14 +128,14 @@ namespace Level
                 .ToArray();
 
             var playersCoordinates = Players.Values
-                .Select(p => LevelModel.ToTileCoordinate(p.HeroEntity.Get<TransformComponent>().WorldPosition))
+                .Select(p => LevelTiles.ToTileCoordinate(p.HeroEntity.Get<TransformComponent>().WorldPosition))
                 .ToArray();
 
-            var floorTiles = LevelModel
+            var floorTiles = LevelTiles
                 .GetTilesByType(LevelTileType.FloorTile)
                 .Where(t =>
                 {
-                    var coordinate = LevelModel.ToTileCoordinate(t.Get<TransformComponent>().WorldPosition);
+                    var coordinate = LevelTiles.ToTileCoordinate(t.Get<TransformComponent>().WorldPosition);
                     return !playersCoordinates.Contains(coordinate);
                 })
                 .ToList();
@@ -169,6 +169,11 @@ namespace Level
             {
                 WorldPosition = position,
                 Direction = enemyConfig.StartDirection,
+                IsStatic = false
+            });
+
+            entity.Replace(new MovementComponent
+            {
                 Speed = fix.zero
             });
 
@@ -218,7 +223,7 @@ namespace Level
 
             var tasks = spawnCorners
                 .Zip(playerConfigs,
-                    (spawnCorner, playerConfig) => (LevelModel.GetCornerWorldPosition(spawnCorner), playerConfig))
+                    (spawnCorner, playerConfig) => (LevelTiles.GetCornerWorldPosition(spawnCorner), playerConfig))
                 .Select(p => CreatePlayerAndSpawnHero(inputService, p.playerConfig, p.Item1))
                 .ToArray();
 
@@ -228,7 +233,7 @@ namespace Level
         private async Task CreatePlayersAndSpawnHeroesPvE(GameModePvEConfig gameMode,
             LevelStagePvEConfig levelStageConfig, IInputService inputService)
         {
-            var spawnCoordinate = LevelModel.GetCornerWorldPosition(levelStageConfig.PlayerSpawnCorner);
+            var spawnCoordinate = LevelTiles.GetCornerWorldPosition(levelStageConfig.PlayerSpawnCorner);
             await CreatePlayerAndSpawnHero(inputService, gameMode.PlayerConfig, spawnCoordinate);
         }
 
@@ -253,6 +258,11 @@ namespace Level
             {
                 WorldPosition = position,
                 Direction = heroConfig.StartDirection,
+                IsStatic = false
+            });
+
+            entity.Replace(new MovementComponent
+            {
                 Speed = fix.zero
             });
 
@@ -261,6 +271,7 @@ namespace Level
                 CurrentHealth = heroConfig.HealthParameters.Health,
                 MaxHealth = heroConfig.HealthParameters.Health
             });
+            // RegisterProgressReader(hero.HeroHealth); :TODO:
 
             entity.AddCollider(heroConfig.Collider);
 
@@ -307,14 +318,35 @@ namespace Level
             {
                 WorldPosition = position,
                 Direction = bombConfig.StartDirection,
-                Speed = fix.zero
+                IsStatic = true
             });
+
+            entity.AddCollider(bombConfig.Collider);
 
             var go = await task;
             Assert.IsNotNull(go);
 
-            var enemyController = go.GetComponent<ItemController>();
-            Assert.IsNotNull(enemyController);
+            var itemController = go.GetComponent<ItemController>();
+            Assert.IsNotNull(itemController);
+
+            entity.Replace(new EntityComponent
+            {
+                Config = bombConfig,
+                Controller = itemController,
+
+                InitialSpeed = fix.zero,
+                SpeedMultiplier = fix.zero
+            });
+
+            entity.Replace(new DamageableComponent
+            {
+                HurtRadius = (fix) bombConfig.DamageParameters.HurtRadius
+            });
+
+            entity.Replace(new LayerMaskComponent
+            {
+                Value = bombConfig.LayerMask
+            });
 
             return entity;
         }

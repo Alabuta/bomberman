@@ -37,7 +37,7 @@ namespace Level
 
         public RandomGenerator RandomGenerator { get; }
 
-        public LevelModel LevelModel { get; private set; }
+        public LevelTiles LevelTiles { get; private set; }
 
         public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
 
@@ -77,6 +77,7 @@ namespace Level
                 .OneFrame<OnCollisionEnterEventComponent>()
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsResolverSystem())
+                .Add(new LevelEntitiesTreeSystem())
                 .Add(new AttackBehaviourSystem())
                 .Add(healthSystem)
                 .Inject(this)
@@ -147,9 +148,9 @@ namespace Level
                         entityComponent.Controller.Kill();
                     }
 
-                    if (ecsEntity.Has<TransformComponent>())
+                    if (ecsEntity.Has<MovementComponent>())
                     {
-                        ref var transformComponent = ref ecsEntity.Get<TransformComponent>();
+                        ref var transformComponent = ref ecsEntity.Get<MovementComponent>();
                         transformComponent.Speed = fix.zero;
                     }
 
@@ -188,7 +189,7 @@ namespace Level
         private IEnumerable<EcsEntity> GetEnemiesByCoordinate(int2 coordinate)
         {
             return _enemies
-                .Where(e => math.all(LevelModel.ToTileCoordinate(e.Get<TransformComponent>().WorldPosition) ==
+                .Where(e => math.all(LevelTiles.ToTileCoordinate(e.Get<TransformComponent>().WorldPosition) ==
                                      coordinate)); // :TODO: refactor
         }
     }

@@ -14,7 +14,7 @@ using UnityEngine.Assertions;
 
 namespace Level
 {
-    public sealed class LevelModel : IEnumerable<EcsEntity>
+    public sealed class LevelTiles : IEnumerable<EcsEntity>
     {
         private static readonly int2[] NeighborTilesOffsets =
         {
@@ -46,7 +46,7 @@ namespace Level
         public EcsEntity this[int index] => _tiles[index];
         public EcsEntity this[int2 coordinate] => _tiles[GetFlattenTileCoordinate(coordinate)];
 
-        public LevelModel(World world, LevelConfig levelConfig, LevelStageConfig levelStageConfig)
+        public LevelTiles(World world, LevelConfig levelConfig, LevelStageConfig levelStageConfig)
         {
             _tileSizeWorldUnits = (fix) levelConfig.TileSizeWorldUnits;
 
@@ -94,7 +94,8 @@ namespace Level
 
             ecsEntity.Replace(new TransformComponent
             {
-                WorldPosition = worldPosition
+                WorldPosition = worldPosition,
+                IsStatic = true
             });
         }
 
@@ -150,7 +151,8 @@ namespace Level
 
                         ecsEntity.Replace(new TransformComponent
                         {
-                            WorldPosition = worldPosition
+                            WorldPosition = worldPosition,
+                            IsStatic = true
                         });
 
                         if (spawnTilesIndices.Contains(index))

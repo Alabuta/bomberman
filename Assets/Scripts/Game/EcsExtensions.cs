@@ -35,7 +35,7 @@ namespace Game
                             ToWorldPosition = transformComponent.WorldPosition
                         });
 
-                        ecsEntity.Replace(new PositionControlledBySystemsTag());
+                        ecsEntity.Replace(new IsKinematicTag());
 
                         break;
 
@@ -94,6 +94,15 @@ namespace Game
         public static bool IsAlive(this ref HealthComponent healthComponent)
         {
             return healthComponent.CurrentHealth < 1;
+        }
+
+        public static long GetEntitiesPairHash(EcsEntity entityA, EcsEntity entityB)
+        {
+            var a = entityA.GetInternalId();
+            var b = entityB.GetInternalId();
+            return a > b
+                ? ((long) a << 32) | (uint) b
+                : ((long) b << 32) | (uint) a;
         }
     }
 }

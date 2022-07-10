@@ -14,9 +14,11 @@ namespace Game.Systems.Behaviours
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<LayerMaskComponent, TransformComponent, SimpleMovementBehaviourComponent>.Exclude<DeadTag>
+        private readonly EcsFilter<LayerMaskComponent, TransformComponent, MovementComponent, SimpleMovementBehaviourComponent>.
+            Exclude<DeadTag>
             _steeredEntities;
-        private readonly EcsFilter<PositionControlledByResolverTag, TransformComponent> _playerControlledEntities;
+        private readonly EcsFilter<PositionControlledByResolverTag, TransformComponent, MovementComponent>
+            _playerControlledEntities;
 
         public void Run()
         {
@@ -33,15 +35,16 @@ namespace Game.Systems.Behaviours
         {
             var entityLayerMask = _steeredEntities.Get1(entityIndex).Value;
             ref var transformComponent = ref _steeredEntities.Get2(entityIndex);
-            ref var movementBehaviourComponent = ref _steeredEntities.Get3(entityIndex);
+            ref var movementComponent = ref _steeredEntities.Get3(entityIndex);
+            ref var movementBehaviourComponent = ref _steeredEntities.Get4(entityIndex);
 
-            var levelModel = _world.LevelModel;
+            var levelTiles = _world.LevelTiles;
             var deltaTime = _world.FixedDeltaTime;
 
-            ref var worldPosition = ref transformComponent.WorldPosition;
-            ref var direction = ref transformComponent.Direction;
+            var worldPosition = transformComponent.WorldPosition;
+            var direction = transformComponent.Direction;
 
-            var path = transformComponent.Speed * deltaTime;
+            var path = movementComponent.Speed * deltaTime;
             var currentWorldPosition = worldPosition + (fix2) direction * path;
 
             if (!IsNeedToUpdate(ref currentWorldPosition, ref movementBehaviourComponent))
@@ -51,7 +54,7 @@ namespace Game.Systems.Behaviours
             }
 
             var toWorldPosition = movementBehaviourComponent.ToWorldPosition;
-            var currentTileCoordinate = levelModel.ToTileCoordinate(toWorldPosition);
+            var currentTileCoordinate = levelTiles.ToTileCoordinate(toWorldPosition);
             int2 targetTileCoordinate;
 
             var randomValue = _world.RandomGenerator.Range(fix.zero, fix.one, (int) _world.Tick);
@@ -59,22 +62,22 @@ namespace Game.Systems.Behaviours
             {
                 var neighborTiles = movementBehaviourComponent.MovementDirections
                     .Select(d => currentTileCoordinate + d)
-                    .Where(levelModel.IsCoordinateInField).ToArray()
-                    .Select(c => levelModel[c])
+                    .Where(levelTiles.IsCoordinateInField).ToArray()
+                    .Select(c => levelTiles[c])
                     .Where(t => IsTileCanBeAsMovementTarget(t, entityLayerMask))
                     .ToArray();
 
                 if (neighborTiles.Length == 0)
                 {
                     transformComponent.Direction = int2.zero;
-                    transformComponent.Speed = fix.zero;
+                    movementComponent.Speed = fix.zero;
 
                     return;
                 }
 
                 var index = _world.RandomGenerator.Range(0, neighborTiles.Length, (int) _world.Tick);
                 var neighborTile = neighborTiles[index];
-                targetTileCoordinate = levelModel.ToTileCoordinate(neighborTile.Get<TransformComponent>().WorldPosition);
+                targetTileCoordinate = levelTiles.ToTileCoordinate(neighborTile.Get<TransformComponent>().WorldPosition);
 
                 transformComponent.Direction = targetTileCoordinate - currentTileCoordinate;
             }
@@ -85,7 +88,7 @@ namespace Game.Systems.Behaviours
 
                 targetTileCoordinate = currentTileCoordinate + direction;
 
-                if (!levelModel.IsCoordinateInField(targetTileCoordinate))
+                if (!levelTiles.IsCoordinateInField(targetTileCoordinate))
                 {
                     var neighborTile = GetRandomNeighborTile(
                         _world,
@@ -95,14 +98,14 @@ namespace Game.Systems.Behaviours
                         entityLayerMask);
 
                     targetTileCoordinate = neighborTile != EcsEntity.Null
-                        ? levelModel.ToTileCoordinate(neighborTile.Get<TransformComponent>().WorldPosition)
+                        ? levelTiles.ToTileCoordinate(neighborTile.Get<TransformComponent>().WorldPosition)
                         : currentTileCoordinate;
                 }
             }
 
             transformComponent.Direction = (int2) math.normalize(direction);
 
-            var targetTile = levelModel[targetTileCoordinate];
+            var targetTile = levelTiles[targetTileCoordinate];
             if (!IsTileCanBeAsMovementTarget(targetTile, entityLayerMask))
             {
                 targetTile = GetRandomNeighborTile(_world,
@@ -115,22 +118,22 @@ namespace Game.Systems.Behaviours
             if (targetTile == EcsEntity.Null)
             {
                 transformComponent.Direction = int2.zero;
-                transformComponent.Speed = fix.zero;
+                movementComponent.Speed = fix.zero;
 
                 return;
             }
 
-            targetTileCoordinate = levelModel.ToTileCoordinate(targetTile.Get<TransformComponent>().WorldPosition);
+            targetTileCoordinate = levelTiles.ToTileCoordinate(targetTile.Get<TransformComponent>().WorldPosition);
 
             transformComponent.Direction = (int2) math.normalize(targetTileCoordinate - currentTileCoordinate);
-            transformComponent.Speed = fix.one;
+            movementComponent.Speed = fix.one;
 
             transformComponent.WorldPosition =
                 movementBehaviourComponent.ToWorldPosition + (fix2) direction * fix2.distance(worldPosition,
                     movementBehaviourComponent.ToWorldPosition);
 
             movementBehaviourComponent.FromWorldPosition = movementBehaviourComponent.ToWorldPosition;
-            movementBehaviourComponent.ToWorldPosition = levelModel.ToWorldPosition(targetTileCoordinate);
+            movementBehaviourComponent.ToWorldPosition = levelTiles.ToWorldPosition(targetTileCoordinate);
         }
 
         private void UpdatePlayerControlledEntities(int entityIndex)
@@ -138,8 +141,9 @@ namespace Game.Systems.Behaviours
             var deltaTime = _world.FixedDeltaTime;
 
             ref var transformComponent = ref _playerControlledEntities.Get2(entityIndex);
+            ref var movementComponent = ref _playerControlledEntities.Get3(entityIndex);
 
-            transformComponent.WorldPosition += (fix2) transformComponent.Direction * transformComponent.Speed * deltaTime;
+            transformComponent.WorldPosition += (fix2) transformComponent.Direction * movementComponent.Speed * deltaTime;
         }
 
         private static bool IsNeedToUpdate(ref fix2 currentWorldPosition,
@@ -170,12 +174,12 @@ namespace Game.Systems.Behaviours
         private EcsEntity GetRandomNeighborTile(World world, int2 tileCoordinate, ref TransformComponent component,
             ref SimpleMovementBehaviourComponent simpleMovementBehaviourComponent, int entityLayerMask)
         {
-            var levelModel = world.LevelModel;
+            var levelTiles = world.LevelTiles;
 
             var tileCoordinates = simpleMovementBehaviourComponent.MovementDirections
                 .Select(d => tileCoordinate + d)
-                .Where(levelModel.IsCoordinateInField)
-                .Select(c => levelModel[c])
+                .Where(levelTiles.IsCoordinateInField)
+                .Select(c => levelTiles[c])
                 .Where(t => IsTileCanBeAsMovementTarget(t, entityLayerMask))
                 .ToArray();
 
@@ -194,7 +198,7 @@ namespace Game.Systems.Behaviours
                 tileCoordinates = tileCoordinates
                     .Where(c =>
                     {
-                        var coordinate = levelModel.ToTileCoordinate(c.Get<TransformComponent>().WorldPosition);
+                        var coordinate = levelTiles.ToTileCoordinate(c.Get<TransformComponent>().WorldPosition);
                         return math.all(coordinate != tileCoordinate - entityDirection);
                     })
                     .ToArray();

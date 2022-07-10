@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Configs.Entity;
 using Game;
 using Game.Components.Entities;
 using Game.Components.Tags;
@@ -23,31 +25,31 @@ namespace Level
             _playersInputActions[Tick].Add(inputActions);
         }
 
-        public void OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
+        public async Task OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
         {
             var heroEntity = player.HeroEntity;
             Assert.IsTrue(heroEntity.Has<HeroTag>());
 
-            ref var heroComponent = ref heroEntity.Get<EntityComponent>();
+            var heroComponent = heroEntity.Get<EntityComponent>();
 
-            /*var bombConfig = ((HeroConfig) heroComponent.Config).BombConfig;
-            var bombCoordinate = LevelModel.ToTileCoordinate(worldPosition);
-            var position = LevelModel.ToWorldPosition(bombCoordinate);
+            var bombConfig = ((HeroConfig) heroComponent.Config).BombConfig;
 
-            var go = _gameFactory.InstantiatePrefab(bombConfig.Prefab, fix2.ToXY(position));
-            Assert.IsNotNull(go);
+            var coordinate = LevelTiles.ToTileCoordinate(worldPosition);
+            var position = LevelTiles.ToWorldPosition(coordinate);
 
-            var itemController = go.GetComponent<ItemController>();
-            Assert.IsNotNull(itemController);
+            var task = CreateAndSpawnBomb(bombConfig, position);
+            var entity = await task;
 
-            var bombItem = _ecsWorld.NewEntity(); // _gameFactory.CreateItem(bombConfig.ItemConfig, itemController); :TODO: fix
+            // LevelModel.AddItem(entity);
+
+            // var bombItem = _ecsWorld.NewEntity(); // _gameFactory.CreateItem(bombConfig.ItemConfig, itemController); :TODO: fix
 
             // LevelModel.AddItem(bombItem, bombCoordinate);
 
             if (!_playerBombs.ContainsKey(player))
                 _playerBombs.Add(player, new Queue<EcsEntity>());
 
-            _playerBombs[player].Enqueue(bombItem);*/
+            _playerBombs[player].Enqueue(entity);
         }
 
         public void OnPlayerBombBlast(IPlayer player)

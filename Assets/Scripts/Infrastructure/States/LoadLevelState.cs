@@ -78,7 +78,7 @@ namespace Infrastructure.States
 
             var defaultPlayer = gameWorld.Players.Values.FirstOrDefault(); // :TODO: use DefaultPlayerTag
             if (defaultPlayer != null)
-                SetupCamera(levelStage, gameWorld.LevelModel, defaultPlayer);
+                SetupCamera(levelStage, gameWorld.LevelTiles, defaultPlayer);
 
             gameWorld.UpdateWorldView();
 
@@ -109,7 +109,7 @@ namespace Infrastructure.States
                 progressReader.LoadProgress(_progressService.Progress);
         }
 
-        private static void SetupCamera(LevelStage levelStage, LevelModel levelModel, IPlayer player)
+        private static void SetupCamera(LevelStage levelStage, LevelTiles levelTiles, IPlayer player)
         {
             var mainCamera = Camera.main;
             if (mainCamera == null)
@@ -117,7 +117,7 @@ namespace Infrastructure.States
 
             var heroEntity = player.HeroEntity;
             var playerPosition = heroEntity.Get<TransformComponent>().WorldPosition;
-            var levelSize = levelModel.Size;
+            var levelSize = levelTiles.Size;
 
             var levelConfig = levelStage.LevelConfig;
 
