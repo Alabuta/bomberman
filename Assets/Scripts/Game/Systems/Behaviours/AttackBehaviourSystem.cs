@@ -28,20 +28,20 @@ namespace Game.Systems.Behaviours
         private void Update(int attackerIndex)
         {
             ref var attackerTransform = ref _attackersFilter.Get1(attackerIndex);
-            ref var attackComponent = ref _attackersFilter.Get2(attackerIndex);
+            ref var attackerBehaviour = ref _attackersFilter.Get2(attackerIndex);
 
             foreach (var targetEntityIndex in _targetsFilter)
             {
                 ref var targetEntity = ref _targetsFilter.GetEntity(targetEntityIndex);
 
                 ref var layerMaskComponent = ref _targetsFilter.Get1(targetEntityIndex);
-                if ((layerMaskComponent.Value & attackComponent.InteractionLayerMask.value) == 0)
+                if ((layerMaskComponent.Value & attackerBehaviour.InteractionLayerMask.value) == 0)
                     continue;
 
                 ref var targetTransform = ref _targetsFilter.Get2(targetEntityIndex);
                 ref var damageableComponent = ref _targetsFilter.Get3(targetEntityIndex);
 
-                var areEntitiesOverlapped = AreEntitiesOverlapped(ref attackerTransform, attackComponent.HitRadius,
+                var areEntitiesOverlapped = AreEntitiesOverlapped(ref attackerTransform, attackerBehaviour.HitRadius,
                     ref targetTransform, damageableComponent.HurtRadius);
 
                 if (!areEntitiesOverlapped)
@@ -49,7 +49,7 @@ namespace Game.Systems.Behaviours
 
                 targetEntity.Replace(new AttackEventComponent
                 {
-                    DamageValue = attackComponent.DamageValue
+                    DamageValue = attackerBehaviour.DamageValue
                 });
             }
         }

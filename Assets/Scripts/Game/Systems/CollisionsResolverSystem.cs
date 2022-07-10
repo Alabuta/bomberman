@@ -51,7 +51,6 @@ namespace Game.Systems
 
             var neighborTiles = levelTiles
                 .GetNeighborTiles(entityCoordinateA)
-                .Where(t => t.Has<LevelTileComponent>())
                 .SelectMany(t =>
                 {
                     ref var levelTileComponent = ref t.Get<LevelTileComponent>();

@@ -6,6 +6,9 @@ namespace Configs.Entity
     public abstract class BombConfig : EntityConfig
     {
         [Space]
+        public DamageParameters DamageParameters;
+
+        [Space]
         public int2[] BombBlastDirections =
         {
             new(1, 0),
