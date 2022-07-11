@@ -52,7 +52,9 @@ namespace Game.Systems
                 .SelectMany(t =>
                 {
                     ref var levelTileComponent = ref t.Get<LevelTileComponent>();
-                    return levelTileComponent.Entities != null ? levelTileComponent.Entities.Append(t) : new[] { t };
+                    return levelTileComponent.EntitiesHolder != null
+                        ? levelTileComponent.EntitiesHolder.Append(t)
+                        : new[] { t };
                 });
 
             foreach (var entityB in neighborTiles)

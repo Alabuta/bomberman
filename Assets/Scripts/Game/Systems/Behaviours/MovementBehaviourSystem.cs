@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Game.Components;
 using Game.Components.Behaviours;
+using Game.Components.Entities;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
@@ -62,7 +63,7 @@ namespace Game.Systems.Behaviours
             {
                 var neighborTiles = movementBehaviourComponent.MovementDirections
                     .Select(d => currentTileCoordinate + d)
-                    .Where(levelTiles.IsCoordinateInField).ToArray()
+                    .Where(levelTiles.IsCoordinateInField)
                     .Select(c => levelTiles[c])
                     .Where(t => IsTileCanBeAsMovementTarget(t, entityLayerMask))
                     .ToArray();
@@ -168,7 +169,12 @@ namespace Game.Systems.Behaviours
         {
             var tileInteractionMask = tile.GetCollidersInteractionMask();
 
-            return (entityLayerMask & tileInteractionMask) == 0;
+            ref var tileComponent = ref tile.Get<LevelTileComponent>();
+            var hasEntities = tileComponent.EntitiesHolder?
+                .Select(e => e.GetCollidersInteractionMask())
+                .Any(m => (m & entityLayerMask) != 0);
+
+            return (entityLayerMask & tileInteractionMask) == 0 && !(hasEntities ?? false);
         }
 
         private EcsEntity GetRandomNeighborTile(World world, int2 tileCoordinate, ref TransformComponent component,

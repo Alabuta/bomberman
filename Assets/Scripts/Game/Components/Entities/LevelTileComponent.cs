@@ -7,6 +7,6 @@ namespace Game.Components.Entities
     public struct LevelTileComponent
     {
         public LevelTileType Type;
-        public HashSet<EcsEntity> Entities;
+        public HashSet<EcsEntity> EntitiesHolder;
     }
 }

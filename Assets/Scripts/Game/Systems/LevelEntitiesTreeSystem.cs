@@ -33,14 +33,14 @@ namespace Game.Systems
 
                 if (!_clearedTiles.Contains(levelTileEntity))
                 {
-                    levelTileComponent.Entities?.Clear();
+                    levelTileComponent.EntitiesHolder?.Clear();
                     _clearedTiles.Add(levelTileEntity);
                 }
 
-                if (levelTileComponent.Entities != null)
-                    levelTileComponent.Entities.Add(entity);
+                if (levelTileComponent.EntitiesHolder != null)
+                    levelTileComponent.EntitiesHolder.Add(entity);
                 else
-                    levelTileComponent.Entities = new HashSet<EcsEntity> { entity };
+                    levelTileComponent.EntitiesHolder = new HashSet<EcsEntity> { entity };
             }
 
             _clearedTiles.Clear();

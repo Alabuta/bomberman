@@ -29,7 +29,7 @@ namespace Game.Systems
                 var levelTile = levelTiles[coordinate];
                 ref var levelTileComponent = ref levelTile.Get<LevelTileComponent>();
 
-                if (levelTileComponent.Entities.Count == 0)
+                if (levelTileComponent.EntitiesHolder.Count == 0)
                     bombEntity.Del<IsKinematicTag>();
             }
         }
