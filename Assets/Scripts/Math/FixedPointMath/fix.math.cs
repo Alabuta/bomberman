@@ -478,8 +478,14 @@ namespace Math.FixedPointMath
         public static bool circle_and_circle_intersection_point(fix2 centerA, fix radiusA, fix2 centerB, fix radiusB,
             out fix2 point)
         {
+            point = default;
+
             var vector = centerB - centerA;
             var length = fix2.length(vector);
+
+            if (length < Epsilon)
+                return true;
+
             var twoRadii = radiusA + radiusB;
 
             if (length != zero && length <= twoRadii)
@@ -488,7 +494,6 @@ namespace Math.FixedPointMath
                 return true;
             }
 
-            point = default;
             return false;
         }
     }

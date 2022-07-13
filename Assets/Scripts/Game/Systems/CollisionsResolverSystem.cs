@@ -82,11 +82,11 @@ namespace Game.Systems
                     continue;
                 }
 
-                if (!transformComponentA.IsStatic && !entityA.Has<IsKinematicTag>())
-                    PopOutEntity(entityA, ref transformComponentA, intersectionPoint);
+                if (!transformComponentA.IsStatic && !(entityA.Has<IsKinematicTag>() || entityB.Has<IsKinematicTag>()))
+                    PopOutEntity(entityA, ref transformComponentA, intersectionPoint, entityB);
 
-                if (!transformComponentB.IsStatic && !entityB.Has<IsKinematicTag>())
-                    PopOutEntity(entityB, ref transformComponentB, intersectionPoint);
+                if (!transformComponentB.IsStatic && !(entityA.Has<IsKinematicTag>() || entityB.Has<IsKinematicTag>()))
+                    PopOutEntity(entityB, ref transformComponentB, intersectionPoint, entityA);
 
                 _collidedPairs.Add(hashedPair);
             }

@@ -1,4 +1,5 @@
-﻿using Game.Components;
+﻿using System.Linq;
+using Game.Components;
 using Game.Components.Entities;
 using Game.Components.Events;
 using Game.Components.Tags;
@@ -20,7 +21,7 @@ namespace Game.Systems
 
             foreach (var index in _bombs)
             {
-                ref var bombEntity = ref _bombs.GetEntity(index);
+                var bombEntity = _bombs.GetEntity(index);
                 ref var transformComponent = ref _bombs.Get1(index);
 
                 var worldPosition = transformComponent.WorldPosition;
@@ -29,7 +30,7 @@ namespace Game.Systems
                 var levelTile = levelTiles[coordinate];
                 ref var levelTileComponent = ref levelTile.Get<LevelTileComponent>();
 
-                if (levelTileComponent.EntitiesHolder.Count == 0)
+                if (levelTileComponent.EntitiesHolder.All(e => e == bombEntity))
                     bombEntity.Del<IsKinematicTag>();
             }
         }
