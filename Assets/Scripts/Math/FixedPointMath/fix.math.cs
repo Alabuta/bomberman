@@ -463,11 +463,13 @@ namespace Math.FixedPointMath
             return fix2.distancesq(point, circleCenter) < circleRadius * circleRadius;
         }
 
-        public static bool circle_and_box_intersection_point(fix2 circleCenter, fix circleR, fix2 aabbCenter, fix innerR,
+        public static bool circle_and_quad_intersection_point(fix2 circleCenter, fix circleR, fix2 aabbCenter, fix size,
             out fix2 point)
         {
-            var pMax = aabbCenter + innerR;
-            var pMin = aabbCenter - innerR;
+            var halfSize = size / new fix(2);
+
+            var pMax = aabbCenter + halfSize;
+            var pMin = aabbCenter - halfSize;
 
             point = fix2.max(pMin, fix2.min(circleCenter, pMax));
 
@@ -475,26 +477,45 @@ namespace Math.FixedPointMath
             return x;
         }
 
-        public static bool circle_and_circle_intersection_point(fix2 centerA, fix radiusA, fix2 centerB, fix radiusB,
-            out fix2 point)
+        public static bool circle_and_circle_intersection(fix2 centerA, fix radiusA, fix2 centerB, fix radiusB, out fix2 point)
         {
-            point = default;
-
             var vector = centerB - centerA;
             var length = fix2.length(vector);
 
             if (length < Epsilon)
+            {
+                point = centerB;
                 return true;
+            }
 
             var twoRadii = radiusA + radiusB;
-
-            if (length != zero && length <= twoRadii)
+            if (length <= twoRadii)
             {
                 point = centerB - vector / length * radiusB;
                 return true;
             }
 
+            point = default;
             return false;
+
+            /*var vector = centerB - centerA;
+            var length = fix2.length(vector);
+
+            if (length < Epsilon)
+            {
+                point = centerB;
+                return true;
+            }
+
+            var twoRadii = radiusA + radiusB;
+            if (length <= twoRadii)
+            {
+                point = centerA + vector / length * radiusA;
+                return true;
+            }
+
+            point = default;
+            return false;*/
         }
     }
 }

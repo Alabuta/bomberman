@@ -59,7 +59,7 @@ namespace Game
                     entity.Replace(new QuadColliderComponent
                     {
                         InteractionLayerMask = config.InteractionLayerMask,
-                        InnerRadius = (fix) config.InnerRadius
+                        Size = (fix) config.Size
                     });
                     entity.Replace(new HasColliderTag());
                     break;
