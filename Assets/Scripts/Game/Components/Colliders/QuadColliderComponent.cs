@@ -6,6 +6,8 @@ namespace Game.Components.Colliders
     public struct QuadColliderComponent
     {
         public LayerMask InteractionLayerMask;
-        public fix Size;
+
+        public fix2 Offset;
+        public fix2 Extent;
     }
 }

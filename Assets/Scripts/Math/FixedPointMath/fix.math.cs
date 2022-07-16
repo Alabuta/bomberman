@@ -463,13 +463,12 @@ namespace Math.FixedPointMath
             return fix2.distancesq(point, circleCenter) < circleRadius * circleRadius;
         }
 
-        public static bool circle_and_quad_intersection_point(fix2 circleCenter, fix circleR, fix2 aabbCenter, fix size,
+        public static bool circle_and_quad_intersection_point(fix2 circleCenter, fix circleR, fix2 position, fix2 offset,
+            fix2 extent,
             out fix2 point)
         {
-            var halfSize = size / new fix(2);
-
-            var pMax = aabbCenter + halfSize;
-            var pMin = aabbCenter - halfSize;
+            var pMax = position + offset + extent;
+            var pMin = position + offset - extent;
 
             point = fix2.max(pMin, fix2.min(circleCenter, pMax));
 

@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 namespace Configs.Game.Colliders
 {
-    [CreateAssetMenu(fileName = "QuadCollider", menuName = "Configs/Colliders/Quad Collider")]
+    [CreateAssetMenu(fileName = "BoxCollider", menuName = "Configs/Colliders/Box Collider")]
     public class QuadColliderConfig : ColliderConfig
     {
-        public double InnerRadius = 0.5;
+        public double2 Offset = double2.zero;
+        public double2 Size = new(1);
     }
 }

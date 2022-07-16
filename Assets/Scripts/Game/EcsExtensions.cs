@@ -59,7 +59,8 @@ namespace Game
                     entity.Replace(new QuadColliderComponent
                     {
                         InteractionLayerMask = config.InteractionLayerMask,
-                        Size = (fix) config.Size
+                        Offset = (fix2) config.Offset,
+                        Extent = (fix2) (config.Size / 2.0)
                     });
                     entity.Replace(new HasColliderTag());
                     break;
