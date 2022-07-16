@@ -41,7 +41,7 @@ namespace Level
             Task.WhenAll(spawnBlocksTask, spawnWallsTask);
         }
 
-        private static async Task SpawnWalls(IGameFactory gameFactory, LevelConfig levelConfig, LevelTiles levelTiles)
+        private async Task SpawnWalls(IGameFactory gameFactory, LevelConfig levelConfig, LevelTiles levelTiles)
         {
             var loadTask = gameFactory.InstantiatePrefabAsync(levelConfig.Walls, Vector3.zero);
 
@@ -183,6 +183,16 @@ namespace Level
                 MaxHealth = enemyConfig.HealthParameters.Health
             });
 
+            entity.Replace(new DamageableComponent
+            {
+                HurtRadius = (fix) enemyConfig.DamageParameters.HurtRadius
+            });
+
+            entity.Replace(new LayerMaskComponent
+            {
+                Value = enemyConfig.LayerMask
+            });
+
             entity.AddCollider(enemyConfig.Collider);
             entity.AddBehaviourComponents(enemyConfig, enemyConfig.BehaviourConfigs);
 
@@ -199,16 +209,6 @@ namespace Level
 
                 InitialSpeed = (fix) enemyConfig.MovementParameters.Speed,
                 SpeedMultiplier = fix.one
-            });
-
-            entity.Replace(new DamageableComponent
-            {
-                HurtRadius = (fix) enemyConfig.DamageParameters.HurtRadius
-            });
-
-            entity.Replace(new LayerMaskComponent
-            {
-                Value = enemyConfig.LayerMask
             });
 
             return entity;
@@ -273,6 +273,16 @@ namespace Level
             });
             // RegisterProgressReader(hero.HeroHealth); :TODO:
 
+            entity.Replace(new DamageableComponent
+            {
+                HurtRadius = (fix) heroConfig.DamageParameters.HurtRadius
+            });
+
+            entity.Replace(new LayerMaskComponent
+            {
+                Value = heroConfig.LayerMask
+            });
+
             entity.AddCollider(heroConfig.Collider);
 
             var go = await task;
@@ -288,16 +298,6 @@ namespace Level
 
                 InitialSpeed = (fix) heroConfig.MovementParameters.Speed,
                 SpeedMultiplier = fix.one
-            });
-
-            entity.Replace(new DamageableComponent
-            {
-                HurtRadius = (fix) heroConfig.DamageParameters.HurtRadius
-            });
-
-            entity.Replace(new LayerMaskComponent
-            {
-                Value = heroConfig.LayerMask
             });
 
             player.AttachHero(entity);
@@ -324,6 +324,16 @@ namespace Level
 
             entity.AddCollider(bombConfig.Collider);
 
+            entity.Replace(new DamageableComponent
+            {
+                HurtRadius = (fix) bombConfig.DamageParameters.HurtRadius
+            });
+
+            entity.Replace(new LayerMaskComponent
+            {
+                Value = bombConfig.LayerMask
+            });
+
             var go = await task;
             Assert.IsNotNull(go);
 
@@ -337,16 +347,6 @@ namespace Level
 
                 InitialSpeed = fix.zero,
                 SpeedMultiplier = fix.zero
-            });
-
-            entity.Replace(new DamageableComponent
-            {
-                HurtRadius = (fix) bombConfig.DamageParameters.HurtRadius
-            });
-
-            entity.Replace(new LayerMaskComponent
-            {
-                Value = bombConfig.LayerMask
             });
 
             return entity;

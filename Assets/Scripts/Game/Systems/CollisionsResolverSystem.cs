@@ -28,11 +28,11 @@ namespace Game.Systems
             foreach (var index in _circleColliders)
                 ResolveCollisions(_circleColliders, index);
 
-            foreach (var index in _boxColliders)
-                ResolveCollisions(_boxColliders, index);
+                foreach (var entityIndex in _boxColliders)
+                    ResolveCollisions(_boxColliders, entityIndex, stepIndex);
 
-            _processedPairs.Clear();
-        }
+                _processedPairs.Clear();
+            }
 
         private void ResolveCollisions<T>(EcsFilter<TransformComponent, LayerMaskComponent, T> filter, int index)
             where T : struct
@@ -70,10 +70,10 @@ namespace Game.Systems
                 _processedPairs.Add(hashedPair);
 
                 ref var transformComponentB = ref entityB.Get<TransformComponent>();
+                var entityPositionB = transformComponentB.WorldPosition;
 
-                var hasIntersection = CheckIntersection(colliderComponentA, entityPositionA,
-                    entityB, transformComponentB.WorldPosition,
-                    out var intersectionPoint);
+                var hasIntersection = EcsExtensions.CheckEntitiesIntersection(colliderComponentA, entityPositionA,
+                    entityB, entityPositionB, out var intersectionPoint);
 
                 DispatchCollisionEvents(entityA, entityB, hashedPair, hasIntersection);
 
@@ -86,10 +86,16 @@ namespace Game.Systems
                 var isKinematicInteraction = entityA.Has<IsKinematicTag>() || entityB.Has<IsKinematicTag>();
 
                 if (!transformComponentA.IsStatic && !isKinematicInteraction)
-                    PopOutEntity(entityA, entityB, ref transformComponentA, intersectionPoint);
+                {
+                    transformComponentA.WorldPosition = PopOutEntity(entityA, entityB, entityPositionA,
+                        entityPositionB, intersectionPoint);
+                }
 
                 if (!transformComponentB.IsStatic && !isKinematicInteraction)
-                    PopOutEntity(entityB, entityA, ref transformComponentB, intersectionPoint);
+                {
+                    transformComponentB.WorldPosition = PopOutEntity(entityB, entityA, entityPositionB,
+                        entityPositionA, intersectionPoint);
+                }
 
                 _collidedPairs.Add(hashedPair);
             }
@@ -133,113 +139,51 @@ namespace Game.Systems
             }
         }
 
-        private static void PopOutEntity(EcsEntity entityA, EcsEntity entityB, ref TransformComponent transformComponentA,
-            fix2 point)
+        private static fix2 PopOutEntity(EcsEntity entityA, EcsEntity entityB, fix2 positionA, fix2 positionB, fix2 point)
         {
             if (entityA.Has<CircleColliderComponent>())
             {
                 ref var colliderComponentA = ref entityA.Get<CircleColliderComponent>();
 
                 if (entityB.Has<CircleColliderComponent>())
-                    CircleCirclePopOut(ref transformComponentA, ref colliderComponentA, entityB);
-                else if (entityB.Has<QuadColliderComponent>())
-                    CircleQuadPopOut(ref transformComponentA, ref colliderComponentA, point);
-                else
-                    throw new NotImplementedException();
-            }
-            else if (entityA.Has<QuadColliderComponent>())
-            {
-                if (entityA.Has<CircleColliderComponent>())
                 {
                     ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
-                    CircleQuadPopOut(ref transformComponentA, ref colliderComponentB, point);
+
+                    return CircleCirclePopOut(positionA, colliderComponentA.Radius,
+                        positionB, colliderComponentB.Radius);
                 }
-                else if (entityB.Has<CircleColliderComponent>())
-                    throw new NotImplementedException();
-                else
-                    throw new NotImplementedException();
+
+                if (entityB.Has<QuadColliderComponent>())
+                    return CircleQuadPopOut(positionA, colliderComponentA.Radius, point);
             }
-            else
-                throw new NotImplementedException();
-        }
 
-        private static void CircleCirclePopOut(ref TransformComponent transformComponentA,
-            ref CircleColliderComponent colliderComponentA, EcsEntity entityB)
-        {
-            ref var transformComponentB = ref entityB.Get<TransformComponent>();
-            ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
-
-            var vector = transformComponentA.WorldPosition - transformComponentB.WorldPosition;
-            var distance = colliderComponentA.Radius + colliderComponentB.Radius - fix2.length(vector);
-
-            vector = fix2.normalize_safe(vector, fix2.zero);
-            transformComponentA.WorldPosition += vector * distance;
-        }
-
-        private static void CircleQuadPopOut(ref TransformComponent transformComponentA,
-            ref CircleColliderComponent colliderComponentA, fix2 point)
-        {
-            var vector = fix2.normalize_safe(transformComponentA.WorldPosition - point, fix2.zero);
-            transformComponentA.WorldPosition = point + vector * colliderComponentA.Radius;
-        }
-
-        private static bool CheckIntersection<T>(T colliderComponentA, fix2 entityPositionA,
-            EcsEntity entityB, fix2 entityPositionB, out fix2 intersectionPoint) where T : struct
-        {
-            var hasIntersection = false;
-            intersectionPoint = default;
-
-            if (entityB.Has<CircleColliderComponent>())
+            if (entityA.Has<QuadColliderComponent>())
             {
-                ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
-
-                hasIntersection = colliderComponentA switch
+                if (entityB.Has<CircleColliderComponent>())
                 {
-                    /*CircleColliderComponent circleColliderComponentA =>
-                        CircleCircleIntersectionPoint(entityPositionA, ref circleColliderComponentA,
-                            entityPositionB, ref colliderComponentB,
-                            out intersectionPoint),*/
-                    CircleColliderComponent circleColliderComponentA =>
-                        fix.circle_and_circle_intersection(
-                            entityPositionA, circleColliderComponentA.Radius,
-                            entityPositionB, colliderComponentB.Radius,
-                            out intersectionPoint),
+                    ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
+                    return CircleQuadPopOut(positionA, colliderComponentB.Radius, point);
+                }
 
-                    /*QuadColliderComponent boxColliderComponentA => CircleBoxIntersectionPoint(
-                        entityPositionB, ref colliderComponentB, entityPositionA,
-                        ref boxColliderComponentA, out intersectionPoint),*/
-                    QuadColliderComponent boxColliderComponentA =>
-                        fix.circle_and_quad_intersection_point(
-                            entityPositionB, colliderComponentB.Radius,
-                            entityPositionA, boxColliderComponentA.Size,
-                            out intersectionPoint),
-
-                    _ => false
-                };
-            }
-            else if (entityB.Has<QuadColliderComponent>())
-            {
-                ref var colliderComponentB = ref entityB.Get<QuadColliderComponent>();
-
-                hasIntersection = colliderComponentA switch
-                {
-                    /*CircleColliderComponent circleColliderComponentA => CircleBoxIntersectionPoint(entityPositionA,
-                        ref circleColliderComponentA, entityPositionB, ref colliderComponentB,
-                        out intersectionPoint),*/
-                    CircleColliderComponent circleColliderComponentA =>
-                        fix.circle_and_quad_intersection_point(
-                            entityPositionA, circleColliderComponentA.Radius,
-                            entityPositionB, colliderComponentB.Size,
-                            out intersectionPoint),
-
-                    QuadColliderComponent _ =>
-                        throw new NotImplementedException(), // :TODO: implement
-
-                    _ => false
-                };
+                if (entityB.Has<QuadColliderComponent>())
+                    throw new NotImplementedException();
             }
 
-            return hasIntersection;
+            throw new NotImplementedException();
+        }
+
+        private static fix2 CircleCirclePopOut(fix2 positionA, fix radiusA, fix2 positionB, fix radiusB)
+        {
+            var vector = positionA - positionB;
+            var distance = radiusA + radiusB - fix2.length(vector);
+
+            return positionA + fix2.normalize_safe(vector, fix2.zero) * distance;
+        }
+
+        private static fix2 CircleQuadPopOut(fix2 positionA, fix radiusA, fix2 point)
+        {
+            var vector = fix2.normalize_safe(positionA - point, fix2.zero);
+            return point + vector * radiusA;
         }
     }
 }

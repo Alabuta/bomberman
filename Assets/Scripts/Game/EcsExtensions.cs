@@ -105,5 +105,55 @@ namespace Game
                 ? ((long) a << 32) | (uint) b
                 : ((long) b << 32) | (uint) a;
         }
+
+        public static bool CheckEntitiesIntersection<T>(T colliderComponentA, fix2 entityPositionA,
+            EcsEntity entityB, fix2 entityPositionB, out fix2 intersectionPoint)
+            where T : struct
+        {
+            var hasIntersection = false;
+            intersectionPoint = default;
+
+            if (entityB.Has<CircleColliderComponent>())
+            {
+                ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
+
+                hasIntersection = colliderComponentA switch
+                {
+                    CircleColliderComponent circleColliderComponentA =>
+                        fix.circle_and_circle_intersection(
+                            entityPositionA, circleColliderComponentA.Radius,
+                            entityPositionB, colliderComponentB.Radius,
+                            out intersectionPoint),
+
+                    QuadColliderComponent boxColliderComponentA =>
+                        fix.circle_and_quad_intersection_point(
+                            entityPositionB, colliderComponentB.Radius,
+                            entityPositionA, boxColliderComponentA.Offset, boxColliderComponentA.Extent,
+                            out intersectionPoint),
+
+                    _ => false
+                };
+            }
+            else if (entityB.Has<QuadColliderComponent>())
+            {
+                ref var colliderComponentB = ref entityB.Get<QuadColliderComponent>();
+
+                hasIntersection = colliderComponentA switch
+                {
+                    CircleColliderComponent circleColliderComponentA =>
+                        fix.circle_and_quad_intersection_point(
+                            entityPositionA, circleColliderComponentA.Radius,
+                            entityPositionB, colliderComponentB.Offset, colliderComponentB.Extent,
+                            out intersectionPoint),
+
+                    QuadColliderComponent _ =>
+                        throw new NotImplementedException(), // :TODO: implement
+
+                    _ => false
+                };
+            }
+
+            return hasIntersection;
+        }
     }
 }
