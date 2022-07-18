@@ -75,7 +75,10 @@ namespace Level
             _ecsFixedSystems
                 .OneFrame<AttackEventComponent>()
                 .OneFrame<OnCollisionEnterEventComponent>()
+                .OneFrame<OnCollisionExitEventComponent>()
+                .OneFrame<OnCollisionStayEventComponent>()
                 .Add(new MovementBehaviourSystem())
+                .Add(new CollisionsDetectionSystem())
                 .Add(new CollisionsResolverSystem())
                 .Add(new CollisionEventsListenerSystem())
                 .Add(new LevelEntitiesTreeSystem())

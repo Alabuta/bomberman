@@ -14,7 +14,7 @@ namespace Game.Systems.Behaviours
         private readonly World _world;
 
         private readonly EcsFilter<TransformComponent, SimpleAttackBehaviourComponent> _attackersFilter;
-        private readonly EcsFilter<LayerMaskComponent, TransformComponent, DamageableComponent> _targetsFilter;
+        private readonly EcsFilter<TransformComponent, LayerMaskComponent, DamageableComponent> _targetsFilter;
 
         public void Run()
         {
@@ -34,11 +34,11 @@ namespace Game.Systems.Behaviours
             {
                 ref var targetEntity = ref _targetsFilter.GetEntity(targetEntityIndex);
 
-                ref var layerMaskComponent = ref _targetsFilter.Get1(targetEntityIndex);
+                ref var layerMaskComponent = ref _targetsFilter.Get2(targetEntityIndex);
                 if ((layerMaskComponent.Value & attackerBehaviour.InteractionLayerMask.value) == 0)
                     continue;
 
-                ref var targetTransform = ref _targetsFilter.Get2(targetEntityIndex);
+                ref var targetTransform = ref _targetsFilter.Get1(targetEntityIndex);
                 ref var damageableComponent = ref _targetsFilter.Get3(targetEntityIndex);
 
                 var areEntitiesOverlapped = AreEntitiesOverlapped(ref attackerTransform, attackerBehaviour.HitRadius,

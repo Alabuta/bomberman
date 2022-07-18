@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Game.Components;
 using Game.Components.Colliders;
-using Game.Components.Entities;
 using Game.Components.Events;
 using Game.Components.Tags;
 using Leopotam.Ecs;
@@ -17,129 +15,76 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<TransformComponent, LayerMaskComponent, CircleColliderComponent> _circleColliders;
-        private readonly EcsFilter<TransformComponent, LayerMaskComponent, QuadColliderComponent> _boxColliders;
+        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, CircleColliderComponent> _circleEnters;
+        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, QuadColliderComponent> _boxEnters;
 
-        private readonly HashSet<long> _processedPairs = new();
-        private readonly HashSet<long> _collidedPairs = new();
+        private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, CircleColliderComponent> _circleStays;
+        private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, QuadColliderComponent> _boxStays;
 
         public void Run()
         {
-            foreach (var index in _circleColliders)
-                ResolveCollisions(_circleColliders, index);
+            foreach (var entityIndex in _circleEnters)
+                ResolveCollisions(_circleEnters, entityIndex);
 
-                foreach (var entityIndex in _boxColliders)
-                    ResolveCollisions(_boxColliders, entityIndex, stepIndex);
+            foreach (var entityIndex in _boxEnters)
+                ResolveCollisions(_boxEnters, entityIndex);
 
-                _processedPairs.Clear();
-            }
+            foreach (var entityIndex in _circleStays)
+                ResolveCollisions(_circleStays, entityIndex);
 
-        private void ResolveCollisions<T>(EcsFilter<TransformComponent, LayerMaskComponent, T> filter, int index)
-            where T : struct
+            foreach (var entityIndex in _boxStays)
+                ResolveCollisions(_boxStays, entityIndex);
+        }
+
+        private static void ResolveCollisions<TCollider, TEvent>(EcsFilter<TransformComponent, TEvent, TCollider> filter,
+            int entityIndex)
+            where TCollider : struct where TEvent : struct
         {
-            var levelTiles = _world.LevelTiles;
+            var entityA = filter.GetEntity(entityIndex);
 
-            var entityA = _circleColliders.GetEntity(index);
-
-            ref var transformComponentA = ref filter.Get1(index);
-            var entityLayerMaskA = filter.Get2(index).Value;
-            ref var colliderComponentA = ref filter.Get3(index);
+            ref var transformComponentA = ref filter.Get1(entityIndex);
+            ref var collisionEventComponent = ref filter.Get2(entityIndex);
+            ref var colliderComponentA = ref filter.Get3(entityIndex);
 
             var entityPositionA = transformComponentA.WorldPosition;
-            var entityCoordinateA = levelTiles.ToTileCoordinate(entityPositionA);
 
-            var neighborTiles = levelTiles
-                .GetNeighborTiles(entityCoordinateA)
-                .SelectMany(t =>
-                {
-                    ref var levelTileComponent = ref t.Get<LevelTileComponent>();
-                    return levelTileComponent.EntitiesHolder != null
-                        ? levelTileComponent.EntitiesHolder.Append(t)
-                        : new[] { t };
-                });
+            var popOutVector = fix2.zero;
+            var count = 0;
 
-            foreach (var entityB in neighborTiles)
+            var entities = collisionEventComponent switch
             {
-                if ((entityLayerMaskA & entityB.GetCollidersInteractionMask()) == 0)
-                    continue;
+                OnCollisionEnterEventComponent eventComponent => eventComponent.Entities,
+                OnCollisionStayEventComponent eventComponent => eventComponent.Entities,
+                _ => new HashSet<EcsEntity>()
+            };
 
-                var hashedPair = EcsExtensions.GetEntitiesPairHash(entityA, entityB);
-                if (_processedPairs.Contains(hashedPair))
-                    continue;
-
-                _processedPairs.Add(hashedPair);
-
+            foreach (var entityB in entities)
+            {
                 ref var transformComponentB = ref entityB.Get<TransformComponent>();
                 var entityPositionB = transformComponentB.WorldPosition;
 
                 var hasIntersection = EcsExtensions.CheckEntitiesIntersection(colliderComponentA, entityPositionA,
-                    entityB, entityPositionB, out var intersectionPoint);
-
-                DispatchCollisionEvents(entityA, entityB, hashedPair, hasIntersection);
+                    entityB, entityPositionB, out var point);
 
                 if (!hasIntersection)
-                {
-                    _collidedPairs.Remove(hashedPair);
                     continue;
-                }
 
                 var isKinematicInteraction = entityA.Has<IsKinematicTag>() || entityB.Has<IsKinematicTag>();
 
-                if (!transformComponentA.IsStatic && !isKinematicInteraction)
-                {
-                    transformComponentA.WorldPosition = PopOutEntity(entityA, entityB, entityPositionA,
-                        entityPositionB, intersectionPoint);
-                }
+                if (transformComponentA.IsStatic || isKinematicInteraction)
+                    continue;
 
-                if (!transformComponentB.IsStatic && !isKinematicInteraction)
-                {
-                    transformComponentB.WorldPosition = PopOutEntity(entityB, entityA, entityPositionB,
-                        entityPositionA, intersectionPoint);
-                }
-
-                _collidedPairs.Add(hashedPair);
+                popOutVector += GetPopOutVector(entityA, entityB, entityPositionA, entityPositionB, point);
+                ++count;
             }
+
+            if (count != 0)
+                popOutVector /= (fix) count;
+
+            transformComponentA.WorldPosition += popOutVector;
         }
 
-        private void DispatchCollisionEvents(EcsEntity entityA, EcsEntity entityB, long hashedPair, bool hasIntersection)
-        {
-            switch (hasIntersection)
-            {
-                case true when !_collidedPairs.Contains(hashedPair):
-                {
-                    ref var collisionEnterEventComponentA = ref entityA.Get<OnCollisionEnterEventComponent>();
-                    if (collisionEnterEventComponentA.Entities != null)
-                        collisionEnterEventComponentA.Entities.Add(entityB);
-                    else
-                        collisionEnterEventComponentA.Entities = new HashSet<EcsEntity> { entityB };
-
-                    ref var collisionEnterEventComponentB = ref entityB.Get<OnCollisionEnterEventComponent>();
-                    if (collisionEnterEventComponentB.Entities != null)
-                        collisionEnterEventComponentB.Entities.Add(entityA);
-                    else
-                        collisionEnterEventComponentB.Entities = new HashSet<EcsEntity> { entityA };
-                    break;
-                }
-
-                case false when _collidedPairs.Contains(hashedPair):
-                {
-                    ref var collisionExitEventComponentA = ref entityA.Get<OnCollisionExitEventComponent>();
-                    if (collisionExitEventComponentA.Entities != null)
-                        collisionExitEventComponentA.Entities.Add(entityB);
-                    else
-                        collisionExitEventComponentA.Entities = new HashSet<EcsEntity> { entityB };
-
-                    ref var collisionExitEventComponentB = ref entityB.Get<OnCollisionExitEventComponent>();
-                    if (collisionExitEventComponentB.Entities != null)
-                        collisionExitEventComponentB.Entities.Add(entityA);
-                    else
-                        collisionExitEventComponentB.Entities = new HashSet<EcsEntity> { entityA };
-                    break;
-                }
-            }
-        }
-
-        private static fix2 PopOutEntity(EcsEntity entityA, EcsEntity entityB, fix2 positionA, fix2 positionB, fix2 point)
+        private static fix2 GetPopOutVector(EcsEntity entityA, EcsEntity entityB, fix2 positionA, fix2 positionB, fix2 point)
         {
             if (entityA.Has<CircleColliderComponent>())
             {
@@ -177,13 +122,13 @@ namespace Game.Systems
             var vector = positionA - positionB;
             var distance = radiusA + radiusB - fix2.length(vector);
 
-            return positionA + fix2.normalize_safe(vector, fix2.zero) * distance;
+            return fix2.normalize_safe(vector, fix2.zero) * distance;
         }
 
         private static fix2 CircleQuadPopOut(fix2 positionA, fix radiusA, fix2 point)
         {
-            var vector = fix2.normalize_safe(positionA - point, fix2.zero);
-            return point + vector * radiusA;
+            var vector = positionA - point;
+            return fix2.normalize_safe(vector, fix2.zero) * (radiusA - fix2.length(vector));
         }
     }
 }

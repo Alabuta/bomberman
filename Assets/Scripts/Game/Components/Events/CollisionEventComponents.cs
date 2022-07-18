@@ -12,4 +12,9 @@ namespace Game.Components.Events
     {
         public HashSet<EcsEntity> Entities;
     }
+
+    public struct OnCollisionStayEventComponent
+    {
+        public HashSet<EcsEntity> Entities;
+    }
 }
