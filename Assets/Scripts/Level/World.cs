@@ -77,6 +77,7 @@ namespace Level
                 .OneFrame<OnCollisionEnterEventComponent>()
                 .OneFrame<OnCollisionExitEventComponent>()
                 .OneFrame<OnCollisionStayEventComponent>()
+                .Add(new BeforeSimulationStepSystem())
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsDetectionSystem())
                 .Add(new CollisionsResolverSystem())
@@ -84,6 +85,7 @@ namespace Level
                 .Add(new LevelEntitiesTreeSystem())
                 .Add(new AttackBehaviourSystem())
                 .Add(healthSystem)
+                .OneFrame<PrevFrameDataComponent>()
                 .Inject(this)
                 .Init();
         }

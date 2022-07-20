@@ -9,13 +9,18 @@ using Level;
 
 namespace Game.Systems
 {
+    public struct PrevFrameDataComponent
+    {
+        public fix2 LastWorldPosition;
+    }
+
     public class CollisionsDetectionSystem : IEcsRunSystem
     {
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
         private readonly EcsFilter<TransformComponent, LayerMaskComponent, CircleColliderComponent> _circleColliders;
-        private readonly EcsFilter<TransformComponent, LayerMaskComponent, QuadColliderComponent> _boxColliders;
+        private readonly EcsFilter<TransformComponent, LayerMaskComponent, BoxColliderComponent> _boxColliders;
 
         private readonly HashSet<long> _processedPairs = new();
         private readonly HashSet<long> _collidedPairs = new();

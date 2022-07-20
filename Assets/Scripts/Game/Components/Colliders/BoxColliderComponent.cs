@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Components.Colliders
 {
-    public struct QuadColliderComponent
+    public struct BoxColliderComponent
     {
         public LayerMask InteractionLayerMask;
 

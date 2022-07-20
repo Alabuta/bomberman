@@ -55,8 +55,8 @@ namespace Game
         {
             switch (colliderConfig)
             {
-                case QuadColliderConfig config:
-                    entity.Replace(new QuadColliderComponent
+                case BoxColliderConfig config:
+                    entity.Replace(new BoxColliderComponent
                     {
                         InteractionLayerMask = config.InteractionLayerMask,
                         Offset = (fix2) config.Offset,
@@ -86,8 +86,8 @@ namespace Game
             if (ecsEntity.Has<CircleColliderComponent>())
                 interactionMask = ecsEntity.Get<CircleColliderComponent>().InteractionLayerMask;
 
-            else if (ecsEntity.Has<QuadColliderComponent>())
-                interactionMask = ecsEntity.Get<QuadColliderComponent>().InteractionLayerMask;
+            else if (ecsEntity.Has<BoxColliderComponent>())
+                interactionMask = ecsEntity.Get<BoxColliderComponent>().InteractionLayerMask;
 
             return interactionMask;
         }
@@ -125,7 +125,7 @@ namespace Game
                             entityPositionB, colliderComponentB.Radius,
                             out intersectionPoint),
 
-                    QuadColliderComponent boxColliderComponentA =>
+                    BoxColliderComponent boxColliderComponentA =>
                         fix.circle_and_quad_intersection_point(
                             entityPositionB, colliderComponentB.Radius,
                             entityPositionA, boxColliderComponentA.Offset, boxColliderComponentA.Extent,
@@ -134,9 +134,9 @@ namespace Game
                     _ => false
                 };
             }
-            else if (entityB.Has<QuadColliderComponent>())
+            else if (entityB.Has<BoxColliderComponent>())
             {
-                ref var colliderComponentB = ref entityB.Get<QuadColliderComponent>();
+                ref var colliderComponentB = ref entityB.Get<BoxColliderComponent>();
 
                 hasIntersection = colliderComponentA switch
                 {
@@ -146,7 +146,7 @@ namespace Game
                             entityPositionB, colliderComponentB.Offset, colliderComponentB.Extent,
                             out intersectionPoint),
 
-                    QuadColliderComponent _ =>
+                    BoxColliderComponent _ =>
                         throw new NotImplementedException(), // :TODO: implement
 
                     _ => false
