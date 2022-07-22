@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace Math.FixedPointMath
 {
@@ -467,6 +468,8 @@ namespace Math.FixedPointMath
             fix2 extent,
             out fix2 point)
         {
+            if (extent.x > fix.one || extent.y > fix.one)
+                Debug.LogWarning(44444);
             var pMax = position + offset + extent;
             var pMin = position + offset - extent;
 

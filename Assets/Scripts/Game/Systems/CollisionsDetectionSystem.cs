@@ -6,6 +6,7 @@ using Game.Components.Entities;
 using Game.Components.Events;
 using Leopotam.Ecs;
 using Level;
+using Math.FixedPointMath;
 
 namespace Game.Systems
 {
@@ -16,6 +17,8 @@ namespace Game.Systems
 
     public class CollisionsDetectionSystem : IEcsRunSystem
     {
+        private const int IterationsCount = 8;
+
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
@@ -47,7 +50,81 @@ namespace Game.Systems
             var entityLayerMaskA = filter.Get2(entityIndex).Value;
             ref var colliderComponentA = ref filter.Get3(entityIndex);
 
-            var entityPositionA = transformComponentA.WorldPosition;
+            var hasPrevFrameDataComponentA = entityA.Has<PrevFrameDataComponent>();
+            ref var prevFrameDataComponentA = ref entityA.Get<PrevFrameDataComponent>();
+
+            if (!hasPrevFrameDataComponentA)
+                prevFrameDataComponentA.LastWorldPosition = transformComponentA.WorldPosition;
+
+            var entityLastPositionA = prevFrameDataComponentA.LastWorldPosition;
+            var entityCurrentPositionA = transformComponentA.WorldPosition;
+
+            var positionIterationsStepA = (entityCurrentPositionA - entityLastPositionA) / (fix) IterationsCount;
+
+            for (var stepIndex = 0; stepIndex < IterationsCount; stepIndex++)
+            {
+                var entityPositionA = entityLastPositionA + positionIterationsStepA * (fix) (stepIndex + 1);
+                var entityCoordinateA = levelTiles.ToTileCoordinate(entityPositionA);
+
+                var neighborTiles = levelTiles
+                    .GetNeighborTiles(entityCoordinateA)
+                    .SelectMany(t =>
+                    {
+                        ref var levelTileComponent = ref t.Get<LevelTileComponent>();
+                        return levelTileComponent.EntitiesHolder != null
+                            ? levelTileComponent.EntitiesHolder.Append(t)
+                            : new[] { t };
+                    });
+
+                var hasIntersection = false;
+
+                foreach (var entityB in neighborTiles)
+                {
+                    if (entityA.Equals(entityB))
+                        continue;
+
+                    if ((entityLayerMaskA & entityB.GetCollidersInteractionMask()) == 0)
+                        continue;
+
+                    var hashedPair = EcsExtensions.GetEntitiesPairHash(entityA, entityB);
+                    if (_processedPairs.Contains(hashedPair))
+                        continue;
+
+                    ref var transformComponentB = ref entityB.Get<TransformComponent>();
+                    // var entityPositionB = transformComponentB.WorldPosition;
+
+                    var hasPrevFrameDataComponentB = entityB.Has<PrevFrameDataComponent>();
+                    ref var prevFrameDataComponentB = ref entityB.Get<PrevFrameDataComponent>();
+
+                    if (!hasPrevFrameDataComponentB)
+                        prevFrameDataComponentB.LastWorldPosition = transformComponentB.WorldPosition;
+
+                    var entityLastPositionB = prevFrameDataComponentB.LastWorldPosition;
+                    var entityCurrentPositionB = transformComponentB.WorldPosition;
+
+                    var positionIterationsStepB =
+                        fix2.length(entityCurrentPositionB - entityLastPositionB) / (fix) IterationsCount;
+                    var entityPositionB = entityLastPositionB + positionIterationsStepB * (fix) stepIndex;
+
+                    hasIntersection = EcsExtensions.CheckEntitiesIntersection(colliderComponentA, entityPositionA,
+                        entityB, entityPositionB, out _);
+
+                    DispatchCollisionEvents(entityA, entityB, hashedPair, hasIntersection);
+
+                    if (hasIntersection)
+                    {
+                        _collidedPairs.Add(hashedPair);
+                        _processedPairs.Add(hashedPair);
+                    }
+                    else
+                        _collidedPairs.Remove(hashedPair);
+                }
+
+                if (hasIntersection)
+                    break;
+            }
+
+            /*var entityPositionA = transformComponentA.WorldPosition;
             var entityCoordinateA = levelTiles.ToTileCoordinate(entityPositionA);
 
             var neighborTiles = levelTiles
@@ -87,7 +164,7 @@ namespace Game.Systems
 
                 else
                     _collidedPairs.Remove(hashedPair);
-            }
+            }*/
         }
 
         private void DispatchCollisionEvents(EcsEntity entityA, EcsEntity entityB, long hashedPair, bool hasIntersection)

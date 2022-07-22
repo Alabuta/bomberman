@@ -16,10 +16,10 @@ namespace Game.Systems
         private readonly World _world;
 
         private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, CircleColliderComponent> _circleEnters;
-        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, QuadColliderComponent> _boxEnters;
+        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, BoxColliderComponent> _boxEnters;
 
         private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, CircleColliderComponent> _circleStays;
-        private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, QuadColliderComponent> _boxStays;
+        private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, BoxColliderComponent> _boxStays;
 
         public void Run()
         {
@@ -46,10 +46,18 @@ namespace Game.Systems
             ref var collisionEventComponent = ref filter.Get2(entityIndex);
             ref var colliderComponentA = ref filter.Get3(entityIndex);
 
+
             var entityPositionA = transformComponentA.WorldPosition;
+            var entityLastPositionA = entityPositionA;
+
+            if (entityA.Has<PrevFrameDataComponent>())
+            {
+                ref var prevFrameDataComponentA = ref entityA.Get<PrevFrameDataComponent>();
+                entityLastPositionA = prevFrameDataComponentA.LastWorldPosition;
+            }
 
             var popOutVector = fix2.zero;
-            var count = 0;
+            var collisionsCount = 0;
 
             var entities = collisionEventComponent switch
             {
@@ -61,7 +69,15 @@ namespace Game.Systems
             foreach (var entityB in entities)
             {
                 ref var transformComponentB = ref entityB.Get<TransformComponent>();
+
                 var entityPositionB = transformComponentB.WorldPosition;
+                var entityLastPositionB = entityPositionB;
+
+                if (entityB.Has<PrevFrameDataComponent>())
+                {
+                    ref var prevFrameDataComponentB = ref entityB.Get<PrevFrameDataComponent>();
+                    entityLastPositionB = prevFrameDataComponentB.LastWorldPosition;
+                }
 
                 var hasIntersection = EcsExtensions.CheckEntitiesIntersection(colliderComponentA, entityPositionA,
                     entityB, entityPositionB, out var point);
@@ -74,17 +90,22 @@ namespace Game.Systems
                 if (transformComponentA.IsStatic || isKinematicInteraction)
                     continue;
 
-                popOutVector += GetPopOutVector(entityA, entityB, entityPositionA, entityPositionB, point);
-                ++count;
+                popOutVector += GetPopOutVector(entityA, entityB, entityPositionA, entityLastPositionA, entityPositionB,
+                    entityLastPositionB, point);
+                ++collisionsCount;
             }
 
-            if (count != 0)
-                popOutVector /= (fix) count;
+            if (collisionsCount != 0)
+                popOutVector /= (fix) collisionsCount;
 
             transformComponentA.WorldPosition += popOutVector;
+
+            /*ref var prevFrameDataComponent = ref entityA.Get<PrevFrameDataComponent>();
+            prevFrameDataComponent.LastWorldPosition = transformComponentA.WorldPosition;*/
         }
 
-        private static fix2 GetPopOutVector(EcsEntity entityA, EcsEntity entityB, fix2 positionA, fix2 positionB, fix2 point)
+        private static fix2 GetPopOutVector(EcsEntity entityA, EcsEntity entityB, fix2 positionA, fix2 lastPositionA,
+            fix2 positionB, fix2 lastPositionB, fix2 point)
         {
             if (entityA.Has<CircleColliderComponent>())
             {
@@ -94,30 +115,30 @@ namespace Game.Systems
                 {
                     ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
 
-                    return CircleCirclePopOut(positionA, colliderComponentA.Radius,
+                    return CircleFromCirclePopOut(positionA, colliderComponentA.Radius,
                         positionB, colliderComponentB.Radius);
                 }
 
-                if (entityB.Has<QuadColliderComponent>())
-                    return CircleQuadPopOut(positionA, colliderComponentA.Radius, point);
+                if (entityB.Has<BoxColliderComponent>())
+                    return CircleFromBoxPopOut(positionA, lastPositionA, colliderComponentA.Radius, positionB, point);
             }
 
-            if (entityA.Has<QuadColliderComponent>())
+            if (entityA.Has<BoxColliderComponent>())
             {
                 if (entityB.Has<CircleColliderComponent>())
                 {
                     ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
-                    return CircleQuadPopOut(positionA, colliderComponentB.Radius, point);
+                    return -CircleFromBoxPopOut(positionB, lastPositionB, colliderComponentB.Radius, positionA, point);
                 }
 
-                if (entityB.Has<QuadColliderComponent>())
+                if (entityB.Has<BoxColliderComponent>())
                     throw new NotImplementedException();
             }
 
             throw new NotImplementedException();
         }
 
-        private static fix2 CircleCirclePopOut(fix2 positionA, fix radiusA, fix2 positionB, fix radiusB)
+        private static fix2 CircleFromCirclePopOut(fix2 positionA, fix radiusA, fix2 positionB, fix radiusB)
         {
             var vector = positionA - positionB;
             var distance = radiusA + radiusB - fix2.length(vector);
@@ -125,10 +146,21 @@ namespace Game.Systems
             return fix2.normalize_safe(vector, fix2.zero) * distance;
         }
 
-        private static fix2 CircleQuadPopOut(fix2 positionA, fix radiusA, fix2 point)
+        private static fix2 CircleFromBoxPopOut(fix2 positionCircle, fix2 lastPositionCircle, fix circleRadius,
+            fix2 positionBox,
+            fix2 point)
         {
-            var vector = positionA - point;
-            return fix2.normalize_safe(vector, fix2.zero) * (radiusA - fix2.length(vector));
+            var vector = positionCircle - point;
+            var length = fix2.length(vector);
+
+            if (length < fix.Epsilon)
+            {
+                vector = lastPositionCircle - positionCircle;
+                return vector;
+            }
+
+            vector = length != fix.zero ? vector / length : fix2.zero;
+            return vector * (circleRadius - length);
         }
     }
 }
