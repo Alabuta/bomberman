@@ -17,7 +17,7 @@ namespace Game.Systems
 
     public class CollisionsDetectionSystem : IEcsRunSystem
     {
-        private const int IterationsCount = 8;
+        private const int IterationsCount = 1;
 
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;

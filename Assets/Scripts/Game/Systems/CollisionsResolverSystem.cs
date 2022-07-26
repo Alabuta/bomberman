@@ -12,6 +12,8 @@ namespace Game.Systems
 {
     public class CollisionsResolverSystem : IEcsRunSystem
     {
+        private static readonly fix VectorsAngleThreshold = fix.one / fix.sqrt(new fix(2));
+
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
@@ -56,15 +58,14 @@ namespace Game.Systems
                 entityLastPositionA = prevFrameDataComponentA.LastWorldPosition;
             }
 
-            var popOutVector = fix2.zero;
-            var collisionsCount = 0;
-
             var entities = collisionEventComponent switch
             {
                 OnCollisionEnterEventComponent eventComponent => eventComponent.Entities,
                 OnCollisionStayEventComponent eventComponent => eventComponent.Entities,
                 _ => new HashSet<EcsEntity>()
             };
+
+            var popOutVector = fix2.zero;
 
             foreach (var entityB in entities)
             {
@@ -90,13 +91,12 @@ namespace Game.Systems
                 if (transformComponentA.IsStatic || isKinematicInteraction)
                     continue;
 
-                popOutVector += GetPopOutVector(entityA, entityB, entityPositionA, entityLastPositionA, entityPositionB,
+                var vector = GetPopOutVector(entityA, entityB, entityPositionA, entityLastPositionA, entityPositionB,
                     entityLastPositionB, point);
-                ++collisionsCount;
-            }
 
-            if (collisionsCount != 0)
-                popOutVector /= (fix) collisionsCount;
+                if (fix2.dot(popOutVector, vector) < VectorsAngleThreshold)
+                    popOutVector += vector;
+            }
 
             transformComponentA.WorldPosition += popOutVector;
 
@@ -147,17 +147,13 @@ namespace Game.Systems
         }
 
         private static fix2 CircleFromBoxPopOut(fix2 positionCircle, fix2 lastPositionCircle, fix circleRadius,
-            fix2 positionBox,
-            fix2 point)
+            fix2 positionBox, fix2 point)
         {
             var vector = positionCircle - point;
-            var length = fix2.length(vector);
 
-            if (length < fix.Epsilon)
-            {
-                vector = lastPositionCircle - positionCircle;
-                return vector;
-            }
+            var length = fix2.length(vector);
+            if (length == fix.zero)
+                return lastPositionCircle - positionCircle;
 
             vector = length != fix.zero ? vector / length : fix2.zero;
             return vector * (circleRadius - length);

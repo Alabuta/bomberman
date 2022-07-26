@@ -62,32 +62,21 @@ namespace Level
             var sprite = walls.GetComponent<SpriteRenderer>();
             sprite.size += new Vector2(columnsNumber, rowsNumber);
 
-#if true
             var entity = _ecsWorld.NewEntity();
             entity.Replace(new TransformComponent
             {
-                WorldPosition = new fix2(new double2( /*-(columnsNumber / 2 + 1), */0, 1)),
+                WorldPosition = new fix2(new double2(0 /*-(columnsNumber / 2 + 1)*/, 0)),
                 IsStatic = true
             });
+
             entity.Replace(new BoxColliderComponent
             {
                 InteractionLayerMask = 0xFFFFFFF,
                 Offset = fix2.zero,
-                Extent = (fix2) (new double2(3, 1) / 2.0)
+                Extent = (fix2) (new double2(1, 20) / 2.0)
             });
 
-            /*entity.Replace(new LayerMaskComponent
-            {
-                Value = 1 << 12
-            });*/
-
-            // entity.Replace(new HasColliderTag());
-
-            /*var x = columnsNumber / 2 + 1;
-            var y = 0;
-            var w = 1;
-            var h = rowsNumber / 2;*/
-#endif
+            entity.Replace(new HasColliderTag());
 
             /*foreach (var (offset, size) in offsetsAndSize) // :TODO: replace to own colliders
             {
