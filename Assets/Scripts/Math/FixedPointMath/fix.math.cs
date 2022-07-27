@@ -463,17 +463,15 @@ namespace Math.FixedPointMath
             return fix2.distancesq(point, circleCenter) < circleRadius * circleRadius;
         }
 
-        public static bool circle_and_quad_intersection_point(fix2 circleCenter, fix circleR, fix2 position, fix2 offset,
-            fix2 extent,
-            out fix2 point)
+        public static bool circle_and_box_intersection_point(fix2 circleCenter, fix circleR, fix2 position, fix2 offset,
+            fix2 extent, out fix2 point)
         {
             var pMax = position + offset + extent;
             var pMin = position + offset - extent;
 
             point = fix2.max(pMin, fix2.min(circleCenter, pMax));
 
-            var x = is_point_inside_circle(point, circleCenter, circleR);
-            return x;
+            return is_point_inside_circle(point, circleCenter, circleR);
         }
 
         public static bool circle_and_circle_intersection(fix2 centerA, fix radiusA, fix2 centerB, fix radiusB, out fix2 point)
@@ -496,25 +494,6 @@ namespace Math.FixedPointMath
 
             point = default;
             return false;
-
-            /*var vector = centerB - centerA;
-            var length = fix2.length(vector);
-
-            if (length < Epsilon)
-            {
-                point = centerB;
-                return true;
-            }
-
-            var twoRadii = radiusA + radiusB;
-            if (length <= twoRadii)
-            {
-                point = centerA + vector / length * radiusA;
-                return true;
-            }
-
-            point = default;
-            return false;*/
         }
     }
 }

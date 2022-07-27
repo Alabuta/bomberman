@@ -99,9 +99,6 @@ namespace Game.Systems
             }
 
             transformComponentA.WorldPosition += popOutVector;
-
-            /*ref var prevFrameDataComponent = ref entityA.Get<PrevFrameDataComponent>();
-            prevFrameDataComponent.LastWorldPosition = transformComponentA.WorldPosition;*/
         }
 
         private static fix2 GetPopOutVector(EcsEntity entityA, EcsEntity entityB, fix2 positionA, fix2 lastPositionA,
@@ -115,12 +112,12 @@ namespace Game.Systems
                 {
                     ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
 
-                    return CircleFromCirclePopOut(positionA, colliderComponentA.Radius,
+                    return GetCircleFromCirclePopOutVector(positionA, colliderComponentA.Radius,
                         positionB, colliderComponentB.Radius);
                 }
 
                 if (entityB.Has<BoxColliderComponent>())
-                    return CircleFromBoxPopOut(positionA, lastPositionA, colliderComponentA.Radius, positionB, point);
+                    return GetCircleFromBoxPopOutVector(positionA, lastPositionA, colliderComponentA.Radius, point);
             }
 
             if (entityA.Has<BoxColliderComponent>())
@@ -128,7 +125,7 @@ namespace Game.Systems
                 if (entityB.Has<CircleColliderComponent>())
                 {
                     ref var colliderComponentB = ref entityB.Get<CircleColliderComponent>();
-                    return -CircleFromBoxPopOut(positionB, lastPositionB, colliderComponentB.Radius, positionA, point);
+                    return -GetCircleFromBoxPopOutVector(positionB, lastPositionB, colliderComponentB.Radius, point);
                 }
 
                 if (entityB.Has<BoxColliderComponent>())
@@ -138,7 +135,7 @@ namespace Game.Systems
             throw new NotImplementedException();
         }
 
-        private static fix2 CircleFromCirclePopOut(fix2 positionA, fix radiusA, fix2 positionB, fix radiusB)
+        private static fix2 GetCircleFromCirclePopOutVector(fix2 positionA, fix radiusA, fix2 positionB, fix radiusB)
         {
             var vector = positionA - positionB;
             var distance = radiusA + radiusB - fix2.length(vector);
@@ -146,8 +143,8 @@ namespace Game.Systems
             return fix2.normalize_safe(vector, fix2.zero) * distance;
         }
 
-        private static fix2 CircleFromBoxPopOut(fix2 positionCircle, fix2 lastPositionCircle, fix circleRadius,
-            fix2 positionBox, fix2 point)
+        private static fix2 GetCircleFromBoxPopOutVector(fix2 positionCircle, fix2 lastPositionCircle, fix circleRadius,
+            fix2 point)
         {
             var vector = positionCircle - point;
 

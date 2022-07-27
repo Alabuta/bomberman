@@ -126,7 +126,7 @@ namespace Game
                             out intersectionPoint),
 
                     BoxColliderComponent boxColliderComponentA =>
-                        fix.circle_and_quad_intersection_point(
+                        fix.circle_and_box_intersection_point(
                             entityPositionB, colliderComponentB.Radius,
                             entityPositionA, boxColliderComponentA.Offset, boxColliderComponentA.Extent,
                             out intersectionPoint),
@@ -141,7 +141,7 @@ namespace Game
                 hasIntersection = colliderComponentA switch
                 {
                     CircleColliderComponent circleColliderComponentA =>
-                        fix.circle_and_quad_intersection_point(
+                        fix.circle_and_box_intersection_point(
                             entityPositionA, circleColliderComponentA.Radius,
                             entityPositionB, colliderComponentB.Offset, colliderComponentB.Extent,
                             out intersectionPoint),
