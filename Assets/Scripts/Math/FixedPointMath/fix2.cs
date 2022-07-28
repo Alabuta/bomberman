@@ -53,6 +53,12 @@ namespace Math.FixedPointMath
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public fix2(int x, int y)
+            : this((fix) x, (fix) y)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public fix2(int2 v)
             : this((fix) v.x, (fix) v.y)
         {
@@ -61,6 +67,12 @@ namespace Math.FixedPointMath
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public fix2(uint v)
             : this(new fix(v))
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public fix2(uint x, uint y)
+            : this((fix) x, (fix) y)
         {
         }
 
@@ -77,6 +89,12 @@ namespace Math.FixedPointMath
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public fix2(float x, float y)
+            : this((fix) x, (fix) y)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public fix2(float2 v)
             : this(new fix(v.x), new fix(v.y))
         {
@@ -85,6 +103,12 @@ namespace Math.FixedPointMath
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public fix2(double v)
             : this(new fix(v))
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public fix2(double x, double y)
+            : this((fix) x, (fix) y)
         {
         }
 
@@ -224,7 +248,6 @@ namespace Math.FixedPointMath
             return new bool2(lhs == rhs.x, lhs == rhs.y);
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool2 operator !=(fix2 lhs, fix2 rhs) => new(lhs.x != rhs.x, lhs.y != rhs.y);
 
@@ -233,6 +256,18 @@ namespace Math.FixedPointMath
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool2 operator !=(fix lhs, fix2 rhs) => new(lhs != rhs.x, lhs != rhs.y);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool2 operator >(fix2 x, fix2 y) => new(x.x > y.x, x.y > y.y);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool2 operator <(fix2 x, fix2 y) => new(x.x < y.x, x.y < y.y);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool2 operator >=(fix2 x, fix2 y) => new(x.x >= y.x, x.y >= y.y);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool2 operator <=(fix2 x, fix2 y) => new(x.x <= y.x, x.y <= y.y);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(fix2 rhs) => x == rhs.x && y == rhs.y;

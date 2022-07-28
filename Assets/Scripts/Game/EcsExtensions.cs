@@ -155,5 +155,25 @@ namespace Game
 
             return hasIntersection;
         }
+
+        public static (fix2 extent, fix2 offset) GetEntityColliderExtentAndOffset(this EcsEntity entity)
+        {
+            var extent = fix2.zero;
+            var offset = fix2.zero;
+
+            if (entity.Has<CircleColliderComponent>())
+            {
+                ref var colliderComponent = ref entity.Get<CircleColliderComponent>();
+                extent = colliderComponent.Radius;
+            }
+            else if (entity.Has<BoxColliderComponent>())
+            {
+                ref var colliderComponent = ref entity.Get<BoxColliderComponent>();
+                extent = colliderComponent.Extent;
+                offset = colliderComponent.Offset;
+            }
+
+            return (extent, offset);
+        }
     }
 }

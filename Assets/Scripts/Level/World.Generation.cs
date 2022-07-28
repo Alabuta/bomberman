@@ -8,7 +8,6 @@ using Configs.Level;
 using Data;
 using Game;
 using Game.Components;
-using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Tags;
 using Game.Enemies;
@@ -62,6 +61,7 @@ namespace Level
             var sprite = walls.GetComponent<SpriteRenderer>();
             sprite.size += new Vector2(columnsNumber, rowsNumber);
 
+#if false
             var entity = _ecsWorld.NewEntity();
             entity.Replace(new TransformComponent
             {
@@ -77,6 +77,7 @@ namespace Level
             });
 
             entity.Replace(new HasColliderTag());
+#endif
 
             /*foreach (var (offset, size) in offsetsAndSize) // :TODO: replace to own colliders
             {
