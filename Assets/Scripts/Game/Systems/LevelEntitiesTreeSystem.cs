@@ -7,13 +7,16 @@ using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Game.Systems
 {
     internal struct TreeNode /*<T> where T : struct*/
     {
-        // public readonly List<(EcsEntity entity, TransformComponent transform, T collider)> Entities;
-        public List<EcsEntity> Entities;
+        public int EntitiesIndex;
+        public EcsEntity[] Entities;
+
+        public bool IsSubdivided;
         public TreeNode[] ChildrenNodes;
     }
 
@@ -29,7 +32,11 @@ namespace Game.Systems
 
         private readonly List<TreeNode> _tree = new();
 
-        const int NodeCapacity = 4;
+        private const int MaxTreeDepth = 16;
+        private const int ChildrenNodesCount = 4;
+        private const int NodeCapacity = 8;
+
+        private readonly int _treeCurrentDepth = -1;
 
         public void Run()
         {
@@ -82,8 +89,6 @@ namespace Game.Systems
 
             foreach (var index in _colliders)
             {
-                Insert(ref rootNode, rootExtent, rootOffset, index);
-
                 ref var entity = ref _colliders.GetEntity(index);
 
                 ref var transformComponent = ref _colliders.Get1(index);
@@ -91,6 +96,9 @@ namespace Game.Systems
 
                 var (entityExtent, entityOffset) = entity.GetEntityColliderExtentAndOffset();
                 entityOffset += position;
+
+                var isInserted = Insert(ref rootNode, rootExtent, rootOffset, entity, entityExtent, entityOffset);
+                Assert.IsTrue(isInserted);
 
                 if (math.any(entityExtent > nodeExtent))
                 {
@@ -127,40 +135,52 @@ namespace Game.Systems
             }
         }
 
-        private void Insert(ref TreeNode node, fix2 nodeExtent, fix2 rootOffset, int index, int depth = 0)
+        private bool Insert(ref TreeNode node, fix2 nodeExtent, fix2 nodeOffset, EcsEntity ecsEntity, fix2 entityExtent,
+            fix2 entityOffset, int depth = 0)
         {
-            ref var entity = ref _colliders.GetEntity(index);
+            if (depth >= MaxTreeDepth)
+                return false;
 
-            ref var transformComponent = ref _colliders.Get1(index);
-            var position = transformComponent.WorldPosition;
+            if (math.any(entityOffset + entityExtent > nodeOffset + nodeExtent))
+                return false;
 
-            var (entityExtent, entityOffset) = entity.GetEntityColliderExtentAndOffset();
-            entityOffset += position;
+            if (math.any(entityOffset - entityExtent < nodeOffset - nodeExtent))
+                return false;
 
-            if (math.any(entityExtent > nodeExtent))
+            if (_treeCurrentDepth < depth)
+                node.IsSubdivided = false;
+
+            if (!node.IsSubdivided)
             {
-                node.Entities.Add(entity);
-            }
-            else
-            {
-                const int divisions = 2;
-
-                for (var y = 0; y < divisions; y++)
+                if (node.Entities == null)
                 {
-                    for (var x = 0; x < divisions; x++)
-                    {
-                        var nodeMin = rootOffset + nodeSize * new fix2(x - 1, y - 1);
-                        if (math.any(entityOffset - entityExtent < nodeMin))
-                            continue;
+                    node.Entities = new EcsEntity[NodeCapacity];
+                    node.EntitiesIndex = 0;
+                }
 
-                        var nodeMax = nodeMin + nodeSize;
-                        if (math.any(entityOffset + entityExtent > nodeMax))
-                            continue;
+                node.Entities[node.EntitiesIndex++] = ecsEntity;
+                return true;
+            }
 
-                        var nodeIndex = x + y * divisions;
-                        /*children[nodeIndex] ??= new TreeNode();
+            node.ChildrenNodes ??= new TreeNode[ChildrenNodesCount];
+            node.IsSubdivided = true;
+
+            const int divisions = 2;
+            for (var y = 0; y < divisions; y++)
+            {
+                for (var x = 0; x < divisions; x++)
+                {
+                    var nodeMin = nodeOffset + nodeExtent * new fix2(x - 1, y - 1);
+                    if (math.any(entityOffset - entityExtent < nodeMin))
+                        continue;
+
+                    var nodeMax = nodeMin + nodeExtent;
+                    if (math.any(entityOffset + entityExtent > nodeMax))
+                        continue;
+
+                    var nodeIndex = x + y * divisions;
+                    /*children[nodeIndex] ??= new TreeNode();
                         children[nodeIndex]..Add();*/
-                    }
                 }
             }
         }
