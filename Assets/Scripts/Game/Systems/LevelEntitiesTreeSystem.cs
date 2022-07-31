@@ -11,7 +11,7 @@ using UnityEngine.Assertions;
 
 namespace Game.Systems
 {
-    internal struct TreeNode /*<T> where T : struct*/
+    internal struct TreeNode
     {
         public int EntitiesIndex;
         public EcsEntity[] Entities;
@@ -22,21 +22,22 @@ namespace Game.Systems
 
     public sealed class LevelEntitiesTreeSystem : IEcsRunSystem
     {
+        private const int MaxTreeDepth = 16;
+        private const int NodeDivisions = 2;
+
+        private const int NodeCapacity = 8;
+        private const int ChildrenNodesCount = 4;
+
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
         private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders;
 
+        private TreeNode _treeRootNode;
+        private int _treeCurrentDepth = -1;
+
         private readonly EcsFilter<TransformComponent>.Exclude<LevelTileComponent> _filter;
         private readonly HashSet<EcsEntity> _clearedTiles = new();
-
-        private readonly List<TreeNode> _tree = new();
-
-        private const int MaxTreeDepth = 16;
-        private const int ChildrenNodesCount = 4;
-        private const int NodeCapacity = 8;
-
-        private readonly int _treeCurrentDepth = -1;
 
         public void Run()
         {
@@ -76,16 +77,10 @@ namespace Game.Systems
             if (_colliders.IsEmpty())
                 return;
 
+            _treeCurrentDepth = -1;
+
             var (rootExtent, rootOffset) = GetRootNodeBounds();
             Debug.LogWarning($"rootExtent {rootExtent} rootOffset {rootOffset}");
-
-            var rootNode = new TreeNode();
-
-            var entities = new List<EcsEntity>();
-            var children = new TreeNode[4];
-
-            var nodeSize = rootExtent;
-            var nodeExtent = rootExtent / (fix) 2;
 
             foreach (var index in _colliders)
             {
@@ -97,41 +92,8 @@ namespace Game.Systems
                 var (entityExtent, entityOffset) = entity.GetEntityColliderExtentAndOffset();
                 entityOffset += position;
 
-                var isInserted = Insert(ref rootNode, rootExtent, rootOffset, entity, entityExtent, entityOffset);
+                var isInserted = Insert(ref _treeRootNode, rootExtent, rootOffset, entity, entityExtent, entityOffset);
                 Assert.IsTrue(isInserted);
-
-                if (math.any(entityExtent > nodeExtent))
-                {
-                    entities.Add(entity);
-                }
-                else
-                {
-                    const int divisions = 2;
-
-                    for (var y = 0; y < divisions; y++)
-                    {
-                        for (var x = 0; x < divisions; x++)
-                        {
-                            var nodeMin = rootOffset + nodeSize * new fix2(x - 1, y - 1);
-                            if (math.any(entityOffset - entityExtent < nodeMin))
-                                continue;
-
-                            var nodeMax = nodeMin + nodeSize;
-                            if (math.any(entityOffset + entityExtent > nodeMax))
-                                continue;
-
-                            var nodeIndex = x + y * divisions;
-                            /*children[nodeIndex] ??= new TreeNode();
-                            children[nodeIndex]..Add();*/
-                        }
-                    }
-                }
-
-                _tree.Add(new TreeNode
-                {
-                    Entities = entities,
-                    ChildrenNodes = children
-                });
             }
         }
 
@@ -148,41 +110,38 @@ namespace Game.Systems
                 return false;
 
             if (_treeCurrentDepth < depth)
+            {
+                node.Entities ??= new EcsEntity[NodeCapacity];
+                node.EntitiesIndex = 0;
+
+                node.ChildrenNodes ??= new TreeNode[ChildrenNodesCount];
                 node.IsSubdivided = false;
 
-            if (!node.IsSubdivided)
-            {
-                if (node.Entities == null)
-                {
-                    node.Entities = new EcsEntity[NodeCapacity];
-                    node.EntitiesIndex = 0;
-                }
+                _treeCurrentDepth = math.min(_treeCurrentDepth + 1, depth);
+            }
 
+            if (node.EntitiesIndex < node.Entities.Length && !node.IsSubdivided)
+            {
                 node.Entities[node.EntitiesIndex++] = ecsEntity;
                 return true;
             }
 
-            node.ChildrenNodes ??= new TreeNode[ChildrenNodesCount];
             node.IsSubdivided = true;
 
-            const int divisions = 2;
-            for (var y = 0; y < divisions; y++)
+            for (var y = 0; y < NodeDivisions; ++y)
+            for (var x = 0; x < NodeDivisions; ++x)
             {
-                for (var x = 0; x < divisions; x++)
-                {
-                    var nodeMin = nodeOffset + nodeExtent * new fix2(x - 1, y - 1);
-                    if (math.any(entityOffset - entityExtent < nodeMin))
-                        continue;
+                var childNodeIndex = x + y * NodeDivisions;
 
-                    var nodeMax = nodeMin + nodeExtent;
-                    if (math.any(entityOffset + entityExtent > nodeMax))
-                        continue;
+                var childNodeExtent = nodeExtent / (fix) NodeDivisions;
+                var childNodeOffset = nodeOffset - childNodeExtent + nodeExtent * new fix2(x, y);
 
-                    var nodeIndex = x + y * divisions;
-                    /*children[nodeIndex] ??= new TreeNode();
-                        children[nodeIndex]..Add();*/
-                }
+                if (Insert(ref node.ChildrenNodes[childNodeIndex], childNodeExtent, childNodeOffset, ecsEntity, entityExtent,
+                        entityOffset, depth + 1))
+                    return true;
             }
+
+            return false;
         }
 
         private (fix2 extent, fix2 offset) GetRootNodeBounds()
@@ -202,7 +161,7 @@ namespace Game.Systems
                 max = fix2.max(max, position + offset + extent);
             }
 
-            var rootNodeExtent = (max + min) / (fix) 2;
+            var rootNodeExtent = (max - min) / (fix) 2;
             return (rootNodeExtent, max - rootNodeExtent);
         }
     }
