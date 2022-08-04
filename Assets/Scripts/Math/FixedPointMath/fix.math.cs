@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using Unity.Mathematics;
 
 namespace Math.FixedPointMath
 {
@@ -463,6 +464,14 @@ namespace Math.FixedPointMath
             return fix2.distancesq(point, circleCenter) < circleRadius * circleRadius;
         }
 
+        public static bool is_point_inside_box(fix2 point, fix2 extent, fix2 offset)
+        {
+            if (math.any(point > offset + extent))
+                return false;
+
+            return !math.any(point < offset - extent);
+        }
+
         public static bool circle_and_box_intersection_point(fix2 circleCenter, fix circleR, fix2 position, fix2 offset,
             fix2 extent, out fix2 point)
         {
@@ -495,5 +504,22 @@ namespace Math.FixedPointMath
             point = default;
             return false;
         }
+
+        public static bool is_AABB_overlapped_by_AABB(fix2 minA, fix2 maxA, fix2 minB, fix2 maxB)
+        {
+            if (math.any(maxA < minB))
+                return false;
+
+            return !math.any(minA > maxB);
+        }
+
+        public static fix AABB_area(fix2 min, fix2 max) =>
+            box_area(max - min);
+
+        public static fix box_area(fix2 size) =>
+            size.x * size.y;
+
+        public (fix2 min, fix2 max) AAABBs_conjugate(fix2 minA, fix2 maxA, fix2 minB, fix2 maxB) =>
+            (fix2.min(minA, minB), fix2.max(maxA, maxB));
     }
 }
