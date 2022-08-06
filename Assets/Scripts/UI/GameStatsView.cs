@@ -5,6 +5,7 @@ using Game.Components.Entities;
 using Game.Components.Tags;
 using Infrastructure.Factory;
 using Leopotam.Ecs;
+using Math.FixedPointMath;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -30,7 +31,7 @@ namespace UI
         private EcsEntity _heroEntity;
 
         public async Task
-            Construct(IGameFactory gameFactory, double timer, EcsEntity heroEntity) // :TODO: get IGameFactory from DI
+            Construct(IGameFactory gameFactory, fix timer, EcsEntity heroEntity) // :TODO: get IGameFactory from DI
         {
             UpdateLevelStageTimer(timer);
 
@@ -50,10 +51,10 @@ namespace UI
             SetHeroIcon(await spriteLoadTask);
         }
 
-        public void UpdateLevelStageTimer(double timer)
+        public void UpdateLevelStageTimer(fix timer)
         {
             if (LevelStageTimeText != null)
-                LevelStageTimeText.SetText(TimeSpan.FromSeconds(timer).ToString(TimeFormat));
+                LevelStageTimeText.SetText(TimeSpan.FromSeconds((double) timer).ToString(TimeFormat));
         }
 
         private void OnDestroy()

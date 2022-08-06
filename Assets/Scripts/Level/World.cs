@@ -13,6 +13,7 @@ using Game.Components.Events;
 using Game.Components.Tags;
 using Game.Systems;
 using Game.Systems.Behaviours;
+using Gizmos;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
 using Input;
@@ -20,6 +21,8 @@ using Leopotam.Ecs;
 using Math;
 using Math.FixedPointMath;
 using Unity.Mathematics;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Level
 {
@@ -33,7 +36,7 @@ namespace Level
 
         private readonly HashSet<EcsEntity> _enemies = new();
 
-        private readonly double _stageTimer;
+        private readonly fix _stageTimer;
 
         public RandomGenerator RandomGenerator { get; }
 
@@ -41,8 +44,8 @@ namespace Level
 
         public IReadOnlyDictionary<PlayerTagConfig, IPlayer> Players => _players;
 
-        public double StageTimer =>
-            math.max(0, _stageTimer - (double) (_simulationCurrentTime - _simulationStartTime));
+        public fix StageTimer =>
+            fix.max(fix.zero, _stageTimer - _simulationCurrentTime + _simulationStartTime);
 
         public World(ApplicationConfig applicationConfig, IGameFactory gameFactory, LevelStage levelStage)
         {
@@ -50,7 +53,7 @@ namespace Level
             FixedDeltaTime = fix.one / (fix) TickRate;
 
             _gameFactory = gameFactory;
-            _stageTimer = levelStage.LevelStageConfig.LevelStageTimer;
+            _stageTimer = (fix) levelStage.LevelStageConfig.LevelStageTimer;
 
             RandomGenerator = new RandomGenerator(levelStage.RandomSeed);
 
@@ -94,7 +97,6 @@ namespace Level
                 .Add(new LevelEntitiesTreeSystem())
                 .Add(new AttackBehaviourSystem())
                 .Add(healthSystem)
-                .OneFrame<PrevFrameDataComponent>()
                 .Inject(this)
                 .Init();
         }
