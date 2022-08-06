@@ -8,6 +8,7 @@ using Configs.Level;
 using Data;
 using Game;
 using Game.Components;
+using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Tags;
 using Game.Enemies;
@@ -61,11 +62,11 @@ namespace Level
             var sprite = walls.GetComponent<SpriteRenderer>();
             sprite.size += new Vector2(columnsNumber, rowsNumber);
 
-#if false
+#if true
             var entity = _ecsWorld.NewEntity();
             entity.Replace(new TransformComponent
             {
-                WorldPosition = new fix2(new double2(0 /*-(columnsNumber / 2 + 1)*/, 0)),
+                WorldPosition = new fix2(new double2(-(columnsNumber / 2 + 1), 0)),
                 IsStatic = true
             });
 
@@ -73,7 +74,7 @@ namespace Level
             {
                 InteractionLayerMask = 0xFFFFFFF,
                 Offset = fix2.zero,
-                Extent = (fix2) (new double2(1, 20) / 2.0)
+                Extent = new fix2(1, rowsNumber) / new fix2(2)
             });
 
             entity.Replace(new HasColliderTag());

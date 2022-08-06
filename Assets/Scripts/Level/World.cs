@@ -64,8 +64,17 @@ namespace Level
             Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_ecsFixedSystems);
 #endif
 
+#if UNITY_EDITOR
+            var go = new GameObject("CollidersBoundsDrawer");
+            Assert.IsNotNull(go);
+            var colliderBoundsDrawer = go.AddComponent<CollidersBoundsDrawer>();
+#endif
+
             _ecsSystems
                 .Add(new WorldViewUpdateSystem())
+#if UNITY_EDITOR
+                .Add(colliderBoundsDrawer)
+#endif
                 .Inject(this)
                 .Init();
 
