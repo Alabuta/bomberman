@@ -1,4 +1,5 @@
-﻿using Game.Components;
+﻿using System;
+using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
@@ -40,11 +41,8 @@ namespace Game.Systems
 
     public sealed class CollidersRectTreeSystem : IEcsRunSystem
     {
-        private const int MaxTreeDepth = 16;
-        private const int NodeDivisions = 2;
-
-        private const int NodeCapacity = 16;
-        private const int ChildrenNodesCount = 4;
+        private const int MaxEntries = 8;
+        private const int MinEntries = MaxEntries / 2;
 
         private int _treeGeneration;
 
@@ -67,6 +65,15 @@ namespace Game.Systems
 
                 var (min, max) = entity.GetEntityColliderAABB(position);
             }
+        }
+
+        private (TreeNode left, TreeNode right) ChooseLeaf(EcsEntity entity, fix2 position)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void AdjustTreeBounds()
+        {
         }
     }
 }
