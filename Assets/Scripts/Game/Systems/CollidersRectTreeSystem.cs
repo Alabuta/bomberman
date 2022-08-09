@@ -7,35 +7,35 @@ using Math.FixedPointMath;
 
 namespace Game.Systems
 {
-    public struct TreeNode
+    public abstract class BaseTreeNode
     {
         public int Generation;
-
         public int EntriesCount;
-        public readonly (BoundingRect Rect, TreeNode ChildNode)[] Entries;
 
-        public TreeNode(int generation, int maxEntries)
+        public BaseTreeNode(int generation)
         {
             Generation = generation;
-
             EntriesCount = 0;
-            Entries = new (BoundingRect Rect, TreeNode Id)[maxEntries];
         }
     }
 
-    public struct TreeLeaf
+    public class TreeNonLeafNode : BaseTreeNode
     {
-        public int Generation;
+        public readonly (AABB Aabb, BaseTreeNode ChildNode)[] Entries;
 
-        public int EntriesCount;
-        public readonly (BoundingRect Rect, int Id)[] Entries;
-
-        public TreeLeaf(int generation, int maxEntries)
+        public TreeNonLeafNode(int generation, int maxEntries) : base(generation)
         {
-            Generation = generation;
+            Entries = new (AABB Rect, BaseTreeNode ChildNode)[maxEntries];
+        }
+    }
 
-            EntriesCount = 0;
-            Entries = new (BoundingRect Rect, int Id)[maxEntries];
+    public class TreeLeafNode : BaseTreeNode
+    {
+        public readonly (AABB Aabb, EcsEntity Entity)[] Entries;
+
+        public TreeLeafNode(int generation, int maxEntries) : base(generation)
+        {
+            Entries = new (AABB Aabb, EcsEntity Entity)[maxEntries];
         }
     }
 
@@ -45,6 +45,8 @@ namespace Game.Systems
         private const int MinEntries = MaxEntries / 2;
 
         private int _treeGeneration;
+
+        private BaseTreeNode _root;
 
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
@@ -63,17 +65,39 @@ namespace Game.Systems
                 ref var transformComponent = ref _filter.Get1(index);
                 var position = transformComponent.WorldPosition;
 
-                var (min, max) = entity.GetEntityColliderAABB(position);
+                var aabb = entity.GetEntityColliderAABB(position);
+                Insert(_root, entity, aabb);
             }
         }
 
-        private (TreeNode left, TreeNode right) ChooseLeaf(EcsEntity entity, fix2 position)
+        private void Insert(BaseTreeNode node, EcsEntity entity, AABB aabb)
         {
+            var leafNode = ChooseLeaf(node, entity, aabb);
+
+            // AdjustBounds
+            // GrowTree
+            throw new NotImplementedException();
+        }
+
+        private (TreeLeafNode left, TreeLeafNode right) ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
+        {
+            if (node is TreeLeafNode leafNode)
+            {
+                if (leafNode.EntriesCount < leafNode.Entries.Length)
+                {
+                    leafNode.Entries[leafNode.EntriesCount++] = (aabb, entity);
+                    return (leafNode, null);
+                }
+
+                ;
+            }
+
             throw new NotImplementedException();
         }
 
         private void AdjustTreeBounds()
         {
+            throw new NotImplementedException();
         }
     }
 }

@@ -176,14 +176,14 @@ namespace Game
             return (extent, offset);
         }
 
-        public static (fix2 min, fix2 max) GetEntityColliderAABB(this EcsEntity entity, fix2 position)
+        public static AABB GetEntityColliderAABB(this EcsEntity entity, fix2 position)
         {
             var (extent, offset) = entity.GetEntityColliderExtentAndOffset();
 
             var min = position + offset - extent;
             var max = position + offset + extent;
 
-            return (min, max);
+            return new AABB(min, max);
         }
     }
 }
