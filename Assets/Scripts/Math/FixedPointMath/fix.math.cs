@@ -519,7 +519,13 @@ namespace Math.FixedPointMath
         public static fix box_area(fix2 size) =>
             size.x * size.y;
 
-        public (fix2 min, fix2 max) AAABBs_conjugate(fix2 minA, fix2 maxA, fix2 minB, fix2 maxB) =>
+        public static (fix2 min, fix2 max) AABBs_conjugate(fix2 minA, fix2 maxA, fix2 minB, fix2 maxB) =>
             (fix2.min(minA, minB), fix2.max(maxA, maxB));
+
+        public static AABB AABBs_conjugate(AABB a, AABB b)
+        {
+            var (min, max) = AABBs_conjugate(a.min, a.max, b.min, b.max);
+            return new AABB(min, max);
+        }
     }
 }

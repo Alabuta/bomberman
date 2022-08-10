@@ -4,6 +4,7 @@ using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
+using Unity.Mathematics;
 
 namespace Game.Systems
 {
@@ -11,6 +12,8 @@ namespace Game.Systems
     {
         public int Generation;
         public int EntriesCount;
+
+        public AABB Aabb = AABB.Invalid;
 
         public BaseTreeNode(int generation)
         {
@@ -79,17 +82,39 @@ namespace Game.Systems
             throw new NotImplementedException();
         }
 
-        private (TreeLeafNode left, TreeLeafNode right) ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
+        private (TreeLeafNode a, TreeLeafNode b) ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
         {
-            if (node is TreeLeafNode leafNode)
+            if (node is TreeLeafNode leafNodeA)
             {
-                if (leafNode.EntriesCount < leafNode.Entries.Length)
+                if (leafNodeA.EntriesCount < leafNodeA.Entries.Length)
                 {
-                    leafNode.Entries[leafNode.EntriesCount++] = (aabb, entity);
-                    return (leafNode, null);
+                    leafNodeA.Entries[leafNodeA.EntriesCount++] = (aabb, entity);
+                    leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, aabb);
+                    return (leafNodeA, null);
                 }
 
-                ;
+                var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
+                leafNodeB.Entries[leafNodeB.EntriesCount++] = (aabb, entity);
+                leafNodeB.Aabb = AABB.Invalid;
+                leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabb);
+
+                var moveCount = math.max(MinEntries, leafNodeA.EntriesCount / 2) - 1;
+                while (moveCount-- > 0)
+                {
+                    var entry = leafNodeA.Entries[leafNodeA.EntriesCount--];
+
+                    leafNodeB.Entries[leafNodeB.EntriesCount++] = entry;
+                    leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, entry.Aabb);
+                }
+
+                leafNodeA.Aabb = AABB.Invalid;
+                for (var i = 0; i < leafNodeA.EntriesCount; i++)
+                {
+                    var entry = leafNodeA.Entries[i];
+                    leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, entry.Aabb);
+                }
+
+                return (leafNodeA, leafNodeB);
             }
 
             throw new NotImplementedException();
