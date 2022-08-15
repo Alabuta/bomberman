@@ -13,12 +13,13 @@ namespace Game.Systems
         public int Generation;
         public int EntriesCount;
 
-        public AABB Aabb = AABB.Invalid;
+        public AABB Aabb;
 
         public BaseTreeNode(int generation)
         {
             Generation = generation;
             EntriesCount = 0;
+            Aabb = AABB.Invalid;
         }
     }
 
@@ -86,38 +87,60 @@ namespace Game.Systems
         {
             if (node is TreeLeafNode leafNodeA)
             {
-                if (leafNodeA.EntriesCount < leafNodeA.Entries.Length)
+                if (leafNodeA.EntriesCount >= leafNodeA.Entries.Length)
+                    return SplitLeafNode(leafNodeA, entity, aabb);
+
+                leafNodeA.Entries[leafNodeA.EntriesCount++] = (aabb, entity);
+                leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, aabb);
+                return (leafNodeA, null);
+            }
+
+            if (node is TreeNonLeafNode nonLeafNode)
+            {
+                var (index, area) = (-1, fix.MaxValue);
+                for (var i = 0; i < nonLeafNode.EntriesCount; i++)
                 {
-                    leafNodeA.Entries[leafNodeA.EntriesCount++] = (aabb, entity);
-                    leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, aabb);
-                    return (leafNodeA, null);
+                    var (childNodeAabb, _) = nonLeafNode.Entries[i];
+
+                    var childNodeArea = fix.AABB_area(childNodeAabb);
+                    if (childNodeArea >= area)
+                        continue;
+
+                    area = childNodeArea;
+                    index = i;
                 }
 
-                var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
-                leafNodeB.Entries[leafNodeB.EntriesCount++] = (aabb, entity);
-                leafNodeB.Aabb = AABB.Invalid;
-                leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabb);
-
-                var moveCount = math.max(MinEntries, leafNodeA.EntriesCount / 2) - 1;
-                while (moveCount-- > 0)
-                {
-                    var entry = leafNodeA.Entries[leafNodeA.EntriesCount--];
-
-                    leafNodeB.Entries[leafNodeB.EntriesCount++] = entry;
-                    leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, entry.Aabb);
-                }
-
-                leafNodeA.Aabb = AABB.Invalid;
-                for (var i = 0; i < leafNodeA.EntriesCount; i++)
-                {
-                    var entry = leafNodeA.Entries[i];
-                    leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, entry.Aabb);
-                }
-
-                return (leafNodeA, leafNodeB);
+                var (_, childNode) = nonLeafNode.Entries[index];
+                childNode.Aabb = fix.AABBs_conjugate(childNode.Aabb, aabb);
             }
 
             throw new NotImplementedException();
+        }
+
+        private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode leafNodeA, EcsEntity entity, AABB aabb)
+        {
+            var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
+            leafNodeB.Entries[leafNodeB.EntriesCount++] = (aabb, entity);
+            leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabb);
+
+            var moveCount = math.max(MinEntries, leafNodeA.EntriesCount / 2) - 1;
+            while (moveCount-- > 0 && leafNodeA.EntriesCount > -1)
+            {
+                var (aabbA, entityA) = leafNodeA.Entries[leafNodeA.EntriesCount--];
+
+                leafNodeB.Entries[leafNodeB.EntriesCount++] = (aabbA, entityA);
+                leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabbA);
+            }
+
+            leafNodeA.Aabb = AABB.Invalid;
+            for (var i = 0; i < leafNodeA.EntriesCount; i++)
+            {
+                var entry = leafNodeA.Entries[i];
+                leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, entry.Aabb);
+            }
+
+            var isLeafASmaller = fix.AABB_area(leafNodeA.Aabb) <= fix.AABB_area(leafNodeB.Aabb);
+            return isLeafASmaller ? (leafNodeA, leafNodeB) : (leafNodeB, leafNodeA);
         }
 
         private void AdjustTreeBounds()

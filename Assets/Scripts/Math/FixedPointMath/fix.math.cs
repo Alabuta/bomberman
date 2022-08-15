@@ -513,8 +513,8 @@ namespace Math.FixedPointMath
             return !math.any(minA > maxB);
         }
 
-        public static fix AABB_area(fix2 min, fix2 max) =>
-            box_area(max - min);
+        public static fix AABB_area(AABB aabb) =>
+            box_area(aabb.max - aabb.min);
 
         public static fix box_area(fix2 size) =>
             size.x * size.y;
