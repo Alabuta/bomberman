@@ -5,6 +5,7 @@ using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
+using UnityEngine.Assertions;
 
 namespace Game.Systems
 {
@@ -83,7 +84,7 @@ namespace Game.Systems
             throw new NotImplementedException();
         }
 
-        private (TreeLeafNode a, TreeLeafNode b) ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
+        private (BaseTreeNode a, BaseTreeNode b) ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
         {
             if (node is TreeLeafNode leafNodeA)
             {
@@ -110,8 +111,15 @@ namespace Game.Systems
                     index = i;
                 }
 
+                Assert.IsTrue(index > -1 && index < nonLeafNode.EntriesCount);
+
                 var (_, childNode) = nonLeafNode.Entries[index];
-                childNode.Aabb = fix.AABBs_conjugate(childNode.Aabb, aabb);
+
+                var (a, b) = ChooseLeaf(childNode, entity, aabb);
+                Assert.IsNotNull(a);
+
+                if (b == null)
+                    childNode.Aabb = fix.AABBs_conjugate(a.Aabb, aabb);
             }
 
             throw new NotImplementedException();
