@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
@@ -84,7 +85,7 @@ namespace Game.Systems
             throw new NotImplementedException();
         }
 
-        private (BaseTreeNode a, BaseTreeNode b) ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
+        private (BaseTreeNode a, BaseTreeNode b)? ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
         {
             if (node is TreeLeafNode leafNodeA)
             {
@@ -93,7 +94,8 @@ namespace Game.Systems
 
                 leafNodeA.Entries[leafNodeA.EntriesCount++] = (aabb, entity);
                 leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, aabb);
-                return (leafNodeA, null);
+
+                return null;
             }
 
             if (node is TreeNonLeafNode nonLeafNode)
@@ -115,14 +117,26 @@ namespace Game.Systems
 
                 var (_, childNode) = nonLeafNode.Entries[index];
 
-                var (a, b) = ChooseLeaf(childNode, entity, aabb);
-                Assert.IsNotNull(a);
-
-                if (b == null)
-                    childNode.Aabb = fix.AABBs_conjugate(a.Aabb, aabb);
+                var splitNodes = ChooseLeaf(childNode, entity, aabb);
+                if (splitNodes == null)
+                {
+                    node.Aabb = GetNodeAABB(node);
+                    return null;
+                }
+                else
+                {
+                    var (a, b) = splitNodes.Value;
+                    if (nonLeafNode.EntriesCount < nonLeafNode.Entries.Length)
+                    {
+                    }
+                    else
+                    {
+                        // concatenate child nodes
+                    }
+                }
             }
 
-            throw new NotImplementedException();
+            return (null, null);
         }
 
         private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode leafNodeA, EcsEntity entity, AABB aabb)
@@ -140,15 +154,20 @@ namespace Game.Systems
                 leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabbA);
             }
 
-            leafNodeA.Aabb = AABB.Invalid;
-            for (var i = 0; i < leafNodeA.EntriesCount; i++)
-            {
-                var entry = leafNodeA.Entries[i];
-                leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, entry.Aabb);
-            }
+            leafNodeA.Aabb = GetNodeAABB(leafNodeA);
 
             var isLeafASmaller = fix.AABB_area(leafNodeA.Aabb) <= fix.AABB_area(leafNodeB.Aabb);
             return isLeafASmaller ? (leafNodeA, leafNodeB) : (leafNodeB, leafNodeA);
+        }
+
+        private static AABB GetNodeAABB(BaseTreeNode node)
+        {
+            return node switch
+            {
+                TreeLeafNode leaf => leaf.Entries.Aggregate(AABB.Invalid, (a, p) => fix.AABBs_conjugate(a, p.Aabb)),
+                TreeNonLeafNode nonLeaf => nonLeaf.Entries.Aggregate(AABB.Invalid, (a, p) => fix.AABBs_conjugate(a, p.Aabb)),
+                _ => AABB.Invalid
+            };
         }
 
         private void AdjustTreeBounds()
