@@ -94,6 +94,7 @@ namespace Game.Systems
 
                 leafNodeA.Entries[leafNodeA.EntriesCount++] = (aabb, entity);
                 leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, aabb);
+                // SortNodeEntities(leafNodeA);
 
                 return null;
             }
@@ -120,23 +121,38 @@ namespace Game.Systems
                 var splitNodes = ChooseLeaf(childNode, entity, aabb);
                 if (splitNodes == null)
                 {
-                    node.Aabb = GetNodeAABB(node);
+                    node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
                     return null;
+                }
+
+                var (a, b) = splitNodes.Value;
+                if (nonLeafNode.EntriesCount < nonLeafNode.Entries.Length)
+                {
+                    nonLeafNode.Entries[index] = (a.Aabb, a);
+                    nonLeafNode.Entries[nonLeafNode.EntriesCount++] = (b.Aabb, b);
+                    nonLeafNode.Aabb = fix.AABBs_conjugate(nonLeafNode.Aabb, aabb);
                 }
                 else
                 {
-                    var (a, b) = splitNodes.Value;
-                    if (nonLeafNode.EntriesCount < nonLeafNode.Entries.Length)
-                    {
-                    }
-                    else
-                    {
-                        // concatenate child nodes
-                    }
+                    // concatenate child nodes
                 }
             }
 
-            return (null, null);
+            throw new NotSupportedException();
+        }
+
+        private static void SortNodeEntities(BaseTreeNode node)
+        {
+            switch (node)
+            {
+                case TreeLeafNode leafNode:
+                    Array.Sort(leafNode.Entries, (a, b) => fix.AABB_area(a.Aabb).CompareTo(fix.AABB_area(b.Aabb)));
+                    break;
+
+                case TreeNonLeafNode nonLeafNode:
+                    Array.Sort(nonLeafNode.Entries, (a, b) => fix.AABB_area(a.Aabb).CompareTo(fix.AABB_area(b.Aabb)));
+                    break;
+            }
         }
 
         private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode leafNodeA, EcsEntity entity, AABB aabb)
@@ -155,6 +171,9 @@ namespace Game.Systems
             }
 
             leafNodeA.Aabb = GetNodeAABB(leafNodeA);
+
+            /*SortNodeEntities(leafNodeA);
+            SortNodeEntities(leafNodeB);*/
 
             var isLeafASmaller = fix.AABB_area(leafNodeA.Aabb) <= fix.AABB_area(leafNodeB.Aabb);
             return isLeafASmaller ? (leafNodeA, leafNodeB) : (leafNodeB, leafNodeA);
