@@ -25,11 +25,11 @@ namespace Game.Systems
         }
     }
 
-    public class TreeNonLeafNode : BaseTreeNode
+    public class TreeRootNode : BaseTreeNode
     {
         public readonly (AABB Aabb, BaseTreeNode ChildNode)[] Entries;
 
-        public TreeNonLeafNode(int generation, int maxEntries) : base(generation)
+        public TreeRootNode(int generation, int maxEntries) : base(generation)
         {
             Entries = new (AABB Rect, BaseTreeNode ChildNode)[maxEntries];
         }
@@ -59,10 +59,15 @@ namespace Game.Systems
 
         private readonly EcsFilter<TransformComponent, HasColliderTag> _filter;
 
+        private readonly int[] _intersectedMBRs = new int[MaxEntries];
+        private readonly fix[] _areas = new fix[MaxEntries];
+
         public void Run()
         {
             if (_filter.IsEmpty())
                 return;
+
+            _root = new TreeRootNode(++_treeGeneration, MaxEntries);
 
             foreach (var index in _filter)
             {
@@ -78,7 +83,7 @@ namespace Game.Systems
 
         private void Insert(BaseTreeNode node, EcsEntity entity, AABB aabb)
         {
-            var leafNode = ChooseLeaf(node, entity, aabb);
+            var splitNodes = ChooseLeaf(node, entity, aabb);
 
             // AdjustBounds
             // GrowTree
@@ -87,58 +92,120 @@ namespace Game.Systems
 
         private (BaseTreeNode a, BaseTreeNode b)? ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
         {
-            if (node is TreeLeafNode leafNodeA)
+            if (node is TreeLeafNode leafNode)
             {
-                if (leafNodeA.EntriesCount >= leafNodeA.Entries.Length)
-                    return SplitLeafNode(leafNodeA, entity, aabb);
+                if (leafNode.EntriesCount >= leafNode.Entries.Length)
+                    return SplitLeafNode(leafNode, entity, aabb);
 
-                leafNodeA.Entries[leafNodeA.EntriesCount++] = (aabb, entity);
-                leafNodeA.Aabb = fix.AABBs_conjugate(leafNodeA.Aabb, aabb);
-                // SortNodeEntities(leafNodeA);
+                leafNode.Entries[leafNode.EntriesCount++] = (aabb, entity);
+                leafNode.Aabb = fix.AABBs_conjugate(leafNode.Aabb, aabb);
+                SortNodeEntities(leafNode);
 
                 return null;
             }
 
-            if (node is TreeNonLeafNode nonLeafNode)
+            if (node is TreeRootNode rootNode)
             {
-                var (index, area) = (-1, fix.MaxValue);
-                for (var i = 0; i < nonLeafNode.EntriesCount; i++)
-                {
-                    var (childNodeAabb, _) = nonLeafNode.Entries[i];
+                /*Array.Fill(_intersectedMBRs, -1);
+                Assert.IsTrue(rootNode.EntriesCount <= _intersectedMBRs.Length);
 
-                    var childNodeArea = fix.AABB_area(childNodeAabb);
-                    if (childNodeArea >= area)
+                for (var i = 0; i < rootNode.EntriesCount; i++)
+                {
+                    var (childNodeAabb, _) = rootNode.Entries[i];
+                    if (!fix.is_AABB_overlapped_by_AABB(childNodeAabb, aabb))
                         continue;
 
-                    area = childNodeArea;
+                    _intersectedMBRs[i] = i;
+                }
+
+                Array.Sort(_intersectedMBRs);*/
+
+                Array.Fill(_areas, fix.MaxValue);
+                for (var i = 0; i < rootNode.EntriesCount; i++)
+                {
+                    var (childNodeAabb, _) = rootNode.Entries[i];
+                    var newAabb = fix.AABBs_conjugate(childNodeAabb, aabb);
+                    var newAabbArea = fix.AABB_area(newAabb);
+                    _areas[i] = newAabbArea;
+                }
+
+                Array.Sort(_areas, rootNode.Entries);
+
+                // SortNodeEntities(rootNode);
+
+                var (index, area) = (-1, fix.MaxValue);
+                for (var i = 0; i < rootNode.EntriesCount; i++)
+                {
+                    var (childNodeAabb, _) = rootNode.Entries[i];
+
+                    var newAabb = fix.AABBs_conjugate(childNodeAabb, aabb);
+                    var newAabbArea = fix.AABB_area(newAabb);
+                    if (newAabbArea >= area)
+                        continue;
+
+                    area = newAabbArea;
                     index = i;
                 }
 
-                Assert.IsTrue(index > -1 && index < nonLeafNode.EntriesCount);
+                Assert.IsTrue(index > -1 && index < rootNode.EntriesCount);
 
-                var (_, childNode) = nonLeafNode.Entries[index];
+                var (_, childNode) = rootNode.Entries[index];
 
                 var splitNodes = ChooseLeaf(childNode, entity, aabb);
                 if (splitNodes == null)
                 {
                     node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
+
+                    SortNodeEntities(rootNode);
+
                     return null;
                 }
 
                 var (a, b) = splitNodes.Value;
-                if (nonLeafNode.EntriesCount < nonLeafNode.Entries.Length)
+                if (rootNode.EntriesCount < rootNode.Entries.Length)
                 {
-                    nonLeafNode.Entries[index] = (a.Aabb, a);
-                    nonLeafNode.Entries[nonLeafNode.EntriesCount++] = (b.Aabb, b);
-                    nonLeafNode.Aabb = fix.AABBs_conjugate(nonLeafNode.Aabb, aabb);
+                    rootNode.Entries[index] = (a.Aabb, a);
+                    rootNode.Entries[rootNode.EntriesCount++] = (b.Aabb, b);
+                    rootNode.Aabb = fix.AABBs_conjugate(rootNode.Aabb, aabb);
+
+                    SortNodeEntities(rootNode);
+
+                    return null;
                 }
-                else
-                {
-                    // concatenate child nodes
-                }
+
+                // linear split
             }
 
             throw new NotSupportedException();
+        }
+
+        private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode leafNodeA, EcsEntity entity, AABB aabb)
+        {
+            var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
+            Assert.AreEqual(leafNodeB.EntriesCount, 0);
+            leafNodeB.Entries[leafNodeB.EntriesCount] = (aabb, entity);
+            leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabb);
+
+            var moveCount = math.max(MinEntries, leafNodeA.EntriesCount / 2) - 1;
+            Assert.IsTrue(moveCount > 0);
+            while (moveCount > 0 && leafNodeA.EntriesCount > 0)
+            {
+                var (aabbA, entityA) = leafNodeA.Entries[--leafNodeA.EntriesCount];
+
+                leafNodeB.Entries[++leafNodeB.EntriesCount] = (aabbA, entityA);
+                leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabbA);
+
+                moveCount--;
+            }
+
+            Assert.IsTrue(leafNodeA.EntriesCount > 0);
+            leafNodeA.Aabb = GetNodeAABB(leafNodeA);
+
+            SortNodeEntities(leafNodeA);
+            SortNodeEntities(leafNodeB);
+
+            var isLeafBSmaller = fix.AABB_area(leafNodeB.Aabb) < fix.AABB_area(leafNodeA.Aabb);
+            return isLeafBSmaller ? (leafNodeB, leafNodeA) : (leafNodeA, leafNodeB);
         }
 
         private static void SortNodeEntities(BaseTreeNode node)
@@ -149,34 +216,10 @@ namespace Game.Systems
                     Array.Sort(leafNode.Entries, (a, b) => fix.AABB_area(a.Aabb).CompareTo(fix.AABB_area(b.Aabb)));
                     break;
 
-                case TreeNonLeafNode nonLeafNode:
+                case TreeRootNode nonLeafNode:
                     Array.Sort(nonLeafNode.Entries, (a, b) => fix.AABB_area(a.Aabb).CompareTo(fix.AABB_area(b.Aabb)));
                     break;
             }
-        }
-
-        private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode leafNodeA, EcsEntity entity, AABB aabb)
-        {
-            var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
-            leafNodeB.Entries[leafNodeB.EntriesCount++] = (aabb, entity);
-            leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabb);
-
-            var moveCount = math.max(MinEntries, leafNodeA.EntriesCount / 2) - 1;
-            while (moveCount-- > 0 && leafNodeA.EntriesCount > -1)
-            {
-                var (aabbA, entityA) = leafNodeA.Entries[leafNodeA.EntriesCount--];
-
-                leafNodeB.Entries[leafNodeB.EntriesCount++] = (aabbA, entityA);
-                leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabbA);
-            }
-
-            leafNodeA.Aabb = GetNodeAABB(leafNodeA);
-
-            /*SortNodeEntities(leafNodeA);
-            SortNodeEntities(leafNodeB);*/
-
-            var isLeafASmaller = fix.AABB_area(leafNodeA.Aabb) <= fix.AABB_area(leafNodeB.Aabb);
-            return isLeafASmaller ? (leafNodeA, leafNodeB) : (leafNodeB, leafNodeA);
         }
 
         private static AABB GetNodeAABB(BaseTreeNode node)
@@ -184,7 +227,7 @@ namespace Game.Systems
             return node switch
             {
                 TreeLeafNode leaf => leaf.Entries.Aggregate(AABB.Invalid, (a, p) => fix.AABBs_conjugate(a, p.Aabb)),
-                TreeNonLeafNode nonLeaf => nonLeaf.Entries.Aggregate(AABB.Invalid, (a, p) => fix.AABBs_conjugate(a, p.Aabb)),
+                TreeRootNode nonLeaf => nonLeaf.Entries.Aggregate(AABB.Invalid, (a, p) => fix.AABBs_conjugate(a, p.Aabb)),
                 _ => AABB.Invalid
             };
         }

@@ -513,6 +513,14 @@ namespace Math.FixedPointMath
             return !math.any(minA > maxB);
         }
 
+        public static bool is_AABB_overlapped_by_AABB(AABB a, AABB b)
+        {
+            if (math.any(a.max < b.min))
+                return false;
+
+            return !math.any(a.min > b.max);
+        }
+
         public static fix AABB_area(AABB aabb) =>
             box_area(aabb.max - aabb.min);
 
