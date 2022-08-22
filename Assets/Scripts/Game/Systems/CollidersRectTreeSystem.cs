@@ -120,7 +120,7 @@ namespace Game.Systems
 
                 Array.Sort(_intersectedMBRs);*/
 
-                Array.Fill(_areas, fix.MaxValue);
+                /*Array.Fill(_areas, fix.MaxValue);
                 for (var i = 0; i < rootNode.EntriesCount; i++)
                 {
                     var (childNodeAabb, _) = rootNode.Entries[i];
@@ -129,21 +129,27 @@ namespace Game.Systems
                     _areas[i] = newAabbArea;
                 }
 
-                Array.Sort(_areas, rootNode.Entries);
+                Array.Sort(_areas, rootNode.Entries);*/
 
                 // SortNodeEntities(rootNode);
 
-                var (index, area) = (-1, fix.MaxValue);
+                var (index, minArea, minAreaIncrease) = (-1, fix.MaxValue, fix.MaxValue);
                 for (var i = 0; i < rootNode.EntriesCount; i++)
                 {
                     var (childNodeAabb, _) = rootNode.Entries[i];
 
-                    var newAabb = fix.AABBs_conjugate(childNodeAabb, aabb);
-                    var newAabbArea = fix.AABB_area(newAabb);
-                    if (newAabbArea >= area)
+                    var conjugatedAabb = fix.AABBs_conjugate(childNodeAabb, aabb);
+                    var childNodeArea = fix.AABB_area(childNodeAabb);
+                    var areaIncrease = fix.AABB_area(conjugatedAabb) - childNodeArea;
+
+                    if (areaIncrease > minAreaIncrease)
                         continue;
 
-                    area = newAabbArea;
+                    if (areaIncrease == minAreaIncrease && childNodeArea >= minArea)
+                        continue;
+
+                    minArea = childNodeArea;
+                    minAreaIncrease = areaIncrease;
                     index = i;
                 }
 
