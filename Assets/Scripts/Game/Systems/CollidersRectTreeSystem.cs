@@ -5,7 +5,6 @@ using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
-using Unity.Mathematics;
 using UnityEngine.Assertions;
 
 namespace Game.Systems
@@ -138,8 +137,8 @@ namespace Game.Systems
                 {
                     var (childNodeAabb, _) = rootNode.Entries[i];
 
-                    var conjugatedAabb = fix.AABBs_conjugate(childNodeAabb, aabb);
                     var childNodeArea = fix.AABB_area(childNodeAabb);
+                    var conjugatedAabb = fix.AABBs_conjugate(childNodeAabb, aabb);
                     var areaIncrease = fix.AABB_area(conjugatedAabb) - childNodeArea;
 
                     if (areaIncrease > minAreaIncrease)
@@ -185,9 +184,43 @@ namespace Game.Systems
             throw new NotSupportedException();
         }
 
-        private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode leafNodeA, EcsEntity entity, AABB aabb)
+        private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode leafNodeA, EcsEntity ecsEntity, AABB entityAabb)
         {
+            Assert.AreEqual(MaxEntries, leafNodeA.EntriesCount);
+
+            var (areaA, indexA) = (fix.MinValue, -1);
+            var (areaB, indexB) = (fix.MinValue, -1);
+
+            /*for (var i = 0; i < leafNodeA.EntriesCount; i++)
+            {
+                var (aabb, _) = leafNodeA.Entries[i];
+                var entityAabbArea = fix.AABB_area(aabb);
+
+                if (entityAabbArea > areaA)
+                {
+                    (areaB, indexB) = (areaA, indexA);
+                    (areaA, indexA) = (entityAabbArea, i);
+                }
+                else if (entityAabbArea > areaB)
+                    (areaB, indexB) = (entityAabbArea, i);
+            }
+
+            var ecsEntityAabbArea = fix.AABB_area(entityAabb);
+            if (ecsEntityAabbArea > areaA)
+            {
+                indexB = indexA;
+                indexA = -1;
+            }
+            else if (ecsEntityAabbArea > areaB)
+                indexB = -1;*/
+
             var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
+            leafNodeB.Entries[leafNodeB.EntriesCount] = indexB != -1 ? leafNodeA.Entries[indexB] : (entityAabb, ecsEntity);
+
+            (leafNodeA.Entries[0], leafNodeA.Entries[indexA]) =
+                (leafNodeA.Entries[indexA], leafNodeA.Entries[indexB != -1 ? indexB : 0]);
+
+            /*var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
             Assert.AreEqual(leafNodeB.EntriesCount, 0);
             leafNodeB.Entries[leafNodeB.EntriesCount] = (aabb, entity);
             leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabb);
@@ -202,13 +235,15 @@ namespace Game.Systems
                 leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabbA);
 
                 moveCount--;
-            }
+            }*/
 
             Assert.IsTrue(leafNodeA.EntriesCount > 0);
+            Assert.IsTrue(leafNodeB.EntriesCount > 0);
+
             leafNodeA.Aabb = GetNodeAABB(leafNodeA);
 
-            SortNodeEntities(leafNodeA);
-            SortNodeEntities(leafNodeB);
+            /*SortNodeEntities(leafNodeA);
+            SortNodeEntities(leafNodeB);*/
 
             var isLeafBSmaller = fix.AABB_area(leafNodeB.Aabb) < fix.AABB_area(leafNodeA.Aabb);
             return isLeafBSmaller ? (leafNodeB, leafNodeA) : (leafNodeA, leafNodeB);
