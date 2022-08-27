@@ -132,29 +132,34 @@ namespace Game.Systems
 
                 // SortNodeEntities(rootNode);
 
-                var (index, minArea, minAreaIncrease) = (-1, fix.MaxValue, fix.MaxValue);
-                for (var i = 0; i < rootNode.EntriesCount; i++)
+                var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
+                for (var i = 0; i < rootNode.EntriesCount - 1; i++)
                 {
-                    var (childNodeAabb, _) = rootNode.Entries[i];
+                    var (aabbA, _) = rootNode.Entries[i];
 
-                    var childNodeArea = fix.AABB_area(childNodeAabb);
-                    var conjugatedAabb = fix.AABBs_conjugate(childNodeAabb, aabb);
-                    var areaIncrease = fix.AABB_area(conjugatedAabb) - childNodeArea;
+                    for (var j = i + 1; j < rootNode.EntriesCount; j++)
+                    {
+                        var (aabbB, _) = rootNode.Entries[j];
+                        var conjugatedAabb = fix.AABBs_conjugate(aabbA, aabbB);
+                        var conjugatedArea = fix.AABB_area(conjugatedAabb);
 
-                    if (areaIncrease > minAreaIncrease)
-                        continue;
+                        if (conjugatedArea <= maxArena)
+                            continue;
 
-                    if (areaIncrease == minAreaIncrease && childNodeArea >= minArea)
-                        continue;
-
-                    minArea = childNodeArea;
-                    minAreaIncrease = areaIncrease;
-                    index = i;
+                        (indexA, indexB, maxArena) = (i, j, conjugatedArea);
+                    }
                 }
 
-                Assert.IsTrue(index > -1 && index < rootNode.EntriesCount);
+                Assert.IsTrue(indexA > -1 && indexA < rootNode.EntriesCount);
+                Assert.IsTrue(indexB > -1 && indexB < rootNode.EntriesCount);
 
-                var (_, childNode) = rootNode.Entries[index];
+                // Quadratic cost split
+                // Put A and B entries in two different nodes
+                // Then consider all other entries area increase relatively to two previous AABBs
+                // Assign entry to the node with smaller AABB area increase
+                // Repeat until all entries are assigned between two new nodes
+
+                var (_, childNode) = rootNode.Entries[indexA];
 
                 var splitNodes = ChooseLeaf(childNode, entity, aabb);
                 if (splitNodes == null)
@@ -169,7 +174,7 @@ namespace Game.Systems
                 var (a, b) = splitNodes.Value;
                 if (rootNode.EntriesCount < rootNode.Entries.Length)
                 {
-                    rootNode.Entries[index] = (a.Aabb, a);
+                    rootNode.Entries[indexA] = (a.Aabb, a);
                     rootNode.Entries[rootNode.EntriesCount++] = (b.Aabb, b);
                     rootNode.Aabb = fix.AABBs_conjugate(rootNode.Aabb, aabb);
 
