@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
@@ -93,45 +92,17 @@ namespace Game.Systems
         {
             if (node is TreeLeafNode leafNode)
             {
-                if (leafNode.EntriesCount >= leafNode.Entries.Length)
+                if (leafNode.EntriesCount == leafNode.Entries.Length)
                     return SplitLeafNode(leafNode, entity, aabb);
 
                 leafNode.Entries[leafNode.EntriesCount++] = (aabb, entity);
                 leafNode.Aabb = fix.AABBs_conjugate(leafNode.Aabb, aabb);
-                SortNodeEntities(leafNode);
 
                 return null;
             }
 
             if (node is TreeRootNode rootNode)
             {
-                /*Array.Fill(_intersectedMBRs, -1);
-                Assert.IsTrue(rootNode.EntriesCount <= _intersectedMBRs.Length);
-
-                for (var i = 0; i < rootNode.EntriesCount; i++)
-                {
-                    var (childNodeAabb, _) = rootNode.Entries[i];
-                    if (!fix.is_AABB_overlapped_by_AABB(childNodeAabb, aabb))
-                        continue;
-
-                    _intersectedMBRs[i] = i;
-                }
-
-                Array.Sort(_intersectedMBRs);*/
-
-                /*Array.Fill(_areas, fix.MaxValue);
-                for (var i = 0; i < rootNode.EntriesCount; i++)
-                {
-                    var (childNodeAabb, _) = rootNode.Entries[i];
-                    var newAabb = fix.AABBs_conjugate(childNodeAabb, aabb);
-                    var newAabbArea = fix.AABB_area(newAabb);
-                    _areas[i] = newAabbArea;
-                }
-
-                Array.Sort(_areas, rootNode.Entries);*/
-
-                // SortNodeEntities(rootNode);
-
                 var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
                 for (var i = 0; i < rootNode.EntriesCount - 1; i++)
                 {
@@ -153,21 +124,12 @@ namespace Game.Systems
                 Assert.IsTrue(indexA > -1 && indexA < rootNode.EntriesCount);
                 Assert.IsTrue(indexB > -1 && indexB < rootNode.EntriesCount);
 
-                // Quadratic cost split
-                // Put A and B entries in two different nodes
-                // Then consider all other entries area increase relatively to two previous AABBs
-                // Assign entry to the node with smaller AABB area increase
-                // Repeat until all entries are assigned between two new nodes
-
                 var (_, childNode) = rootNode.Entries[indexA];
 
                 var splitNodes = ChooseLeaf(childNode, entity, aabb);
                 if (splitNodes == null)
                 {
                     node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
-
-                    SortNodeEntities(rootNode);
-
                     return null;
                 }
 
@@ -178,8 +140,6 @@ namespace Game.Systems
                     rootNode.Entries[rootNode.EntriesCount++] = (b.Aabb, b);
                     rootNode.Aabb = fix.AABBs_conjugate(rootNode.Aabb, aabb);
 
-                    SortNodeEntities(rootNode);
-
                     return null;
                 }
 
@@ -189,70 +149,179 @@ namespace Game.Systems
             throw new NotSupportedException();
         }
 
-        private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode leafNodeA, EcsEntity ecsEntity, AABB entityAabb)
+        private (TreeRootNode a, TreeRootNode b) SplitRootNode(TreeRootNode nodeA, BaseTreeNode childNode)
         {
-            Assert.AreEqual(MaxEntries, leafNodeA.EntriesCount);
+            Assert.AreEqual(MaxEntries, nodeA.EntriesCount);
 
-            var (areaA, indexA) = (fix.MinValue, -1);
-            var (areaB, indexB) = (fix.MinValue, -1);
+            // Quadratic cost split
+            // Search for pairs of entries A and B that would cause the largest area if placed in the same node
+            // Put A and B entries in two different nodes
+            // Then consider all other entries area increase relatively to two previous nodes' AABBs
+            // Assign entry to the node with smaller AABB area increase
+            // Repeat until all entries are assigned between two new nodes
 
-            /*for (var i = 0; i < leafNodeA.EntriesCount; i++)
+            var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
+            for (var i = 0; i < nodeA.EntriesCount; i++)
             {
-                var (aabb, _) = leafNodeA.Entries[i];
-                var entityAabbArea = fix.AABB_area(aabb);
+                var (aabbA, _) = nodeA.Entries[i];
+                fix conjugatedArea;
 
-                if (entityAabbArea > areaA)
+                for (var j = i + 1; j < nodeA.EntriesCount; j++)
                 {
-                    (areaB, indexB) = (areaA, indexA);
-                    (areaA, indexA) = (entityAabbArea, i);
+                    var (aabbB, _) = nodeA.Entries[j];
+
+                    conjugatedArea = GetConjugatedArea(aabbA, aabbB);
+                    if (conjugatedArea <= maxArena)
+                        continue;
+
+                    (indexA, indexB, maxArena) = (i, j, conjugatedArea);
                 }
-                else if (entityAabbArea > areaB)
-                    (areaB, indexB) = (entityAabbArea, i);
+
+                conjugatedArea = GetConjugatedArea(aabbA, childNode.Aabb);
+                if (conjugatedArea <= maxArena)
+                    continue;
+
+                (indexA, indexB, maxArena) = (i, nodeA.EntriesCount, conjugatedArea);
             }
 
-            var ecsEntityAabbArea = fix.AABB_area(entityAabb);
-            if (ecsEntityAabbArea > areaA)
+            Assert.IsTrue(indexA > -1 && indexB > -1 && (indexA < nodeA.EntriesCount || indexB < nodeA.EntriesCount));
+
+            var nodeBFirstEntry = indexB != nodeA.EntriesCount ? nodeA.Entries[indexB] : (childNode.Aabb, childNode);
+            var nodeB = new TreeRootNode(_treeGeneration, MaxEntries)
             {
-                indexB = indexA;
-                indexA = -1;
+                EntriesCount = 1,
+                Entries =
+                {
+                    [0] = nodeBFirstEntry
+                },
+                Aabb = nodeBFirstEntry.Aabb
+            };
+
+            (nodeA.Entries[0], nodeA.Entries[indexA]) = (nodeA.Entries[indexA], nodeA.Entries[0]);
+            nodeA.EntriesCount = 1;
+            nodeA.Aabb = nodeA.Entries[0].Aabb;
+
+            for (var i = MaxEntries; i > 0; i--)
+            {
+                if (i == indexB)
+                    continue;
+
+                var (aabb, entity) = i == MaxEntries ? (childNode.Aabb, childNode) : nodeA.Entries[i];
+
+                var conjugatedAabbA = fix.AABBs_conjugate(nodeA.Aabb, aabb);
+                var conjugatedAreaA = fix.AABB_area(conjugatedAabbA);
+
+                var conjugatedAabbB = fix.AABBs_conjugate(nodeB.Aabb, aabb);
+                var conjugatedAreaB = fix.AABB_area(conjugatedAabbB);
+
+                var areaIncreaseA = conjugatedAreaA - fix.AABB_area(nodeA.Aabb);
+                var areaIncreaseB = conjugatedAreaB - fix.AABB_area(nodeB.Aabb);
+
+                if (areaIncreaseA <= areaIncreaseB)
+                {
+                    nodeA.Entries[nodeA.EntriesCount++] = (aabb, entity);
+                    nodeA.Aabb = conjugatedAabbA;
+                }
+                else
+                {
+                    nodeB.Entries[nodeB.EntriesCount++] = (aabb, entity);
+                    nodeB.Aabb = conjugatedAabbB;
+                }
             }
-            else if (ecsEntityAabbArea > areaB)
-                indexB = -1;*/
 
-            var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
-            leafNodeB.Entries[leafNodeB.EntriesCount] = indexB != -1 ? leafNodeA.Entries[indexB] : (entityAabb, ecsEntity);
+            Assert.IsTrue(nodeA.EntriesCount is > 0 and <= MaxEntries);
+            Assert.IsTrue(nodeB.EntriesCount is > 0 and <= MaxEntries);
 
-            (leafNodeA.Entries[0], leafNodeA.Entries[indexA]) =
-                (leafNodeA.Entries[indexA], leafNodeA.Entries[indexB != -1 ? indexB : 0]);
-
-            /*var leafNodeB = new TreeLeafNode(_treeGeneration, MaxEntries);
-            Assert.AreEqual(leafNodeB.EntriesCount, 0);
-            leafNodeB.Entries[leafNodeB.EntriesCount] = (aabb, entity);
-            leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabb);
-
-            var moveCount = math.max(MinEntries, leafNodeA.EntriesCount / 2) - 1;
-            Assert.IsTrue(moveCount > 0);
-            while (moveCount > 0 && leafNodeA.EntriesCount > 0)
-            {
-                var (aabbA, entityA) = leafNodeA.Entries[--leafNodeA.EntriesCount];
-
-                leafNodeB.Entries[++leafNodeB.EntriesCount] = (aabbA, entityA);
-                leafNodeB.Aabb = fix.AABBs_conjugate(leafNodeB.Aabb, aabbA);
-
-                moveCount--;
-            }*/
-
-            Assert.IsTrue(leafNodeA.EntriesCount > 0);
-            Assert.IsTrue(leafNodeB.EntriesCount > 0);
-
-            leafNodeA.Aabb = GetNodeAABB(leafNodeA);
-
-            /*SortNodeEntities(leafNodeA);
-            SortNodeEntities(leafNodeB);*/
-
-            var isLeafBSmaller = fix.AABB_area(leafNodeB.Aabb) < fix.AABB_area(leafNodeA.Aabb);
-            return isLeafBSmaller ? (leafNodeB, leafNodeA) : (leafNodeA, leafNodeB);
+            return (nodeA, nodeB);
         }
+
+        private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode nodeA, EcsEntity ecsEntity, AABB entityAabb)
+        {
+            Assert.AreEqual(MaxEntries, nodeA.EntriesCount);
+
+            // Quadratic cost split
+            // Search for pairs of entries A and B that would cause the largest area if placed in the same node
+            // Put A and B entries in two different nodes
+            // Then consider all other entries area increase relatively to two previous nodes' AABBs
+            // Assign entry to the node with smaller AABB area increase
+            // Repeat until all entries are assigned between two new nodes
+
+            var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
+            for (var i = 0; i < nodeA.EntriesCount; i++)
+            {
+                var (aabbA, _) = nodeA.Entries[i];
+                fix conjugatedArea;
+
+                for (var j = i + 1; j < nodeA.EntriesCount; j++)
+                {
+                    var (aabbB, _) = nodeA.Entries[j];
+
+                    conjugatedArea = GetConjugatedArea(aabbA, aabbB);
+                    if (conjugatedArea <= maxArena)
+                        continue;
+
+                    (indexA, indexB, maxArena) = (i, j, conjugatedArea);
+                }
+
+                conjugatedArea = GetConjugatedArea(aabbA, entityAabb);
+                if (conjugatedArea <= maxArena)
+                    continue;
+
+                (indexA, indexB, maxArena) = (i, nodeA.EntriesCount, conjugatedArea);
+            }
+
+            Assert.IsTrue(indexA > -1 && indexB > -1 && (indexA < nodeA.EntriesCount || indexB < nodeA.EntriesCount));
+
+            var nodeB = new TreeLeafNode(_treeGeneration, MaxEntries)
+            {
+                EntriesCount = 1,
+                Entries =
+                {
+                    [0] = indexB != nodeA.EntriesCount ? nodeA.Entries[indexB] : (entityAabb, ecsEntity)
+                }
+            };
+            nodeB.Aabb = nodeB.Entries[0].Aabb;
+
+            (nodeA.Entries[0], nodeA.Entries[indexA]) = (nodeA.Entries[indexA], nodeA.Entries[0]);
+            nodeA.EntriesCount = 1;
+            nodeA.Aabb = nodeA.Entries[0].Aabb;
+
+            for (var i = MaxEntries; i > 0; i--)
+            {
+                if (i == indexB)
+                    continue;
+
+                var (aabb, entity) = i == MaxEntries ? (entityAabb, ecsEntity) : nodeA.Entries[i];
+
+                var conjugatedAabbA = fix.AABBs_conjugate(nodeA.Aabb, aabb);
+                var conjugatedAreaA = fix.AABB_area(conjugatedAabbA);
+
+                var conjugatedAabbB = fix.AABBs_conjugate(nodeB.Aabb, aabb);
+                var conjugatedAreaB = fix.AABB_area(conjugatedAabbB);
+
+                var areaIncreaseA = conjugatedAreaA - fix.AABB_area(nodeA.Aabb);
+                var areaIncreaseB = conjugatedAreaB - fix.AABB_area(nodeB.Aabb);
+
+                if (areaIncreaseA <= areaIncreaseB)
+                {
+                    nodeA.Entries[nodeA.EntriesCount++] = (aabb, entity);
+                    nodeA.Aabb = conjugatedAabbA;
+                }
+                else
+                {
+                    nodeB.Entries[nodeB.EntriesCount++] = (aabb, entity);
+                    nodeB.Aabb = conjugatedAabbB;
+                }
+            }
+
+            Assert.IsTrue(nodeA.EntriesCount is > 0 and <= MaxEntries);
+            Assert.IsTrue(nodeB.EntriesCount is > 0 and <= MaxEntries);
+
+            return (nodeA, nodeB);
+        }
+
+        private static fix GetConjugatedArea(AABB aabbA, AABB aabbB) =>
+            fix.AABB_area(fix.AABBs_conjugate(aabbA, aabbB));
 
         private static void SortNodeEntities(BaseTreeNode node)
         {
@@ -266,16 +335,6 @@ namespace Game.Systems
                     Array.Sort(nonLeafNode.Entries, (a, b) => fix.AABB_area(a.Aabb).CompareTo(fix.AABB_area(b.Aabb)));
                     break;
             }
-        }
-
-        private static AABB GetNodeAABB(BaseTreeNode node)
-        {
-            return node switch
-            {
-                TreeLeafNode leaf => leaf.Entries.Aggregate(AABB.Invalid, (a, p) => fix.AABBs_conjugate(a, p.Aabb)),
-                TreeRootNode nonLeaf => nonLeaf.Entries.Aggregate(AABB.Invalid, (a, p) => fix.AABBs_conjugate(a, p.Aabb)),
-                _ => AABB.Invalid
-            };
         }
 
         private void AdjustTreeBounds()
