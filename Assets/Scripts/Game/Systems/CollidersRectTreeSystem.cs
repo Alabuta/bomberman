@@ -88,7 +88,7 @@ namespace Game.Systems
             throw new NotImplementedException();
         }
 
-        private (BaseTreeNode a, BaseTreeNode b)? ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
+        private (BaseTreeNode a, BaseTreeNode b) ChooseLeaf(BaseTreeNode node, EcsEntity entity, AABB aabb)
         {
             if (node is TreeLeafNode leafNode)
             {
@@ -98,52 +98,45 @@ namespace Game.Systems
                 leafNode.Entries[leafNode.EntriesCount++] = (aabb, entity);
                 leafNode.Aabb = fix.AABBs_conjugate(leafNode.Aabb, aabb);
 
-                return null;
+                return (leafNode, null);
             }
 
             if (node is TreeRootNode rootNode)
             {
-                var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
+                var (indexA, maxArena) = (-1, fix.MaxValue);
                 for (var i = 0; i < rootNode.EntriesCount - 1; i++)
                 {
                     var (aabbA, _) = rootNode.Entries[i];
 
-                    for (var j = i + 1; j < rootNode.EntriesCount; j++)
-                    {
-                        var (aabbB, _) = rootNode.Entries[j];
-                        var conjugatedAabb = fix.AABBs_conjugate(aabbA, aabbB);
-                        var conjugatedArea = fix.AABB_area(conjugatedAabb);
+                    var conjugatedArea = GetConjugatedArea(aabbA, aabb);
+                    if (conjugatedArea < maxArena)
+                        continue;
 
-                        if (conjugatedArea <= maxArena)
-                            continue;
-
-                        (indexA, indexB, maxArena) = (i, j, conjugatedArea);
-                    }
+                    (indexA, maxArena) = (i, conjugatedArea);
                 }
 
                 Assert.IsTrue(indexA > -1 && indexA < rootNode.EntriesCount);
-                Assert.IsTrue(indexB > -1 && indexB < rootNode.EntriesCount);
 
                 var (_, childNode) = rootNode.Entries[indexA];
 
-                var splitNodes = ChooseLeaf(childNode, entity, aabb);
-                if (splitNodes == null)
+                var (a, b) = ChooseLeaf(childNode, entity, aabb);
+                if (b == null)
                 {
                     node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
-                    return null;
+                    return (a, null);
                 }
 
-                var (a, b) = splitNodes.Value;
+                rootNode.Entries[indexA] = (a.Aabb, a);
+
                 if (rootNode.EntriesCount < rootNode.Entries.Length)
                 {
-                    rootNode.Entries[indexA] = (a.Aabb, a);
                     rootNode.Entries[rootNode.EntriesCount++] = (b.Aabb, b);
                     rootNode.Aabb = fix.AABBs_conjugate(rootNode.Aabb, aabb);
 
-                    return null;
+                    return (a, b);
                 }
 
-                // linear split
+                return SplitRootNode(rootNode, b);
             }
 
             throw new NotSupportedException();
@@ -229,8 +222,8 @@ namespace Game.Systems
                 }
             }
 
-            Assert.IsTrue(nodeA.EntriesCount is > 0 and <= MaxEntries);
-            Assert.IsTrue(nodeB.EntriesCount is > 0 and <= MaxEntries);
+            Assert.IsTrue(nodeA.EntriesCount is >= MinEntries and <= MaxEntries);
+            Assert.IsTrue(nodeB.EntriesCount is >= MinEntries and <= MaxEntries);
 
             return (nodeA, nodeB);
         }
@@ -314,8 +307,8 @@ namespace Game.Systems
                 }
             }
 
-            Assert.IsTrue(nodeA.EntriesCount is > 0 and <= MaxEntries);
-            Assert.IsTrue(nodeB.EntriesCount is > 0 and <= MaxEntries);
+            Assert.IsTrue(nodeA.EntriesCount is >= MinEntries and <= MaxEntries);
+            Assert.IsTrue(nodeB.EntriesCount is >= MinEntries and <= MaxEntries);
 
             return (nodeA, nodeB);
         }
