@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
@@ -15,7 +16,7 @@ namespace Game.Systems
 
         public AABB Aabb;
 
-        public BaseTreeNode(int generation)
+        protected BaseTreeNode(int generation)
         {
             Generation = generation;
             EntriesCount = 0;
@@ -30,6 +31,9 @@ namespace Game.Systems
         public TreeRootNode(int generation, int maxEntries) : base(generation)
         {
             Entries = new (AABB Rect, BaseTreeNode ChildNode)[maxEntries];
+
+            for (var i = 0; i < Entries.Length; i++)
+                Entries[i].Aabb = AABB.Invalid;
         }
     }
 
@@ -40,32 +44,38 @@ namespace Game.Systems
         public TreeLeafNode(int generation, int maxEntries) : base(generation)
         {
             Entries = new (AABB Aabb, EcsEntity Entity)[maxEntries];
+
+            for (var i = 0; i < Entries.Length; i++)
+                Entries[i].Aabb = AABB.Invalid;
         }
     }
 
     public sealed class CollidersRectTreeSystem : IEcsRunSystem
     {
+        private const int RootNodesCount = 2;
         private const int MaxEntries = 8;
         private const int MinEntries = MaxEntries / 2;
 
         private int _treeGeneration;
 
-        private BaseTreeNode _root;
+        private TreeRootNode[] _rootNodes;
 
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
         private readonly EcsFilter<TransformComponent, HasColliderTag> _filter;
 
-        private readonly int[] _intersectedMBRs = new int[MaxEntries];
-        private readonly fix[] _areas = new fix[MaxEntries];
-
         public void Run()
         {
             if (_filter.IsEmpty())
                 return;
 
-            _root = new TreeRootNode(++_treeGeneration, MaxEntries);
+            ++_treeGeneration;
+
+            _rootNodes = Enumerable
+                .Range(0, RootNodesCount)
+                .Select(_ => new TreeRootNode(_treeGeneration, MaxEntries))
+                .ToArray();
 
             foreach (var index in _filter)
             {
@@ -75,13 +85,29 @@ namespace Game.Systems
                 var position = transformComponent.WorldPosition;
 
                 var aabb = entity.GetEntityColliderAABB(position);
-                Insert(_root, entity, aabb);
+                Insert(entity, aabb);
             }
         }
 
-        private void Insert(BaseTreeNode node, EcsEntity entity, AABB aabb)
+        private void Insert(EcsEntity entity, AABB aabb)
         {
-            var splitNodes = ChooseLeaf(node, entity, aabb);
+            var (indexA, maxArena) = (-1, fix.MaxValue);
+            for (var i = 0; i < _rootNodes.Length; i++)
+            {
+                var rootNode = _rootNodes[i];
+
+                var conjugatedArea = GetConjugatedArea(rootNode.Aabb, aabb);
+                if (conjugatedArea >= maxArena)
+                    continue;
+
+                (indexA, maxArena) = (i, conjugatedArea);
+            }
+
+            Assert.IsTrue(indexA > -1 && indexA < _rootNodes.Length);
+
+            var (a, b) = ChooseLeaf(_rootNodes[indexA], entity, aabb);
+            if (b == null)
+                return;
 
             // AdjustBounds
             // GrowTree
@@ -109,11 +135,14 @@ namespace Game.Systems
                     var (aabbA, _) = rootNode.Entries[i];
 
                     var conjugatedArea = GetConjugatedArea(aabbA, aabb);
-                    if (conjugatedArea < maxArena)
+                    if (conjugatedArea >= maxArena)
                         continue;
 
                     (indexA, maxArena) = (i, conjugatedArea);
                 }
+
+                if (rootNode.EntriesCount == 0)
+                    indexA = 0;
 
                 Assert.IsTrue(indexA > -1 && indexA < rootNode.EntriesCount);
 
@@ -126,17 +155,15 @@ namespace Game.Systems
                     return (a, null);
                 }
 
-                rootNode.Entries[indexA] = (a.Aabb, a);
+                // rootNode.Entries[indexA] = (a.Aabb, a);
 
-                if (rootNode.EntriesCount < rootNode.Entries.Length)
-                {
-                    rootNode.Entries[rootNode.EntriesCount++] = (b.Aabb, b);
-                    rootNode.Aabb = fix.AABBs_conjugate(rootNode.Aabb, aabb);
+                if (rootNode.EntriesCount >= rootNode.Entries.Length)
+                    return SplitRootNode(rootNode, b);
 
-                    return (a, b);
-                }
+                rootNode.Entries[rootNode.EntriesCount++] = (b.Aabb, b);
+                rootNode.Aabb = fix.AABBs_conjugate(rootNode.Aabb, aabb);
 
-                return SplitRootNode(rootNode, b);
+                return (a, b);
             }
 
             throw new NotSupportedException();
@@ -164,14 +191,14 @@ namespace Game.Systems
                     var (aabbB, _) = nodeA.Entries[j];
 
                     conjugatedArea = GetConjugatedArea(aabbA, aabbB);
-                    if (conjugatedArea <= maxArena)
+                    if (conjugatedArea >= maxArena)
                         continue;
 
                     (indexA, indexB, maxArena) = (i, j, conjugatedArea);
                 }
 
                 conjugatedArea = GetConjugatedArea(aabbA, childNode.Aabb);
-                if (conjugatedArea <= maxArena)
+                if (conjugatedArea >= maxArena)
                     continue;
 
                 (indexA, indexB, maxArena) = (i, nodeA.EntriesCount, conjugatedArea);
@@ -250,14 +277,14 @@ namespace Game.Systems
                     var (aabbB, _) = nodeA.Entries[j];
 
                     conjugatedArea = GetConjugatedArea(aabbA, aabbB);
-                    if (conjugatedArea <= maxArena)
+                    if (conjugatedArea >= maxArena)
                         continue;
 
                     (indexA, indexB, maxArena) = (i, j, conjugatedArea);
                 }
 
                 conjugatedArea = GetConjugatedArea(aabbA, entityAabb);
-                if (conjugatedArea <= maxArena)
+                if (conjugatedArea >= maxArena)
                     continue;
 
                 (indexA, indexB, maxArena) = (i, nodeA.EntriesCount, conjugatedArea);
