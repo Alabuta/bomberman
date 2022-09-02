@@ -53,7 +53,7 @@ namespace Game.Systems
     public sealed class CollidersRectTreeSystem : IEcsRunSystem
     {
         private const int RootNodesCount = 2;
-        private const int MaxEntries = 8;
+        private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
 
         private int _treeGeneration;
@@ -63,7 +63,7 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<TransformComponent, HasColliderTag> _filter;
+        private readonly EcsFilter<TransformComponent, HasColliderTag, HasColliderTempTag> _filter;
 
         public void Run()
         {
@@ -95,6 +95,12 @@ namespace Game.Systems
             for (var i = 0; i < _rootNodes.Length; i++)
             {
                 var rootNode = _rootNodes[i];
+
+                if (rootNode.Aabb == AABB.Invalid)
+                {
+                    indexA = i;
+                    break;
+                }
 
                 var conjugatedArea = GetConjugatedArea(rootNode.Aabb, aabb);
                 if (conjugatedArea >= maxArena)
@@ -144,7 +150,8 @@ namespace Game.Systems
                 if (rootNode.EntriesCount == 0)
                     indexA = 0;
 
-                Assert.IsTrue(indexA > -1 && indexA < rootNode.EntriesCount);
+                else
+                    Assert.IsTrue(indexA > -1 && indexA < rootNode.EntriesCount);
 
                 var (_, childNode) = rootNode.Entries[indexA];
 
