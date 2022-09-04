@@ -35,6 +35,11 @@ namespace Game.Systems
             for (var i = 0; i < Entries.Length; i++)
                 Entries[i].Aabb = AABB.Invalid;
         }
+
+        public TreeRootNode(int generation, (AABB Aabb, BaseTreeNode ChildNode)[] entries) : base(generation)
+        {
+            Entries = entries;
+        }
     }
 
     public class TreeLeafNode : BaseTreeNode
@@ -74,7 +79,10 @@ namespace Game.Systems
 
             _rootNodes = Enumerable
                 .Range(0, RootNodesCount)
-                .Select(_ => new TreeRootNode(_treeGeneration, MaxEntries))
+                .Select(_ => new TreeRootNode(_treeGeneration, Enumerable
+                    .Range(0, MinEntries)
+                    .Select(_ => (AABB.Invalid, (BaseTreeNode) new TreeLeafNode(_treeGeneration, MaxEntries)))
+                    .ToArray()))
                 .ToArray();
 
             foreach (var index in _filter)
@@ -148,7 +156,9 @@ namespace Game.Systems
                 }
 
                 if (rootNode.EntriesCount == 0)
+                {
                     indexA = 0;
+                }
 
                 else
                     Assert.IsTrue(indexA > -1 && indexA < rootNode.EntriesCount);
@@ -158,6 +168,8 @@ namespace Game.Systems
                 var (a, b) = ChooseLeaf(childNode, entity, aabb);
                 if (b == null)
                 {
+                    rootNode.Entries[indexA].Aabb = childNode.Aabb;
+                    rootNode.Entries[indexA].ChildNode = childNode;
                     node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
                     return (a, null);
                 }
