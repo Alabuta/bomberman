@@ -27,5 +27,11 @@ namespace Math.FixedPointMath
 
         public bool Equals(AABB other) =>
             math.all(min == other.min) && math.all(max == other.max);
+
+        public override bool Equals(object obj) =>
+            obj is AABB other && Equals(other);
+
+        public override int GetHashCode() =>
+            HashCode.Combine(min, max);
     }
 }
