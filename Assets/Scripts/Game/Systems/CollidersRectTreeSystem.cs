@@ -20,20 +20,6 @@ namespace Game.Systems
         public int EntriesCount;
     }
 
-    public abstract class BaseNodeEntries
-    {
-        public int StartIndex;
-        public int Count;
-    }
-
-    public class LeafNodeEntries : BaseNodeEntries
-    {
-    }
-
-    public class RootNodeEntries : BaseNodeEntries
-    {
-    }
-
     public abstract class BaseTreeNode
     {
         public int Generation;
@@ -185,9 +171,9 @@ namespace Game.Systems
 
             Assert.IsTrue(indexA > -1);
 
-            var entries = ChooseLeaf2(indexA, entity, aabb);
-            /*if (b == null)
-                return;*/
+            var childNodes = ChooseLeaf2(indexA, entity, aabb);
+            if (childNodes.Length == 1)
+                return;
 
             // AdjustBounds
             // GrowTree
@@ -197,7 +183,7 @@ namespace Game.Systems
         /*private bool IsLeafNode(int nodeIndex) =>
             _nodes[nodeIndex].Entries is LeafNodeEntries;*/
 
-        private IEnumerable<Node> ChooseLeaf2(int nodeIndex, EcsEntity entity, AABB aabb)
+        private Node[] ChooseLeaf2(int nodeIndex, EcsEntity entity, AABB aabb)
         {
             var node = _nodes[nodeIndex];
 
@@ -207,8 +193,16 @@ namespace Game.Systems
                     // return SplitLeafNode2(node, entity, aabb);
                     throw new NotImplementedException();
 
-                Assert.IsTrue(node.EntriesStartIndex > -1);
-                Assert.IsTrue(node.EntriesCount > -1);
+                Assert.IsTrue(node.EntriesCount is > -1 and < MaxEntries);
+                if (node.EntriesStartIndex == -1)
+                {
+                    node.EntriesStartIndex = _leafEntries.Count;
+
+                    _leafEntries.AddRange(
+                        Enumerable
+                            .Range(0, MaxEntries)
+                            .Select(_ => (AABB.Invalid, EcsEntity.Null)));
+                }
 
                 /*if (node.Entries.EntriesStartIndex == -1)
                 {
@@ -221,8 +215,10 @@ namespace Game.Systems
                             .Select(_ => (AABB.Invalid, EcsEntity.Null)));
                 }*/
 
-                _leafEntries[node.EntriesCount++] = (aabb, entity);
-                node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
+                _leafEntries[node.EntriesStartIndex + node.EntriesCount] = (aabb, entity);
+
+                node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb); // :TODO: check if changed
+                node.EntriesCount++; // :TODO: check if changed
 
                 return new[] { node };
             }
@@ -230,39 +226,40 @@ namespace Game.Systems
             var startIndex = node.EntriesStartIndex;
             var entriesCount = node.EntriesCount;
 
-            var (indexA, maxArena) = (-1, fix.MaxValue);
+            var (childNodeIndex, maxArena) = (-1, fix.MaxValue);
             for (var i = startIndex; i < startIndex + entriesCount; i++)
             {
-                var nodeAabb = _nodes[i].Aabb;
+                var childNodeAabb = _nodes[i].Aabb;
 
-                var conjugatedArea = GetConjugatedArea(nodeAabb, aabb);
+                var conjugatedArea = GetConjugatedArea(childNodeAabb, aabb);
                 if (conjugatedArea >= maxArena)
                     continue;
 
-                (indexA, maxArena) = (i, conjugatedArea);
+                (childNodeIndex, maxArena) = (i, conjugatedArea);
             }
 
-            Assert.IsTrue(indexA > -1);
+            Assert.IsTrue(childNodeIndex > -1);
 
-            var entries = ChooseLeaf2(indexA, entity, aabb).ToArray();
-            if (entries.Length == 1)
+            var childNodes = ChooseLeaf2(childNodeIndex, entity, aabb);
+            if (childNodes.Length == 1)
             {
-                rootNode.Entries[indexA].Aabb = childNode.Aabb;
-                rootNode.Entries[indexA].ChildNode = childNode;
-                node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
-                return (a, null);
+                _nodes[childNodeIndex] = childNodes[0];
+                node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb); // :TODO: check if changed
+                return childNodes;
             }
 
-            // rootNode.Entries[indexA] = (a.Aabb, a);
+            var newChildNode = childNodes[1];
 
-            if (entriesCount >= MaxEntries)
+            if (entriesCount == MaxEntries)
                 // return SplitRootNode2(rootNode, b);
                 throw new NotImplementedException();
 
-            rootNode.Entries[rootNode.EntriesCount++] = (b.Aabb, b);
-            rootNode.Aabb = fix.AABBs_conjugate(rootNode.Aabb, aabb);
+            _nodes[startIndex + node.EntriesCount] = newChildNode;
 
-            return (a, b);
+            node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
+            node.EntriesCount++;
+
+            return new[] { node };
         }
 
 
