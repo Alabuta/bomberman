@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using Game.Systems;
 using Leopotam.Ecs;
 using Level;
@@ -19,78 +19,61 @@ namespace Gizmos
         {
             _rTree = rTree;
 
+            const float alpha = 0.8f;
             _colors = new[]
             {
-                Color.cyan,
-                Color.magenta,
-                Color.yellow,
-                Color.red
+                Color.red * new Color(1, 1, 1, alpha),
+                Color.blue * new Color(1, 1, 1, alpha),
+                Color.yellow * new Color(1, 1, 1, alpha),
+                Color.cyan * new Color(1, 1, 1, alpha),
+                Color.magenta * new Color(1, 1, 1, alpha)
             };
         }
 
         private void OnDrawGizmos()
         {
             UnityEngine.Gizmos.matrix = Matrix4x4.identity;
-            UnityEngine.Gizmos.color = Color.black;
+            UnityEngine.Gizmos.color = Color.black * new Color(1, 1, 1, 0.2f);
 
             const int treeDepth = 0;
 
-            foreach (var rootNode in _rTree.RootNodes)
+            if (_rTree.RootNodes.Any(i => i < 0))
+                return;
+
+            var rootNodes = _rTree.GetNodes(_rTree.RootNodes);
+            foreach (var rootNode in rootNodes)
             {
                 var aabb = rootNode.Aabb;
                 var size = aabb.max - aabb.min;
                 var center = fix2.ToXY(aabb.min + size / new fix(2));
 
-                UnityEngine.Gizmos.DrawWireCube(center, fix2.ToXY(size));
+                UnityEngine.Gizmos.DrawCube(center, fix2.ToXY(size));
 
                 DrawChildren(rootNode, treeDepth + 1);
             }
         }
 
-        private void DrawChildren(BaseTreeNode rootNode, int treeDepth)
+        private void DrawChildren(Node rootNode, int treeDepth)
         {
-            switch (rootNode)
+            /*if (treeDepth > 1)
+                return;*/
+
+            if (rootNode.IsLeafNode)
+                return;
+
+            var childNodes = _rTree.GetNodes(Enumerable.Range(rootNode.EntriesStartIndex, rootNode.EntriesCount));
+
+            var i = -1;
+            foreach (var childNode in childNodes)
             {
-                case TreeLeafNode treeLeafNode:
-                    DrawChildren(treeLeafNode, treeDepth);
-                    break;
-
-                case TreeRootNode treeRootNode:
-                    DrawChildren(treeRootNode, treeDepth);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(rootNode));
-            }
-        }
-
-        private void DrawChildren(TreeRootNode rootNode, int treeDepth)
-        {
-            UnityEngine.Gizmos.color = _colors[treeDepth];
-
-            foreach (var entry in rootNode.Entries)
-            {
-                var (aabb, node) = entry;
+                var aabb = childNode.Aabb;
                 var size = aabb.max - aabb.min;
                 var center = fix2.ToXY(aabb.min + size / new fix(2));
 
-                UnityEngine.Gizmos.DrawWireCube(center, fix2.ToXY(size));
-
-                DrawChildren(node, treeDepth + 1);
-            }
-        }
-
-        private static void DrawChildren(TreeLeafNode rootNode, int _)
-        {
-            UnityEngine.Gizmos.color = new Color(0, 0, 1, 0.4f);
-
-            foreach (var entry in rootNode.Entries)
-            {
-                var (aabb, _) = entry;
-                var size = aabb.max - aabb.min;
-                var center = fix2.ToXY(aabb.min + size / new fix(2));
-
+                UnityEngine.Gizmos.color = _colors[++i];
                 UnityEngine.Gizmos.DrawCube(center, fix2.ToXY(size));
+
+                DrawChildren(childNode, treeDepth + 1);
             }
         }
     }
