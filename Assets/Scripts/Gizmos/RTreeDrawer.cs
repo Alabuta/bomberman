@@ -21,19 +21,21 @@ namespace Gizmos
 
             const float alpha = 0.8f;
             _colors = new[]
-            {
-                Color.red * new Color(1, 1, 1, alpha),
-                Color.blue * new Color(1, 1, 1, alpha),
-                Color.yellow * new Color(1, 1, 1, alpha),
-                Color.cyan * new Color(1, 1, 1, alpha),
-                Color.magenta * new Color(1, 1, 1, alpha)
-            };
+                {
+                    Color.red,
+                    Color.blue,
+                    Color.yellow,
+                    Color.cyan,
+                    Color.white,
+                    Color.magenta
+                }
+                /*.Select(c => c * new Color(1, 1, 1, alpha))
+                .ToArray()*/;
         }
 
         private void OnDrawGizmos()
         {
             UnityEngine.Gizmos.matrix = Matrix4x4.identity;
-            UnityEngine.Gizmos.color = Color.black * new Color(1, 1, 1, 0.2f);
 
             const int treeDepth = 0;
 
@@ -44,10 +46,17 @@ namespace Gizmos
             foreach (var rootNode in rootNodes)
             {
                 var aabb = rootNode.Aabb;
+                if (aabb == AABB.Invalid)
+                    continue;
+
                 var size = aabb.max - aabb.min;
                 var center = fix2.ToXY(aabb.min + size / new fix(2));
 
+                UnityEngine.Gizmos.color = Color.black * new Color(1, 1, 1, 0.4f);
                 UnityEngine.Gizmos.DrawCube(center, fix2.ToXY(size));
+
+                UnityEngine.Gizmos.color = Color.black;
+                UnityEngine.Gizmos.DrawWireCube(center, fix2.ToXY(size));
 
                 DrawChildren(rootNode, treeDepth + 1);
             }
@@ -70,8 +79,11 @@ namespace Gizmos
                 var size = aabb.max - aabb.min;
                 var center = fix2.ToXY(aabb.min + size / new fix(2));
 
-                UnityEngine.Gizmos.color = _colors[++i];
+                UnityEngine.Gizmos.color = _colors[++i] * new Color(1, 1, 1, 0.2f * treeDepth);
                 UnityEngine.Gizmos.DrawCube(center, fix2.ToXY(size));
+
+                UnityEngine.Gizmos.color = _colors[i];
+                UnityEngine.Gizmos.DrawWireCube(center, fix2.ToXY(size));
 
                 DrawChildren(childNode, treeDepth + 1);
             }
