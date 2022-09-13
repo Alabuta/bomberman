@@ -67,10 +67,17 @@ namespace Level
             Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_ecsFixedSystems);
 #endif
 
+            var rectTreeSystem = new CollidersRectTreeSystem();
+
 #if UNITY_EDITOR
-            var go = new GameObject("CollidersBoundsDrawer");
-            Assert.IsNotNull(go);
-            var colliderBoundsDrawer = go.AddComponent<CollidersBoundsDrawer>();
+            var collidersDrawerGo = new GameObject("CollidersBoundsDrawer");
+            Assert.IsNotNull(collidersDrawerGo);
+            var colliderBoundsDrawer = collidersDrawerGo.AddComponent<CollidersBoundsDrawer>();
+
+            var rTreeDrawerGo = new GameObject("RTreeDrawer");
+            Assert.IsNotNull(rTreeDrawerGo);
+            var rTreeDrawer = rTreeDrawerGo.AddComponent<RTreeDrawer>();
+            rTreeDrawer.SetRTree(rectTreeSystem);
 #endif
 
             _ecsSystems
@@ -89,7 +96,10 @@ namespace Level
                 .OneFrame<OnCollisionEnterEventComponent>()
                 .OneFrame<OnCollisionExitEventComponent>()
                 .OneFrame<OnCollisionStayEventComponent>()
+                .OneFrame<PrevFrameDataComponent>()
                 .Add(new BeforeSimulationStepSystem())
+                .Add(new EntitiesTreeSystem())
+                .Add(rectTreeSystem)
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsDetectionSystem())
                 .Add(new CollisionsResolverSystem())

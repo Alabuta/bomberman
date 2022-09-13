@@ -122,7 +122,6 @@ namespace Game.Systems
                 return;
             }
 
-            // AdjustBounds
             // GrowTree
             throw new NotImplementedException();
         }
@@ -227,30 +226,7 @@ namespace Game.Systems
             // Assign entry to the node with smaller AABB area increase
             // Repeat until all entries are assigned between two new nodes
 
-            var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
-            for (var i = startIndex; i < endIndex; i++)
-            {
-                var aabbA = getAabbFunc.Invoke(nodeEntries[i]); // :TODO: leaf nodes vs root nodes
-                fix conjugatedArea;
-
-                for (var j = i + 1; j < endIndex; j++)
-                {
-                    var aabbB = getAabbFunc.Invoke(nodeEntries[i]); // :TODO: leaf nodes vs root nodes
-
-                    conjugatedArea = GetConjugatedArea(aabbA, aabbB);
-                    if (conjugatedArea <= maxArena)
-                        continue;
-
-                    (indexA, indexB, maxArena) = (i, j, conjugatedArea);
-                }
-
-                conjugatedArea = GetConjugatedArea(aabbA, getAabbFunc.Invoke(newEntry));
-                if (conjugatedArea < maxArena)
-                    continue;
-
-                (indexA, indexB, maxArena) = (i, endIndex, conjugatedArea);
-            }
-
+            var (indexA, indexB) = FindLargestEntriesPair(nodeEntries, newEntry, startIndex, endIndex, getAabbFunc);
             Assert.IsTrue(indexA > -1 && indexB > -1);
 
             var newNodeStartEntry = indexB != endIndex ? nodeEntries[indexB] : newEntry;
@@ -284,28 +260,10 @@ namespace Game.Systems
                 var newNodeAabb = GetNodeAabb(newNode);
 
                 var conjugatedAabbA = fix.AABBs_conjugate(splitNodeAabb, entityAabb);
-
-                var sidesA = splitNodeAabb.max - splitNodeAabb.min;
-                var conjugatedSidesA = conjugatedAabbA.max - conjugatedAabbA.min;
-
-
-                var conjugatedAreaA = fix.AABB_area(conjugatedAabbA);
-
                 var conjugatedAabbB = fix.AABBs_conjugate(newNodeAabb, entityAabb);
-                var conjugatedAreaB = fix.AABB_area(conjugatedAabbB);
 
-                var areaIncreaseA = conjugatedAreaA - fix.AABB_area(splitNodeAabb);
-                var areaIncreaseB = conjugatedAreaB - fix.AABB_area(newNodeAabb);
-
-                var isNewNodeTarget = areaIncreaseA > areaIncreaseB;
+                var isNewNodeTarget = ChooseTargetNode(splitNodeAabb, newNodeAabb, conjugatedAabbA, conjugatedAabbB);
                 ref var targetNode = ref isNewNodeTarget ? ref newNode : ref splitNode;
-
-                /*if (targetNode.EntriesCount == i && !isNewNodeTarget)
-                {
-                    targetNode.EntriesCount++;
-                    targetNode.Aabb = isNewNodeTarget ? conjugatedAabbB : conjugatedAabbA;
-                    continue;
-                }*/
 
                 if (isNewNodeTarget || targetNode.EntriesCount != i)
                     nodeEntries[targetNode.EntriesStartIndex + targetNode.EntriesCount] = entry;
@@ -314,125 +272,77 @@ namespace Game.Systems
                 targetNode.Aabb = isNewNodeTarget ? conjugatedAabbB : conjugatedAabbA;
             }
 
+            if (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
+                FulfillNodes(nodeEntries, getAabbFunc, ref splitNode, ref newNode);
+
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
             Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
 
             return new[] { splitNode, newNode };
         }
 
-        private static AABB GetNodeAabb(Node node) =>
-            node.Aabb;
-
-        private static AABB GetLeafEntryAabb((AABB Aabb, EcsEntity Entity) leafEntry) =>
-            leafEntry.Aabb;
-
-#if false
-        private (TreeRootNode a, TreeRootNode b) SplitRootNode(TreeRootNode nodeA, BaseTreeNode childNode)
+        private static void FulfillNodes<T>(IList<T> nodeEntries, Func<T, AABB> getAabbFunc, ref Node splitNode,
+            ref Node newNode)
         {
-            Assert.AreEqual(MaxEntries, nodeA.EntriesCount);
+            ref var sourceNode = ref splitNode.EntriesCount < MinEntries ? ref newNode : ref splitNode;
+            ref var targetNode = ref splitNode.EntriesCount < MinEntries ? ref splitNode : ref newNode;
 
-            // Quadratic cost split
-            // Search for pairs of entries A and B that would cause the largest area if placed in the same node
-            // Put A and B entries in two different nodes
-            // Then consider all other entries area increase relatively to two previous nodes' AABBs
-            // Assign entry to the node with smaller AABB area increase
-            // Repeat until all entries are assigned between two new nodes
+            var sourceNodeEntriesCount = sourceNode.EntriesCount;
+            var sourceNodeStartIndex = sourceNode.EntriesStartIndex;
+            var sourceNodeEndIndex = sourceNodeStartIndex + sourceNodeEntriesCount;
 
-            var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
-            for (var i = 0; i < nodeA.EntriesCount; i++)
+            var targetNodeAabb = GetNodeAabb(targetNode);
+            var sourceNodeAabb = AABB.Invalid;
+
+            var (sourceEntryIndex, sourceEntryAabb, minArena) = (-1, AABB.Invalid, fix.MaxValue);
+            for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++)
             {
-                var (aabbA, _) = nodeA.Entries[i];
-                fix conjugatedArea;
+                var entry = nodeEntries[i];
+                var entryAabb = getAabbFunc.Invoke(entry);
 
-                for (var j = i + 1; j < nodeA.EntriesCount; j++)
+                var conjugatedArea = GetConjugatedArea(targetNodeAabb, entryAabb);
+                if (conjugatedArea > minArena)
                 {
-                    var (aabbB, _) = nodeA.Entries[j];
-
-                    conjugatedArea = GetConjugatedArea(aabbA, aabbB);
-                    if (conjugatedArea < maxArena)
-                        continue;
-
-                    (indexA, indexB, maxArena) = (i, j, conjugatedArea);
+                    sourceNodeAabb = fix.AABBs_conjugate(sourceNodeAabb, entryAabb);
+                    continue;
                 }
 
-                conjugatedArea = GetConjugatedArea(aabbA, childNode.Aabb);
-                if (conjugatedArea < maxArena)
-                    continue;
+                sourceNodeAabb = fix.AABBs_conjugate(sourceNodeAabb, sourceEntryAabb);
 
-                (indexA, indexB, maxArena) = (i, nodeA.EntriesCount, conjugatedArea);
+                (sourceEntryIndex, sourceEntryAabb, minArena) = (i, entryAabb, conjugatedArea);
             }
 
-            Assert.IsTrue(indexA > -1 && indexB > -1 && (indexA < nodeA.EntriesCount || indexB < nodeA.EntriesCount));
+            Assert.IsTrue(sourceEntryIndex > -1);
 
-            var nodeBFirstEntry = indexB != nodeA.EntriesCount ? nodeA.Entries[indexB] : (childNode.Aabb, childNode);
-            var nodeB = new TreeRootNode(_treeGeneration, MaxEntries)
-            {
-                EntriesCount = 1,
-                Entries =
-                {
-                    [0] = nodeBFirstEntry
-                },
-                Aabb = nodeBFirstEntry.Aabb
-            };
+            var targetEntryIndex = targetNode.EntriesStartIndex + targetNode.EntriesCount;
+            nodeEntries[targetEntryIndex] = nodeEntries[sourceEntryIndex];
 
-            (nodeA.Entries[0], nodeA.Entries[indexA]) = (nodeA.Entries[indexA], nodeA.Entries[0]);
-            nodeA.EntriesCount = 1;
-            nodeA.Aabb = nodeA.Entries[0].Aabb;
+            targetNode.Aabb = fix.AABBs_conjugate(targetNode.Aabb, sourceEntryAabb);
+            targetNode.EntriesCount++;
 
-            for (var i = MaxEntries; i > 0; i--)
-            {
-                if (i == indexB)
-                    continue;
+            if (sourceEntryIndex != sourceNodeEndIndex - 1)
+                nodeEntries[sourceEntryIndex] = nodeEntries[sourceNodeEndIndex - 1];
 
-                var (aabb, entity) = i == MaxEntries ? (childNode.Aabb, childNode) : nodeA.Entries[i];
-
-                var conjugatedAabbA = fix.AABBs_conjugate(nodeA.Aabb, aabb);
-                var conjugatedAreaA = fix.AABB_area(conjugatedAabbA);
-
-                var conjugatedAabbB = fix.AABBs_conjugate(nodeB.Aabb, aabb);
-                var conjugatedAreaB = fix.AABB_area(conjugatedAabbB);
-
-                var areaIncreaseA = conjugatedAreaA - fix.AABB_area(nodeA.Aabb);
-                var areaIncreaseB = conjugatedAreaB - fix.AABB_area(nodeB.Aabb);
-
-                if (areaIncreaseA <= areaIncreaseB)
-                {
-                    nodeA.Entries[nodeA.EntriesCount++] = (aabb, entity);
-                    nodeA.Aabb = conjugatedAabbA;
-                }
-                else
-                {
-                    nodeB.Entries[nodeB.EntriesCount++] = (aabb, entity);
-                    nodeB.Aabb = conjugatedAabbB;
-                }
-            }
-
-            Assert.IsTrue(nodeA.EntriesCount is >= MinEntries and <= MaxEntries);
-            Assert.IsTrue(nodeB.EntriesCount is >= MinEntries and <= MaxEntries);
-
-            return (nodeA, nodeB);
+            sourceNode.Aabb = sourceNodeAabb;
+            sourceNode.EntriesCount--;
         }
 
-        private (TreeLeafNode a, TreeLeafNode b) SplitLeafNode(TreeLeafNode nodeA, EcsEntity ecsEntity, AABB entityAabb)
+        private static (int indexA, int indexB) FindLargestEntriesPair<T>(
+            IReadOnlyList<T> nodeEntries,
+            T newEntry,
+            int startIndex,
+            int endIndex,
+            Func<T, AABB> getAabbFunc)
         {
-            Assert.AreEqual(MaxEntries, nodeA.EntriesCount);
-
-            // Quadratic cost split
-            // Search for pairs of entries A and B that would cause the largest area if placed in the same node
-            // Put A and B entries in two different nodes
-            // Then consider all other entries area increase relatively to two previous nodes' AABBs
-            // Assign entry to the node with smaller AABB area increase
-            // Repeat until all entries are assigned between two new nodes
-
             var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
-            for (var i = 0; i < nodeA.EntriesCount; i++)
+            for (var i = startIndex; i < endIndex; i++)
             {
-                var (aabbA, _) = nodeA.Entries[i];
+                var aabbA = getAabbFunc.Invoke(nodeEntries[i]);
                 fix conjugatedArea;
 
-                for (var j = i + 1; j < nodeA.EntriesCount; j++)
+                for (var j = i + 1; j < endIndex; j++)
                 {
-                    var (aabbB, _) = nodeA.Entries[j];
+                    var aabbB = getAabbFunc.Invoke(nodeEntries[i]);
 
                     conjugatedArea = GetConjugatedArea(aabbA, aabbB);
                     if (conjugatedArea <= maxArena)
@@ -441,69 +351,52 @@ namespace Game.Systems
                     (indexA, indexB, maxArena) = (i, j, conjugatedArea);
                 }
 
-                conjugatedArea = GetConjugatedArea(aabbA, entityAabb);
-                if (conjugatedArea < maxArena)
+                conjugatedArea = GetConjugatedArea(aabbA, getAabbFunc.Invoke(newEntry));
+                if (conjugatedArea <= maxArena)
                     continue;
 
-                (indexA, indexB, maxArena) = (i, nodeA.EntriesCount, conjugatedArea);
+                (indexA, indexB, maxArena) = (i, endIndex, conjugatedArea);
             }
 
-            Assert.IsTrue(indexA > -1 && indexB > -1 && (indexA < nodeA.EntriesCount || indexB < nodeA.EntriesCount));
-
-            var nodeB = new TreeLeafNode(_treeGeneration, MaxEntries)
-            {
-                EntriesCount = 1,
-                Entries =
-                {
-                    [0] = indexB != nodeA.EntriesCount ? nodeA.Entries[indexB] : (entityAabb, ecsEntity)
-                }
-            };
-            nodeB.Aabb = nodeB.Entries[0].Aabb;
-
-            (nodeA.Entries[0], nodeA.Entries[indexA]) = (nodeA.Entries[indexA], nodeA.Entries[0]);
-            nodeA.EntriesCount = 1;
-            nodeA.Aabb = nodeA.Entries[0].Aabb;
-
-            for (var i = MaxEntries; i > 0; i--)
-            {
-                if (i == indexB)
-                    continue;
-
-                var (aabb, entity) = i == MaxEntries ? (entityAabb, ecsEntity) : nodeA.Entries[i];
-
-                var conjugatedAabbA = fix.AABBs_conjugate(nodeA.Aabb, aabb);
-                var conjugatedAreaA = fix.AABB_area(conjugatedAabbA);
-
-                var conjugatedAabbB = fix.AABBs_conjugate(nodeB.Aabb, aabb);
-                var conjugatedAreaB = fix.AABB_area(conjugatedAabbB);
-
-                var areaIncreaseA = conjugatedAreaA - fix.AABB_area(nodeA.Aabb);
-                var areaIncreaseB = conjugatedAreaB - fix.AABB_area(nodeB.Aabb);
-
-                if (areaIncreaseA <= areaIncreaseB)
-                {
-                    nodeA.Entries[nodeA.EntriesCount++] = (aabb, entity);
-                    nodeA.Aabb = conjugatedAabbA;
-                }
-                else
-                {
-                    nodeB.Entries[nodeB.EntriesCount++] = (aabb, entity);
-                    nodeB.Aabb = conjugatedAabbB;
-                }
-            }
-
-            Assert.IsTrue(nodeA.EntriesCount is >= MinEntries and <= MaxEntries);
-            Assert.IsTrue(nodeB.EntriesCount is >= MinEntries and <= MaxEntries);
-
-            return (nodeA, nodeB);
+            return (indexA, indexB);
         }
-#endif
+
+        private static bool ChooseTargetNode(AABB splitNodeAabb, AABB newNodeAabb, AABB conjugatedAabbA, AABB conjugatedAabbB)
+        {
+            var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(splitNodeAabb, conjugatedAabbA);
+            var (areaIncreaseB, deltaB) = GetAreaAndSizeIncrease(newNodeAabb, conjugatedAabbB);
+
+            if (areaIncreaseA > areaIncreaseB == deltaA > deltaB)
+                return areaIncreaseA > areaIncreaseB;
+
+            if (areaIncreaseA == areaIncreaseB)
+                return deltaA > deltaB;
+
+            if (deltaA == deltaB)
+                return areaIncreaseA > areaIncreaseB;
+
+            return true;
+        }
+
+        private static (fix areaIncrease, fix sizeIncrease) GetAreaAndSizeIncrease(AABB nodeAabb, AABB conjugatedAabb)
+        {
+            var conjugatedArea = fix.AABB_area(conjugatedAabb);
+            var areaIncrease = conjugatedArea - fix.AABB_area(nodeAabb);
+
+            var size = nodeAabb.max - nodeAabb.min;
+            var conjugatedSize = conjugatedAabb.max - conjugatedAabb.min;
+            var sizeIncrease = fix.max(conjugatedSize.x - size.x, conjugatedSize.y - size.y);
+
+            return (areaIncrease, sizeIncrease);
+        }
+
+        private static AABB GetNodeAabb(Node node) =>
+            node.Aabb;
+
+        private static AABB GetLeafEntryAabb((AABB Aabb, EcsEntity Entity) leafEntry) =>
+            leafEntry.Aabb;
+
         private static fix GetConjugatedArea(AABB aabbA, AABB aabbB) =>
             fix.AABB_area(fix.AABBs_conjugate(aabbA, aabbB));
-
-        private void AdjustTreeBounds()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
