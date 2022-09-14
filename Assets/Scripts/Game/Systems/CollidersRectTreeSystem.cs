@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Components;
 using Game.Components.Tags;
+using JetBrains.Annotations;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
@@ -28,37 +29,42 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<TransformComponent, HasColliderTag, HasColliderTempTag> _filter;
+        private readonly EcsFilter<TransformComponent, HasColliderTag /*, HasColliderTempTag*/> _filter;
+
+        private readonly List<int> _rootNodes = new(MaxEntries);
 
         private readonly List<Node> _nodes = new(512);
         private readonly List<(AABB Aabb, EcsEntity Entity)> _leafEntries = new(512);
 
-        private readonly int[] _rootNodes = new int[RootNodesCount];
+        private readonly (AABB Invalid, EcsEntity Null) _invalidLeafEntry = (AABB.Invalid, EcsEntity.Null);
+        private readonly Node _invalidNodeEntry = new()
+        {
+            Aabb = AABB.Invalid,
 
-        private readonly (AABB Invalid, EcsEntity Null) _invalidEntry = (AABB.Invalid, EcsEntity.Null);
+            EntriesStartIndex = -1,
+            EntriesCount = 0
+        };
 
         public IEnumerable<int> RootNodes => _rootNodes;
 
         public IEnumerable<Node> GetNodes(IEnumerable<int> indices) =>
             _nodes.Count == 0 ? Enumerable.Empty<Node>() : indices.Select(i => _nodes[i]);
 
-        public IEnumerable<(AABB Aabb, EcsEntity Entity)> GetLeafEntries(IEnumerable<int> indices) =>
-            _leafEntries.Count == 0 ? Enumerable.Empty<(AABB Aabb, EcsEntity Entity)>() : indices.Select(i => _leafEntries[i]);
-
         public void Run()
         {
+            _rootNodes.Clear();
             _nodes.Clear();
             _leafEntries.Clear();
 
             if (_filter.IsEmpty())
                 return;
 
-            for (var i = 0; i < _rootNodes.Length; i++)
+            for (var i = 0; i < RootNodesCount; i++)
             {
                 var nodeIndex = _nodes.Count;
                 var leafNodesStartIndex = nodeIndex + 1;
 
-                _rootNodes[i] = nodeIndex;
+                _rootNodes.Add(nodeIndex);
 
                 _nodes.Add(new Node
                 {
@@ -116,13 +122,37 @@ namespace Game.Systems
             Assert.IsTrue(index > -1);
 
             var childNodes = ChooseLeaf(index, aabb, entity);
+
+            _nodes[index] = childNodes[0];
             if (childNodes.Length == 1)
             {
                 _nodes[index] = childNodes[0];
                 return;
             }
 
-            // GrowTree
+            var newChildNode = childNodes[1];
+            var newNodeIndex = _nodes.Count;
+
+            _nodes.Add(newChildNode);
+
+            if (_rootNodes.Count < MaxEntries)
+            {
+                _rootNodes.Add(newNodeIndex);
+                return;
+            }
+
+            GrowTree(newNodeIndex);
+        }
+
+        private void GrowTree(int newChildNodeIndex)
+        {
+            // nodeIndex, false, _nodes, , , _invalidNodeEntry
+            var (indexA, indexB) = FindLargestEntriesPair(_rootNodes, newChildNodeIndex, 0, _rootNodes.Count, GetRootNodeAabb);
+            Assert.IsTrue(indexA > -1 && indexB > -1);
+
+            AABB GetRootNodeAabb(int i) =>
+                _nodes[_rootNodes[i]].Aabb;
+
             throw new NotImplementedException();
         }
 
@@ -132,12 +162,12 @@ namespace Game.Systems
             if (node.IsLeafNode)
             {
                 if (node.EntriesCount == MaxEntries)
-                    return SplitLeafNode(nodeIndex, true, _leafEntries, (aabb, entity), GetLeafEntryAabb, _invalidEntry);
+                    return SplitNode(nodeIndex, true, _leafEntries, (aabb, entity), GetLeafEntryAabb, _invalidLeafEntry);
 
                 if (node.EntriesStartIndex == -1)
                 {
                     node.EntriesStartIndex = _leafEntries.Count;
-                    _leafEntries.AddRange(Enumerable.Repeat(_invalidEntry, MaxEntries));
+                    _leafEntries.AddRange(Enumerable.Repeat(_invalidLeafEntry, MaxEntries));
                 }
 
                 _leafEntries[node.EntriesStartIndex + node.EntriesCount] = (Aabb: aabb, Entity: entity);
@@ -188,17 +218,7 @@ namespace Game.Systems
             var newChildNode = childNodes[1];
 
             if (entriesCount == MaxEntries)
-            {
-                var invalidNode = new Node
-                {
-                    Aabb = AABB.Invalid,
-
-                    EntriesStartIndex = -1,
-                    EntriesCount = 0
-                };
-
-                return SplitLeafNode(nodeIndex, false, _nodes, newChildNode, GetNodeAabb, invalidNode);
-            }
+                return SplitNode(nodeIndex, false, _nodes, newChildNode, GetNodeAabb, _invalidNodeEntry);
 
             _nodes[startIndex + node.EntriesCount] = newChildNode;
 
@@ -208,10 +228,10 @@ namespace Game.Systems
             return new[] { node };
         }
 
-        private Node[] SplitLeafNode<T>(int nodeIndexA, bool isLeafNode, List<T> nodeEntries, T newEntry,
+        private Node[] SplitNode<T>(int splitNodeIndex, bool isLeafNode, List<T> nodeEntries, T newEntry,
             Func<T, AABB> getAabbFunc, T invalidEntry)
         {
-            var splitNode = _nodes[nodeIndexA];
+            var splitNode = _nodes[splitNodeIndex];
 
             var entriesCount = splitNode.EntriesCount;
             var startIndex = splitNode.EntriesStartIndex;
@@ -329,7 +349,7 @@ namespace Game.Systems
 
         private static (int indexA, int indexB) FindLargestEntriesPair<T>(
             IReadOnlyList<T> nodeEntries,
-            T newEntry,
+            [CanBeNull] T newEntry,
             int startIndex,
             int endIndex,
             Func<T, AABB> getAabbFunc)
@@ -350,6 +370,9 @@ namespace Game.Systems
 
                     (indexA, indexB, maxArena) = (i, j, conjugatedArea);
                 }
+
+                if (newEntry == null)
+                    continue;
 
                 conjugatedArea = GetConjugatedArea(aabbA, getAabbFunc.Invoke(newEntry));
                 if (conjugatedArea <= maxArena)
