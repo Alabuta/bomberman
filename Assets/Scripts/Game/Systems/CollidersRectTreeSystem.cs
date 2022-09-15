@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Components;
 using Game.Components.Tags;
-using JetBrains.Annotations;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
@@ -22,7 +21,9 @@ namespace Game.Systems
 
     public sealed class CollidersRectTreeSystem : IEcsRunSystem
     {
-        private const int RootNodesCount = 2;
+        private const int RootNodesStartCount = 2;
+        private const int RootNodesMaxCount = 4;
+
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
 
@@ -59,7 +60,7 @@ namespace Game.Systems
             if (_filter.IsEmpty())
                 return;
 
-            for (var i = 0; i < RootNodesCount; i++)
+            for (var i = 0; i < RootNodesStartCount; i++)
             {
                 var nodeIndex = _nodes.Count;
                 var leafNodesStartIndex = nodeIndex + 1;
@@ -124,36 +125,73 @@ namespace Game.Systems
             var childNodes = ChooseLeaf(index, aabb, entity);
 
             _nodes[index] = childNodes[0];
+
             if (childNodes.Length == 1)
-            {
-                _nodes[index] = childNodes[0];
                 return;
-            }
 
-            var newChildNode = childNodes[1];
-            var newNodeIndex = _nodes.Count;
+            _rootNodes.Add(_nodes.Count);
+            _nodes.Add(childNodes[1]);
 
-            _nodes.Add(newChildNode);
-
-            if (_rootNodes.Count < MaxEntries)
-            {
-                _rootNodes.Add(newNodeIndex);
+            Assert.IsTrue(RootNodesMaxCount == 4);
+            if (_rootNodes.Count < RootNodesMaxCount)
                 return;
-            }
 
-            GrowTree(newNodeIndex);
+            GrowTree();
         }
 
-        private void GrowTree(int newChildNodeIndex)
+        private void GrowTree()
         {
-            // nodeIndex, false, _nodes, , , _invalidNodeEntry
-            var (indexA, indexB) = FindLargestEntriesPair(_rootNodes, newChildNodeIndex, 0, _rootNodes.Count, GetRootNodeAabb);
+            var (indexA, indexB) = FindLargestEntriesPair(_rootNodes, -1, 0, _rootNodes.Count, GetRootNodeAabb);
             Assert.IsTrue(indexA > -1 && indexB > -1);
 
-            AABB GetRootNodeAabb(int i) =>
-                _nodes[_rootNodes[i]].Aabb;
+            var (rootNodeIndexA, rootNodeIndexB) = (_rootNodes[indexA], _rootNodes[indexB]);
 
-            throw new NotImplementedException();
+            var rootNodeIndices = _rootNodes
+                .Where(i => i != indexA && i != indexB)
+                .Select(i => _rootNodes[i])
+                .ToArray();
+
+            var newRootNodeIndexA = _nodes.Count;
+
+            _rootNodes.Clear();
+            _rootNodes.Add(newRootNodeIndexA);
+            _rootNodes.Add(newRootNodeIndexA + 1);
+
+            var newRootNodeA = new Node
+            {
+                IsLeafNode = false,
+                Aabb = AABB.Invalid,
+
+                EntriesStartIndex = rootNodeIndexA,
+                EntriesCount = 1
+            };
+
+            var newRootNodeB = new Node
+            {
+                IsLeafNode = false,
+                Aabb = AABB.Invalid,
+
+                EntriesStartIndex = rootNodeIndexB,
+                EntriesCount = 1
+            };
+
+            _nodes.Add(newRootNodeA);
+            _nodes.Add(newRootNodeB);
+
+            foreach (var rootNodeIndexC in rootNodeIndices)
+            {
+                var aabbA = _nodes[rootNodeIndexA].Aabb;
+                var aabbB = _nodes[rootNodeIndexB].Aabb;
+                var aabbC = _nodes[rootNodeIndexC].Aabb;
+
+                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
+                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
+
+                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
+            }
+
+            AABB GetRootNodeAabb(int i) =>
+                i > -1 ? _nodes[i].Aabb : AABB.Invalid;
         }
 
         private Node[] ChooseLeaf(int nodeIndex, AABB aabb, EcsEntity entity)
@@ -282,7 +320,7 @@ namespace Game.Systems
                 var conjugatedAabbA = fix.AABBs_conjugate(splitNodeAabb, entityAabb);
                 var conjugatedAabbB = fix.AABBs_conjugate(newNodeAabb, entityAabb);
 
-                var isNewNodeTarget = ChooseTargetNode(splitNodeAabb, newNodeAabb, conjugatedAabbA, conjugatedAabbB);
+                var isNewNodeTarget = IsSecondNodeTarget(splitNodeAabb, newNodeAabb, conjugatedAabbA, conjugatedAabbB);
                 ref var targetNode = ref isNewNodeTarget ? ref newNode : ref splitNode;
 
                 if (isNewNodeTarget || targetNode.EntriesCount != i)
@@ -293,7 +331,7 @@ namespace Game.Systems
             }
 
             if (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
-                FulfillNodes(nodeEntries, getAabbFunc, ref splitNode, ref newNode);
+                FillNodes(nodeEntries, getAabbFunc, ref splitNode, ref newNode);
 
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
             Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
@@ -301,7 +339,7 @@ namespace Game.Systems
             return new[] { splitNode, newNode };
         }
 
-        private static void FulfillNodes<T>(IList<T> nodeEntries, Func<T, AABB> getAabbFunc, ref Node splitNode,
+        private static void FillNodes<T>(IList<T> nodeEntries, Func<T, AABB> getAabbFunc, ref Node splitNode,
             ref Node newNode)
         {
             ref var sourceNode = ref splitNode.EntriesCount < MinEntries ? ref newNode : ref splitNode;
@@ -349,7 +387,7 @@ namespace Game.Systems
 
         private static (int indexA, int indexB) FindLargestEntriesPair<T>(
             IReadOnlyList<T> nodeEntries,
-            [CanBeNull] T newEntry,
+            T newEntry,
             int startIndex,
             int endIndex,
             Func<T, AABB> getAabbFunc)
@@ -362,7 +400,9 @@ namespace Game.Systems
 
                 for (var j = i + 1; j < endIndex; j++)
                 {
-                    var aabbB = getAabbFunc.Invoke(nodeEntries[i]);
+                    var aabbB = getAabbFunc.Invoke(nodeEntries[j]);
+                    if (aabbB == AABB.Invalid)
+                        continue;
 
                     conjugatedArea = GetConjugatedArea(aabbA, aabbB);
                     if (conjugatedArea <= maxArena)
@@ -371,10 +411,11 @@ namespace Game.Systems
                     (indexA, indexB, maxArena) = (i, j, conjugatedArea);
                 }
 
-                if (newEntry == null)
+                var newEntryAabb = getAabbFunc.Invoke(newEntry);
+                if (newEntryAabb == AABB.Invalid)
                     continue;
 
-                conjugatedArea = GetConjugatedArea(aabbA, getAabbFunc.Invoke(newEntry));
+                conjugatedArea = GetConjugatedArea(aabbA, newEntryAabb);
                 if (conjugatedArea <= maxArena)
                     continue;
 
@@ -384,10 +425,10 @@ namespace Game.Systems
             return (indexA, indexB);
         }
 
-        private static bool ChooseTargetNode(AABB splitNodeAabb, AABB newNodeAabb, AABB conjugatedAabbA, AABB conjugatedAabbB)
+        private static bool IsSecondNodeTarget(AABB nodeAabbA, AABB nodeAabbB, AABB conjugatedAabbA, AABB conjugatedAabbB)
         {
-            var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(splitNodeAabb, conjugatedAabbA);
-            var (areaIncreaseB, deltaB) = GetAreaAndSizeIncrease(newNodeAabb, conjugatedAabbB);
+            var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(nodeAabbA, conjugatedAabbA);
+            var (areaIncreaseB, deltaB) = GetAreaAndSizeIncrease(nodeAabbB, conjugatedAabbB);
 
             if (areaIncreaseA > areaIncreaseB == deltaA > deltaB)
                 return areaIncreaseA > areaIncreaseB;
