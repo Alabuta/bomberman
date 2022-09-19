@@ -60,34 +60,37 @@ namespace Game.Systems
             if (_filter.IsEmpty())
                 return;
 
-            for (var i = 0; i < RootNodesStartCount; i++)
-            {
-                var nodeIndex = _nodes.Count;
-                var leafNodesStartIndex = nodeIndex + 1;
-
-                _rootNodes.Add(nodeIndex);
-
-                _nodes.Add(new Node
+            var rootNodes = Enumerable
+                .Range(0, RootNodesMaxCount)
+                .Select(nodeIndex =>
                 {
-                    IsLeafNode = false,
+                    if (_rootNodes.Count < RootNodesStartCount)
+                        _rootNodes.Add(nodeIndex);
+
+                    return new Node
+                    {
+                        IsLeafNode = false,
+                        Aabb = AABB.Invalid,
+
+                        EntriesStartIndex = RootNodesMaxCount + nodeIndex * MaxEntries,
+                        EntriesCount = 0
+                    };
+                })
+                .ToArray();
+
+            _nodes.AddRange(rootNodes);
+
+            var leafNodes = Enumerable
+                .Repeat(new Node
+                {
+                    IsLeafNode = true,
                     Aabb = AABB.Invalid,
 
-                    EntriesStartIndex = leafNodesStartIndex,
+                    EntriesStartIndex = -1,
                     EntriesCount = 0
-                });
+                }, MaxEntries * rootNodes.Length);
 
-                _nodes.AddRange(
-                    Enumerable
-                        .Repeat(new Node
-                        {
-                            IsLeafNode = true,
-                            Aabb = AABB.Invalid,
-
-                            EntriesStartIndex = -1,
-                            EntriesCount = 0
-                        }, MaxEntries)
-                );
-            }
+            _nodes.AddRange(leafNodes);
 
             foreach (var index in _filter)
             {
@@ -129,12 +132,16 @@ namespace Game.Systems
             if (childNodes.Length == 1)
                 return;
 
-            _rootNodes.Add(_nodes.Count);
-            _nodes.Add(childNodes[1]);
+            Assert.IsTrue(_rootNodes.Count < RootNodesMaxCount);
 
-            Assert.IsTrue(RootNodesMaxCount == 4);
+            var newRootNodeIndex = _rootNodes.Last() + 1;
+            _rootNodes.Add(newRootNodeIndex);
+            _nodes[_rootNodes[newRootNodeIndex]] = childNodes[1];
+
             if (_rootNodes.Count < RootNodesMaxCount)
                 return;
+
+            Assert.IsTrue(_rootNodes.Count == RootNodesMaxCount);
 
             GrowTree();
         }
@@ -151,11 +158,41 @@ namespace Game.Systems
                 .Select(i => _rootNodes[i])
                 .ToArray();
 
+            var newRootsStartIndex = _nodes.Count;
+
+            var newRootNodes = Enumerable
+                .Range(0, RootNodesMaxCount)
+                .Select(nodeIndex => new Node
+                {
+                    IsLeafNode = false,
+                    Aabb = AABB.Invalid,
+
+                    EntriesStartIndex = newRootsStartIndex + nodeIndex * MaxEntries,
+                    EntriesCount = 0
+                })
+                .ToArray();
+
+            _nodes.AddRange(newRootNodes);
+
+            var newLeafNodes = Enumerable
+                .Repeat(new Node
+                {
+                    IsLeafNode = true,
+                    Aabb = AABB.Invalid,
+
+                    EntriesStartIndex = -1,
+                    EntriesCount = 0
+                }, MaxEntries * (newRootNodes.Length - 1));
+
+            _nodes.AddRange(newLeafNodes);
+
             var newRootNodeIndexA = _nodes.Count;
+            var newRootNodeIndexB = newRootNodeIndexA + 1;
 
             _rootNodes.Clear();
+
             _rootNodes.Add(newRootNodeIndexA);
-            _rootNodes.Add(newRootNodeIndexA + 1);
+            _rootNodes.Add(newRootNodeIndexB);
 
             var newRootNodeA = new Node
             {
