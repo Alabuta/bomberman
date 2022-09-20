@@ -158,8 +158,22 @@ namespace Game.Systems
                 .Select(i => _rootNodes[i])
                 .ToArray();
 
-            var newRootsStartIndex = _nodes.Count;
+            /*var newChildNodesStartIndex = _nodes.Count;
+            var newChildNodes = Enumerable
+                .Range(0, MaxEntries)
+                .Select(nodeIndex => new Node
+                {
+                    IsLeafNode = false,
+                    Aabb = AABB.Invalid,
 
+                    EntriesStartIndex = -1,
+                    EntriesCount = 0
+                })
+                .ToArray();
+
+            _nodes.AddRange(newChildNodes);*/
+
+            var newRootNodesStartIndex = _nodes.Count;
             var newRootNodes = Enumerable
                 .Range(0, RootNodesMaxCount)
                 .Select(nodeIndex => new Node
@@ -167,7 +181,7 @@ namespace Game.Systems
                     IsLeafNode = false,
                     Aabb = AABB.Invalid,
 
-                    EntriesStartIndex = newRootsStartIndex + nodeIndex * MaxEntries,
+                    EntriesStartIndex = newRootNodesStartIndex + nodeIndex * MaxEntries,
                     EntriesCount = 0
                 })
                 .ToArray();
