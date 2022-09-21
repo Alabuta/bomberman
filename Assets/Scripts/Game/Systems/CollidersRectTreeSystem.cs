@@ -152,14 +152,29 @@ namespace Game.Systems
             Assert.IsTrue(indexA > -1 && indexB > -1);
 
             var (rootNodeIndexA, rootNodeIndexB) = (_rootNodes[indexA], _rootNodes[indexB]);
+            var startIndex = _rootNodes[0];
 
             var rootNodeIndices = _rootNodes
                 .Where(i => i != indexA && i != indexB)
                 .Select(i => _rootNodes[i])
                 .ToArray();
 
-            /*var newChildNodesStartIndex = _nodes.Count;
-            var newChildNodes = Enumerable
+            foreach (var rootNodeIndexC in rootNodeIndices)
+            {
+                var aabbA = _nodes[rootNodeIndexA].Aabb;
+                var aabbB = _nodes[rootNodeIndexB].Aabb;
+                var aabbC = _nodes[rootNodeIndexC].Aabb;
+
+                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
+                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
+
+                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
+            }
+
+            (_nodes[startIndex], _nodes[rootNodeIndexA]) = (_nodes[rootNodeIndexA], _nodes[startIndex]);
+
+            var childNodesStartIndexB = _nodes.Count;
+            var childNodesB = Enumerable
                 .Range(0, MaxEntries)
                 .Select(nodeIndex => new Node
                 {
@@ -171,7 +186,7 @@ namespace Game.Systems
                 })
                 .ToArray();
 
-            _nodes.AddRange(newChildNodes);*/
+            _nodes.AddRange(childNodesB);
 
             var newRootNodesStartIndex = _nodes.Count;
             var newRootNodes = Enumerable
@@ -228,18 +243,6 @@ namespace Game.Systems
 
             _nodes.Add(newRootNodeA);
             _nodes.Add(newRootNodeB);
-
-            foreach (var rootNodeIndexC in rootNodeIndices)
-            {
-                var aabbA = _nodes[rootNodeIndexA].Aabb;
-                var aabbB = _nodes[rootNodeIndexB].Aabb;
-                var aabbC = _nodes[rootNodeIndexC].Aabb;
-
-                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
-                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
-
-                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
-            }
 
             AABB GetRootNodeAabb(int i) =>
                 i > -1 ? _nodes[i].Aabb : AABB.Invalid;
