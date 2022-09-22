@@ -303,6 +303,7 @@ namespace Level
             });
 
             entity.AddCollider(heroConfig.Collider);
+            entity.Replace(new HasColliderTempTag());
 
             var go = await task;
             Assert.IsNotNull(go);

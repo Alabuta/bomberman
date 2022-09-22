@@ -33,7 +33,7 @@ namespace Game
             if (inputAction.BombPlant)
             {
                 ref var transformComponent = ref HeroEntity.Get<TransformComponent>();
-                world.OnPlayerBombPlant(this, transformComponent.WorldPosition);
+                var _ = world.OnPlayerBombPlant(this, transformComponent.WorldPosition); // :TODO: fix?
             }
 
             if (inputAction.BombBlast)

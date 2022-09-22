@@ -6,6 +6,7 @@ using Configs.Level;
 using Game;
 using Game.Components;
 using Game.Components.Entities;
+using Game.Components.Tags;
 using JetBrains.Annotations;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
@@ -139,6 +140,8 @@ namespace Level
             var hardBlockConfig = levelConfig.HardBlockConfig;
             var softBlockConfig = levelConfig.SoftBlockConfig;
 
+            var ii = 0;
+
             return Enumerable
                 .Range(0, totalTilesCount + spawnTilesIndicesCount)
                 .Select(
@@ -173,6 +176,8 @@ namespace Level
                             });
 
                             ecsEntity.AddCollider(hardBlockConfig.Collider);
+                            if (ii++ < 20)
+                                ecsEntity.Replace(new HasColliderTempTag()); // :TODO: remove
 
                             return ecsEntity;
                         }
