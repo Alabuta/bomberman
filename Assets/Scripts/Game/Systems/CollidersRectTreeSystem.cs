@@ -152,31 +152,19 @@ namespace Game.Systems
             Assert.IsTrue(indexA > -1 && indexB > -1);
 
             var (rootNodeIndexA, rootNodeIndexB) = (_rootNodes[indexA], _rootNodes[indexB]);
-            var startIndex = _rootNodes[0];
+            var childNodesStartIndexA = _rootNodes[0];
 
             var rootNodeIndices = _rootNodes
                 .Where(i => i != indexA && i != indexB)
                 .Select(i => _rootNodes[i])
                 .ToArray();
 
-            foreach (var rootNodeIndexC in rootNodeIndices)
-            {
-                var aabbA = _nodes[rootNodeIndexA].Aabb;
-                var aabbB = _nodes[rootNodeIndexB].Aabb;
-                var aabbC = _nodes[rootNodeIndexC].Aabb;
-
-                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
-                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
-
-                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
-            }
-
-            (_nodes[startIndex], _nodes[rootNodeIndexA]) = (_nodes[rootNodeIndexA], _nodes[startIndex]);
+            (_nodes[childNodesStartIndexA], _nodes[rootNodeIndexA]) = (_nodes[rootNodeIndexA], _nodes[childNodesStartIndexA]);
 
             var childNodesStartIndexB = _nodes.Count;
             var childNodesB = Enumerable
                 .Range(0, MaxEntries)
-                .Select(nodeIndex => new Node
+                .Select(_ => new Node
                 {
                     IsLeafNode = false,
                     Aabb = AABB.Invalid,
@@ -185,6 +173,49 @@ namespace Game.Systems
                     EntriesCount = 0
                 })
                 .ToArray();
+
+            var newRootNodeA = new Node
+            {
+                IsLeafNode = false,
+                Aabb = AABB.Invalid,
+
+                EntriesStartIndex = childNodesStartIndexA,
+                EntriesCount = 1
+            };
+
+            var newRootNodeB = new Node
+            {
+                IsLeafNode = false,
+                Aabb = AABB.Invalid,
+
+                EntriesStartIndex = childNodesStartIndexB,
+                EntriesCount = 1
+            };
+
+            foreach (var rootNodeIndexC in rootNodeIndices)
+            {
+                var aabbA = _nodes[rootNodeIndexA].Aabb;
+                var aabbB = _nodes[rootNodeIndexB].Aabb;
+
+                var nodeC = _nodes[rootNodeIndexC];
+                var aabbC = nodeC.Aabb;
+
+                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
+                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
+
+                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
+                if (isSecondNodeTarget)
+                {
+                    _nodes.Add(nodeC);
+                }
+                else
+                {
+                    ;
+                }
+            }
+
+            _nodes.Add(newRootNodeA);
+            _nodes.Add(newRootNodeB);
 
             _nodes.AddRange(childNodesB);
 
@@ -222,27 +253,6 @@ namespace Game.Systems
 
             _rootNodes.Add(newRootNodeIndexA);
             _rootNodes.Add(newRootNodeIndexB);
-
-            var newRootNodeA = new Node
-            {
-                IsLeafNode = false,
-                Aabb = AABB.Invalid,
-
-                EntriesStartIndex = rootNodeIndexA,
-                EntriesCount = 1
-            };
-
-            var newRootNodeB = new Node
-            {
-                IsLeafNode = false,
-                Aabb = AABB.Invalid,
-
-                EntriesStartIndex = rootNodeIndexB,
-                EntriesCount = 1
-            };
-
-            _nodes.Add(newRootNodeA);
-            _nodes.Add(newRootNodeB);
 
             AABB GetRootNodeAabb(int i) =>
                 i > -1 ? _nodes[i].Aabb : AABB.Invalid;
