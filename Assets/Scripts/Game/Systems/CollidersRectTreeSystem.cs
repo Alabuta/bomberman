@@ -152,14 +152,9 @@ namespace Game.Systems
             Assert.IsTrue(indexA > -1 && indexB > -1);
 
             var (rootNodeIndexA, rootNodeIndexB) = (_rootNodes[indexA], _rootNodes[indexB]);
+            Assert.IsTrue(rootNodeIndexA < rootNodeIndexB);
+
             var childNodesStartIndexA = _rootNodes[0];
-
-            var rootNodeIndices = _rootNodes
-                .Where(i => i != indexA && i != indexB)
-                .Select(i => _rootNodes[i])
-                .ToArray();
-
-            (_nodes[childNodesStartIndexA], _nodes[rootNodeIndexA]) = (_nodes[rootNodeIndexA], _nodes[childNodesStartIndexA]);
 
             var childNodesStartIndexB = _nodes.Count;
             var childNodesB = Enumerable
@@ -174,26 +169,22 @@ namespace Game.Systems
                 })
                 .ToArray();
 
-            var newRootNodeA = new Node
-            {
-                IsLeafNode = false,
-                Aabb = AABB.Invalid,
+            childNodesB[childNodesStartIndexB] = _nodes[rootNodeIndexB];
 
-                EntriesStartIndex = childNodesStartIndexA,
-                EntriesCount = 1
-            };
-
-            var newRootNodeB = new Node
-            {
-                IsLeafNode = false,
-                Aabb = AABB.Invalid,
-
-                EntriesStartIndex = childNodesStartIndexB,
-                EntriesCount = 1
-            };
+            var rootNodeIndices = _rootNodes
+                // .Where(i => i != indexA && i != indexB)
+                .Select(i => _rootNodes[i]);
 
             foreach (var rootNodeIndexC in rootNodeIndices)
             {
+                if (rootNodeIndexC == rootNodeIndexA)
+                {
+                    continue;
+                }
+
+                if (rootNodeIndexC == rootNodeIndexB)
+                    continue;
+
                 var aabbA = _nodes[rootNodeIndexA].Aabb;
                 var aabbB = _nodes[rootNodeIndexB].Aabb;
 
@@ -213,6 +204,24 @@ namespace Game.Systems
                     ;
                 }
             }
+
+            var newRootNodeA = new Node
+            {
+                IsLeafNode = false,
+                Aabb = AABB.Invalid,
+
+                EntriesStartIndex = childNodesStartIndexA,
+                EntriesCount = 1
+            };
+
+            var newRootNodeB = new Node
+            {
+                IsLeafNode = false,
+                Aabb = AABB.Invalid,
+
+                EntriesStartIndex = childNodesStartIndexB,
+                EntriesCount = 1
+            };
 
             _nodes.Add(newRootNodeA);
             _nodes.Add(newRootNodeB);
