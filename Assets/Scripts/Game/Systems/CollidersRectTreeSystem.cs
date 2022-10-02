@@ -171,40 +171,6 @@ namespace Game.Systems
 
             childNodesB[childNodesStartIndexB] = _nodes[rootNodeIndexB];
 
-            var rootNodeIndices = _rootNodes
-                // .Where(i => i != indexA && i != indexB)
-                .Select(i => _rootNodes[i]);
-
-            foreach (var rootNodeIndexC in rootNodeIndices)
-            {
-                if (rootNodeIndexC == rootNodeIndexA)
-                {
-                    continue;
-                }
-
-                if (rootNodeIndexC == rootNodeIndexB)
-                    continue;
-
-                var aabbA = _nodes[rootNodeIndexA].Aabb;
-                var aabbB = _nodes[rootNodeIndexB].Aabb;
-
-                var nodeC = _nodes[rootNodeIndexC];
-                var aabbC = nodeC.Aabb;
-
-                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
-                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
-
-                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
-                if (isSecondNodeTarget)
-                {
-                    _nodes.Add(nodeC);
-                }
-                else
-                {
-                    ;
-                }
-            }
-
             var newRootNodeA = new Node
             {
                 IsLeafNode = false,
@@ -222,6 +188,38 @@ namespace Game.Systems
                 EntriesStartIndex = childNodesStartIndexB,
                 EntriesCount = 1
             };
+
+            foreach (var rootNodeIndexC in _rootNodes.Select(i => _rootNodes[i]))
+            {
+                if (rootNodeIndexC == rootNodeIndexA)
+                {
+                    if (rootNodeIndexA == childNodesStartIndexA)
+                        continue;
+                }
+
+                if (rootNodeIndexC == rootNodeIndexB)
+                    continue;
+
+                var aabbA = _nodes[rootNodeIndexA].Aabb;
+                var aabbB = _nodes[rootNodeIndexB].Aabb;
+
+                var nodeC = _nodes[rootNodeIndexC];
+                var aabbC = nodeC.Aabb;
+
+                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
+                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
+
+                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
+                if (isSecondNodeTarget)
+                {
+                    newRootNodeB.EntriesCount += 1;
+                    _nodes.Add(nodeC);
+                }
+                else
+                {
+                    newRootNodeA.EntriesCount += 1;
+                }
+            }
 
             _nodes.Add(newRootNodeA);
             _nodes.Add(newRootNodeB);
