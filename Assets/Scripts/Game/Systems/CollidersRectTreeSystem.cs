@@ -169,15 +169,13 @@ namespace Game.Systems
                 })
                 .ToArray();
 
-            childNodesB[childNodesStartIndexB] = _nodes[rootNodeIndexB];
-
             var newRootNodeA = new Node
             {
                 IsLeafNode = false,
                 Aabb = AABB.Invalid,
 
                 EntriesStartIndex = childNodesStartIndexA,
-                EntriesCount = 1
+                EntriesCount = 0
             };
 
             var newRootNodeB = new Node
@@ -189,12 +187,20 @@ namespace Game.Systems
                 EntriesCount = 1
             };
 
+            var index = 0;
+            childNodesB[index] = _nodes[rootNodeIndexB];
+            ++index;
+
             foreach (var rootNodeIndexC in _rootNodes.Select(i => _rootNodes[i]))
             {
                 if (rootNodeIndexC == rootNodeIndexA)
                 {
-                    if (rootNodeIndexA == childNodesStartIndexA)
-                        continue;
+                    _nodes[childNodesStartIndexA] = _nodes[rootNodeIndexA];
+
+                    ++childNodesStartIndexA;
+                    ++newRootNodeA.EntriesCount;
+
+                    continue;
                 }
 
                 if (rootNodeIndexC == rootNodeIndexB)
@@ -212,23 +218,48 @@ namespace Game.Systems
                 var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
                 if (isSecondNodeTarget)
                 {
-                    newRootNodeB.EntriesCount += 1;
-                    _nodes.Add(nodeC);
+                    childNodesB[index] = nodeC;
+
+                    ++newRootNodeB.EntriesCount;
+                    ++index;
                 }
                 else
                 {
-                    newRootNodeA.EntriesCount += 1;
+                    _nodes[childNodesStartIndexA] = nodeC;
+
+                    ++newRootNodeA.EntriesCount;
+                    ++childNodesStartIndexA;
                 }
             }
+
+            _nodes.AddRange(childNodesB);
+
+            var newRootNodeIndexA = _nodes.Count;
+            var newRootNodeIndexB = newRootNodeIndexA + 1;
+
+            _rootNodes.Clear();
+
+            _rootNodes.Add(newRootNodeIndexA);
+            _rootNodes.Add(newRootNodeIndexB);
 
             _nodes.Add(newRootNodeA);
             _nodes.Add(newRootNodeB);
 
-            _nodes.AddRange(childNodesB);
-
             var newRootNodesStartIndex = _nodes.Count;
+            _nodes.AddRange(Enumerable
+                .Range(2, RootNodesMaxCount)
+                .Select(nodeIndex => new Node
+                {
+                    IsLeafNode = false,
+                    Aabb = AABB.Invalid,
+
+                    EntriesStartIndex = newRootNodesStartIndex + nodeIndex * MaxEntries,
+                    EntriesCount = 0
+                }));
+
+            /*var newRootNodesStartIndex = _nodes.Count;
             var newRootNodes = Enumerable
-                .Range(0, RootNodesMaxCount)
+                .Range(0, RootNodesMaxCount - 2)
                 .Select(nodeIndex => new Node
                 {
                     IsLeafNode = false,
@@ -259,7 +290,7 @@ namespace Game.Systems
             _rootNodes.Clear();
 
             _rootNodes.Add(newRootNodeIndexA);
-            _rootNodes.Add(newRootNodeIndexB);
+            _rootNodes.Add(newRootNodeIndexB);*/
 
             AABB GetRootNodeAabb(int i) =>
                 i > -1 ? _nodes[i].Aabb : AABB.Invalid;
