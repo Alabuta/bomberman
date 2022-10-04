@@ -219,16 +219,18 @@ namespace Game.Systems
                 if (isSecondNodeTarget)
                 {
                     childNodesB[index] = nodeC;
-
-                    ++newRootNodeB.EntriesCount;
                     ++index;
+
+                    newRootNodeB.Aabb = fix.AABBs_conjugate(newRootNodeB.Aabb, aabbC);
+                    ++newRootNodeB.EntriesCount;
                 }
                 else
                 {
                     _nodes[childNodesStartIndexA] = nodeC;
-
-                    ++newRootNodeA.EntriesCount;
                     ++childNodesStartIndexA;
+
+                    newRootNodeA.Aabb = fix.AABBs_conjugate(newRootNodeA.Aabb, aabbC);
+                    ++newRootNodeA.EntriesCount;
                 }
             }
 
@@ -340,7 +342,7 @@ namespace Game.Systems
             }
 
             Assert.IsTrue(childNodeIndex >= startIndex && startIndex <= endIndex);
-            Assert.IsTrue(childNodeIndex - startIndex <= node.EntriesCount);
+            Assert.IsTrue(childNodeIndex < endIndex);
 
             if (childNodeIndex - startIndex == node.EntriesCount)
                 node.EntriesCount++;
