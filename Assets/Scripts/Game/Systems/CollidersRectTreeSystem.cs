@@ -30,7 +30,7 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<TransformComponent, HasColliderTag /*, HasColliderTempTag*/> _filter;
+        private readonly EcsFilter<TransformComponent, HasColliderTag> _filter;
 
         private readonly List<int> _rootNodes = new(MaxEntries);
 
@@ -259,41 +259,6 @@ namespace Game.Systems
                     EntriesCount = 0
                 }));
 
-            /*var newRootNodesStartIndex = _nodes.Count;
-            var newRootNodes = Enumerable
-                .Range(0, RootNodesMaxCount - 2)
-                .Select(nodeIndex => new Node
-                {
-                    IsLeafNode = false,
-                    Aabb = AABB.Invalid,
-
-                    EntriesStartIndex = newRootNodesStartIndex + nodeIndex * MaxEntries,
-                    EntriesCount = 0
-                })
-                .ToArray();
-
-            _nodes.AddRange(newRootNodes);
-
-            var newLeafNodes = Enumerable
-                .Repeat(new Node
-                {
-                    IsLeafNode = true,
-                    Aabb = AABB.Invalid,
-
-                    EntriesStartIndex = -1,
-                    EntriesCount = 0
-                }, MaxEntries * (newRootNodes.Length - 1));
-
-            _nodes.AddRange(newLeafNodes);
-
-            var newRootNodeIndexA = _nodes.Count;
-            var newRootNodeIndexB = newRootNodeIndexA + 1;
-
-            _rootNodes.Clear();
-
-            _rootNodes.Add(newRootNodeIndexA);
-            _rootNodes.Add(newRootNodeIndexB);*/
-
             AABB GetRootNodeAabb(int i) =>
                 i > -1 ? _nodes[i].Aabb : AABB.Invalid;
         }
@@ -434,7 +399,7 @@ namespace Game.Systems
                 targetNode.Aabb = isNewNodeTarget ? conjugatedAabbB : conjugatedAabbA;
             }
 
-            if (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
+            while (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
                 FillNodes(nodeEntries, getAabbFunc, ref splitNode, ref newNode);
 
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);

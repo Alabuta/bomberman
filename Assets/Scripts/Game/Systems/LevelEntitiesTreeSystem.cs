@@ -3,6 +3,7 @@ using Game.Components;
 using Game.Components.Entities;
 using Leopotam.Ecs;
 using Level;
+using Unity.Mathematics;
 
 namespace Game.Systems
 {
@@ -26,6 +27,9 @@ namespace Game.Systems
                 ref var entity = ref _filter.GetEntity(index);
                 ref var transformComponent = ref _filter.Get1(index);
                 var tileCoordinate = levelTiles.ToTileCoordinate(transformComponent.WorldPosition);
+
+                if (math.any(tileCoordinate >= levelTiles.Size))
+                    continue;
 
                 var levelTileEntity = levelTiles[tileCoordinate];
                 ref var levelTileComponent = ref levelTileEntity.Get<LevelTileComponent>();

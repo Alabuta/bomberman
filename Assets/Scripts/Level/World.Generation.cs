@@ -49,43 +49,37 @@ namespace Level
             var columnsNumber = levelTiles.ColumnsNumber;
             var rowsNumber = levelTiles.RowsNumber;
 
-            /*var offsetsAndSize = new[]
-            {
-                (math.float2(+columnsNumber / 2f + 1, 0), math.float2(2, rowsNumber)),
-                (math.float2(-columnsNumber / 2f - 1, 0), math.float2(2, rowsNumber)),
-                (math.float2(0, +rowsNumber / 2f + 1), math.float2(columnsNumber, 2)),
-                (math.float2(0, -rowsNumber / 2f - 1), math.float2(columnsNumber, 2))
-            };*/
-
             var walls = await loadTask;
 
             var sprite = walls.GetComponent<SpriteRenderer>();
             sprite.size += new Vector2(columnsNumber, rowsNumber);
 
-#if true
-            var entity = _ecsWorld.NewEntity();
-            entity.Replace(new TransformComponent
+            var offsetsAndSize = new[]
             {
-                WorldPosition = new fix2(new double2(-(columnsNumber / 2 + 1), 0)),
-                IsStatic = true
-            });
+                (new fix2(+columnsNumber / 2 + 1, 0), new fix2(1, rowsNumber) / new fix2(2)),
+                (new fix2(-columnsNumber / 2 - 1, 0), new fix2(1, rowsNumber) / new fix2(2)),
+                (new fix2(0, +rowsNumber / 2 + 1), new fix2(columnsNumber, 1) / new fix2(2)),
+                (new fix2(0, -rowsNumber / 2 - 1), new fix2(columnsNumber, 1) / new fix2(2))
+            };
 
-            entity.Replace(new BoxColliderComponent
+            foreach (var (position, extent) in offsetsAndSize) // :TODO: replace to own colliders
             {
-                InteractionLayerMask = 0xFFFFFFF,
-                Offset = fix2.zero,
-                Extent = new fix2(1, rowsNumber) / new fix2(2)
-            });
+                var entity = _ecsWorld.NewEntity();
+                entity.Replace(new TransformComponent
+                {
+                    WorldPosition = position,
+                    IsStatic = true
+                });
 
-            entity.Replace(new HasColliderTag());
-#endif
+                entity.Replace(new BoxColliderComponent
+                {
+                    InteractionLayerMask = 0xFFFFFFF,
+                    Offset = fix2.zero,
+                    Extent = extent
+                });
 
-            /*foreach (var (offset, size) in offsetsAndSize) // :TODO: replace to own colliders
-            {
-                var collider = walls.AddComponent<BoxCollider2D>();
-                collider.offset = offset;
-                collider.size = size;
-            }*/
+                entity.Replace(new HasColliderTag());
+            }
         }
 
         private async Task SpawnBlocks(LevelConfig levelConfig, LevelTiles levelTiles,
@@ -303,7 +297,6 @@ namespace Level
             });
 
             entity.AddCollider(heroConfig.Collider);
-            entity.Replace(new HasColliderTempTag());
 
             var go = await task;
             Assert.IsNotNull(go);
