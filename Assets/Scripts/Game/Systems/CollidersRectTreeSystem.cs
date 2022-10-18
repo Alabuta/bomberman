@@ -32,7 +32,7 @@ namespace Game.Systems
 
         private readonly EcsFilter<TransformComponent, HasColliderTag> _filter;
 
-        private readonly List<int> _rootNodes = new(MaxEntries);
+        private readonly List<int> _rootNodeIndices = new(MaxEntries);
 
         private readonly List<Node> _nodes = new(512);
         private readonly List<(AABB Aabb, EcsEntity Entity)> _leafEntries = new(512);
@@ -46,14 +46,14 @@ namespace Game.Systems
             EntriesCount = 0
         };
 
-        public IEnumerable<int> RootNodes => _rootNodes;
+        public IEnumerable<int> RootNodeIndices => _rootNodeIndices;
 
         public IEnumerable<Node> GetNodes(IEnumerable<int> indices) =>
             _nodes.Count == 0 ? Enumerable.Empty<Node>() : indices.Select(i => _nodes[i]);
 
         public void Run()
         {
-            _rootNodes.Clear();
+            _rootNodeIndices.Clear();
             _nodes.Clear();
             _leafEntries.Clear();
 
@@ -64,8 +64,8 @@ namespace Game.Systems
                 .Range(0, RootNodesMaxCount)
                 .Select(nodeIndex =>
                 {
-                    if (_rootNodes.Count < RootNodesStartCount)
-                        _rootNodes.Add(nodeIndex);
+                    if (_rootNodeIndices.Count < RootNodesStartCount)
+                        _rootNodeIndices.Add(nodeIndex);
 
                     return new Node
                     {
@@ -107,7 +107,7 @@ namespace Game.Systems
         private void Insert(EcsEntity entity, AABB aabb)
         {
             var (index, minArea) = (-1, fix.MaxValue);
-            foreach (var i in _rootNodes)
+            foreach (var i in _rootNodeIndices)
             {
                 var nodeAabb = _nodes[i].Aabb;
                 if (nodeAabb == AABB.Invalid)
@@ -132,29 +132,29 @@ namespace Game.Systems
             if (childNodes.Length == 1)
                 return;
 
-            Assert.IsTrue(_rootNodes.Count < RootNodesMaxCount);
+            Assert.IsTrue(_rootNodeIndices.Count < RootNodesMaxCount);
 
-            var newRootNodeIndex = _rootNodes.Last() + 1;
-            _rootNodes.Add(newRootNodeIndex);
-            _nodes[_rootNodes[newRootNodeIndex]] = childNodes[1];
+            var newRootNodeIndex = _rootNodeIndices.Last() + 1;
+            _nodes[newRootNodeIndex] = childNodes[1];
+            _rootNodeIndices.Add(newRootNodeIndex);
 
-            if (_rootNodes.Count < RootNodesMaxCount)
+            if (_rootNodeIndices.Count < RootNodesMaxCount)
                 return;
 
-            Assert.IsTrue(_rootNodes.Count == RootNodesMaxCount);
+            Assert.IsTrue(_rootNodeIndices.Count == RootNodesMaxCount);
 
             GrowTree();
         }
 
         private void GrowTree()
         {
-            var (indexA, indexB) = FindLargestEntriesPair(_rootNodes, -1, 0, _rootNodes.Count, GetRootNodeAabb);
+            var (indexA, indexB) = FindLargestEntriesPair(_rootNodeIndices, -1, 0, _rootNodeIndices.Count, GetRootNodeAabb);
             Assert.IsTrue(indexA > -1 && indexB > -1);
 
-            var (rootNodeIndexA, rootNodeIndexB) = (_rootNodes[indexA], _rootNodes[indexB]);
+            var (rootNodeIndexA, rootNodeIndexB) = (_rootNodeIndices[indexA], _rootNodeIndices[indexB]);
             Assert.IsTrue(rootNodeIndexA < rootNodeIndexB);
 
-            var childNodesStartIndexA = _rootNodes[0];
+            var childNodesStartIndexA = _rootNodeIndices[0];
 
             var childNodesStartIndexB = _nodes.Count;
             var childNodesB = Enumerable
@@ -191,7 +191,7 @@ namespace Game.Systems
             childNodesB[index] = _nodes[rootNodeIndexB];
             ++index;
 
-            foreach (var rootNodeIndexC in _rootNodes.Select(i => _rootNodes[i]))
+            foreach (var rootNodeIndexC in _rootNodeIndices)
             {
                 if (rootNodeIndexC == rootNodeIndexA)
                 {
@@ -239,23 +239,23 @@ namespace Game.Systems
             var newRootNodeIndexA = _nodes.Count;
             var newRootNodeIndexB = newRootNodeIndexA + 1;
 
-            _rootNodes.Clear();
+            _rootNodeIndices.Clear();
 
-            _rootNodes.Add(newRootNodeIndexA);
-            _rootNodes.Add(newRootNodeIndexB);
+            _rootNodeIndices.Add(newRootNodeIndexA);
+            _rootNodeIndices.Add(newRootNodeIndexB);
 
             _nodes.Add(newRootNodeA);
             _nodes.Add(newRootNodeB);
 
-            var newRootNodesStartIndex = _nodes.Count;
+            // var newRootNodesStartIndex = _nodes.Count;
             _nodes.AddRange(Enumerable
-                .Range(2, RootNodesMaxCount)
-                .Select(nodeIndex => new Node
+                .Range(0, RootNodesMaxCount - 2)
+                .Select(_ => new Node
                 {
                     IsLeafNode = false,
                     Aabb = AABB.Invalid,
 
-                    EntriesStartIndex = newRootNodesStartIndex + nodeIndex * MaxEntries,
+                    EntriesStartIndex = -1, //newRootNodesStartIndex + nodeIndex * MaxEntries,
                     EntriesCount = 0
                 }));
 
