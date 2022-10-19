@@ -6,6 +6,7 @@ using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
+using Unity.Mathematics;
 using UnityEngine.Assertions;
 
 namespace Game.Systems
@@ -17,6 +18,126 @@ namespace Game.Systems
 
         public int EntriesStartIndex;
         public int EntriesCount;
+    }
+
+    public sealed class RectTreeSystem : IEcsRunSystem
+    {
+        private const int MaxEntries = 4;
+        private const int MinEntries = MaxEntries / 2;
+
+        private readonly EcsWorld _ecsWorld;
+        private readonly World _world;
+
+        private readonly EcsFilter<TransformComponent, HasColliderTag> _filter;
+
+        private readonly List<List<Node>> _nodes = new();
+        private readonly List<(AABB Aabb, EcsEntity Entity)> _leafEntries = new(512);
+
+        public void Run()
+        {
+            _nodes.Clear();
+            _leafEntries.Clear();
+
+            if (_filter.IsEmpty())
+                return;
+
+            _nodes.Add(
+                Enumerable
+                    .Repeat(new Node
+                    {
+                        IsLeafNode = true,
+                        Aabb = AABB.Invalid,
+
+                        EntriesStartIndex = -1,
+                        EntriesCount = 0
+                    }, MaxEntries)
+                    .ToList());
+
+            foreach (var index in _filter)
+            {
+                ref var entity = ref _filter.GetEntity(index);
+
+                ref var transformComponent = ref _filter.Get1(index);
+                var position = transformComponent.WorldPosition;
+
+                var aabb = entity.GetEntityColliderAABB(position);
+                Insert(entity, aabb);
+            }
+        }
+
+        private void Insert(EcsEntity entity, AABB aabb)
+        {
+            var rootNodes = _nodes[0];
+
+            var (index, minArea) = (-1, fix.MaxValue);
+            for (var i = 0; i < rootNodes.Count; i++)
+            {
+                var nodeAabb = rootNodes[i].Aabb;
+                if (nodeAabb == AABB.Invalid)
+                    continue;
+
+                var conjugatedArea = GetConjugatedArea(nodeAabb, aabb);
+                if (conjugatedArea >= minArea)
+                    continue;
+
+                (index, minArea) = (i, conjugatedArea);
+            }
+
+            index = math.max(0, index);
+
+            var (a, b) = ChooseLeaf(index, aabb, entity, depth: 0);
+            Assert.IsTrue(a.HasValue);
+
+            rootNodes[index] = a.Value;
+
+            if (!b.HasValue)
+                return;
+
+            var candidateNodeIndex = rootNodes.FindIndex(n => n.Aabb == AABB.Invalid);
+            if (candidateNodeIndex != -1)
+            {
+                rootNodes[candidateNodeIndex].Aabb = b.Value.Aabb;
+            }
+
+            Assert.IsTrue(_rootNodeIndices.Count < RootNodesMaxCount);
+
+            var newRootNodeIndex = _rootNodeIndices.Last() + 1;
+            _nodes[newRootNodeIndex] = childNodes[1];
+            _rootNodeIndices.Add(newRootNodeIndex);
+
+            if (_rootNodeIndices.Count < RootNodesMaxCount)
+                return;
+
+            Assert.IsTrue(_rootNodeIndices.Count == RootNodesMaxCount);
+
+            GrowTree();
+        }
+
+        private (Node? a, Node? b) ChooseLeaf(int nodeIndex, AABB aabb, EcsEntity entity, int depth)
+        {
+            return (a: null, b: null);
+        }
+
+        private static (fix areaIncrease, fix sizeIncrease) GetAreaAndSizeIncrease(AABB nodeAabb, AABB conjugatedAabb)
+        {
+            var conjugatedArea = fix.AABB_area(conjugatedAabb);
+            var areaIncrease = conjugatedArea - fix.AABB_area(nodeAabb);
+
+            var size = nodeAabb.max - nodeAabb.min;
+            var conjugatedSize = conjugatedAabb.max - conjugatedAabb.min;
+            var sizeIncrease = fix.max(conjugatedSize.x - size.x, conjugatedSize.y - size.y);
+
+            return (areaIncrease, sizeIncrease);
+        }
+
+        private static AABB GetNodeAabb(Node node) =>
+            node.Aabb;
+
+        private static AABB GetLeafEntryAabb((AABB Aabb, EcsEntity Entity) leafEntry) =>
+            leafEntry.Aabb;
+
+        private static fix GetConjugatedArea(AABB aabbA, AABB aabbB) =>
+            fix.AABB_area(fix.AABBs_conjugate(aabbA, aabbB));
     }
 
     public sealed class CollidersRectTreeSystem : IEcsRunSystem
@@ -61,18 +182,17 @@ namespace Game.Systems
                 return;
 
             var rootNodes = Enumerable
-                .Range(0, RootNodesMaxCount)
+                .Range(0, MaxEntries)
                 .Select(nodeIndex =>
                 {
-                    if (_rootNodeIndices.Count < RootNodesStartCount)
-                        _rootNodeIndices.Add(nodeIndex);
+                    _rootNodeIndices.Add(nodeIndex);
 
                     return new Node
                     {
                         IsLeafNode = false,
                         Aabb = AABB.Invalid,
 
-                        EntriesStartIndex = RootNodesMaxCount + nodeIndex * MaxEntries,
+                        EntriesStartIndex = MaxEntries + nodeIndex * MaxEntries,
                         EntriesCount = 0
                     };
                 })
@@ -104,6 +224,11 @@ namespace Game.Systems
             }
         }
 
+        /*public IEnumerable<EcsEntity> QueryAABB(AABB aabb)
+        {
+
+        }*/
+
         private void Insert(EcsEntity entity, AABB aabb)
         {
             var (index, minArea) = (-1, fix.MaxValue);
@@ -111,10 +236,7 @@ namespace Game.Systems
             {
                 var nodeAabb = _nodes[i].Aabb;
                 if (nodeAabb == AABB.Invalid)
-                {
-                    index = i;
-                    break;
-                }
+                    continue;
 
                 var conjugatedArea = GetConjugatedArea(nodeAabb, aabb);
                 if (conjugatedArea >= minArea)
@@ -123,9 +245,14 @@ namespace Game.Systems
                 (index, minArea) = (i, conjugatedArea);
             }
 
+            if (index == -1)
+            {
+                index = 0;
+            }
+
             Assert.IsTrue(index > -1);
 
-            var childNodes = ChooseLeaf(index, aabb, entity);
+            var childNodes = ChooseLeaf(index, aabb, entity, depth: 0);
 
             _nodes[index] = childNodes[0];
 
@@ -263,7 +390,7 @@ namespace Game.Systems
                 i > -1 ? _nodes[i].Aabb : AABB.Invalid;
         }
 
-        private Node[] ChooseLeaf(int nodeIndex, AABB aabb, EcsEntity entity)
+        private Node[] ChooseLeaf(int nodeIndex, AABB aabb, EcsEntity entity, int depth)
         {
             var node = _nodes[nodeIndex];
             if (node.IsLeafNode)
@@ -285,8 +412,22 @@ namespace Game.Systems
                 return new[] { node };
             }
 
+            if (node.EntriesStartIndex == -1)
+            {
+                node.EntriesStartIndex = _nodes.Count;
+                _nodes.AddRange(Enumerable.Repeat(new Node
+                {
+                    IsLeafNode = true, // :TODO: has to be dynamic branching
+                    Aabb = AABB.Invalid,
+
+                    EntriesStartIndex = -1,
+                    EntriesCount = 0
+                }, MaxEntries));
+            }
+
             var entriesCount = node.EntriesCount;
             var startIndex = node.EntriesStartIndex;
+            Assert.IsTrue(startIndex > -1);
             var endIndex = startIndex + (entriesCount >= MinEntries ? entriesCount : MaxEntries);
 
             var (childNodeIndex, minArea) = (-1, fix.MaxValue);
@@ -294,10 +435,7 @@ namespace Game.Systems
             {
                 var childNodeAabb = _nodes[i].Aabb;
                 if (childNodeAabb == AABB.Invalid)
-                {
-                    childNodeIndex = i;
-                    break;
-                }
+                    continue;
 
                 var conjugatedArea = GetConjugatedArea(childNodeAabb, aabb);
                 if (conjugatedArea >= minArea)
@@ -312,7 +450,7 @@ namespace Game.Systems
             if (childNodeIndex - startIndex == node.EntriesCount)
                 node.EntriesCount++;
 
-            var childNodes = ChooseLeaf(childNodeIndex, aabb, entity);
+            var childNodes = ChooseLeaf(childNodeIndex, aabb, entity, depth + 1);
 
             _nodes[childNodeIndex] = childNodes[0];
 
