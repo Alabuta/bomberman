@@ -33,6 +33,14 @@ namespace Game.Systems
         private readonly List<List<Node>> _nodes = new();
         private readonly List<(AABB Aabb, EcsEntity Entity)> _leafEntries = new(512);
 
+        private readonly Node _invalidNodeEntry = new()
+        {
+            Aabb = AABB.Invalid,
+
+            EntriesStartIndex = -1,
+            EntriesCount = 0
+        };
+
         public void Run()
         {
             _nodes.Clear();
@@ -68,6 +76,7 @@ namespace Game.Systems
         private void Insert(EcsEntity entity, AABB aabb)
         {
             var rootNodes = _nodes[0];
+            Assert.IsTrue(rootNodes.Count == MaxEntries);
 
             var (index, minArea) = (-1, fix.MaxValue);
             for (var i = 0; i < rootNodes.Count; i++)
@@ -96,26 +105,309 @@ namespace Game.Systems
             var candidateNodeIndex = rootNodes.FindIndex(n => n.Aabb == AABB.Invalid);
             if (candidateNodeIndex != -1)
             {
-                rootNodes[candidateNodeIndex].Aabb = b.Value.Aabb;
+                rootNodes[candidateNodeIndex] = b.Value;
+                return;
             }
 
-            Assert.IsTrue(_rootNodeIndices.Count < RootNodesMaxCount);
+            Assert.IsTrue(rootNodes.All(n => n.Aabb != AABB.Invalid));
 
-            var newRootNodeIndex = _rootNodeIndices.Last() + 1;
-            _nodes[newRootNodeIndex] = childNodes[1];
-            _rootNodeIndices.Add(newRootNodeIndex);
+            GrowTree(b.Value);
+        }
 
-            if (_rootNodeIndices.Count < RootNodesMaxCount)
-                return;
+        private void GrowTree(Node newEntry)
+        {
+            var rootNodes = _nodes[0];
 
-            Assert.IsTrue(_rootNodeIndices.Count == RootNodesMaxCount);
+            var (rootNodeIndexA, rootNodeIndexB) = FindLargestEntriesPair(rootNodes, newEntry, 0, 4, GetNodeAabb);
+            Assert.IsTrue(rootNodeIndexA > -1 && rootNodeIndexB > -1 && rootNodeIndexA < rootNodeIndexB);
+            // var (rootNodeIndexA, rootNodeIndexB) = (rootNodes[indexA], rootNodes[indexB]);
 
-            GrowTree();
+            var childNodesStartIndexA = 0; // _rootNodeIndices[0];
+            var childNodesStartIndexB = rootNodes.Count;
+            Assert.IsTrue(childNodesStartIndexB == MaxEntries);
+
+            var childNodesB = Enumerable
+                .Range(0, MaxEntries)
+                .Select(_ => new Node
+                {
+                    IsLeafNode = false,
+                    Aabb = AABB.Invalid,
+
+                    EntriesStartIndex = -1,
+                    EntriesCount = 0
+                })
+                .ToArray();
+
+            var newRootNodeA = new Node
+            {
+                IsLeafNode = false,
+                Aabb = AABB.Invalid,
+
+                EntriesStartIndex = childNodesStartIndexA,
+                EntriesCount = 0
+            };
+
+            var newRootNodeB = new Node
+            {
+                IsLeafNode = false,
+                Aabb = AABB.Invalid,
+
+                EntriesStartIndex = childNodesStartIndexB,
+                EntriesCount = 1
+            };
+
+            var index = 0;
+            childNodesB[index] = rootNodes[rootNodeIndexB];
+            ++index;
+
+            for (var rootNodeIndexC = 0; rootNodeIndexC < rootNodes.Count; rootNodeIndexC++)
+            {
+                if (rootNodeIndexC == rootNodeIndexA)
+                {
+                    rootNodes[childNodesStartIndexA] = rootNodes[rootNodeIndexA];
+
+                    ++childNodesStartIndexA;
+                    ++newRootNodeA.EntriesCount;
+
+                    continue;
+                }
+
+                if (rootNodeIndexC == rootNodeIndexB)
+                    continue;
+
+                var aabbA = rootNodes[rootNodeIndexA].Aabb;
+                var aabbB = rootNodes[rootNodeIndexB].Aabb;
+
+                var nodeC = rootNodes[rootNodeIndexC];
+                var aabbC = nodeC.Aabb;
+
+                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
+                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
+
+                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
+                if (isSecondNodeTarget)
+                {
+                    childNodesB[index] = nodeC;
+                    ++index;
+
+                    newRootNodeB.Aabb = fix.AABBs_conjugate(newRootNodeB.Aabb, aabbC);
+                    ++newRootNodeB.EntriesCount;
+                }
+                else
+                {
+                    rootNodes[childNodesStartIndexA] = nodeC;
+                    ++childNodesStartIndexA;
+
+                    newRootNodeA.Aabb = fix.AABBs_conjugate(newRootNodeA.Aabb, aabbC);
+                    ++newRootNodeA.EntriesCount;
+                }
+            }
+
+            _nodes.AddRange(childNodesB);
+
+            var newRootNodeIndexA = _nodes.Count;
+            var newRootNodeIndexB = newRootNodeIndexA + 1;
+
+            _rootNodeIndices.Clear();
+
+            _rootNodeIndices.Add(newRootNodeIndexA);
+            _rootNodeIndices.Add(newRootNodeIndexB);
+
+            _nodes.Add(newRootNodeA);
+            _nodes.Add(newRootNodeB);
+
+            // var newRootNodesStartIndex = _nodes.Count;
+            _nodes.AddRange(Enumerable
+                .Range(0, RootNodesMaxCount - 2)
+                .Select(_ => new Node
+                {
+                    IsLeafNode = false,
+                    Aabb = AABB.Invalid,
+
+                    EntriesStartIndex = -1, //newRootNodesStartIndex + nodeIndex * MaxEntries,
+                    EntriesCount = 0
+                }));
         }
 
         private (Node? a, Node? b) ChooseLeaf(int nodeIndex, AABB aabb, EcsEntity entity, int depth)
         {
             return (a: null, b: null);
+        }
+
+        private Node[] SplitNode<T>(int splitNodeLevel, int splitNodeIndex, bool isLeafNode, List<T> nodeEntries, T newEntry,
+            Func<T, AABB> getAabbFunc, T invalidEntry)
+        {
+            var splitNode = _nodes[splitNodeLevel][splitNodeIndex];
+
+            var entriesCount = splitNode.EntriesCount;
+            var startIndex = splitNode.EntriesStartIndex;
+            var endIndex = startIndex + entriesCount;
+
+            Assert.AreEqual(MaxEntries, entriesCount);
+
+            // Quadratic cost split
+            // Search for pairs of entries A and B that would cause the largest area if placed in the same node
+            // Put A and B entries in two different nodes
+            // Then consider all other entries area increase relatively to two previous nodes' AABBs
+            // Assign entry to the node with smaller AABB area increase
+            // Repeat until all entries are assigned between two new nodes
+
+            var (indexA, indexB) = FindLargestEntriesPair(nodeEntries, newEntry, startIndex, endIndex, getAabbFunc);
+            Assert.IsTrue(indexA > -1 && indexB > -1);
+
+            var newNodeStartEntry = indexB != endIndex ? nodeEntries[indexB] : newEntry;
+            var newEntriesStartIndex = nodeEntries.Count;
+            var newNode = new Node
+            {
+                IsLeafNode = isLeafNode,
+                Aabb = getAabbFunc.Invoke(newNodeStartEntry),
+
+                EntriesStartIndex = newEntriesStartIndex,
+                EntriesCount = 1
+            };
+
+            nodeEntries.Add(newNodeStartEntry);
+            nodeEntries.AddRange(Enumerable.Repeat(invalidEntry, MaxEntries - 1));
+
+            (nodeEntries[startIndex], nodeEntries[indexA]) = (nodeEntries[indexA], nodeEntries[startIndex]);
+
+            splitNode.EntriesCount = 1;
+            splitNode.Aabb = getAabbFunc.Invoke(nodeEntries[startIndex]);
+
+            for (var i = 1; i <= MaxEntries; i++)
+            {
+                if (startIndex + i == indexB)
+                    continue;
+
+                var entry = i == MaxEntries ? newEntry : nodeEntries[startIndex + i];
+                var entityAabb = getAabbFunc.Invoke(entry);
+
+                var splitNodeAabb = GetNodeAabb(splitNode);
+                var newNodeAabb = GetNodeAabb(newNode);
+
+                var conjugatedAabbA = fix.AABBs_conjugate(splitNodeAabb, entityAabb);
+                var conjugatedAabbB = fix.AABBs_conjugate(newNodeAabb, entityAabb);
+
+                var isNewNodeTarget = IsSecondNodeTarget(splitNodeAabb, newNodeAabb, conjugatedAabbA, conjugatedAabbB);
+                ref var targetNode = ref isNewNodeTarget ? ref newNode : ref splitNode;
+
+                if (isNewNodeTarget || targetNode.EntriesCount != i)
+                    nodeEntries[targetNode.EntriesStartIndex + targetNode.EntriesCount] = entry;
+
+                targetNode.EntriesCount++;
+                targetNode.Aabb = isNewNodeTarget ? conjugatedAabbB : conjugatedAabbA;
+            }
+
+            while (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
+                FillNodes(nodeEntries, getAabbFunc, ref splitNode, ref newNode);
+
+            Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
+            Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
+
+            return new[] { splitNode, newNode };
+        }
+
+        private static void FillNodes<T>(IList<T> nodeEntries, Func<T, AABB> getAabbFunc, ref Node splitNode,
+            ref Node newNode)
+        {
+            ref var sourceNode = ref splitNode.EntriesCount < MinEntries ? ref newNode : ref splitNode;
+            ref var targetNode = ref splitNode.EntriesCount < MinEntries ? ref splitNode : ref newNode;
+
+            var sourceNodeEntriesCount = sourceNode.EntriesCount;
+            var sourceNodeStartIndex = sourceNode.EntriesStartIndex;
+            var sourceNodeEndIndex = sourceNodeStartIndex + sourceNodeEntriesCount;
+
+            var targetNodeAabb = GetNodeAabb(targetNode);
+            var sourceNodeAabb = AABB.Invalid;
+
+            var (sourceEntryIndex, sourceEntryAabb, minArena) = (-1, AABB.Invalid, fix.MaxValue);
+            for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++)
+            {
+                var entry = nodeEntries[i];
+                var entryAabb = getAabbFunc.Invoke(entry);
+
+                var conjugatedArea = GetConjugatedArea(targetNodeAabb, entryAabb);
+                if (conjugatedArea > minArena)
+                {
+                    sourceNodeAabb = fix.AABBs_conjugate(sourceNodeAabb, entryAabb);
+                    continue;
+                }
+
+                sourceNodeAabb = fix.AABBs_conjugate(sourceNodeAabb, sourceEntryAabb);
+
+                (sourceEntryIndex, sourceEntryAabb, minArena) = (i, entryAabb, conjugatedArea);
+            }
+
+            Assert.IsTrue(sourceEntryIndex > -1);
+
+            var targetEntryIndex = targetNode.EntriesStartIndex + targetNode.EntriesCount;
+            nodeEntries[targetEntryIndex] = nodeEntries[sourceEntryIndex];
+
+            targetNode.Aabb = fix.AABBs_conjugate(targetNode.Aabb, sourceEntryAabb);
+            targetNode.EntriesCount++;
+
+            if (sourceEntryIndex != sourceNodeEndIndex - 1)
+                nodeEntries[sourceEntryIndex] = nodeEntries[sourceNodeEndIndex - 1];
+
+            sourceNode.Aabb = sourceNodeAabb;
+            sourceNode.EntriesCount--;
+        }
+
+        private static (int indexA, int indexB) FindLargestEntriesPair<T>(
+            IReadOnlyList<T> nodeEntries,
+            T newEntry,
+            int startIndex,
+            int endIndex,
+            Func<T, AABB> getAabbFunc)
+        {
+            var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                var aabbA = getAabbFunc.Invoke(nodeEntries[i]);
+                fix conjugatedArea;
+
+                for (var j = i + 1; j < endIndex; j++)
+                {
+                    var aabbB = getAabbFunc.Invoke(nodeEntries[j]);
+                    if (aabbB == AABB.Invalid)
+                        continue;
+
+                    conjugatedArea = GetConjugatedArea(aabbA, aabbB);
+                    if (conjugatedArea <= maxArena)
+                        continue;
+
+                    (indexA, indexB, maxArena) = (i, j, conjugatedArea);
+                }
+
+                var newEntryAabb = getAabbFunc.Invoke(newEntry);
+                if (newEntryAabb == AABB.Invalid)
+                    continue;
+
+                conjugatedArea = GetConjugatedArea(aabbA, newEntryAabb);
+                if (conjugatedArea <= maxArena)
+                    continue;
+
+                (indexA, indexB, maxArena) = (i, endIndex, conjugatedArea);
+            }
+
+            return (indexA, indexB);
+        }
+
+        private static bool IsSecondNodeTarget(AABB nodeAabbA, AABB nodeAabbB, AABB conjugatedAabbA, AABB conjugatedAabbB)
+        {
+            var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(nodeAabbA, conjugatedAabbA);
+            var (areaIncreaseB, deltaB) = GetAreaAndSizeIncrease(nodeAabbB, conjugatedAabbB);
+
+            if (areaIncreaseA > areaIncreaseB == deltaA > deltaB)
+                return areaIncreaseA > areaIncreaseB;
+
+            if (areaIncreaseA == areaIncreaseB)
+                return deltaA > deltaB;
+
+            if (deltaA == deltaB)
+                return areaIncreaseA > areaIncreaseB;
+
+            return true;
         }
 
         private static (fix areaIncrease, fix sizeIncrease) GetAreaAndSizeIncrease(AABB nodeAabb, AABB conjugatedAabb)
