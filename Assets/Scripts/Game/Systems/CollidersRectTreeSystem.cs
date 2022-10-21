@@ -156,15 +156,18 @@ namespace Game.Systems
                 EntriesCount = 1
             };
 
+            var rootNodeA = rootNodes[rootNodeIndexA];
+            var rootNodeB = rootNodeIndexB < MaxEntries ? rootNodes[rootNodeIndexB] : newEntry;
+
             var index = 0;
-            childNodesB[index] = rootNodes[rootNodeIndexB];
+            childNodesB[index] = rootNodeB;
             ++index;
 
             for (var rootNodeIndexC = 0; rootNodeIndexC < rootNodes.Count; rootNodeIndexC++)
             {
                 if (rootNodeIndexC == rootNodeIndexA)
                 {
-                    rootNodes[childNodesStartIndexA] = rootNodes[rootNodeIndexA];
+                    rootNodes[childNodesStartIndexA] = rootNodeA;
 
                     ++childNodesStartIndexA;
                     ++newRootNodeA.EntriesCount;
@@ -175,8 +178,8 @@ namespace Game.Systems
                 if (rootNodeIndexC == rootNodeIndexB)
                     continue;
 
-                var aabbA = rootNodes[rootNodeIndexA].Aabb;
-                var aabbB = rootNodes[rootNodeIndexB].Aabb;
+                var aabbA = rootNodeA.Aabb;
+                var aabbB = rootNodeB.Aabb;
 
                 var nodeC = rootNodes[rootNodeIndexC];
                 var aabbC = nodeC.Aabb;
@@ -203,22 +206,13 @@ namespace Game.Systems
                 }
             }
 
-            _nodes.AddRange(childNodesB);
+            rootNodes.AddRange(childNodesB);
 
-            var newRootNodeIndexA = _nodes.Count;
-            var newRootNodeIndexB = newRootNodeIndexA + 1;
-
-            _rootNodeIndices.Clear();
-
-            _rootNodeIndices.Add(newRootNodeIndexA);
-            _rootNodeIndices.Add(newRootNodeIndexB);
-
-            _nodes.Add(newRootNodeA);
-            _nodes.Add(newRootNodeB);
+            var newRootNodes = new List<Node>(new[] { newRootNodeA, newRootNodeB });
 
             // var newRootNodesStartIndex = _nodes.Count;
-            _nodes.AddRange(Enumerable
-                .Range(0, RootNodesMaxCount - 2)
+            newRootNodes.AddRange(Enumerable
+                .Range(0, MaxEntries - newRootNodes.Count)
                 .Select(_ => new Node
                 {
                     IsLeafNode = false,
@@ -227,11 +221,93 @@ namespace Game.Systems
                     EntriesStartIndex = -1, //newRootNodesStartIndex + nodeIndex * MaxEntries,
                     EntriesCount = 0
                 }));
+
+            _nodes.Insert(0, newRootNodes);
         }
 
         private (Node? a, Node? b) ChooseLeaf(int nodeIndex, AABB aabb, EcsEntity entity, int depth)
         {
-            return (a: null, b: null);
+            var nodes = _nodes[depth];
+            var node = nodes[nodeIndex];
+            if (node.IsLeafNode)
+            {
+                if (node.EntriesCount == MaxEntries)
+                    return SplitNode(nodeIndex, true, _leafEntries, (aabb, entity), GetLeafEntryAabb, _invalidLeafEntry);
+
+                if (node.EntriesStartIndex == -1)
+                {
+                    node.EntriesStartIndex = _leafEntries.Count;
+                    _leafEntries.AddRange(Enumerable.Repeat(_invalidLeafEntry, MaxEntries));
+                }
+
+                _leafEntries[node.EntriesStartIndex + node.EntriesCount] = (Aabb: aabb, Entity: entity);
+
+                node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
+                node.EntriesCount++;
+
+                return (a: node, b: null);
+            }
+
+            if (node.EntriesStartIndex == -1)
+            {
+                node.EntriesStartIndex = nodes.Count;
+                nodes.AddRange(Enumerable.Repeat(new Node
+                {
+                    IsLeafNode = true, // :TODO: has to be dynamic branching
+                    Aabb = AABB.Invalid,
+
+                    EntriesStartIndex = -1,
+                    EntriesCount = 0
+                }, MaxEntries));
+            }
+
+            var entriesCount = node.EntriesCount;
+            var startIndex = node.EntriesStartIndex;
+            Assert.IsTrue(startIndex > -1);
+            var endIndex = startIndex + (entriesCount >= MinEntries ? entriesCount : MaxEntries);
+
+            var (childNodeIndex, minArea) = (-1, fix.MaxValue);
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                var childNodeAabb = nodes[i].Aabb;
+                if (childNodeAabb == AABB.Invalid)
+                    continue;
+
+                var conjugatedArea = GetConjugatedArea(childNodeAabb, aabb);
+                if (conjugatedArea >= minArea)
+                    continue;
+
+                (childNodeIndex, minArea) = (i, conjugatedArea);
+            }
+
+            Assert.IsTrue(childNodeIndex >= startIndex && startIndex <= endIndex);
+            Assert.IsTrue(childNodeIndex < endIndex);
+
+            if (childNodeIndex - startIndex == node.EntriesCount)
+                node.EntriesCount++;
+
+            var (a, b) = ChooseLeaf(childNodeIndex, aabb, entity, depth + 1);
+            Assert.IsTrue(a.HasValue);
+
+            nodes[childNodeIndex] = a.Value;
+
+            if (!b.HasValue)
+            {
+                node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
+                return (a: node, b: null);
+            }
+
+            var newChildNode = b.Value;
+
+            if (entriesCount == MaxEntries)
+                return SplitNode(nodeIndex, false, nodes, newChildNode, GetNodeAabb, _invalidNodeEntry);
+
+            nodes[startIndex + node.EntriesCount] = newChildNode;
+
+            node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
+            node.EntriesCount++;
+
+            return (a: node, b: null);
         }
 
         private Node[] SplitNode<T>(int splitNodeLevel, int splitNodeIndex, bool isLeafNode, List<T> nodeEntries, T newEntry,
