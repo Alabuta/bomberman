@@ -19,18 +19,15 @@ namespace Gizmos
         {
             _rTree = rTree;
 
-            const float alpha = 0.8f;
             _colors = new[]
-                {
-                    Color.red,
-                    Color.blue,
-                    Color.yellow,
-                    Color.cyan,
-                    Color.white,
-                    Color.magenta
-                }
-                /*.Select(c => c * new Color(1, 1, 1, alpha))
-                .ToArray()*/;
+            {
+                Color.red,
+                Color.blue,
+                Color.yellow,
+                Color.cyan,
+                Color.white,
+                Color.magenta
+            };
         }
 
         private void OnDrawGizmos()
@@ -39,10 +36,7 @@ namespace Gizmos
 
             const int treeDepth = 0;
 
-            if (_rTree.RootNodes.Any(i => i < 0))
-                return;
-
-            var rootNodes = _rTree.GetNodes(_rTree.RootNodes);
+            var rootNodes = _rTree.RootNodes;
             foreach (var rootNode in rootNodes)
             {
                 var aabb = rootNode.Aabb;
@@ -67,10 +61,10 @@ namespace Gizmos
             /*if (treeDepth > 1)
                 return;*/
 
-            if (rootNode.IsLeafNode)
+            if (treeDepth >= _rTree.TreeHeight)
                 return;
 
-            var childNodes = _rTree.GetNodes(Enumerable.Range(rootNode.EntriesStartIndex, rootNode.EntriesCount));
+            var childNodes = _rTree.GetNodes(treeDepth, Enumerable.Range(rootNode.EntriesStartIndex, rootNode.EntriesCount));
 
             var i = -1;
             foreach (var childNode in childNodes)
