@@ -4,7 +4,6 @@ using System.Linq;
 using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
-using Level;
 using Math.FixedPointMath;
 using UnityEngine.Assertions;
 
@@ -18,15 +17,10 @@ namespace Game.Systems
         public int EntriesCount;
     }
 
-    public sealed class CollidersRectTreeSystem : IEcsRunSystem
+    public sealed class CollidersRectTree
     {
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
-
-        private readonly EcsWorld _ecsWorld;
-        private readonly World _world;
-
-        private readonly EcsFilter<TransformComponent, HasColliderTag> _filter;
 
         private readonly List<List<Node>> _nodes = new();
         private readonly List<(AABB Aabb, EcsEntity Entity)> _leafEntries = new(512);
@@ -47,12 +41,12 @@ namespace Game.Systems
         public IEnumerable<Node> GetNodes(int levelIndex, IEnumerable<int> indices) =>
             _nodes.Count == 0 ? Enumerable.Empty<Node>() : indices.Select(i => _nodes[levelIndex][i]);
 
-        public void Run()
+        public void Build(EcsFilter<TransformComponent, HasColliderTag> filter)
         {
             _nodes.Clear();
             _leafEntries.Clear();
 
-            if (_filter.IsEmpty())
+            if (filter.IsEmpty())
                 return;
 
             _nodes.Add(
@@ -66,16 +60,44 @@ namespace Game.Systems
                     }, MaxEntries)
                     .ToList());
 
-            foreach (var index in _filter)
+            foreach (var index in filter)
             {
-                ref var entity = ref _filter.GetEntity(index);
+                ref var entity = ref filter.GetEntity(index);
 
-                ref var transformComponent = ref _filter.Get1(index);
+                ref var transformComponent = ref filter.Get1(index);
                 var position = transformComponent.WorldPosition;
 
                 var aabb = entity.GetEntityColliderAABB(position);
                 Insert(entity, aabb);
             }
+        }
+
+        public void QueryAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result)
+        {
+            var topLevelNodes = _nodes[0];
+            for (var nodeIndex = 0; nodeIndex < topLevelNodes.Count; nodeIndex++)
+                QueryNodeAabb(aabb, result, 0, nodeIndex);
+        }
+
+        private void QueryNodeAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result, int levelIndex, int nodeIndex)
+        {
+            var node = _nodes[levelIndex][nodeIndex];
+            if (!fix.is_AABB_overlapped_by_AABB(aabb, node.Aabb))
+                return;
+
+            var entriesStartIndex = node.EntriesStartIndex;
+            var entriesEndIndex = node.EntriesStartIndex + node.EntriesCount;
+
+            if (levelIndex + 1 == TreeHeight)
+            {
+                for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                    result.Add(_leafEntries[i]);
+
+                return;
+            }
+
+            for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                QueryNodeAabb(aabb, result, levelIndex + 1, i);
         }
 
         private void Insert(EcsEntity entity, AABB aabb)
@@ -162,20 +184,6 @@ namespace Game.Systems
                 node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
                 return (a: node, b: null);
             }
-
-            /*for (var i = entriesStartIndex; i < entriesStartIndex + MaxEntries; i++)
-            {
-                var childNodeAabb = childNodes[i].Aabb;
-                if (childNodeAabb != AABB.Invalid)
-                    continue;
-
-                childNodes[i] = b.Value;
-
-                node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
-                node.EntriesCount++;
-
-                return (a: node, b: null);
-            }*/
 
             var newChildNode = b.Value;
             if (entriesCount == MaxEntries)
@@ -309,8 +317,6 @@ namespace Game.Systems
         private (Node a, Node b) SplitNode<T>(int splitNodeLevel, int splitNodeIndex, List<T> nodeEntries,
             T newEntry, Func<T, AABB> getAabbFunc, T invalidEntry)
         {
-            var isLeafLevel = splitNodeLevel + 1 == TreeHeight;
-
             var levelNodes = _nodes[splitNodeLevel];
             var splitNode = levelNodes[splitNodeIndex];
 

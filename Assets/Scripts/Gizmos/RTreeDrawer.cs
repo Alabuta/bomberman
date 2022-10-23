@@ -12,10 +12,10 @@ namespace Gizmos
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private CollidersRectTreeSystem _rTree;
+        private CollidersRectTree _rTree;
         private Color[] _colors;
 
-        public void SetRTree(CollidersRectTreeSystem rTree)
+        public void SetRTree(CollidersRectTree rTree)
         {
             _rTree = rTree;
 
