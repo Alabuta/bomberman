@@ -58,17 +58,23 @@ namespace Game.Systems.Behaviours
             var currentTileCoordinate = levelTiles.ToTileCoordinate(toWorldPosition);
             int2 targetTileCoordinate;
 
-            var randomValue = _world.RandomGenerator.Range(fix.zero, fix.one, (int) _world.Tick);
+            var neighborTiles = movementBehaviourComponent.MovementDirections
+                .Where(d => math.any(d != direction))
+                .Select(d => currentTileCoordinate + d)
+                .Where(levelTiles.IsCoordinateInField)
+                .Select(c => levelTiles[c])
+                .Where(t => IsTileCanBeAsMovementTarget(t, entityLayerMask))
+                .ToArray();
+
+            var canChangeDirection = neighborTiles.Length != 0;
+
+            var randomValue = canChangeDirection
+                ? _world.RandomGenerator.Range(fix.zero, fix.one, (int) _world.Tick, entityIndex)
+                : movementBehaviourComponent.DirectionChangeChance;
+
             if (randomValue < movementBehaviourComponent.DirectionChangeChance)
             {
-                var neighborTiles = movementBehaviourComponent.MovementDirections
-                    .Select(d => currentTileCoordinate + d)
-                    .Where(levelTiles.IsCoordinateInField)
-                    .Select(c => levelTiles[c])
-                    .Where(t => IsTileCanBeAsMovementTarget(t, entityLayerMask))
-                    .ToArray();
-
-                if (neighborTiles.Length == 0)
+                if (!canChangeDirection)
                 {
                     transformComponent.Direction = int2.zero;
                     movementComponent.Speed = fix.zero;
@@ -76,10 +82,9 @@ namespace Game.Systems.Behaviours
                     return;
                 }
 
-                var index = _world.RandomGenerator.Range(0, neighborTiles.Length, (int) _world.Tick);
+                var index = _world.RandomGenerator.Range(0, neighborTiles.Length, (int) _world.Tick, entityIndex);
                 var neighborTile = neighborTiles[index];
                 targetTileCoordinate = levelTiles.ToTileCoordinate(neighborTile.Get<TransformComponent>().WorldPosition);
-
                 transformComponent.Direction = targetTileCoordinate - currentTileCoordinate;
             }
             else
@@ -96,7 +101,8 @@ namespace Game.Systems.Behaviours
                         currentTileCoordinate,
                         ref transformComponent,
                         ref movementBehaviourComponent,
-                        entityLayerMask);
+                        entityLayerMask,
+                        entityIndex);
 
                     targetTileCoordinate = neighborTile != EcsEntity.Null
                         ? levelTiles.ToTileCoordinate(neighborTile.Get<TransformComponent>().WorldPosition)
@@ -113,7 +119,8 @@ namespace Game.Systems.Behaviours
                     currentTileCoordinate,
                     ref transformComponent,
                     ref movementBehaviourComponent,
-                    entityLayerMask);
+                    entityLayerMask,
+                    entityIndex);
             }
 
             if (targetTile == EcsEntity.Null)
@@ -178,7 +185,7 @@ namespace Game.Systems.Behaviours
         }
 
         private EcsEntity GetRandomNeighborTile(World world, int2 tileCoordinate, ref TransformComponent component,
-            ref SimpleMovementBehaviourComponent simpleMovementBehaviourComponent, int entityLayerMask)
+            ref SimpleMovementBehaviourComponent simpleMovementBehaviourComponent, int entityLayerMask, int entityIndex)
         {
             var levelTiles = world.LevelTiles;
 
@@ -210,7 +217,7 @@ namespace Game.Systems.Behaviours
                     .ToArray();
             }
 
-            var index = world.RandomGenerator.Range(0, tileCoordinates.Length, (int) world.Tick);
+            var index = world.RandomGenerator.Range(0, tileCoordinates.Length, (int) world.Tick, entityIndex);
             return tileCoordinates[index];
         }
     }
