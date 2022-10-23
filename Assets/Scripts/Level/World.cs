@@ -101,7 +101,7 @@ namespace Level
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsDetectionSystem())
                 .Add(new CollisionsResolverSystem())
-                .Add(new CollisionEventsListenerSystem())
+                .Add(new BombsProcessSystem())
                 .Add(new LevelEntitiesTreeSystem())
                 .Add(new AttackBehaviourSystem())
                 .Add(healthSystem)
