@@ -41,7 +41,7 @@ namespace Game.Systems
         public IEnumerable<Node> GetNodes(int levelIndex, IEnumerable<int> indices) =>
             _nodes.Count == 0 ? Enumerable.Empty<Node>() : indices.Select(i => _nodes[levelIndex][i]);
 
-        public void Build(EcsFilter<TransformComponent, HasColliderTag> filter)
+        public void Build(EcsFilter<TransformComponent, HasColliderTag> filter, fix simulationSubStep)
         {
             _nodes.Clear();
             _leafEntries.Clear();
@@ -65,7 +65,16 @@ namespace Game.Systems
                 ref var entity = ref filter.GetEntity(index);
 
                 ref var transformComponent = ref filter.Get1(index);
-                var position = transformComponent.WorldPosition;
+                var currentPosition = transformComponent.WorldPosition;
+
+                var hasPrevFrameDataComponent = entity.Has<PrevFrameDataComponent>();
+                ref var prevFrameDataComponent = ref entity.Get<PrevFrameDataComponent>();
+
+                var lastPosition = hasPrevFrameDataComponent
+                    ? prevFrameDataComponent.LastWorldPosition
+                    : transformComponent.WorldPosition;
+
+                var position = lastPosition + (currentPosition - lastPosition) * simulationSubStep;
 
                 var aabb = entity.GetEntityColliderAABB(position);
                 Insert(entity, aabb);
