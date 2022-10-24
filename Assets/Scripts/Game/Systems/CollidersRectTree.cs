@@ -153,13 +153,12 @@ namespace Game.Systems
             if (isLeafLevel)
             {
                 if (node.EntriesCount == MaxEntries)
-                    return SplitNode(nodeLevelIndex, nodeIndex, _leafEntries, (aabb, entity), GetLeafEntryAabb,
-                        _invalidLeafEntry);
+                    return SplitNode(nodeLevelIndex, nodeIndex, _leafEntries, (aabb, entity), GetLeafEntryAabb, default);
 
                 if (node.EntriesStartIndex == -1)
                 {
                     node.EntriesStartIndex = _leafEntries.Count;
-                    _leafEntries.AddRange(Enumerable.Repeat(_invalidLeafEntry, MaxEntries));
+                    _leafEntries.AddRange(Enumerable.Repeat(default((AABB, EcsEntity)), MaxEntries));
                 }
 
                 _leafEntries[node.EntriesStartIndex + node.EntriesCount] = (Aabb: aabb, Entity: entity);
