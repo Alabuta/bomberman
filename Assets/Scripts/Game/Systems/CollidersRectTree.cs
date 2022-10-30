@@ -25,7 +25,6 @@ namespace Game.Systems
         private readonly List<List<Node>> _nodes = new();
         private readonly List<(AABB Aabb, EcsEntity Entity)> _leafEntries = new(512);
 
-        private readonly (AABB Invalid, EcsEntity Null) _invalidLeafEntry = (AABB.Invalid, EcsEntity.Null);
         private readonly Node _invalidNodeEntry = new()
         {
             Aabb = AABB.Invalid,

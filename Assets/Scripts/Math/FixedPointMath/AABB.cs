@@ -33,5 +33,11 @@ namespace Math.FixedPointMath
 
         public override int GetHashCode() =>
             HashCode.Combine(min, max);
+
+        public static AABB CreateFromPositionAndSize(fix2 position, fix2 size)
+        {
+            var halfSize = size / new fix2(2);
+            return new AABB(position - halfSize, position + halfSize);
+        }
     }
 }
