@@ -80,11 +80,46 @@ namespace Game.Systems
             }
         }
 
+        public void QueryLine(fix2 p0, fix2 p1, IList<(AABB Aabb, EcsEntity Entity)> result)
+        {
+            const int levelIndex = 0;
+
+            var topLevelNodes = _nodes[levelIndex];
+            for (var nodeIndex = 0; nodeIndex < topLevelNodes.Count; nodeIndex++)
+                QueryNodesByLine(p0, p1, result, levelIndex, nodeIndex);
+        }
+
+        private void QueryNodesByLine(
+            fix2 p0, fix2 p1,
+            IList<(AABB Aabb, EcsEntity Entity)> result,
+            int levelIndex, int nodeIndex)
+        {
+            var node = _nodes[levelIndex][nodeIndex];
+            if (!node.Aabb.CohenSutherlandLineClip(ref p0, ref p1))
+                return;
+
+            var entriesStartIndex = node.EntriesStartIndex;
+            var entriesEndIndex = node.EntriesStartIndex + node.EntriesCount;
+
+            if (levelIndex + 1 == TreeHeight)
+            {
+                for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                    result.Add(_leafEntries[i]);
+
+                return;
+            }
+
+            for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                QueryNodesByLine(p0, p1, result, levelIndex + 1, i);
+        }
+
         public void QueryAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result)
         {
-            var topLevelNodes = _nodes[0];
+            const int levelIndex = 0;
+
+            var topLevelNodes = _nodes[levelIndex];
             for (var nodeIndex = 0; nodeIndex < topLevelNodes.Count; nodeIndex++)
-                QueryNodeAabb(aabb, result, 0, nodeIndex);
+                QueryNodeAabb(aabb, result, levelIndex, nodeIndex);
         }
 
         private void QueryNodeAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result, int levelIndex, int nodeIndex)
