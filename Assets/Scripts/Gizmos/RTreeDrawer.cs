@@ -40,7 +40,7 @@ namespace Gizmos
             foreach (var rootNode in rootNodes)
             {
                 var aabb = rootNode.Aabb;
-                if (aabb == AABB.Invalid)
+                if (!aabb.IsValid())
                     continue;
 
                 var size = aabb.max - aabb.min;

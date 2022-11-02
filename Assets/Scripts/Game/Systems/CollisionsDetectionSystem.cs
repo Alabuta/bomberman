@@ -22,17 +22,19 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
+        private readonly CollidersRectTree _collidersRectTree;
+
         private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders;
 
         private readonly EcsFilter<TransformComponent, LayerMaskComponent, CircleColliderComponent> _circleColliders;
         private readonly EcsFilter<TransformComponent, LayerMaskComponent, BoxColliderComponent> _boxColliders;
 
+        private readonly EcsFilter<CollidersLinecastComponent> _lineCasters;
+
         private readonly HashSet<long> _processedPairs = new();
         private readonly HashSet<long> _collidedPairs = new();
 
         private readonly HashSet<int> _collidedEntities = new();
-
-        private readonly CollidersRectTree _collidersRectTree = new();
 
         public void Run()
         {
@@ -48,10 +50,29 @@ namespace Game.Systems
                 foreach (var entityIndex in _boxColliders)
                     DetectCollisions(simulationSubStep, _boxColliders, entityIndex);
 
+                foreach (var entityIndex in _lineCasters)
+                    TraceLine(simulationSubStep, filter: _lineCasters, entityIndex);
+
                 _processedPairs.Clear();
             }
 
             _collidedEntities.Clear();
+        }
+
+        private void TraceLine(fix simulationSubStep, EcsFilter<CollidersLinecastComponent> filter, int entityIndex)
+        {
+            var entityA = filter.GetEntity(entityIndex);
+
+            var linecastComponent = filter.Get1(entityIndex);
+
+            using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
+            {
+                _collidersRectTree.QueryLine(linecastComponent.Start, linecastComponent.End, result);
+
+                foreach (var (aabb, entity) in result)
+                {
+                }
+            }
         }
 
         private void DetectCollisions<T>(fix simulationSubStep, EcsFilter<TransformComponent, LayerMaskComponent, T> filter,
@@ -75,12 +96,12 @@ namespace Game.Systems
 
             var entityLastPositionA = prevFrameDataComponentA.LastWorldPosition;
             var entityCurrentPositionA = transformComponentA.WorldPosition;
+            var entityPositionA = entityLastPositionA + (entityCurrentPositionA - entityLastPositionA) * simulationSubStep;
+
+            var aabbA = entityA.GetEntityColliderAABB(entityPositionA);
 
             using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
             {
-                var entityPositionA = entityLastPositionA + (entityCurrentPositionA - entityLastPositionA) * simulationSubStep;
-
-                var aabbA = entityA.GetEntityColliderAABB(entityPositionA);
                 _collidersRectTree.QueryAabb(aabbA, result);
 
                 var hasIntersection = false;

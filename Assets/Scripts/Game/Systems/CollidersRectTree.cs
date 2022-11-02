@@ -104,13 +104,21 @@ namespace Game.Systems
             if (levelIndex + 1 == TreeHeight)
             {
                 for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                {
+                    if (!IntersectedByLine(p0, p1, _leafEntries[i].Aabb))
+                        continue;
+
                     result.Add(_leafEntries[i]);
+                }
 
                 return;
             }
 
             for (var i = entriesStartIndex; i < entriesEndIndex; i++)
                 QueryNodesByLine(p0, p1, result, levelIndex + 1, i);
+
+            bool IntersectedByLine(fix2 a, fix2 b, AABB aabb) =>
+                aabb.CohenSutherlandLineClip(ref a, ref b);
         }
 
         public void QueryAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result)
