@@ -72,12 +72,11 @@ namespace Level
             Assert.IsNotNull(collidersDrawerGo);
             var colliderBoundsDrawer = collidersDrawerGo.AddComponent<CollidersBoundsDrawer>();
 
-            /*var collidersRectTree = new CollidersRectTree();
-
+            var collidersRectTree = new CollidersRectTree();
             var rTreeDrawerGo = new GameObject("RTreeDrawer");
             Assert.IsNotNull(rTreeDrawerGo);
             var rTreeDrawer = rTreeDrawerGo.AddComponent<RTreeDrawer>();
-            rTreeDrawer.SetRTree(collidersRectTree);*/
+            rTreeDrawer.SetRTree(collidersRectTree);
 #endif
 
             _ecsSystems
@@ -96,6 +95,7 @@ namespace Level
                 .OneFrame<OnCollisionEnterEventComponent>()
                 .OneFrame<OnCollisionExitEventComponent>()
                 .OneFrame<OnCollisionStayEventComponent>()
+                .OneFrame<OnBombBlastEventComponent>()
                 .OneFrame<PrevFrameDataComponent>()
                 .Add(new BeforeSimulationStepSystem())
                 .Add(new MovementBehaviourSystem())
@@ -106,6 +106,7 @@ namespace Level
                 .Add(new AttackBehaviourSystem())
                 .Add(healthSystem)
                 .Inject(this)
+                .Inject(collidersRectTree)
                 .Init();
         }
 

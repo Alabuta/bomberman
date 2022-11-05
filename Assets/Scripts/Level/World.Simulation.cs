@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Level
@@ -67,20 +64,6 @@ namespace Level
             }
 
             _playersInputActions.Remove(Tick);
-        }
-
-        private static IEnumerable<int2[]> GetBombBlastTileLines(int2[] blastDirections, int blastRadius,
-            int2 blastCoordinate)
-        {
-            return blastDirections
-                .Select(blastDirection =>
-                {
-                    return Enumerable
-                        .Range(1, blastRadius)
-                        .Select(offset => blastCoordinate + blastDirection * offset)
-                        .ToArray();
-                })
-                .Append(new[] { blastCoordinate });
         }
     }
 }

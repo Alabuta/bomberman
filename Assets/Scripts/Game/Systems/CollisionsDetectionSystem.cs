@@ -67,7 +67,7 @@ namespace Game.Systems
 
             using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
             {
-                _collidersRectTree.QueryLine(linecastComponent.Start, linecastComponent.End, result);
+                _collidersRectTree.QueryByLine(linecastComponent.Start, linecastComponent.End, result);
 
                 foreach (var (aabb, entity) in result)
                 {
@@ -102,7 +102,7 @@ namespace Game.Systems
 
             using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
             {
-                _collidersRectTree.QueryAabb(aabbA, result);
+                _collidersRectTree.QueryByAabb(aabbA, result);
 
                 var hasIntersection = false;
                 foreach (var (aabbB, entityB) in result)

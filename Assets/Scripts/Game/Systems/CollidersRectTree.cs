@@ -80,7 +80,7 @@ namespace Game.Systems
             }
         }
 
-        public void QueryLine(fix2 p0, fix2 p1, IList<(AABB Aabb, EcsEntity Entity)> result)
+        public void QueryByLine(fix2 p0, fix2 p1, IList<(AABB Aabb, EcsEntity Entity)> result)
         {
             const int levelIndex = 0;
 
@@ -121,16 +121,16 @@ namespace Game.Systems
                 aabb.CohenSutherlandLineClip(ref a, ref b);
         }
 
-        public void QueryAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result)
+        public void QueryByAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result)
         {
             const int levelIndex = 0;
 
             var topLevelNodes = _nodes[levelIndex];
             for (var nodeIndex = 0; nodeIndex < topLevelNodes.Count; nodeIndex++)
-                QueryNodeAabb(aabb, result, levelIndex, nodeIndex);
+                QueryNodesByAabb(aabb, result, levelIndex, nodeIndex);
         }
 
-        private void QueryNodeAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result, int levelIndex, int nodeIndex)
+        private void QueryNodesByAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result, int levelIndex, int nodeIndex)
         {
             var node = _nodes[levelIndex][nodeIndex];
             if (!fix.is_AABB_overlapped_by_AABB(aabb, node.Aabb))
@@ -148,7 +148,7 @@ namespace Game.Systems
             }
 
             for (var i = entriesStartIndex; i < entriesEndIndex; i++)
-                QueryNodeAabb(aabb, result, levelIndex + 1, i);
+                QueryNodesByAabb(aabb, result, levelIndex + 1, i);
         }
 
         private void Insert(EcsEntity entity, AABB aabb)

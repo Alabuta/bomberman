@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Configs.Entity;
 using Game;
+using Game.Components;
+using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Tags;
 using Input;
@@ -31,20 +33,20 @@ namespace Level
             Assert.IsTrue(heroEntity.Has<HeroTag>());
 
             var heroComponent = heroEntity.Get<EntityComponent>();
-
-            var bombConfig = ((HeroConfig) heroComponent.Config).BombConfig;
+            var heroConfig = heroComponent.Config as HeroConfig;
+            Assert.IsNotNull(heroConfig);
 
             var coordinate = LevelTiles.ToTileCoordinate(worldPosition);
             var position = LevelTiles.ToWorldPosition(coordinate);
 
-            var task = CreateAndSpawnBomb(bombConfig, position);
+            var task = CreateAndSpawnBomb(heroConfig.BombConfig, position);
             var entity = await task;
 
-            // LevelModel.AddItem(entity);
+            /*LevelModel.AddItem(entity);
 
-            // var bombItem = _ecsWorld.NewEntity(); // _gameFactory.CreateItem(bombConfig.ItemConfig, itemController); :TODO: fix
+            var bombItem = _ecsWorld.NewEntity(); // _gameFactory.CreateItem(bombConfig.ItemConfig, itemController); :TODO: fix
 
-            // LevelModel.AddItem(bombItem, bombCoordinate);
+            LevelModel.AddItem(bombItem, bombCoordinate);*/
 
             if (!_playerBombs.ContainsKey(player))
                 _playerBombs.Add(player, new Queue<EcsEntity>());
@@ -57,16 +59,24 @@ namespace Level
             if (!_playerBombs.TryGetValue(player, out var bombsQueue))
                 return;
 
-            if (!bombsQueue.TryDequeue(out var bombItem))
+            if (!bombsQueue.TryDequeue(out var bombEntity))
                 return;
 
-            /*var bombCoordinate = LevelModel.ToTileCoordinate(bombItem.Controller.WorldPosition); :TODO: fix
+            Assert.IsTrue(bombEntity.Has<BombTag>());
+            Assert.IsTrue(bombEntity.Has<EntityComponent>());
+            Assert.IsTrue(bombEntity.Has<TransformComponent>());
 
-            LevelModel.RemoveItem(bombCoordinate);
-            bombItem.Controller.DestroyItem();
+            ref var entityComponent = ref bombEntity.Get<EntityComponent>();
+            entityComponent.Controller.Kill();
+
+            ref var transformComponent = ref bombEntity.Get<TransformComponent>();
+            var bombPosition = transformComponent.WorldPosition;
+            /*var bombCoordinate = LevelModel.ToTileCoordinate(bombEntity.Controller.WorldPosition);
+            LevelModel.RemoveItem(bombCoordinate);*/
 
             var heroEntity = player.HeroEntity;
             Assert.IsTrue(heroEntity.Has<HeroTag>());
+            Assert.IsTrue(heroEntity.Has<EntityComponent>());
 
             ref var heroComponent = ref heroEntity.Get<EntityComponent>();
 
@@ -75,15 +85,39 @@ namespace Level
             var bombBlastRadius = heroConfig.BombBlastRadius;
             var blastDirections = heroConfig.BombBlastDirections;
 
-            var blastLines = GetBombBlastTileLines(blastDirections, bombBlastRadius, bombCoordinate).ToArray();
+            var entity = _ecsWorld.NewEntity();
+            entity.Replace(new CollidersLinecastComponent
+            {
+                InteractionLayerMask = 0xFFFFFFF,
+                Start = bombPosition - new fix2(1, 0),
+                End = bombPosition
+            });
 
-            var bombPosition = LevelModel.ToWorldPosition(bombCoordinate);
-            InstantiateBlastEffect(blastLines, bombBlastRadius, bombPosition, bombItem);
+            // var blastLines = GetBombBlastAabbs(blastDirections, bombBlastRadius, bombPosition);
 
-            ApplyDamageToEntities(blastLines, bombBlastDamage);
+            // InstantiateBlastEffect(blastLines, bombBlastRadius, bombPosition, bombEntity);
+
+            /*ApplyDamageToEntities(blastLines, bombBlastDamage);
 
             ApplyDamageToBlocks(blastLines);*/
+
+            // bombEntity.Destroy();
         }
+
+        /*private IEnumerable<AABB> GetBombBlastAabbs(IReadOnlyList<int2> blastDirections, int blastRadius, fix2 blastPosition)
+        {
+            return blastDirections
+                .Select(blastDirection =>
+                {
+                    var size = (fix2) (blastDirection * blastRadius) * LevelTiles.TileSize;
+                    AABB.CreateFromPositionAndSize(blastPosition, size);
+                    return Enumerable
+                        .Range(1, blastRadius)
+                        .Select(offset => blastPosition + blastDirection * offset)
+                        .ToArray();
+                })
+                .Append(new[] { blastCoordinate });
+        }*/
 
         private void ApplyDamageToBlocks(int2[][] blastLines)
         {
@@ -153,7 +187,7 @@ namespace Level
                 entity.Health.ApplyDamage(bombBlastDamage);*/
         }
 
-        /*private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, fix2 position, BombItem bombItem) :TODO: fix
+        /*private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, fix2 position, BombItem bombItem)
         {
             var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
             Assert.IsNotNull(go);
