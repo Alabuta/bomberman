@@ -1,3 +1,4 @@
+using Game.Systems;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using UnityEngine;
@@ -9,6 +10,8 @@ namespace Level
         private readonly EcsWorld _ecsWorld;
         private readonly EcsSystems _ecsSystems;
         private readonly EcsSystems _ecsFixedSystems;
+
+        private readonly EntitiesAabbTree _entitiesAabbTree;
 
         private fix _simulationStartTime;
         private fix _simulationCurrentTime;

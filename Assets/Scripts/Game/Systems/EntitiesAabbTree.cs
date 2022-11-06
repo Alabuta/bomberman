@@ -5,6 +5,7 @@ using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Game.Systems
@@ -17,7 +18,7 @@ namespace Game.Systems
         public int EntriesCount;
     }
 
-    public sealed class CollidersRectTree
+    public sealed class EntitiesAabbTree
     {
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
@@ -80,7 +81,7 @@ namespace Game.Systems
             }
         }
 
-        public void QueryByLine(fix2 p0, fix2 p1, IList<(AABB Aabb, EcsEntity Entity)> result)
+        public void QueryByLine(fix2 p0, fix2 p1, ICollection<(AABB Aabb, EcsEntity Entity)> result)
         {
             const int levelIndex = 0;
 
@@ -91,11 +92,11 @@ namespace Game.Systems
 
         private void QueryNodesByLine(
             fix2 p0, fix2 p1,
-            IList<(AABB Aabb, EcsEntity Entity)> result,
+            ICollection<(AABB Aabb, EcsEntity Entity)> result,
             int levelIndex, int nodeIndex)
         {
             var node = _nodes[levelIndex][nodeIndex];
-            if (!node.Aabb.CohenSutherlandLineClip(ref p0, ref p1))
+            if (!IntersectedByLine(p0, p1, node.Aabb))
                 return;
 
             var entriesStartIndex = node.EntriesStartIndex;
@@ -105,6 +106,8 @@ namespace Game.Systems
             {
                 for (var i = entriesStartIndex; i < entriesEndIndex; i++)
                 {
+                    if (_leafEntries[i].Entity.Has<HeroTag>())
+                        Debug.LogWarning("hero tag");
                     if (!IntersectedByLine(p0, p1, _leafEntries[i].Aabb))
                         continue;
 
@@ -121,7 +124,7 @@ namespace Game.Systems
                 aabb.CohenSutherlandLineClip(ref a, ref b);
         }
 
-        public void QueryByAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result)
+        public void QueryByAabb(AABB aabb, ICollection<(AABB Aabb, EcsEntity Entity)> result)
         {
             const int levelIndex = 0;
 
@@ -130,7 +133,8 @@ namespace Game.Systems
                 QueryNodesByAabb(aabb, result, levelIndex, nodeIndex);
         }
 
-        private void QueryNodesByAabb(AABB aabb, IList<(AABB Aabb, EcsEntity Entity)> result, int levelIndex, int nodeIndex)
+        private void QueryNodesByAabb(AABB aabb, ICollection<(AABB Aabb, EcsEntity Entity)> result, int levelIndex,
+            int nodeIndex)
         {
             var node = _nodes[levelIndex][nodeIndex];
             if (!fix.is_AABB_overlapped_by_AABB(aabb, node.Aabb))

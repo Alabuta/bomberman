@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Configs.Level;
@@ -14,7 +13,7 @@ using UnityEngine.Assertions;
 
 namespace Level
 {
-    public sealed class LevelTiles : IEnumerable<EcsEntity>
+    public sealed class LevelTiles /*: IEnumerable<EcsEntity>*/
     {
         private static readonly int2[] NeighborTilesOffsets =
         {
@@ -247,11 +246,11 @@ namespace Level
         public IEnumerable<EcsEntity> GetTilesByType(LevelTileType type) =>
             _tiles.Where(t => t.Get<LevelTileComponent>().Type == type);
 
-        public IEnumerator<EcsEntity> GetEnumerator() =>
+        /*public IEnumerator<EcsEntity> GetEnumerator() =>
             _tiles.AsEnumerable().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() =>
-            GetEnumerator();
+            GetEnumerator();*/
 
         /*public void AddItem(BombItem item, int2 coordinate)
         {

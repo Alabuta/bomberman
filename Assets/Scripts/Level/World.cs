@@ -61,22 +61,21 @@ namespace Level
             _ecsSystems = new EcsSystems(_ecsWorld);
             _ecsFixedSystems = new EcsSystems(_ecsWorld);
 
+            _entitiesAabbTree = new EntitiesAabbTree();
+
 #if UNITY_EDITOR
             Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create(_ecsWorld);
             Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_ecsSystems);
             Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_ecsFixedSystems);
-#endif
 
-#if UNITY_EDITOR
             var collidersDrawerGo = new GameObject("CollidersBoundsDrawer");
             Assert.IsNotNull(collidersDrawerGo);
             var colliderBoundsDrawer = collidersDrawerGo.AddComponent<CollidersBoundsDrawer>();
 
-            var collidersRectTree = new CollidersRectTree();
             var rTreeDrawerGo = new GameObject("RTreeDrawer");
             Assert.IsNotNull(rTreeDrawerGo);
-            var rTreeDrawer = rTreeDrawerGo.AddComponent<RTreeDrawer>();
-            rTreeDrawer.SetRTree(collidersRectTree);
+            var rTreeDrawer = rTreeDrawerGo.AddComponent<AabbEntitiesTreeDrawer>();
+            rTreeDrawer.SetRTree(_entitiesAabbTree);
 #endif
 
             _ecsSystems
@@ -106,8 +105,13 @@ namespace Level
                 .Add(new AttackBehaviourSystem())
                 .Add(healthSystem)
                 .Inject(this)
-                .Inject(collidersRectTree)
+                .Inject(_entitiesAabbTree)
                 .Init();
+        }
+
+        public void TraceLine(fix2 start, fix2 end, ICollection<(AABB Aabb, EcsEntity Entity)> result)
+        {
+            _entitiesAabbTree.QueryByLine(start, end, result);
         }
 
         public async Task InitWorld(IInputService inputService, LevelStage levelStage)

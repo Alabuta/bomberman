@@ -22,9 +22,9 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly CollidersRectTree _collidersRectTree;
+        private readonly EntitiesAabbTree _entitiesAabbTree;
 
-        private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders;
+        private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders; // :TODO: use AABBComponent
 
         private readonly EcsFilter<TransformComponent, LayerMaskComponent, CircleColliderComponent> _circleColliders;
         private readonly EcsFilter<TransformComponent, LayerMaskComponent, BoxColliderComponent> _boxColliders;
@@ -42,7 +42,7 @@ namespace Game.Systems
             {
                 var simulationSubStep = (fix) (iterationIndex + 1) / (fix) IterationsCount;
 
-                _collidersRectTree.Build(_colliders, simulationSubStep);
+                _entitiesAabbTree.Build(_colliders, simulationSubStep);
 
                 foreach (var entityIndex in _circleColliders)
                     DetectCollisions(simulationSubStep, _circleColliders, entityIndex);
@@ -50,8 +50,8 @@ namespace Game.Systems
                 foreach (var entityIndex in _boxColliders)
                     DetectCollisions(simulationSubStep, _boxColliders, entityIndex);
 
-                foreach (var entityIndex in _lineCasters)
-                    TraceLine(simulationSubStep, filter: _lineCasters, entityIndex);
+                /*foreach (var entityIndex in _lineCasters)
+                    TraceLine(simulationSubStep, filter: _lineCasters, entityIndex);*/
 
                 _processedPairs.Clear();
             }
@@ -67,7 +67,12 @@ namespace Game.Systems
 
             using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
             {
-                _collidersRectTree.QueryByLine(linecastComponent.Start, linecastComponent.End, result);
+                _entitiesAabbTree.QueryByLine(linecastComponent.Start, linecastComponent.End, result);
+
+                /*result.Sort((a, b) =>
+                {
+                    return 0;
+                });*/
 
                 foreach (var (aabb, entity) in result)
                 {
@@ -102,7 +107,7 @@ namespace Game.Systems
 
             using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
             {
-                _collidersRectTree.QueryByAabb(aabbA, result);
+                _entitiesAabbTree.QueryByAabb(aabbA, result);
 
                 var hasIntersection = false;
                 foreach (var (aabbB, entityB) in result)

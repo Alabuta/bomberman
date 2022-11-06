@@ -1,16 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Configs.Entity;
 using Game;
 using Game.Components;
-using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Tags;
 using Input;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
+using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Pool;
 
 namespace Level
 {
@@ -82,16 +84,47 @@ namespace Level
 
             var heroConfig = (HeroConfig) heroComponent.Config;
             var bombBlastDamage = heroConfig.BombBlastDamage; // :TODO: use hero parameters
-            var bombBlastRadius = heroConfig.BombBlastRadius;
+            var bombBlastRadius = 10; //heroConfig.BombBlastRadius;
             var blastDirections = heroConfig.BombBlastDirections;
 
-            var entity = _ecsWorld.NewEntity();
-            entity.Replace(new CollidersLinecastComponent
+            var start = bombPosition;
+            var end = bombPosition - new fix2(bombBlastRadius, 0);
+            var line = end - start;
+            var direction = fix2.normalize_safe(line, fix2.zero);
+
+            using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
             {
-                InteractionLayerMask = 0xFFFFFFF,
-                Start = bombPosition - new fix2(1, 0),
-                End = bombPosition
-            });
+                TraceLine(start, end, result);
+
+                /*result
+                    .Where(pair =>
+                    {
+
+                        return false;
+                    });*/
+
+                result.Sort((a, b) =>
+                {
+                    var vectorA = a.Aabb.GetCenter() - start;
+                    var vectorB = b.Aabb.GetCenter() - start;
+
+                    var distanceA = fix2.dot(vectorA, direction);
+                    var distanceB = fix2.dot(vectorB, direction);
+
+                    return distanceA.CompareTo(distanceB);
+                });
+
+                var (wallAabb, wallEntity) = result.FirstOrDefault(p =>
+                {
+                    if (p.Entity.Has<LevelTileComponent>() &&
+                        p.Entity.Get<LevelTileComponent>().Type == LevelTileType.HardBlock)
+                        return true;
+
+                    return p.Entity.Has<WallTag>();
+                });
+
+                Debug.LogWarning(result);
+            }
 
             // var blastLines = GetBombBlastAabbs(blastDirections, bombBlastRadius, bombPosition);
 

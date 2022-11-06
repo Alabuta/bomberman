@@ -7,15 +7,15 @@ using UnityEngine;
 
 namespace Gizmos
 {
-    public class RTreeDrawer : MonoBehaviour
+    public class AabbEntitiesTreeDrawer : MonoBehaviour
     {
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private CollidersRectTree _rTree;
+        private EntitiesAabbTree _rTree;
         private Color[] _colors;
 
-        public void SetRTree(CollidersRectTree rTree)
+        public void SetRTree(EntitiesAabbTree rTree)
         {
             _rTree = rTree;
 

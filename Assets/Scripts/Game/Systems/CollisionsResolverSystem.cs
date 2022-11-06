@@ -17,11 +17,15 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, CircleColliderComponent> _circleEnters;
-        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, BoxColliderComponent> _boxEnters;
+        private readonly EntitiesAabbTree _entitiesAabbTree;
 
+        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, CircleColliderComponent> _circleEnters;
         private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, CircleColliderComponent> _circleStays;
+
+        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, BoxColliderComponent> _boxEnters;
         private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, BoxColliderComponent> _boxStays;
+
+        private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders; // :TODO: use AABBComponent
 
         public void Run()
         {
@@ -36,6 +40,8 @@ namespace Game.Systems
 
             foreach (var entityIndex in _boxStays)
                 ResolveCollisions(_boxStays, entityIndex);
+
+            _entitiesAabbTree.Build(_colliders, fix.one);
         }
 
         private static void ResolveCollisions<TCollider, TEvent>(EcsFilter<TransformComponent, TEvent, TCollider> filter,

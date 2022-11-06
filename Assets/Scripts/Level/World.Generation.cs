@@ -79,6 +79,7 @@ namespace Level
                 });
 
                 entity.Replace(new HasColliderTag());
+                entity.Replace(new WallTag());
             }
         }
 
