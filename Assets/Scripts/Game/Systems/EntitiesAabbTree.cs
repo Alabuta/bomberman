@@ -79,6 +79,24 @@ namespace Game.Systems
                 var aabb = entity.GetEntityColliderAABB(position);
                 Insert(entity, aabb);
             }
+
+            for (var i = 0; i < _nodes[0].Count; i++)
+            {
+                if (_nodes[0][i].EntriesStartIndex < 0)
+                {
+                    Assert.AreEqual(AABB.Invalid, _nodes[0][i].Aabb);
+                    continue;
+                }
+
+                if (_nodes[0][i].EntriesCount < 1)
+                {
+                    Assert.AreEqual(AABB.Invalid, _nodes[0][i].Aabb);
+                    continue;
+                }
+
+                var aabb2 = CalculateLeafNodesAABB(0, i);
+                Assert.AreEqual(aabb2, _nodes[0][i].Aabb);
+            }
         }
 
         public void QueryByLine(fix2 p0, fix2 p1, ICollection<(AABB Aabb, EcsEntity Entity)> result)
@@ -96,7 +114,7 @@ namespace Game.Systems
             int levelIndex, int nodeIndex)
         {
             var node = _nodes[levelIndex][nodeIndex];
-            if (!IntersectedByLine(p0, p1, node.Aabb))
+            if (!node.Aabb.CohenSutherlandLineClip(ref p0, ref p1))
                 return;
 
             var entriesStartIndex = node.EntriesStartIndex;
@@ -170,18 +188,61 @@ namespace Game.Systems
                 rootEntriesStartIndex + nonEmptyNodesCount, nonEmptyNodesCount < MinEntries, aabb);
             Assert.IsTrue(nodeIndex > -1);
 
+            var expectedAabb = fix.AABBs_conjugate(rootNodes[nodeIndex].Aabb, aabb);
+
             var (a, b) = ChooseLeaf(rootLevelIndex, nodeIndex, aabb, entity);
             Assert.IsTrue(a.HasValue);
 
             rootNodes[nodeIndex] = a.Value;
 
             if (!b.HasValue)
+            {
+                Assert.AreEqual(expectedAabb, rootNodes[nodeIndex].Aabb);
+
+                for (var i = 0; i < _nodes[0].Count; i++)
+                {
+                    if (_nodes[0][i].EntriesStartIndex < 0)
+                    {
+                        Assert.AreEqual(AABB.Invalid, _nodes[0][i].Aabb);
+                        continue;
+                    }
+
+                    if (_nodes[0][i].EntriesCount < 1)
+                    {
+                        Assert.AreEqual(AABB.Invalid, _nodes[0][i].Aabb);
+                        continue;
+                    }
+
+                    var aabb2 = CalculateLeafNodesAABB(0, i);
+                    Assert.AreEqual(aabb2, _nodes[0][i].Aabb);
+                }
+
                 return;
+            }
 
             var candidateNodeIndex = rootNodes.FindIndex(n => n.Aabb == AABB.Invalid);
             if (candidateNodeIndex != -1)
             {
                 rootNodes[candidateNodeIndex] = b.Value;
+
+                for (var i = 0; i < _nodes[0].Count; i++)
+                {
+                    if (_nodes[0][i].EntriesStartIndex < 0)
+                    {
+                        Assert.AreEqual(AABB.Invalid, _nodes[0][i].Aabb);
+                        continue;
+                    }
+
+                    if (_nodes[0][i].EntriesCount < 1)
+                    {
+                        Assert.AreEqual(AABB.Invalid, _nodes[0][i].Aabb);
+                        continue;
+                    }
+
+                    var aabb2 = CalculateLeafNodesAABB(0, i);
+                    Assert.AreEqual(aabb2, _nodes[0][i].Aabb);
+                }
+
                 return;
             }
 
@@ -339,6 +400,49 @@ namespace Game.Systems
                 }, MaxEntries - newRootNodes.Count));
 
             _nodes.Insert(0, newRootNodes);
+
+            for (var i = 0; i < _nodes[0].Count; i++)
+            {
+                if (_nodes[0][i].EntriesStartIndex < 0)
+                {
+                    Assert.AreEqual(AABB.Invalid, _nodes[0][i].Aabb);
+                    continue;
+                }
+
+                if (_nodes[0][i].EntriesCount < 1)
+                {
+                    Assert.AreEqual(AABB.Invalid, _nodes[0][i].Aabb);
+                    continue;
+                }
+
+                var aabb = CalculateLeafNodesAABB(0, i);
+                Assert.AreEqual(aabb, _nodes[0][i].Aabb);
+            }
+        }
+
+        private AABB CalculateLeafNodesAABB(int levelIndex, int nodeIndex)
+        {
+            var node = _nodes[levelIndex][nodeIndex];
+
+            var entriesStartIndex = node.EntriesStartIndex;
+            var entriesEndIndex = node.EntriesStartIndex + node.EntriesCount;
+
+            if (levelIndex + 1 == TreeHeight)
+            {
+                var leafNodesAabb = AABB.Invalid;
+
+                for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                    leafNodesAabb = fix.AABBs_conjugate(leafNodesAabb, _leafEntries[i].Aabb);
+
+                return leafNodesAabb;
+            }
+
+            var aabb = AABB.Invalid;
+
+            for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                aabb = fix.AABBs_conjugate(aabb, CalculateLeafNodesAABB(levelIndex + 1, i));
+
+            return aabb;
         }
 
         private int GetNodeIndexToInsert(int nodeLevel, int entriesStartIndex, int entriesEndIndex, bool isFillCase,
