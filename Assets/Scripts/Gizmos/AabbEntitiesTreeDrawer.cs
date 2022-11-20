@@ -57,13 +57,12 @@ namespace Gizmos
             }
         }
 
-        private void DrawChildren(Node parentNode, int levelIndex, int hashCode)
+        private void DrawChildren(Node node, int levelIndex, int hashCode)
         {
             if (levelIndex >= _rTree.TreeHeight)
                 return;
 
-            var childNodes =
-                _rTree.GetNodes(levelIndex, Enumerable.Range(parentNode.EntriesStartIndex, parentNode.EntriesCount));
+            var childNodes = _rTree.GetNodes(levelIndex, Enumerable.Range(node.EntriesStartIndex, node.EntriesCount));
 
             foreach (var (childNode, i) in childNodes.Select((n, i) => (n, i)))
             {
@@ -72,15 +71,14 @@ namespace Gizmos
                 if (levelIndex + 1 != _rTree.TreeHeight)
                 {
                     DrawChildren(childNode, levelIndex + 1, childHashCode);
-                    return;
+                    continue;
                 }
 
                 if (!_colorsInUse.TryGetValue(childHashCode, out var color))
                 {
                     color = _colors.LastOrDefault();
-                    _colors.RemoveAt(_colors.Count - 1);
-
                     _colorsInUse.Add(childHashCode, color);
+                    _colors.RemoveAt(_colors.Count - 1);
                 }
 
                 var aabb = childNode.Aabb;
@@ -95,27 +93,23 @@ namespace Gizmos
                 var leftBottomCorner = fix2.ToXY(aabb.min);
                 var rightBottomCorner = fix2.ToXY(new fix2(aabb.max.x, aabb.min.y));
 
-                const float thickness = 8f;
-                Handles.DrawBezier(rightTopCorner, leftTopCorner, rightTopCorner, leftTopCorner, color, null, thickness);
-                Handles.DrawBezier(leftTopCorner, leftBottomCorner, leftTopCorner, leftBottomCorner, color, null,
-                    thickness);
+                const float width = 8f;
+                Handles.DrawBezier(rightTopCorner, leftTopCorner, rightTopCorner, leftTopCorner, color, null, width);
+                Handles.DrawBezier(leftTopCorner, leftBottomCorner, leftTopCorner, leftBottomCorner, color, null, width);
                 Handles.DrawBezier(leftBottomCorner, rightBottomCorner, leftBottomCorner, rightBottomCorner, color, null,
-                    thickness);
-                Handles.DrawBezier(rightBottomCorner, rightTopCorner, rightBottomCorner, rightTopCorner, color, null,
-                    thickness);
+                    width);
+                Handles.DrawBezier(rightBottomCorner, rightTopCorner, rightBottomCorner, rightTopCorner, color, null, width);
 
-                DrawLeafEntries(childNode, levelIndex + 1, color * new Color(1, 1, 1, 0.99f));
+                DrawLeafEntries(childNode, color * new Color(1, 1, 1, 0.99f));
             }
         }
 
-        private void DrawLeafEntries(Node parentNode, int levelIndex, Color color)
+        private void DrawLeafEntries(Node node, Color color)
         {
-            var leafNodes =
-                _rTree.GetLeafEntries(levelIndex, Enumerable.Range(parentNode.EntriesStartIndex, parentNode.EntriesCount));
+            var leafEntries = _rTree.GetLeafEntries(Enumerable.Range(node.EntriesStartIndex, node.EntriesCount));
 
-            foreach (var childNode in leafNodes)
+            foreach (var (aabb, _) in leafEntries)
             {
-                var aabb = childNode.Aabb;
                 var size = aabb.max - aabb.min;
                 var center = fix2.ToXY(aabb.min + size / new fix(2));
 
