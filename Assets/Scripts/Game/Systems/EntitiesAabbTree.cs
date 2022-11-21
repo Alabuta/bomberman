@@ -74,8 +74,6 @@ namespace Game.Systems
                 var aabb = entity.GetEntityColliderAABB(position);
                 Insert(entity, aabb);
             }
-
-            CheckLevel();
         }
 
         public void QueryByLine(fix2 p0, fix2 p1, ICollection<(AABB Aabb, EcsEntity Entity)> result)
@@ -165,134 +163,31 @@ namespace Game.Systems
                 rootEntriesStartIndex + nonEmptyNodesCount, nonEmptyNodesCount < MinEntries, aabb);
             Assert.IsTrue(nodeIndex > -1);
 
-            CheckRefs();
-            CheckLevel();
+            var targetNode = rootNodes[nodeIndex];
+            var extraNode = ChooseLeaf(ref targetNode, rootLevelIndex, aabb, entity);
+            Assert.AreNotEqual(AABB.Empty, targetNode.Aabb);
 
-            var expectedAabb = fix.AABBs_conjugate(rootNodes[nodeIndex].Aabb, aabb);
+            rootNodes[nodeIndex] = targetNode;
 
-            var (a, b) = ChooseLeaf(rootLevelIndex, nodeIndex, aabb, entity);
-            Assert.IsTrue(a.HasValue);
-            Assert.AreNotEqual(AABB.Empty, a.Value.Aabb);
-
-            rootNodes[nodeIndex] = a.Value;
-
-            Assert.AreEqual(CalculateNodeAabb(rootNodes[nodeIndex], 0), rootNodes[nodeIndex].Aabb);
-
-            if (!b.HasValue)
-            {
-                Assert.AreEqual(expectedAabb, rootNodes[nodeIndex].Aabb);
-                CheckRefs();
-                CheckLevel();
+            if (!extraNode.HasValue)
                 return;
-            }
 
-            Assert.AreNotEqual(AABB.Empty, b.Value.Aabb);
+            Assert.AreNotEqual(AABB.Empty, extraNode.Value.Aabb);
 
             var candidateNodeIndex = rootNodes.FindIndex(n => n.Aabb == AABB.Empty);
             if (candidateNodeIndex != -1)
             {
-                rootNodes[candidateNodeIndex] = b.Value;
-                Assert.AreEqual(CalculateNodeAabb(rootNodes[candidateNodeIndex], 0), rootNodes[candidateNodeIndex].Aabb);
-                CheckRefs();
-                CheckLevel();
+                rootNodes[candidateNodeIndex] = extraNode.Value;
                 return;
             }
 
             Assert.IsTrue(rootNodes.All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
 
-            CheckLevel();
-            CheckRefs();
-            GrowTree(b.Value);
-            CheckLevel();
-            CheckRefs();
+            GrowTree(extraNode.Value);
         }
 
-        private void CheckRefs(int levelIndex = 0)
+        private Node? ChooseLeaf(ref Node node, int nodeLevelIndex, in AABB aabb, EcsEntity entity)
         {
-            return;
-
-            CheckDuplicateRefs(levelIndex);
-            CheckDeadRefs(levelIndex);
-        }
-
-        private void CheckDeadRefs(int levelIndex)
-        {
-            while (levelIndex < TreeHeight)
-            {
-                var levelNodes = _nodes[levelIndex];
-
-                foreach (var levelNode in levelNodes)
-                {
-                    Assert.AreEqual(levelNode.EntriesStartIndex == -1, levelNode.EntriesCount == 0);
-                    Assert.AreEqual(levelNode.EntriesStartIndex == -1, levelNode.Aabb == AABB.Empty);
-                    Assert.AreEqual(levelNode.EntriesCount == 0, levelNode.Aabb == AABB.Empty);
-
-                    if (levelNode.EntriesStartIndex == -1)
-                        continue;
-
-                    Assert.IsTrue(levelNode.EntriesCount <= MaxEntries);
-
-                    var indices = Enumerable.Range(levelNode.EntriesStartIndex + levelNode.EntriesCount,
-                        MaxEntries - levelNode.EntriesCount);
-
-                    foreach (var index in indices)
-                    {
-                        if (levelIndex + 1 == TreeHeight)
-                        {
-                            Assert.AreEqual(AABB.Empty, _leafEntries[index].Aabb);
-                            Assert.AreEqual(EcsEntity.Null, _leafEntries[index].Entity);
-                        }
-                        else
-                        {
-                            Assert.AreEqual(AABB.Empty, _nodes[levelIndex + 1][index].Aabb);
-                            Assert.AreEqual(-1, _nodes[levelIndex + 1][index].EntriesStartIndex);
-                            Assert.AreEqual(0, _nodes[levelIndex + 1][index].EntriesCount);
-                        }
-                    }
-                }
-
-                levelIndex++;
-            }
-        }
-
-        private void CheckDuplicateRefs(int levelIndex = 0)
-        {
-            while (levelIndex < TreeHeight)
-            {
-                var set = new SortedSet<int>();
-                var levelNodes = _nodes[levelIndex];
-
-                foreach (var levelNode in levelNodes)
-                {
-                    Assert.AreEqual(levelNode.EntriesStartIndex == -1, levelNode.EntriesCount == 0);
-                    Assert.AreEqual(levelNode.EntriesStartIndex == -1, levelNode.Aabb == AABB.Empty);
-                    Assert.AreEqual(levelNode.EntriesCount == 0, levelNode.Aabb == AABB.Empty);
-
-                    if (levelNode.EntriesStartIndex == -1)
-                        continue;
-
-                    Assert.IsTrue(levelNode.EntriesCount <= MaxEntries);
-
-                    var indices = Enumerable.Range(levelNode.EntriesStartIndex, levelNode.EntriesCount)
-                        .ToArray();
-
-                    foreach (var index in indices)
-                    {
-                        Assert.IsFalse(set.Contains(index));
-                        set.Add(index);
-                    }
-                }
-
-                levelIndex++;
-            }
-        }
-
-        private (Node? a, Node? b) ChooseLeaf(int nodeLevelIndex, int nodeIndex, in AABB aabb, EcsEntity entity)
-        {
-            CheckLevel(nodeLevelIndex);
-            var levelNodes = _nodes[nodeLevelIndex];
-            var node = levelNodes[nodeIndex];
-
             var isLeafLevel = nodeLevelIndex + 1 == TreeHeight;
             if (isLeafLevel)
             {
@@ -310,8 +205,7 @@ namespace Game.Systems
                 node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
                 node.EntriesCount++;
 
-                Assert.AreEqual(CalculateNodeAabb(node, nodeLevelIndex), node.Aabb);
-                return (a: node, b: null);
+                return null;
             }
 
             var entriesCount = node.EntriesCount;
@@ -326,24 +220,19 @@ namespace Game.Systems
             Assert.IsTrue(childNodeIndex >= entriesStartIndex);
             Assert.IsTrue(childNodeIndex < entriesEndIndex);
 
-            var node0 = CalculateNodeAabb(node, nodeLevelIndex);
-            Assert.AreEqual(node0, node.Aabb);
-            var (a, b) = ChooseLeaf(childNodeLevelIndex, childNodeIndex, aabb, entity);
-            Assert.IsTrue(a.HasValue);
-            Assert.AreEqual(CalculateNodeAabb(a.Value, childNodeLevelIndex), a.Value.Aabb);
+            var targetChildNode = _nodes[childNodeLevelIndex][childNodeIndex];
+            var extraChildNode = ChooseLeaf(ref targetChildNode, childNodeLevelIndex, aabb, entity);
 
             var childLevelNodes = _nodes[childNodeLevelIndex];
-            childLevelNodes[childNodeIndex] = a.Value;
+            childLevelNodes[childNodeIndex] = targetChildNode;
 
-            if (!b.HasValue)
+            if (!extraChildNode.HasValue)
             {
                 node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
-                Assert.AreEqual(CalculateNodeAabb(node, nodeLevelIndex), node.Aabb);
-                return (a: node, b: null);
+                return null;
             }
 
-            var newChildNode = b.Value;
-            Assert.AreEqual(CalculateNodeAabb(newChildNode, childNodeLevelIndex), b.Value.Aabb);
+            var newChildNode = extraChildNode.Value;
             if (entriesCount == MaxEntries)
                 return SplitNode(ref node, childLevelNodes, newChildNode, GetNodeAabb, _invalidNodeEntry);
 
@@ -352,14 +241,11 @@ namespace Game.Systems
             node.Aabb = fix.AABBs_conjugate(node.Aabb, aabb);
             node.EntriesCount++;
 
-            Assert.AreEqual(CalculateNodeAabb(node, nodeLevelIndex), node.Aabb);
-            return (a: node, b: null);
+            return null;
         }
 
         private void GrowTree(in Node newEntry)
         {
-            CheckRefs();
-
             var topLevelNodes = _nodes[0];
             Assert.AreEqual(MaxEntries, topLevelNodes.Count);
 
@@ -370,14 +256,13 @@ namespace Game.Systems
                 EntriesCount = topLevelNodes.Count
             };
 
-            var (a, b) = SplitNode(ref newRootNodeA, topLevelNodes, newEntry, GetNodeAabb, _invalidNodeEntry);
+            var newRootNodeB = SplitNode(ref newRootNodeA, topLevelNodes, newEntry, GetNodeAabb, _invalidNodeEntry);
 
-            var newRootNodes = new List<Node>(new[] { newRootNodeA, b });
+            var newRootNodes = new List<Node>(new[] { newRootNodeA, newRootNodeB });
             newRootNodes.AddRange(Enumerable
                 .Repeat(new Node
                 {
                     Aabb = AABB.Empty,
-
                     EntriesStartIndex = -1,
                     EntriesCount = 0
                 }, MaxEntries - newRootNodes.Count));
@@ -387,12 +272,9 @@ namespace Game.Systems
             Assert.IsTrue(_nodes[0].Count(n => n.Aabb != AABB.Empty) >= MinEntries);
             Assert.IsTrue(_nodes[0].Count(n => n.EntriesStartIndex != -1) >= MinEntries);
             Assert.IsTrue(_nodes[0].Count(n => n.EntriesCount > 0) >= MinEntries);
-
-            CheckRefs();
-            CheckLevel();
         }
 
-        private static (Node a, Node b) SplitNode<T>(ref Node splitNode, List<T> nodeEntries,
+        private static Node SplitNode<T>(ref Node splitNode, List<T> nodeEntries,
             T newEntry, Func<T, AABB> getAabbFunc, T invalidEntry)
         {
             var entriesCount = splitNode.EntriesCount;
@@ -467,93 +349,7 @@ namespace Game.Systems
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
             Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
 
-            return (a: splitNode, b: newNode);
-        }
-
-        private void CheckLevel(int levelIndex = 0)
-        {
-            return;
-
-            var nodes = _nodes[levelIndex];
-
-            for (var i = 0; i < nodes.Count; i++)
-            {
-                Assert.AreEqual(nodes[i].EntriesStartIndex == -1, nodes[i].EntriesCount == 0);
-                Assert.AreEqual(nodes[i].EntriesStartIndex == -1, nodes[i].Aabb == AABB.Empty);
-
-                if (nodes[i].EntriesStartIndex < 0 || nodes[i].EntriesCount < 1)
-                    continue;
-
-                var aabb = CalculateLeafNodesAABB(levelIndex, i);
-                Assert.AreEqual(aabb, nodes[i].Aabb);
-            }
-        }
-
-        private AABB CalculateLeafNodesAABB(int levelIndex, int nodeIndex)
-        {
-            var node = _nodes[levelIndex][nodeIndex];
-
-            var startIndex = node.EntriesStartIndex;
-            var endIndex = startIndex + node.EntriesCount;
-
-            if (node.Aabb == AABB.Empty || startIndex == -1 || endIndex == 0)
-                return AABB.Empty;
-
-            if (levelIndex + 1 == TreeHeight)
-            {
-                var leafNodesAabb = AABB.Empty;
-
-                for (var i = startIndex; i < endIndex; i++)
-                {
-                    Assert.AreNotEqual(EcsEntity.Null, _leafEntries[i].Entity);
-                    Assert.AreNotEqual(AABB.Empty, _leafEntries[i].Aabb);
-                    leafNodesAabb = fix.AABBs_conjugate(leafNodesAabb, _leafEntries[i].Aabb);
-                }
-
-                return leafNodesAabb;
-            }
-
-            var aabb = AABB.Empty;
-
-            for (var i = startIndex; i < endIndex; i++)
-            {
-                Assert.AreNotEqual(AABB.Empty, _nodes[levelIndex + 1][i].Aabb);
-                aabb = fix.AABBs_conjugate(aabb, CalculateLeafNodesAABB(levelIndex + 1, i));
-            }
-
-            return aabb;
-        }
-
-        private AABB CalculateNodeAabb(Node node, int levelIndex)
-        {
-            var startIndex = node.EntriesStartIndex;
-            var endIndex = startIndex + node.EntriesCount;
-
-            if (node.Aabb == AABB.Empty || startIndex == -1 || endIndex == 0)
-                return AABB.Empty;
-
-            var aabb = AABB.Empty;
-
-            if (levelIndex + 1 == TreeHeight)
-            {
-                for (var i = startIndex; i < endIndex; i++)
-                {
-                    Assert.AreNotEqual(EcsEntity.Null, _leafEntries[i].Entity);
-                    Assert.AreNotEqual(AABB.Empty, _leafEntries[i].Aabb);
-                    aabb = fix.AABBs_conjugate(aabb, _leafEntries[i].Aabb);
-                }
-
-                return aabb;
-            }
-
-            var childNodes = _nodes[levelIndex + 1];
-            for (var i = startIndex; i < endIndex; i++)
-            {
-                var childNodeAabb = CalculateNodeAabb(childNodes[i], levelIndex + 1);
-                aabb = fix.AABBs_conjugate(aabb, childNodeAabb);
-            }
-
-            return aabb;
+            return newNode;
         }
 
         private int GetNodeIndexToInsert(int nodeLevel, int entriesStartIndex, int entriesEndIndex, bool isFillCase,
