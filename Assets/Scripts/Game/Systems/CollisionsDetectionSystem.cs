@@ -173,55 +173,61 @@ namespace Game.Systems
             {
                 case true when _collidedPairs.Contains(hashedPair):
                 {
-                    ref var eventComponentA = ref entityA.Get<OnCollisionStayEventComponent>();
-                    if (eventComponentA.Entities != null)
-                        eventComponentA.Entities.Add(entityB);
-                    else
-                        eventComponentA.Entities = new HashSet<EcsEntity> { entityB };
-
-                    ref var eventComponentB = ref entityB.Get<OnCollisionStayEventComponent>();
-                    if (eventComponentB.Entities != null)
-                        eventComponentB.Entities.Add(entityA);
-                    else
-                        eventComponentB.Entities = new HashSet<EcsEntity> { entityA };
+                    UpdateCollisionStayEventComponent(entityA, entityB);
+                    UpdateCollisionStayEventComponent(entityB, entityA);
 
                     break;
                 }
 
                 case true when !_collidedPairs.Contains(hashedPair):
                 {
-                    ref var eventComponentA = ref entityA.Get<OnCollisionEnterEventComponent>();
-                    if (eventComponentA.Entities != null)
-                        eventComponentA.Entities.Add(entityB);
-                    else
-                        eventComponentA.Entities = new HashSet<EcsEntity> { entityB };
-
-                    ref var eventComponentB = ref entityB.Get<OnCollisionEnterEventComponent>();
-                    if (eventComponentB.Entities != null)
-                        eventComponentB.Entities.Add(entityA);
-                    else
-                        eventComponentB.Entities = new HashSet<EcsEntity> { entityA };
+                    UpdateCollisionEnterEventComponent(entityA, entityB);
+                    UpdateCollisionEnterEventComponent(entityB, entityA);
 
                     break;
                 }
 
                 case false when _collidedPairs.Contains(hashedPair):
                 {
-                    ref var eventComponentA = ref entityA.Get<OnCollisionExitEventComponent>();
-                    if (eventComponentA.Entities != null)
-                        eventComponentA.Entities.Add(entityB);
-                    else
-                        eventComponentA.Entities = new HashSet<EcsEntity> { entityB };
-
-                    ref var eventComponentB = ref entityB.Get<OnCollisionExitEventComponent>();
-                    if (eventComponentB.Entities != null)
-                        eventComponentB.Entities.Add(entityA);
-                    else
-                        eventComponentB.Entities = new HashSet<EcsEntity> { entityA };
+                    UpdateCollisionExitEventComponent(entityA, entityB);
+                    UpdateCollisionExitEventComponent(entityB, entityA);
 
                     break;
                 }
             }
+        }
+
+        private static void UpdateCollisionEnterEventComponent(EcsEntity entityA, EcsEntity entityB)
+        {
+            if (entityA.Has<OnCollisionEnterEventComponent>())
+            {
+                ref var eventComponent = ref entityA.Get<OnCollisionEnterEventComponent>();
+                eventComponent.Entities.Add(entityB);
+            }
+            else
+                entityA.Replace(new OnCollisionEnterEventComponent(new HashSet<EcsEntity> { entityB }));
+        }
+
+        private static void UpdateCollisionExitEventComponent(EcsEntity entityA, EcsEntity entityB)
+        {
+            if (entityA.Has<OnCollisionExitEventComponent>())
+            {
+                ref var eventComponent = ref entityA.Get<OnCollisionExitEventComponent>();
+                eventComponent.Entities.Add(entityB);
+            }
+            else
+                entityA.Replace(new OnCollisionExitEventComponent(new HashSet<EcsEntity> { entityB }));
+        }
+
+        private static void UpdateCollisionStayEventComponent(EcsEntity entityA, EcsEntity entityB)
+        {
+            if (entityA.Has<OnCollisionStayEventComponent>())
+            {
+                ref var eventComponent = ref entityA.Get<OnCollisionStayEventComponent>();
+                eventComponent.Entities.Add(entityB);
+            }
+            else
+                entityA.Replace(new OnCollisionStayEventComponent(new HashSet<EcsEntity> { entityB }));
         }
     }
 }
