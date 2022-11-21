@@ -6,7 +6,7 @@ using Unity.Mathematics;
 namespace Math.FixedPointMath
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public struct AABB : IEquatable<AABB>
+    public readonly struct AABB : IEquatable<AABB>
     {
         [Flags]
         private enum OutCode
@@ -18,8 +18,8 @@ namespace Math.FixedPointMath
             Top = 0b1000
         }
 
-        public fix2 min;
-        public fix2 max;
+        public readonly fix2 min;
+        public readonly fix2 max;
 
         public static AABB Empty = new(new fix2(fix.MaxValue), new fix2(fix.MinValue));
 

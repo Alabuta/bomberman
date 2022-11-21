@@ -297,8 +297,7 @@ namespace Game.Systems
             if (isLeafLevel)
             {
                 if (node.EntriesCount == MaxEntries)
-                    return SplitNode(nodeLevelIndex, nodeIndex, _leafEntries, (aabb, entity), GetLeafEntryAabb,
-                        _invalidLeafEntry);
+                    return SplitNode(ref node, _leafEntries, (aabb, entity), GetLeafEntryAabb, _invalidLeafEntry);
 
                 if (node.EntriesStartIndex == -1)
                 {
@@ -346,7 +345,7 @@ namespace Game.Systems
             var newChildNode = b.Value;
             Assert.AreEqual(CalculateNodeAabb(newChildNode, childNodeLevelIndex), b.Value.Aabb);
             if (entriesCount == MaxEntries)
-                return SplitNode(nodeLevelIndex, nodeIndex, childLevelNodes, newChildNode, GetNodeAabb, _invalidNodeEntry);
+                return SplitNode(ref node, childLevelNodes, newChildNode, GetNodeAabb, _invalidNodeEntry);
 
             childLevelNodes[entriesStartIndex + node.EntriesCount] = newChildNode;
 
@@ -364,96 +363,16 @@ namespace Game.Systems
             var topLevelNodes = _nodes[0];
             Assert.AreEqual(MaxEntries, topLevelNodes.Count);
 
-            var (childNodeIndexA, childNodeIndexB) =
-                FindLargestEntriesPair(topLevelNodes, newEntry, 0, MaxEntries, GetNodeAabb);
-            Assert.IsTrue(childNodeIndexA > -1 && childNodeIndexB > -1 && childNodeIndexA < childNodeIndexB);
-
-            var childNodesStartIndexA = 0;
-            var childNodesStartIndexB = topLevelNodes.Count;
-            var childNodesEndIndexB = topLevelNodes.Count + MaxEntries;
-            Assert.AreEqual(MaxEntries, childNodesStartIndexB);
-
-            var childNodeA = topLevelNodes[childNodeIndexA];
-            var childNodeB = childNodeIndexB == MaxEntries ? newEntry : topLevelNodes[childNodeIndexB];
-
-            topLevelNodes.AddRange(Enumerable.Repeat(_invalidNodeEntry, MaxEntries));
-
-            var aabbA = childNodeA.Aabb;
-            var aabbB = childNodeB.Aabb;
-
             var newRootNodeA = new Node
             {
                 Aabb = AABB.Empty,
-
-                EntriesStartIndex = childNodesStartIndexA,
-                EntriesCount = 0
+                EntriesStartIndex = 0,
+                EntriesCount = topLevelNodes.Count
             };
 
-            var newRootNodeB = new Node
-            {
-                Aabb = aabbB,
+            var (a, b) = SplitNode(ref newRootNodeA, topLevelNodes, newEntry, GetNodeAabb, _invalidNodeEntry);
 
-                EntriesStartIndex = childNodesStartIndexB,
-                EntriesCount = 1
-            };
-
-            topLevelNodes[childNodesStartIndexB++] = childNodeB;
-
-            for (var rootNodeIndexC = 0; rootNodeIndexC <= MaxEntries; rootNodeIndexC++)
-            {
-                if (rootNodeIndexC == childNodeIndexA)
-                {
-                    topLevelNodes[childNodesStartIndexA] = childNodeA;
-                    newRootNodeA.Aabb = fix.AABBs_conjugate(newRootNodeA.Aabb, childNodeA.Aabb);
-
-                    ++childNodesStartIndexA;
-                    ++newRootNodeA.EntriesCount;
-
-                    continue;
-                }
-
-                if (rootNodeIndexC == childNodeIndexB)
-                    continue;
-
-                var nodeC = rootNodeIndexC == MaxEntries ? newEntry : topLevelNodes[rootNodeIndexC];
-                var aabbC = nodeC.Aabb;
-
-                var conjugatedAabbA = fix.AABBs_conjugate(aabbA, aabbC);
-                var conjugatedAabbB = fix.AABBs_conjugate(aabbB, aabbC);
-
-                var isSecondNodeTarget = IsSecondNodeTarget(aabbA, aabbB, conjugatedAabbA, conjugatedAabbB);
-                if (isSecondNodeTarget && childNodesStartIndexB < childNodesEndIndexB)
-                {
-                    topLevelNodes[childNodesStartIndexB++] = nodeC;
-
-                    newRootNodeB.Aabb = fix.AABBs_conjugate(newRootNodeB.Aabb, aabbC);
-                    ++newRootNodeB.EntriesCount;
-                }
-                else
-                {
-                    topLevelNodes[childNodesStartIndexA++] = nodeC;
-
-                    newRootNodeA.Aabb = fix.AABBs_conjugate(newRootNodeA.Aabb, aabbC);
-                    ++newRootNodeA.EntriesCount;
-                }
-            }
-
-            /*for (var i = childNodesStartIndexA; i < MaxEntries; i++)
-                topLevelNodes[i] = _invalidNodeEntry;*/
-
-            while (newRootNodeA.EntriesCount < MinEntries || newRootNodeB.EntriesCount < MinEntries)
-                FillNodes(topLevelNodes, GetNodeAabb, ref newRootNodeA, ref newRootNodeB);
-
-            for (var i = newRootNodeA.EntriesCount; i < MaxEntries; i++)
-                topLevelNodes[newRootNodeA.EntriesStartIndex + i] = _invalidNodeEntry;
-
-            for (var i = newRootNodeB.EntriesCount; i < MaxEntries; i++)
-                topLevelNodes[newRootNodeB.EntriesStartIndex + i] = _invalidNodeEntry;
-
-            Assert.IsTrue(newRootNodeA.EntriesCount is >= MinEntries and <= MaxEntries);
-            Assert.IsTrue(newRootNodeB.EntriesCount is >= MinEntries and <= MaxEntries);
-
-            var newRootNodes = new List<Node>(new[] { newRootNodeA, newRootNodeB });
+            var newRootNodes = new List<Node>(new[] { newRootNodeA, b });
             newRootNodes.AddRange(Enumerable
                 .Repeat(new Node
                 {
@@ -471,6 +390,84 @@ namespace Game.Systems
 
             CheckRefs();
             CheckLevel();
+        }
+
+        private static (Node a, Node b) SplitNode<T>(ref Node splitNode, List<T> nodeEntries,
+            T newEntry, Func<T, AABB> getAabbFunc, T invalidEntry)
+        {
+            var entriesCount = splitNode.EntriesCount;
+            var startIndex = splitNode.EntriesStartIndex;
+            var endIndex = startIndex + entriesCount;
+
+            Assert.AreEqual(MaxEntries, entriesCount);
+
+            // Quadratic cost split
+            // Search for pairs of entries A and B that would cause the largest area if placed in the same node
+            // Put A and B entries in two different nodes
+            // Then consider all other entries area increase relatively to two previous nodes' AABBs
+            // Assign entry to the node with smaller AABB area increase
+            // Repeat until all entries are assigned between two new nodes
+
+            var (indexA, indexB) = FindLargestEntriesPair(nodeEntries, newEntry, startIndex, endIndex, getAabbFunc);
+            Assert.IsTrue(indexA > -1 && indexB > -1);
+
+            var newNodeStartEntry = indexB != endIndex ? nodeEntries[indexB] : newEntry;
+            var newEntriesStartIndex = nodeEntries.Count;
+            var newNode = new Node
+            {
+                Aabb = getAabbFunc.Invoke(newNodeStartEntry),
+
+                EntriesStartIndex = newEntriesStartIndex,
+                EntriesCount = 1
+            };
+
+            nodeEntries.Add(newNodeStartEntry);
+            nodeEntries.AddRange(Enumerable.Repeat(invalidEntry, MaxEntries - 1));
+
+            (nodeEntries[startIndex], nodeEntries[indexA]) = (nodeEntries[indexA], nodeEntries[startIndex]);
+
+            splitNode.EntriesCount = 1;
+            splitNode.Aabb = getAabbFunc.Invoke(nodeEntries[startIndex]);
+
+            for (var i = 1; i <= MaxEntries; i++)
+            {
+                if (startIndex + i == indexB)
+                    continue;
+
+                var entry = i == MaxEntries ? newEntry : nodeEntries[startIndex + i];
+                var entityAabb = getAabbFunc.Invoke(entry);
+
+                var splitNodeAabb = GetNodeAabb(splitNode);
+                var newNodeAabb = GetNodeAabb(newNode);
+
+                var conjugatedAabbA = fix.AABBs_conjugate(splitNodeAabb, entityAabb);
+                var conjugatedAabbB = fix.AABBs_conjugate(newNodeAabb, entityAabb);
+
+                var isNewNodeTarget = IsSecondNodeTarget(splitNodeAabb, newNodeAabb, conjugatedAabbA, conjugatedAabbB);
+                ref var targetNode = ref isNewNodeTarget ? ref newNode : ref splitNode;
+
+                if (isNewNodeTarget || targetNode.EntriesCount != i)
+                    nodeEntries[targetNode.EntriesStartIndex + targetNode.EntriesCount] = entry;
+
+                targetNode.EntriesCount++;
+                targetNode.Aabb = isNewNodeTarget ? conjugatedAabbB : conjugatedAabbA;
+            }
+
+            while (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
+                FillNodes(nodeEntries, getAabbFunc, ref splitNode, ref newNode);
+
+            for (var i = splitNode.EntriesCount; i < MaxEntries; i++)
+                nodeEntries[splitNode.EntriesStartIndex + i] = invalidEntry;
+
+            for (var i = newNode.EntriesCount; i < MaxEntries; i++)
+                nodeEntries[newNode.EntriesStartIndex + i] = invalidEntry;
+
+            Assert.IsTrue(nodeEntries.Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries * 2);
+
+            Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
+            Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
+
+            return (a: splitNode, b: newNode);
         }
 
         private void CheckLevel(int levelIndex = 0)
@@ -584,96 +581,6 @@ namespace Game.Systems
             }
 
             return nodeIndex;
-        }
-
-        private (Node a, Node b) SplitNode<T>(int splitNodeLevel, int splitNodeIndex, List<T> nodeEntries,
-            T newEntry, Func<T, AABB> getAabbFunc, T invalidEntry)
-        {
-            var levelNodes = _nodes[splitNodeLevel];
-            var splitNode = levelNodes[splitNodeIndex];
-
-            var entriesCount = splitNode.EntriesCount;
-            var startIndex = splitNode.EntriesStartIndex;
-            var endIndex = startIndex + entriesCount;
-
-            Assert.AreEqual(MaxEntries, entriesCount);
-
-            // Quadratic cost split
-            // Search for pairs of entries A and B that would cause the largest area if placed in the same node
-            // Put A and B entries in two different nodes
-            // Then consider all other entries area increase relatively to two previous nodes' AABBs
-            // Assign entry to the node with smaller AABB area increase
-            // Repeat until all entries are assigned between two new nodes
-
-            var (indexA, indexB) = FindLargestEntriesPair(nodeEntries, newEntry, startIndex, endIndex, getAabbFunc);
-            Assert.IsTrue(indexA > -1 && indexB > -1);
-
-            var newNodeStartEntry = indexB != endIndex ? nodeEntries[indexB] : newEntry;
-            var newEntriesStartIndex = nodeEntries.Count;
-            var newNode = new Node
-            {
-                Aabb = getAabbFunc.Invoke(newNodeStartEntry),
-
-                EntriesStartIndex = newEntriesStartIndex,
-                EntriesCount = 1
-            };
-
-            nodeEntries.Add(newNodeStartEntry);
-            nodeEntries.AddRange(Enumerable.Repeat(invalidEntry, MaxEntries - 1));
-
-            (nodeEntries[startIndex], nodeEntries[indexA]) = (nodeEntries[indexA], nodeEntries[startIndex]);
-
-            splitNode.EntriesCount = 1;
-            splitNode.Aabb = getAabbFunc.Invoke(nodeEntries[startIndex]);
-
-            for (var i = 1; i <= MaxEntries; i++)
-            {
-                if (startIndex + i == indexB)
-                    continue;
-
-                var entry = i == MaxEntries ? newEntry : nodeEntries[startIndex + i];
-                var entityAabb = getAabbFunc.Invoke(entry);
-
-                var splitNodeAabb = GetNodeAabb(splitNode);
-                var newNodeAabb = GetNodeAabb(newNode);
-
-                var conjugatedAabbA = fix.AABBs_conjugate(splitNodeAabb, entityAabb);
-                var conjugatedAabbB = fix.AABBs_conjugate(newNodeAabb, entityAabb);
-
-                var isNewNodeTarget = IsSecondNodeTarget(splitNodeAabb, newNodeAabb, conjugatedAabbA, conjugatedAabbB);
-                ref var targetNode = ref isNewNodeTarget ? ref newNode : ref splitNode;
-
-                if (isNewNodeTarget || targetNode.EntriesCount != i)
-                    nodeEntries[targetNode.EntriesStartIndex + targetNode.EntriesCount] = entry;
-
-                targetNode.EntriesCount++;
-                targetNode.Aabb = isNewNodeTarget ? conjugatedAabbB : conjugatedAabbA;
-            }
-
-            /*for (var i = splitNode.EntriesCount; i < MaxEntries; i++)
-                nodeEntries[startIndex + i] = invalidEntry;*/
-
-            while (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
-                FillNodes(nodeEntries, getAabbFunc, ref splitNode, ref newNode);
-
-            for (var i = splitNode.EntriesCount; i < MaxEntries; i++)
-                nodeEntries[splitNode.EntriesStartIndex + i] = invalidEntry;
-
-            for (var i = newNode.EntriesCount; i < MaxEntries; i++)
-                nodeEntries[newNode.EntriesStartIndex + i] = invalidEntry;
-
-            CalculateNodeAabb(splitNode, splitNodeLevel);
-            CalculateNodeAabb(newNode, splitNodeLevel);
-
-            Assert.IsTrue(nodeEntries.Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries * 2);
-
-            Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
-            Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
-
-            Assert.AreEqual(CalculateNodeAabb(splitNode, splitNodeLevel), splitNode.Aabb);
-            Assert.AreEqual(CalculateNodeAabb(newNode, splitNodeLevel), newNode.Aabb);
-
-            return (a: splitNode, b: newNode);
         }
 
         private static void FillNodes<T>(IList<T> nodeEntries, Func<T, AABB> getAabbFunc, ref Node splitNode,
