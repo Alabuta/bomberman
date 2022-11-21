@@ -53,16 +53,7 @@ namespace Game.Systems
             if (filter.IsEmpty())
                 return;
 
-            _nodes.Add(
-                Enumerable
-                    .Repeat(new Node
-                    {
-                        Aabb = AABB.Empty,
-
-                        EntriesStartIndex = -1,
-                        EntriesCount = 0
-                    }, MaxEntries)
-                    .ToList());
+            _nodes.Add(Enumerable.Repeat(_invalidNodeEntry, MaxEntries).ToList());
 
             foreach (var index in filter)
             {
@@ -124,11 +115,11 @@ namespace Game.Systems
             for (var i = entriesStartIndex; i < entriesEndIndex; i++)
                 QueryNodesByLine(p0, p1, result, levelIndex + 1, i);
 
-            bool IntersectedByLine(fix2 a, fix2 b, AABB aabb) =>
+            bool IntersectedByLine(fix2 a, fix2 b, in AABB aabb) =>
                 aabb.CohenSutherlandLineClip(ref a, ref b);
         }
 
-        public void QueryByAabb(AABB aabb, ICollection<(AABB Aabb, EcsEntity Entity)> result)
+        public void QueryByAabb(in AABB aabb, ICollection<(AABB Aabb, EcsEntity Entity)> result)
         {
             const int levelIndex = 0;
 
@@ -137,7 +128,7 @@ namespace Game.Systems
                 QueryNodesByAabb(aabb, result, levelIndex, nodeIndex);
         }
 
-        private void QueryNodesByAabb(AABB aabb, ICollection<(AABB Aabb, EcsEntity Entity)> result, int levelIndex,
+        private void QueryNodesByAabb(in AABB aabb, ICollection<(AABB Aabb, EcsEntity Entity)> result, int levelIndex,
             int nodeIndex)
         {
             var node = _nodes[levelIndex][nodeIndex];
@@ -159,7 +150,7 @@ namespace Game.Systems
                 QueryNodesByAabb(aabb, result, levelIndex + 1, i);
         }
 
-        private void Insert(EcsEntity entity, AABB aabb)
+        private void Insert(EcsEntity entity, in AABB aabb)
         {
             const int rootLevelIndex = 0;
             const int rootEntriesStartIndex = 0;
@@ -296,7 +287,7 @@ namespace Game.Systems
             }
         }
 
-        private (Node? a, Node? b) ChooseLeaf(int nodeLevelIndex, int nodeIndex, AABB aabb, EcsEntity entity)
+        private (Node? a, Node? b) ChooseLeaf(int nodeLevelIndex, int nodeIndex, in AABB aabb, EcsEntity entity)
         {
             CheckLevel(nodeLevelIndex);
             var levelNodes = _nodes[nodeLevelIndex];
@@ -366,7 +357,7 @@ namespace Game.Systems
             return (a: node, b: null);
         }
 
-        private void GrowTree(Node newEntry)
+        private void GrowTree(in Node newEntry)
         {
             CheckRefs();
 
@@ -771,7 +762,8 @@ namespace Game.Systems
             return (indexA, indexB);
         }
 
-        private static bool IsSecondNodeTarget(AABB nodeAabbA, AABB nodeAabbB, AABB conjugatedAabbA, AABB conjugatedAabbB)
+        private static bool IsSecondNodeTarget(in AABB nodeAabbA, in AABB nodeAabbB, in AABB conjugatedAabbA,
+            in AABB conjugatedAabbB)
         {
             var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(nodeAabbA, conjugatedAabbA);
             var (areaIncreaseB, deltaB) = GetAreaAndSizeIncrease(nodeAabbB, conjugatedAabbB);
@@ -788,7 +780,7 @@ namespace Game.Systems
             return true;
         }
 
-        private static (fix areaIncrease, fix sizeIncrease) GetAreaAndSizeIncrease(AABB nodeAabb, AABB conjugatedAabb)
+        private static (fix areaIncrease, fix sizeIncrease) GetAreaAndSizeIncrease(in AABB nodeAabb, in AABB conjugatedAabb)
         {
             var conjugatedArea = fix.AABB_area(conjugatedAabb);
             var areaIncrease = conjugatedArea - fix.AABB_area(nodeAabb);
@@ -806,7 +798,7 @@ namespace Game.Systems
         private static AABB GetLeafEntryAabb((AABB Aabb, EcsEntity Entity) leafEntry) =>
             leafEntry.Aabb;
 
-        private static fix GetConjugatedArea(AABB aabbA, AABB aabbB) =>
+        private static fix GetConjugatedArea(in AABB aabbA, in AABB aabbB) =>
             fix.AABB_area(fix.AABBs_conjugate(aabbA, aabbB));
     }
 }
