@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using App;
 using Game.Components;
 using Game.Components.Colliders;
 using Game.Components.Events;
@@ -38,6 +39,8 @@ namespace Game.Systems
 
         public void Run()
         {
+            using var _ = Profiling.CollisionsDetection.Auto();
+
             for (var iterationIndex = 0; iterationIndex < IterationsCount; iterationIndex++)
             {
                 var simulationSubStep = (fix) (iterationIndex + 1) / (fix) IterationsCount;

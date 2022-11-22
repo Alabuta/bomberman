@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using App;
 using Game.Components;
 using Game.Components.Colliders;
 using Game.Components.Events;
@@ -29,17 +30,20 @@ namespace Game.Systems
 
         public void Run()
         {
-            foreach (var entityIndex in _circleEnters)
-                ResolveCollisions(_circleEnters, entityIndex);
+            using ( Profiling.CollisionsResolver.Auto() )
+            {
+                foreach (var entityIndex in _circleEnters)
+                    ResolveCollisions(_circleEnters, entityIndex);
 
-            foreach (var entityIndex in _boxEnters)
-                ResolveCollisions(_boxEnters, entityIndex);
+                foreach (var entityIndex in _boxEnters)
+                    ResolveCollisions(_boxEnters, entityIndex);
 
-            foreach (var entityIndex in _circleStays)
-                ResolveCollisions(_circleStays, entityIndex);
+                foreach (var entityIndex in _circleStays)
+                    ResolveCollisions(_circleStays, entityIndex);
 
-            foreach (var entityIndex in _boxStays)
-                ResolveCollisions(_boxStays, entityIndex);
+                foreach (var entityIndex in _boxStays)
+                    ResolveCollisions(_boxStays, entityIndex);
+            }
 
             _entitiesAabbTree.Build(_colliders, fix.one);
         }

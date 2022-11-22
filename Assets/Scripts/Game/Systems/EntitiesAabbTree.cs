@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using App;
 using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
@@ -47,6 +48,8 @@ namespace Game.Systems
 
         public void Build(EcsFilter<TransformComponent, HasColliderTag> filter, fix simulationSubStep)
         {
+            using var _ = Profiling.RTreeBuild.Auto();
+
             _nodes.Clear();
             _leafEntries.Clear();
 

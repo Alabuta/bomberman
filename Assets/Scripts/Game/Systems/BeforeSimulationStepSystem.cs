@@ -1,4 +1,5 @@
-﻿using Game.Components;
+﻿using App;
+using Game.Components;
 using Leopotam.Ecs;
 using Level;
 
@@ -13,6 +14,8 @@ namespace Game.Systems
 
         public void Run()
         {
+            using var _ = Profiling.BeforeSimulationStep.Auto();
+
             foreach (var entityIndex in _transformFilter)
             {
                 var entity = _transformFilter.GetEntity(entityIndex);

@@ -1,3 +1,4 @@
+using App;
 using Game.Systems;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
@@ -37,15 +38,19 @@ namespace Level
 
         public void UpdateWorldModel()
         {
+            using var _ = Profiling.UpdateWorldModel.Auto();
+
             var deltaTime = (fix) Time.fixedDeltaTime + _timeRemainder;
 
             var targetTick = Tick + (ulong) ((fix) TickRate * deltaTime);
             var tickCounts = targetTick - Tick;
             while (Tick < targetTick)
             {
-                ProcessPlayersInput();
+                using ( Profiling.PlayersInputProcess.Auto() )
+                    ProcessPlayersInput();
 
-                _ecsFixedSystems.Run();
+                using ( Profiling.EcsFixedSystemsUpdate.Auto() )
+                    _ecsFixedSystems.Run();
 
                 ++Tick;
             }

@@ -1,4 +1,5 @@
-﻿using Game.Components;
+﻿using App;
+using Game.Components;
 using Game.Components.Behaviours;
 using Game.Components.Entities;
 using Game.Components.Events;
@@ -18,6 +19,8 @@ namespace Game.Systems.Behaviours
 
         public void Run()
         {
+            using var _ = Profiling.AttackBehavioursUpdate.Auto();
+
             if (_attackersFilter.IsEmpty() || _targetsFilter.IsEmpty())
                 return;
 

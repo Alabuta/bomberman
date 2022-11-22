@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using App;
 using Game.Components;
 using Game.Components.Behaviours;
 using Game.Components.Entities;
@@ -23,6 +24,8 @@ namespace Game.Systems.Behaviours
 
         public void Run()
         {
+            using var _ = Profiling.MovementBehavioursUpdate.Auto();
+
             if (!_steeredEntities.IsEmpty())
                 foreach (var index in _steeredEntities)
                     UpdateSteeredEntities(index);
