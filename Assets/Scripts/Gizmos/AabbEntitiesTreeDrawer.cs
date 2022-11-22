@@ -11,6 +11,7 @@ namespace Gizmos
 {
     public class AabbEntitiesTreeDrawer : MonoBehaviour
     {
+#if UNITY_EDITOR
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
@@ -118,5 +119,6 @@ namespace Gizmos
                 UnityEngine.Gizmos.DrawWireCube(center, fix2.ToXY(size));
             }
         }
+#endif
     }
 }

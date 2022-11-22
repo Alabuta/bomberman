@@ -1,4 +1,5 @@
-﻿using Game.Components;
+﻿using App;
+using Game.Components;
 using Game.Components.Entities;
 using Leopotam.Ecs;
 
@@ -13,6 +14,8 @@ namespace Game.Systems
 
         public void Run()
         {
+            using var _ = Profiling.WorldViewUpdate.Auto();
+
             UpdateEntities();
         }
 

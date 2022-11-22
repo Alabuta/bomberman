@@ -157,25 +157,40 @@ namespace Game.Systems
             const int rootEntriesStartIndex = 0;
 
             var rootNodes = _nodes[rootLevelIndex];
+#if ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, rootNodes.Count);
+#endif
 
-            var nonEmptyNodesCount = rootNodes.Count(n => n.Aabb != AABB.Empty);
+            var nonEmptyNodesCount = 0;
+            for (var i = 0; i < rootNodes.Count; i++)
+            {
+                if (rootNodes[i].Aabb != AABB.Empty)
+                    nonEmptyNodesCount++;
+            }
+#if ENABLE_ASSERTS
             Assert.AreEqual(nonEmptyNodesCount, rootNodes.Count(n => n.EntriesCount > 0));
+#endif
 
             var nodeIndex = GetNodeIndexToInsert(rootLevelIndex, rootEntriesStartIndex,
                 rootEntriesStartIndex + nonEmptyNodesCount, nonEmptyNodesCount < MinEntries, aabb);
+#if ENABLE_ASSERTS
             Assert.IsTrue(nodeIndex > -1);
+#endif
 
             var targetNode = rootNodes[nodeIndex];
             var extraNode = ChooseLeaf(ref targetNode, rootLevelIndex, aabb, entity);
+#if ENABLE_ASSERTS
             Assert.AreNotEqual(AABB.Empty, targetNode.Aabb);
+#endif
 
             rootNodes[nodeIndex] = targetNode;
 
             if (!extraNode.HasValue)
                 return;
 
+#if ENABLE_ASSERTS
             Assert.AreNotEqual(AABB.Empty, extraNode.Value.Aabb);
+#endif
 
             var candidateNodeIndex = rootNodes.FindIndex(n => n.Aabb == AABB.Empty);
             if (candidateNodeIndex != -1)
@@ -184,7 +199,9 @@ namespace Game.Systems
                 return;
             }
 
+#if ENABLE_ASSERTS
             Assert.IsTrue(rootNodes.All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
+#endif
 
             GrowTree(extraNode.Value);
         }
@@ -212,16 +229,22 @@ namespace Game.Systems
             }
 
             var entriesCount = node.EntriesCount;
+#if ENABLE_ASSERTS
             Assert.IsTrue(entriesCount is >= MinEntries and <= MaxEntries);
+#endif
 
             var entriesStartIndex = node.EntriesStartIndex;
             var entriesEndIndex = entriesStartIndex + entriesCount;
+#if ENABLE_ASSERTS
             Assert.IsTrue(entriesStartIndex > -1);
+#endif
 
             var childNodeLevelIndex = nodeLevelIndex + 1;
             var childNodeIndex = GetNodeIndexToInsert(childNodeLevelIndex, entriesStartIndex, entriesEndIndex, false, aabb);
+#if ENABLE_ASSERTS
             Assert.IsTrue(childNodeIndex >= entriesStartIndex);
             Assert.IsTrue(childNodeIndex < entriesEndIndex);
+#endif
 
             var targetChildNode = _nodes[childNodeLevelIndex][childNodeIndex];
             var extraChildNode = ChooseLeaf(ref targetChildNode, childNodeLevelIndex, aabb, entity);
@@ -250,7 +273,9 @@ namespace Game.Systems
         private void GrowTree(in Node newEntry)
         {
             var rootNodes = _nodes[0];
+#if ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, rootNodes.Count);
+#endif
 
             var newRootNodeA = new Node
             {
@@ -272,9 +297,11 @@ namespace Game.Systems
 
             _nodes.Insert(0, newRootNodes);
 
+#if ENABLE_ASSERTS
             Assert.IsTrue(_nodes[0].Count(n => n.Aabb != AABB.Empty) >= MinEntries);
             Assert.IsTrue(_nodes[0].Count(n => n.EntriesStartIndex != -1) >= MinEntries);
             Assert.IsTrue(_nodes[0].Count(n => n.EntriesCount > 0) >= MinEntries);
+#endif
         }
 
         private static Node SplitNode<T>(ref Node splitNode, List<T> nodeEntries,
@@ -284,7 +311,9 @@ namespace Game.Systems
             var startIndex = splitNode.EntriesStartIndex;
             var endIndex = startIndex + entriesCount;
 
+#if ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, entriesCount);
+#endif
 
             // Quadratic cost split
             // Search for pairs of entries A and B that would cause the largest area if placed in the same node
@@ -294,7 +323,9 @@ namespace Game.Systems
             // Repeat until all entries are assigned between two new nodes
 
             var (indexA, indexB) = FindLargestEntriesPair(nodeEntries, newEntry, startIndex, endIndex, getAabbFunc);
+#if ENABLE_ASSERTS
             Assert.IsTrue(indexA > -1 && indexB > -1);
+#endif
 
             var newNodeStartEntry = indexB != endIndex ? nodeEntries[indexB] : newEntry;
             var newEntriesStartIndex = nodeEntries.Count;
@@ -347,10 +378,12 @@ namespace Game.Systems
             for (var i = newNode.EntriesCount; i < MaxEntries; i++)
                 nodeEntries[newNode.EntriesStartIndex + i] = invalidEntry;
 
+#if ENABLE_ASSERTS
             Assert.IsTrue(nodeEntries.Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries * 2);
 
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
             Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
+#endif
 
             return newNode;
         }
@@ -413,7 +446,9 @@ namespace Game.Systems
                 (sourceEntryIndex, sourceEntryAabb, minArena) = (i, entryAabb, conjugatedArea);
             }
 
+#if ENABLE_ASSERTS
             Assert.IsTrue(sourceEntryIndex > -1);
+#endif
 
             var targetEntryIndex = targetNode.EntriesStartIndex + targetNode.EntriesCount;
             nodeEntries[targetEntryIndex] = nodeEntries[sourceEntryIndex];
