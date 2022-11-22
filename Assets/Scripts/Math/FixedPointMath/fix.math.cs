@@ -414,9 +414,7 @@ namespace Math.FixedPointMath
                         result = (result >> 1) + bit;
                     }
                     else
-                    {
-                        result = result >> 1;
-                    }
+                        result >>= 1;
 
                     bit >>= 2;
                 }
@@ -513,7 +511,7 @@ namespace Math.FixedPointMath
             return !math.any(minA > maxB);
         }
 
-        public static bool is_AABB_overlapped_by_AABB(AABB a, AABB b)
+        public static bool is_AABB_overlapped_by_AABB(in AABB a, in AABB b)
         {
             if (math.any(a.max < b.min))
                 return false;
@@ -521,7 +519,7 @@ namespace Math.FixedPointMath
             return !math.any(a.min > b.max);
         }
 
-        public static fix AABB_area(AABB aabb) =>
+        public static fix AABB_area(in AABB aabb) =>
             box_area(aabb.max - aabb.min);
 
         public static fix box_area(fix2 size) =>
@@ -530,7 +528,7 @@ namespace Math.FixedPointMath
         public static (fix2 min, fix2 max) AABBs_conjugate(fix2 minA, fix2 maxA, fix2 minB, fix2 maxB) =>
             (fix2.min(minA, minB), fix2.max(maxA, maxB));
 
-        public static AABB AABBs_conjugate(AABB a, AABB b)
+        public static AABB AABBs_conjugate(in AABB a, in AABB b)
         {
             var (min, max) = AABBs_conjugate(a.min, a.max, b.min, b.max);
             return new AABB(min, max);

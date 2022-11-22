@@ -246,17 +246,17 @@ namespace Game.Systems
 
         private void GrowTree(in Node newEntry)
         {
-            var topLevelNodes = _nodes[0];
-            Assert.AreEqual(MaxEntries, topLevelNodes.Count);
+            var rootNodes = _nodes[0];
+            Assert.AreEqual(MaxEntries, rootNodes.Count);
 
             var newRootNodeA = new Node
             {
                 Aabb = AABB.Empty,
                 EntriesStartIndex = 0,
-                EntriesCount = topLevelNodes.Count
+                EntriesCount = rootNodes.Count
             };
 
-            var newRootNodeB = SplitNode(ref newRootNodeA, topLevelNodes, newEntry, GetNodeAabb, _invalidNodeEntry);
+            var newRootNodeB = SplitNode(ref newRootNodeA, rootNodes, newEntry, GetNodeAabb, _invalidNodeEntry);
 
             var newRootNodes = new List<Node>(new[] { newRootNodeA, newRootNodeB });
             newRootNodes.AddRange(Enumerable
