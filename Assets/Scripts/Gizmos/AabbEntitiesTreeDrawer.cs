@@ -20,10 +20,12 @@ namespace Gizmos
         private readonly List<Color> _colors;
         private readonly Dictionary<int, Color> _colorsInUse = new();
 
+        private int _colorIndex = -1;
+
         public AabbEntitiesTreeDrawer()
         {
-            const int count = 60;
-            const int hueStep = 64;
+            const int count = 64;
+            const int hueStep = 41;
             var hue = -hueStep;
 
             _colors = Enumerable
@@ -77,9 +79,8 @@ namespace Gizmos
 
                 if (!_colorsInUse.TryGetValue(childHashCode, out var color))
                 {
-                    color = _colors.LastOrDefault();
+                    color = _colors[++_colorIndex % _colors.Count];
                     _colorsInUse.Add(childHashCode, color);
-                    _colors.RemoveAt(_colors.Count - 1);
                 }
 
                 var aabb = childNode.Aabb;
