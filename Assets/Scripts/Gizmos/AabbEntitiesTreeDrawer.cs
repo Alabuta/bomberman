@@ -6,6 +6,7 @@ using Level;
 using Math.FixedPointMath;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Gizmos
 {
@@ -62,8 +63,19 @@ namespace Gizmos
 
         private void DrawChildren(Node node, int levelIndex, int hashCode)
         {
-            if (levelIndex >= _rTree.TreeHeight)
+            Assert.IsTrue(levelIndex <= _rTree.TreeHeight);
+
+            if (levelIndex == _rTree.TreeHeight)
+            {
+                if (!_colorsInUse.TryGetValue(hashCode, out var color))
+                {
+                    color = _colors[++_colorIndex % _colors.Count];
+                    _colorsInUse.Add(hashCode, color);
+                }
+
+                DrawLeafEntries(node, color * new Color(1, 1, 1, 0.99f));
                 return;
+            }
 
             var childNodes = _rTree.GetNodes(levelIndex, Enumerable.Range(node.EntriesStartIndex, node.EntriesCount));
 
