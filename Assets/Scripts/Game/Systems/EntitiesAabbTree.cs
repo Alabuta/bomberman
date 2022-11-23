@@ -6,7 +6,6 @@ using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
-using UnityEngine.Assertions;
 
 namespace Game.Systems
 {
@@ -61,20 +60,8 @@ namespace Game.Systems
             foreach (var index in filter)
             {
                 ref var entity = ref filter.GetEntity(index);
-
                 ref var transformComponent = ref filter.Get1(index);
-                var currentPosition = transformComponent.WorldPosition;
-
-                var hasPrevFrameDataComponent = entity.Has<PrevFrameDataComponent>();
-                ref var prevFrameDataComponent = ref entity.Get<PrevFrameDataComponent>();
-
-                var lastPosition = hasPrevFrameDataComponent
-                    ? prevFrameDataComponent.LastWorldPosition
-                    : transformComponent.WorldPosition;
-
-                var position = lastPosition + (currentPosition - lastPosition) * simulationSubStep;
-
-                var aabb = entity.GetEntityColliderAABB(position);
+                var aabb = entity.GetEntityColliderAABB(transformComponent.WorldPosition);
                 Insert(entity, aabb);
             }
         }
