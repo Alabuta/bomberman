@@ -38,7 +38,7 @@ MonoBehaviour:
     m_EditorAssetChanged: 0
   BombConfig: {fileID: 11400000, guid: 61f1d4abaafbdf2489a0cdd6f6d8ee97, type: 2}
   BombBlastDamage: 1
-  BombBlastRadius: 1
+  BombBlastRadius: 3
   BombBlastDirections:
   - x: 1
     y: 0

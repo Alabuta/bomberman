@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Configs.Entity;
 using Game;
@@ -96,13 +95,6 @@ namespace Level
             {
                 TraceLine(start, end, result);
 
-                /*result
-                    .Where(pair =>
-                    {
-
-                        return false;
-                    });*/
-
                 result.Sort((a, b) =>
                 {
                     var vectorA = a.Aabb.GetCenter() - start;
@@ -114,7 +106,7 @@ namespace Level
                     return distanceA.CompareTo(distanceB);
                 });
 
-                var (wallAabb, wallEntity) = result.FirstOrDefault(p =>
+                var wallIndex = result.FindIndex(p =>
                 {
                     if (p.Entity.Has<LevelTileComponent>() &&
                         p.Entity.Get<LevelTileComponent>().Type == LevelTileType.HardBlock)
@@ -134,7 +126,7 @@ namespace Level
 
             ApplyDamageToBlocks(blastLines);*/
 
-            // bombEntity.Destroy();
+            bombEntity.Destroy();
         }
 
         /*private IEnumerable<AABB> GetBombBlastAabbs(IReadOnlyList<int2> blastDirections, int blastRadius, fix2 blastPosition)

@@ -259,6 +259,8 @@ namespace Game.Systems
 
         private void GrowTree(in Node newEntry)
         {
+            using var _ = Profiling.RTreeGrow.Auto();
+
             var rootNodes = _nodes[0];
 #if ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, rootNodes.Count);
@@ -415,7 +417,7 @@ namespace Game.Systems
             var targetNodeAabb = GetNodeAabb(targetNode);
             var sourceNodeAabb = AABB.Empty;
 
-            var (sourceEntryIndex, sourceEntryAabb, minArena) = (-1, Invalid: AABB.Empty, fix.MaxValue);
+            var (sourceEntryIndex, sourceEntryAabb, minArena) = (-1, AABB.Empty, fix.MaxValue);
             for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++)
             {
                 var entry = nodeEntries[i];
