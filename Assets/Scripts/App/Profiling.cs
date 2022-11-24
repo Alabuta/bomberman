@@ -16,6 +16,19 @@ namespace App
         public static readonly ProfilerMarker CollisionsDetection = new(Simulation, nameof(CollisionsDetection));
         public static readonly ProfilerMarker CollisionsResolver = new(Simulation, nameof(CollisionsResolver));
         public static readonly ProfilerMarker RTreeBuild = new(Simulation, nameof(RTreeBuild));
+        public static readonly ProfilerMarker RTreeInsert = new(Simulation, nameof(RTreeInsert));
         public static readonly ProfilerMarker RTreeGrow = new(Simulation, nameof(RTreeGrow));
+        public static readonly ProfilerMarker RTreeSplitNode = new(Simulation, nameof(RTreeSplitNode));
+        public static readonly ProfilerMarker RTreeLeafNodesUpdate = new(Simulation, nameof(RTreeLeafNodesUpdate));
+        public static readonly ProfilerMarker RTreeNodesUpdate = new(Simulation, nameof(RTreeNodesUpdate));
+        public static readonly ProfilerMarker RTreeA = new(Simulation, nameof(RTreeA));
+        public static readonly ProfilerMarker RTreeB = new(Simulation, nameof(RTreeB));
+        public static readonly ProfilerMarker RTreeC = new(Simulation, nameof(RTreeC));
+        public static readonly ProfilerMarker RTreeD = new(Simulation, nameof(RTreeD));
+        public static readonly ProfilerMarker RTreeE = new(Simulation, nameof(RTreeE));
+        public static readonly ProfilerMarker RTreeF = new(Simulation, nameof(RTreeF));
+        public static readonly ProfilerMarker RTreeG = new(Simulation, nameof(RTreeG));
+        public static readonly ProfilerMarker RTreeH = new(Simulation, nameof(RTreeH));
+        public static readonly ProfilerMarker RTreeI = new(Simulation, nameof(RTreeI));
     }
 }
