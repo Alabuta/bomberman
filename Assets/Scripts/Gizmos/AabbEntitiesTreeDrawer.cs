@@ -16,7 +16,7 @@ namespace Gizmos
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private EntitiesAabbTree _rTree;
+        private IRTree _rTree;
 
         private readonly List<Color> _colors;
         private readonly Dictionary<int, Color> _colorsInUse = new();
@@ -41,7 +41,7 @@ namespace Gizmos
             _colorsInUse.Clear();
         }
 
-        public void SetRTree(EntitiesAabbTree rTree)
+        public void SetRTree(IRTree rTree)
         {
             _rTree = rTree;
         }
@@ -122,8 +122,9 @@ namespace Gizmos
         {
             var leafEntries = _rTree.GetLeafEntries(Enumerable.Range(node.EntriesStartIndex, node.EntriesCount));
 
-            foreach (var (aabb, _) in leafEntries)
+            foreach (var entry in leafEntries)
             {
+                var aabb = entry.Aabb;
                 var size = aabb.max - aabb.min;
                 var center = fix2.ToXY(aabb.min + size / new fix(2));
 

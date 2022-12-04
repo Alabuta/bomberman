@@ -26,7 +26,7 @@ using UnityEngine.Assertions;
 
 namespace Level
 {
-    public partial class World
+    public partial class World : IDisposable
     {
         private readonly IGameFactory _gameFactory;
 
@@ -143,13 +143,6 @@ namespace Level
             return _players.TryGetValue(playerTagConfig, out var player) ? player : null; // :TODO: refactor
         }
 
-        public void Destroy()
-        {
-            _ecsFixedSystems.Destroy();
-            _ecsSystems.Destroy();
-            _ecsWorld.Destroy();
-        }
-
         public EcsEntity NewEntity()
         {
             return _ecsWorld.NewEntity();
@@ -221,6 +214,15 @@ namespace Level
             // :TODO: refactor
             return _enemies
                 .Where(e => math.all(LevelTiles.ToTileCoordinate(e.Get<TransformComponent>().WorldPosition) == coordinate));
+        }
+
+        public void Dispose()
+        {
+            _entitiesAabbTree?.Dispose();
+
+            _ecsFixedSystems.Destroy();
+            _ecsSystems.Destroy();
+            _ecsWorld.Destroy();
         }
     }
 }

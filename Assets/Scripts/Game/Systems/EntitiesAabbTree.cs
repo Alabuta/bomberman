@@ -17,7 +17,7 @@ namespace Game.Systems
         public int EntriesCount;
     }
 
-    public sealed class EntitiesAabbTree
+    public sealed partial class EntitiesAabbTree : IRTree
     {
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;

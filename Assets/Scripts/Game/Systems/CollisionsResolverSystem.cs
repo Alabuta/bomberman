@@ -18,7 +18,7 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EntitiesAabbTree _entitiesAabbTree;
+        private readonly IRTree _entitiesAabbTree;
 
         private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, CircleColliderComponent> _circleEnters;
         private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, CircleColliderComponent> _circleStays;

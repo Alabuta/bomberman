@@ -23,7 +23,7 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EntitiesAabbTree _entitiesAabbTree;
+        private readonly IRTree _entitiesAabbTree;
 
         private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders; // :TODO: use AABBComponent
 

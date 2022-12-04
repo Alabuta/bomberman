@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
@@ -6,7 +7,7 @@ using Math.FixedPointMath;
 
 namespace Game.Systems
 {
-    public interface IRTree
+    public interface IRTree : IDisposable
     {
         int TreeHeight { get; }
         IEnumerable<Node> RootNodes { get; }

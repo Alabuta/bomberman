@@ -12,7 +12,7 @@ namespace Level
         private readonly EcsSystems _ecsSystems;
         private readonly EcsSystems _ecsFixedSystems;
 
-        private readonly EntitiesAabbTree _entitiesAabbTree;
+        private readonly IRTree _entitiesAabbTree;
 
         private fix _simulationStartTime;
         private fix _simulationCurrentTime;

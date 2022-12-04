@@ -71,7 +71,7 @@ namespace Infrastructure.States
         {
             var applicationConfig = ApplicationConfig.Instance;
 
-            Game.World?.Destroy();
+            Game.World?.Dispose();
 
             var gameWorld = new World(applicationConfig, _gameFactory, levelStage); // :TODO: move to DI
             await gameWorld.InitWorld(_inputService, levelStage);

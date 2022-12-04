@@ -13,6 +13,7 @@ namespace Infrastructure.States
 
         public void Exit()
         {
+            Game.World?.Dispose();
         }
 
         public Task Enter()
