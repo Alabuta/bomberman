@@ -7,6 +7,8 @@ using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Collections;
+using Unity.Mathematics;
+using UnityEngine.Assertions;
 
 namespace Game.Systems
 {
@@ -17,17 +19,17 @@ namespace Game.Systems
         public static NativeArray<T> SubRange;
     }
 
-    public class AabbRTree : IDisposable, IRTree
+    public class AabbRTree : IRTree
     {
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
 
-        public const int MaxTreeHeight = 12; // log base MinEntries of 4096 objects
+        private const int EntriesMaxCount = 4096;
 
         private readonly List<NativeList<Node>> _nodes;
-        private NativeList<int> _nodesCountByLevel = new(MaxTreeHeight, Allocator.Persistent);
+        private NativeList<int> _nodesCountByLevel;
 
-        private NativeList<RTreeLeafEntry> _leafEntries = new(1024, Allocator.Persistent);
+        private NativeList<RTreeLeafEntry> _leafEntries = new(EntriesMaxCount, Allocator.Persistent);
         private int _leafEntriesCount;
 
         private static readonly Func<RTreeLeafEntry, AABB> GetLeafEntryAabb = leafEntry => leafEntry.Aabb;
@@ -52,6 +54,9 @@ namespace Game.Systems
 
         public AabbRTree()
         {
+            var maxTreeHeight = (int) math.ceil(math.log10(EntriesMaxCount) / math.log10(MinEntries));
+            _nodesCountByLevel = new NativeList<int>(maxTreeHeight, Allocator.Persistent);
+
             InvalidEntry<Node>.Entry = new Node
             {
                 Aabb = AABB.Empty,
@@ -81,16 +86,13 @@ namespace Game.Systems
                     .Repeat(InvalidEntry<RTreeLeafEntry>.Entry, MaxEntries - MinEntries)
                     .ToArray(), Allocator.Persistent);
 
-            _nodes = Enumerable.Range(0, MaxTreeHeight)
+            _nodes = Enumerable.Range(0, maxTreeHeight)
                 .Select(levelIndex =>
                 {
-                    /*var entriesCount = (int) math.pow(MaxEntries, MaxTreeHeight - levelIndex);
+                    var entriesCount = (int) math.pow(MaxEntries, maxTreeHeight - levelIndex);
                     var nativeList = new NativeList<Node>(entriesCount, Allocator.Persistent);
-                    nativeList.AddRange(InvalidEntry<Node>.Entry);
-                    return nativeList;*/
-
-                    var nativeList = new NativeList<Node>(4096, Allocator.Persistent);
                     nativeList.AddRange(InvalidEntry<Node>.Range);
+                    Assert.AreEqual(entriesCount, nativeList.Capacity);
                     return nativeList;
                 })
                 .ToList();
@@ -141,16 +143,13 @@ namespace Game.Systems
                 return;
 
             var entitiesCount = filter.GetEntitiesCount();
+            Assert.IsTrue(entitiesCount <= EntriesMaxCount);
 
             _nodesCountByLevel.Add(MaxEntries);
 
             var rootNodes = _nodes[RootNodesIndex];
-            // rootNodes.AddRangeNoResize(InvalidEntry<Node>.Range);
             for (var i = 0; i < MaxEntries; i++)
-            {
                 rootNodes[i] = InvalidEntry<Node>.Entry;
-                // rootNodes.Add(InvalidEntry<Node>.Entry);
-            }
 
             Profiling.RTreeInsert.Begin();
             for (var index = 0; index < entitiesCount; index++)
@@ -335,8 +334,6 @@ namespace Game.Systems
                 EntriesStartIndex = 0,
                 EntriesCount = rootNodesCount
             };
-            /*_tempNodeEntry.EntriesStartIndex = 0;
-            _tempNodeEntry.EntriesCount = rootNodesCount;*/
 
             var newRootNodeB = SplitNode(ref newRootNodeA, ref rootNodes, rootNodesCount, newEntry, GetNodeAabb);
 
@@ -346,9 +343,12 @@ namespace Game.Systems
             if (_nodes.Count < TreeHeight)
             {
                 var newRootNodes = new NativeList<Node>(MaxEntries, Allocator.Persistent);
-                newRootNodes.Add(newRootNodeA);
-                newRootNodes.Add(newRootNodeB);
-                newRootNodes.AddRange(InvalidEntry<Node>.SubRange);
+                newRootNodes.AddNoResize(newRootNodeA);
+                newRootNodes.AddNoResize(newRootNodeB);
+                // newRootNodes.AddRangeNoResize(InvalidEntry<Node>.SubRange);
+                for (var i = 2; i < MaxEntries; i++)
+                    newRootNodes.AddNoResize(InvalidEntry<Node>.Entry);
+
                 _nodes.Add(newRootNodes);
             }
             else
