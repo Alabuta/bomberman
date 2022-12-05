@@ -54,7 +54,7 @@ namespace Game.Systems
 
         public AabbRTree()
         {
-            var maxTreeHeight = (int) math.ceil(math.log10(EntriesMaxCount) / math.log10(MinEntries));
+            var maxTreeHeight = (int) math.ceil(math.log10((double) EntriesMaxCount / MaxEntries) / math.log10(MaxEntries));
             _nodesCountByLevel = new NativeList<int>(maxTreeHeight, Allocator.Persistent);
 
             InvalidEntry<Node>.Entry = new Node
@@ -69,21 +69,11 @@ namespace Game.Systems
                     .Repeat(InvalidEntry<Node>.Entry, MaxEntries)
                     .ToArray(), Allocator.Persistent);
 
-            InvalidEntry<Node>.SubRange = new NativeArray<Node>(
-                Enumerable
-                    .Repeat(InvalidEntry<Node>.Entry, MaxEntries - MinEntries)
-                    .ToArray(), Allocator.Persistent);
-
             InvalidEntry<RTreeLeafEntry>.Entry = new RTreeLeafEntry(AABB.Empty, -1);
 
             InvalidEntry<RTreeLeafEntry>.Range = new NativeArray<RTreeLeafEntry>(
                 Enumerable
                     .Repeat(InvalidEntry<RTreeLeafEntry>.Entry, MaxEntries)
-                    .ToArray(), Allocator.Persistent);
-
-            InvalidEntry<RTreeLeafEntry>.SubRange = new NativeArray<RTreeLeafEntry>(
-                Enumerable
-                    .Repeat(InvalidEntry<RTreeLeafEntry>.Entry, MaxEntries - MinEntries)
                     .ToArray(), Allocator.Persistent);
 
             _nodes = Enumerable.Range(0, maxTreeHeight)
@@ -92,7 +82,6 @@ namespace Game.Systems
                     var entriesCount = (int) math.pow(MaxEntries, maxTreeHeight - levelIndex);
                     var nativeList = new NativeList<Node>(entriesCount, Allocator.Persistent);
                     nativeList.AddRange(InvalidEntry<Node>.Range);
-                    Assert.AreEqual(entriesCount, nativeList.Capacity);
                     return nativeList;
                 })
                 .ToList();
@@ -164,7 +153,7 @@ namespace Game.Systems
             Profiling.RTreeInsert.End();
         }
 
-        private void Insert(in RTreeLeafEntry entry)
+        private void Insert(in RTreeLeafEntry entry, int nodeIndex)
         {
             var rootLevelIndex = RootNodesIndex;
             const int rootEntriesStartIndex = 0;
@@ -177,16 +166,6 @@ namespace Game.Systems
 #if ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, rootNodesCount);
 #endif
-
-            var nonEmptyNodesCount = 0;
-            for (var i = 0; i < rootNodesCount; i++)
-                nonEmptyNodesCount += rootNodes[i].Aabb != AABB.Empty ? 1 : 0;
-#if ENABLE_ASSERTS
-            Assert.AreEqual(nonEmptyNodesCount, rootNodes.Take(rootNodesCount).Count(n => n.EntriesCount > 0));
-#endif
-
-            var nodeIndex = GetNodeIndexToInsert(rootNodes, GetNodeAabb, rootEntriesStartIndex,
-                rootEntriesStartIndex + nonEmptyNodesCount, nonEmptyNodesCount < MinEntries, entry);
 #if ENABLE_ASSERTS
             Assert.IsTrue(nodeIndex > -1);
 #endif
@@ -215,7 +194,64 @@ namespace Game.Systems
                 if (rootNodes[candidateNodeIndex].Aabb == AABB.Empty)
                     break;
 
-            // var candidateNodeIndex = rootNodes.FindIndex(n => n.Aabb == AABB.Empty);
+            if (candidateNodeIndex != MaxEntries && candidateNodeIndex < rootNodesCount)
+            {
+                rootNodes[candidateNodeIndex] = extraNode.Value;
+                return;
+            }
+        }
+
+        private void Insert(in RTreeLeafEntry entry)
+        {
+            var rootLevelIndex = RootNodesIndex;
+            const int rootEntriesStartIndex = 0;
+
+#if ENABLE_ASSERTS
+            Assert.IsTrue(TreeHeight > 0);
+#endif
+            var rootNodes = _nodes[rootLevelIndex];
+            var rootNodesCount = _nodesCountByLevel[RootNodesIndex];
+#if ENABLE_ASSERTS
+            Assert.AreEqual(MaxEntries, rootNodesCount);
+#endif
+
+            var nonEmptyNodesCount = 0;
+            for (var i = 0; i < rootNodesCount; i++)
+                nonEmptyNodesCount += rootNodes[i].Aabb != AABB.Empty ? 1 : 0;
+#if ENABLE_ASSERTS
+            Assert.AreEqual(nonEmptyNodesCount, rootNodes.ToArray().Take(rootNodesCount).Count(n => n.EntriesCount > 0));
+#endif
+
+            var nodeIndex = GetNodeIndexToInsert(rootNodes, GetNodeAabb, rootEntriesStartIndex,
+                rootEntriesStartIndex + nonEmptyNodesCount, nonEmptyNodesCount < MinEntries, entry.Aabb);
+#if ENABLE_ASSERTS
+            Assert.IsTrue(nodeIndex > -1);
+#endif
+
+            var targetNode = rootNodes[nodeIndex];
+            var extraNode = ChooseLeaf(ref targetNode, rootLevelIndex, entry);
+#if ENABLE_ASSERTS
+            Assert.AreNotEqual(targetNode.Aabb, AABB.Empty);
+            Assert.AreNotEqual(targetNode.EntriesCount, 0);
+            Assert.AreNotEqual(targetNode.EntriesStartIndex, -1);
+#endif
+
+            rootNodes[nodeIndex] = targetNode;
+
+            if (!extraNode.HasValue)
+                return;
+
+#if ENABLE_ASSERTS
+            Assert.AreNotEqual(extraNode.Value.Aabb, AABB.Empty);
+            Assert.AreNotEqual(extraNode.Value.EntriesCount, 0);
+            Assert.AreNotEqual(extraNode.Value.EntriesStartIndex, -1);
+#endif
+
+            var candidateNodeIndex = nodeIndex + 1;
+            for (; candidateNodeIndex < MaxEntries; candidateNodeIndex++)
+                if (rootNodes[candidateNodeIndex].Aabb == AABB.Empty)
+                    break;
+
             if (candidateNodeIndex != MaxEntries && candidateNodeIndex < rootNodesCount)
             {
                 rootNodes[candidateNodeIndex] = extraNode.Value;
@@ -224,6 +260,7 @@ namespace Game.Systems
 
 #if ENABLE_ASSERTS
             Assert.IsTrue(rootNodes
+                .ToArray()
                 .Take(rootNodesCount)
                 .All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
 #endif
@@ -253,7 +290,10 @@ namespace Game.Systems
                     _leafEntriesCount += MaxEntries;
 
                     if (_leafEntries.Length < _leafEntriesCount)
-                        _leafEntries.AddRange(InvalidEntry<RTreeLeafEntry>.Range);
+                    {
+                        for (var i = 0; i < MaxEntries; i++)
+                            _leafEntries.AddNoResize(InvalidEntry<RTreeLeafEntry>.Entry);
+                    }
                 }
 
                 _leafEntries[node.EntriesStartIndex + node.EntriesCount] = entry;
@@ -280,7 +320,7 @@ namespace Game.Systems
             var childNodeLevelIndex = nodeLevelIndex - 1;
             var childLevelNodes = _nodes[childNodeLevelIndex];
             var childNodeIndex =
-                GetNodeIndexToInsert(childLevelNodes, GetNodeAabb, entriesStartIndex, entriesEndIndex, false, entry);
+                GetNodeIndexToInsert(childLevelNodes, GetNodeAabb, entriesStartIndex, entriesEndIndex, false, entry.Aabb);
 #if ENABLE_ASSERTS
             Assert.IsTrue(childNodeIndex >= entriesStartIndex);
             Assert.IsTrue(childNodeIndex < entriesEndIndex);
@@ -354,26 +394,19 @@ namespace Game.Systems
             else
             {
                 var newRootNodes = _nodes[RootNodesIndex];
-                if (newRootNodes.Length < MaxEntries)
-                {
-                    newRootNodes.Add(newRootNodeA);
-                    newRootNodes.Add(newRootNodeB);
-                    newRootNodes.AddRange(InvalidEntry<Node>.SubRange);
-                }
-                else
-                {
-                    newRootNodes[0] = newRootNodeA;
-                    newRootNodes[1] = newRootNodeB;
+                Assert.IsFalse(newRootNodes.Length < MaxEntries);
 
-                    for (var i = 2; i < MaxEntries; i++)
-                        newRootNodes[i] = InvalidEntry<Node>.Entry;
-                }
+                newRootNodes[0] = newRootNodeA;
+                newRootNodes[1] = newRootNodeB;
+
+                for (var i = 2; i < MaxEntries; i++)
+                    newRootNodes[i] = InvalidEntry<Node>.Entry;
             }
 
 #if ENABLE_ASSERTS
-            Assert.IsTrue(_nodes[RootNodesIndex].Take(rootNodesCount).Count(n => n.Aabb != AABB.Empty) >= MinEntries);
-            Assert.IsTrue(_nodes[RootNodesIndex].Take(rootNodesCount).Count(n => n.EntriesStartIndex != -1) >= MinEntries);
-            Assert.IsTrue(_nodes[RootNodesIndex].Take(rootNodesCount).Count(n => n.EntriesCount > 0) >= MinEntries);
+            Assert.IsTrue(_nodes[RootNodesIndex].ToArray().Take(rootNodesCount).Count(n => n.Aabb != AABB.Empty) >= MinEntries);
+            Assert.IsTrue(_nodes[RootNodesIndex].ToArray().Take(rootNodesCount).Count(n => n.EntriesStartIndex != -1) >= MinEntries);
+            Assert.IsTrue(_nodes[RootNodesIndex].ToArray().Take(rootNodesCount).Count(n => n.EntriesCount > 0) >= MinEntries);
 #endif
         }
 
@@ -460,7 +493,7 @@ namespace Game.Systems
                 nodeEntries[newNode.EntriesStartIndex + i] = invalidEntry;
 
 #if ENABLE_ASSERTS
-            Assert.IsTrue(nodeEntries.Take(nodeEntriesCount).Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries * 2);
+            Assert.IsTrue(nodeEntries.ToArray().Take(nodeEntriesCount).Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries * 2);
 
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
             Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
@@ -470,7 +503,7 @@ namespace Game.Systems
         }
 
         private static int GetNodeIndexToInsert<T>(NativeArray<T> nodeEntries, Func<T, AABB> getAabbFunc, int entriesStartIndex,
-            int entriesEndIndex, bool isFillCase, in RTreeLeafEntry newEntry)
+            int entriesEndIndex, bool isFillCase, in AABB aabb)
             where T : struct
         {
             var (nodeIndex, minArea) = (-1, fix.MaxValue);
@@ -485,7 +518,7 @@ namespace Game.Systems
                     break;
                 }
 
-                var conjugatedArea = GetConjugatedArea(nodeAabb, newEntry.Aabb);
+                var conjugatedArea = GetConjugatedArea(nodeAabb, aabb);
                 if (conjugatedArea >= minArea)
                     continue;
 
