@@ -28,20 +28,13 @@ namespace Game.Systems
         private readonly int _leafEntriesMaxCount;
 
         private readonly List<NativeList<Node>> _nodes;
-        private NativeList<int> _nodesCountByLevel;
 
         private NativeList<RTreeLeafEntry> _leafEntries;
-        private int _leafEntriesCount;
 
         private NativeList<RTreeLeafEntry> _entriesNativeList;
 
-        private readonly NativeArray<AABB>[] _results;
-        private readonly JobHandle[] _jobHandlers;
-
         private static readonly Func<RTreeLeafEntry, AABB> GetLeafEntryAabb = leafEntry => leafEntry.Aabb;
         private static readonly Func<Node, AABB> GetNodeAabb = node => node.Aabb;
-
-        private const int JobsCount = 4;
 
         private int _rootNodesIndex = -1;
 
@@ -63,45 +56,12 @@ namespace Game.Systems
         private bool IsLevelRoot(int nodeLevelIndex) =>
             nodeLevelIndex == _rootNodesIndex;
 
-        // [BurstCompatible]
-        /*internal struct JobPar : IJobParallelFor
-        {
-            [ReadOnly]
-            public AABB AABB;
-
-            [ReadOnly]
-            public int _rootNodesIndex;
-
-            [ReadOnly]
-            public int TreeHeight;
-
-            [ReadOnly]
-            public NativeSlice<RTreeLeafEntry> Entries;
-
-            [WriteOnly]
-            public NativeArray<AABB> ExtraNode;
-
-            [WriteOnly]
-            public List<NativeList<Node>>. _nodes;
-
-            public void Execute(int index)
-            {
-                var aabb = AABB.Empty;
-
-                for (var i = 0; i < Entries.Length; i++)
-                    aabb = fix.AABBs_conjugate(aabb, Entries[i].Aabb);
-
-                ExtraNode[0] = aabb;
-            }
-        }*/
-
         public AabbRTree()
         {
             const int entriesCount = 993; // level setup to 65x63 blocks plus the hero
 
             // var maxTreeHeight = (int) math.ceil(math.log10((double) entriesCount / MinEntries) / math.log10(MaxEntries));
             var maxTreeHeight = (int) math.floor(math.log10((double) (entriesCount + 1) / 2) / math.log10(MinEntries));
-            _nodesCountByLevel = new NativeList<int>(maxTreeHeight, Allocator.Persistent);
 
             const double ratio = (double) MaxEntries / MinEntries;
 
@@ -127,30 +87,6 @@ namespace Game.Systems
                 .ToList();
 
             _entriesNativeList = new NativeList<RTreeLeafEntry>(_leafEntriesMaxCount, Allocator.Persistent);
-
-            _results = Enumerable
-                .Range(0, JobsCount)
-                .Select(_ => new NativeArray<AABB>(1, Allocator.Persistent))
-                .ToArray();
-
-            _jobHandlers = Enumerable.Repeat(new JobHandle(), JobsCount).ToArray();
-
-            /*Debug.LogWarning(Marshal.SizeOf(typeof(IntPtr))); // 8
-            Debug.LogWarning(Marshal.SizeOf(typeof(fix2))); // 16
-            // Debug.LogWarning(Marshal.SizeOf(typeof(RTreeLeafEntry))); // 264
-            Debug.LogWarning(Marshal.SizeOf(typeof(RTreeLeafEntry))); // 40
-            Debug.LogWarning(Marshal.SizeOf(typeof(Node))); // 40
-            Debug.LogWarning(Marshal.SizeOf(typeof(AABB))); // 32
-            Debug.LogWarning(Marshal.SizeOf(typeof(EcsEntity))); // 232
-            Debug.LogWarning(_nodes.Select(n => n.Length).Sum()); // 240
-            Debug.LogWarning(Marshal.SizeOf(typeof(Node)) * _nodes.Select(n => n.Length).Sum());
-            Debug.LogWarning(_leafEntries.Length);
-            Debug.LogWarning((Marshal.SizeOf(typeof(AABB)) + Marshal.SizeOf(typeof(EcsEntity))) * _leafEntries.Length);
-            Debug.LogWarning(Marshal.SizeOf(typeof(NativeArray<RTreeLeafEntry>)));
-            Debug.LogWarning(Marshal.SizeOf(typeof(NativeArray<Node>))); // 80
-            Debug.LogWarning(Marshal.SizeOf(typeof(NativeArray<RTreeLeafEntry>))); // 80
-            Debug.LogWarning(Marshal.SizeOf(typeof(NativeList<RTreeLeafEntry>))); // 72
-            Debug.LogWarning(Marshal.SizeOf(typeof(NativeList<RTreeLeafEntry>))); // 72*/
         }
 
         public void Dispose()
@@ -160,7 +96,6 @@ namespace Game.Systems
             foreach (var nodes in _nodes)
                 nodes.Dispose();
 
-            _nodesCountByLevel.Dispose();
             _leafEntries.Dispose();
         }
 
@@ -176,12 +111,11 @@ namespace Game.Systems
         {
             using var _ = Profiling.RTreeBuild.Auto();
 
-            _nodesCountByLevel.Clear();
-            _rootNodesIndex = -1;
-            _leafEntriesCount = 0;
-
             if (filter.IsEmpty())
                 return;
+
+            _rootNodesIndex = -1;
+            _leafEntries.Clear();
 
             foreach (var nodes in _nodes)
                 nodes.Clear();
@@ -240,7 +174,6 @@ namespace Game.Systems
 
             var subSize = (totalAabb.max - totalAabb.min) / new fix2(2);*/
 
-            _nodesCountByLevel.Add(MaxEntries);
             ++_rootNodesIndex;
 
             var rootNodes = _nodes[_rootNodesIndex];
@@ -279,7 +212,7 @@ namespace Game.Systems
             Assert.IsTrue(TreeHeight > 0);
 #endif
             var rootNodes = _nodes[_rootNodesIndex];
-            var rootNodesCount = _nodesCountByLevel[_rootNodesIndex];
+            var rootNodesCount = rootNodes.Length;
 #if !ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, rootNodesCount);
 #endif
@@ -345,24 +278,14 @@ namespace Game.Systems
                 using var _ = Profiling.RTreeLeafNodesUpdate.Auto();
 
                 if (node.EntriesCount == MaxEntries)
-                {
-                    Profiling.RTreeB.Begin();
-                    var splitNode = SplitNode(ref node, ref _leafEntries, _leafEntriesCount, entry, GetLeafEntryAabb);
-                    Profiling.RTreeB.End();
-                    _leafEntriesCount += MaxEntries;
-                    return splitNode;
-                }
+                    return SplitNode(ref node, ref _leafEntries, entry, GetLeafEntryAabb);
 
                 if (node.EntriesStartIndex == -1)
                 {
-                    node.EntriesStartIndex = _leafEntriesCount;
-                    _leafEntriesCount += MaxEntries;
+                    node.EntriesStartIndex = _leafEntries.Length;
 
-                    if (_leafEntries.Length < _leafEntriesCount)
-                    {
-                        for (var i = 0; i < MaxEntries; i++)
-                            _leafEntries.AddNoResize(InvalidEntry<RTreeLeafEntry>.Entry);
-                    }
+                    for (var i = 0; i < MaxEntries; i++)
+                        _leafEntries.AddNoResize(InvalidEntry<RTreeLeafEntry>.Entry);
                 }
 
                 _leafEntries[node.EntriesStartIndex + node.EntriesCount] = entry;
@@ -409,12 +332,7 @@ namespace Game.Systems
 
             var newChildNode = extraChildNode.Value;
             if (entriesCount == MaxEntries)
-            {
-                var splitNode = SplitNode(ref node, ref childLevelNodes, _nodesCountByLevel[childNodeLevelIndex], newChildNode,
-                    GetNodeAabb);
-                _nodesCountByLevel[childNodeLevelIndex] += MaxEntries;
-                return splitNode;
-            }
+                return SplitNode(ref node, ref childLevelNodes, newChildNode, GetNodeAabb);
 
             childLevelNodes[entriesStartIndex + node.EntriesCount] = newChildNode;
 
@@ -433,7 +351,7 @@ namespace Game.Systems
             using var _ = Profiling.RTreeGrow.Auto();
 
             var rootNodes = _nodes[_rootNodesIndex];
-            var rootNodesCount = _nodesCountByLevel[_rootNodesIndex];
+            var rootNodesCount = rootNodes.Length;
 #if !ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, rootNodesCount);
 #endif
@@ -445,10 +363,8 @@ namespace Game.Systems
                 EntriesCount = rootNodesCount
             };
 
-            var newRootNodeB = SplitNode(ref newRootNodeA, ref rootNodes, rootNodesCount, newEntry, GetNodeAabb);
+            var newRootNodeB = SplitNode(ref newRootNodeA, ref rootNodes, newEntry, GetNodeAabb);
 
-            _nodesCountByLevel[_rootNodesIndex] += MaxEntries;
-            _nodesCountByLevel.Add(MaxEntries);
             ++_rootNodesIndex;
 
             Assert.IsFalse(_nodes.Count < TreeHeight);
@@ -479,8 +395,8 @@ namespace Game.Systems
 #endif
         }
 
-        private static Node SplitNode<T>(ref Node splitNode, ref NativeList<T> nodeEntries, int nodeEntriesCount,
-            in T newEntry, Func<T, AABB> getAabbFunc) where T : unmanaged
+        private static Node SplitNode<T>(ref Node splitNode, ref NativeList<T> nodeEntries, in T newEntry,
+            Func<T, AABB> getAabbFunc) where T : unmanaged
         {
             using var _ = Profiling.RTreeSplitNode.Auto();
 
@@ -505,7 +421,7 @@ namespace Game.Systems
 #endif
 
             var newNodeStartEntry = indexB != endIndex ? nodeEntries[indexB] : newEntry;
-            var newEntriesStartIndex = nodeEntriesCount;
+            var newEntriesStartIndex = nodeEntries.Length;
             var newNode = new Node
             {
                 Aabb = getAabbFunc.Invoke(newNodeStartEntry),
@@ -516,12 +432,8 @@ namespace Game.Systems
 
             var invalidEntry = InvalidEntry<T>.Entry;
 
-            nodeEntriesCount += MaxEntries;
-            if (nodeEntries.Length < nodeEntriesCount)
-            {
-                for (var i = 0; i < MaxEntries; i++)
-                    nodeEntries.AddNoResize(invalidEntry);
-            }
+            for (var i = 0; i < MaxEntries; i++)
+                nodeEntries.AddNoResize(invalidEntry);
 
             nodeEntries[newEntriesStartIndex] = newNodeStartEntry;
 
@@ -565,8 +477,10 @@ namespace Game.Systems
                 nodeEntries[newNode.EntriesStartIndex + i] = invalidEntry;
 
 #if !ENABLE_ASSERTS
-            Assert.IsTrue(nodeEntries.ToArray().Take(nodeEntriesCount).Count(n => getAabbFunc(n) != AABB.Empty) >=
-                          MinEntries * 2);
+            Assert.IsTrue(nodeEntries
+                .ToArray()
+                .Take(nodeEntries.Length)
+                .Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries * 2);
 
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
             Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
