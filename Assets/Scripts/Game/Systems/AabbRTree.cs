@@ -7,7 +7,6 @@ using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Collections;
-using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine.Assertions;
 
@@ -206,26 +205,23 @@ namespace Game.Systems
 
         private void Insert(in RTreeLeafEntry entry)
         {
-            const int rootEntriesStartIndex = 0;
-
 #if !ENABLE_ASSERTS
             Assert.IsTrue(TreeHeight > 0);
 #endif
             var rootNodes = _nodes[_rootNodesIndex];
-            var rootNodesCount = rootNodes.Length;
 #if !ENABLE_ASSERTS
-            Assert.AreEqual(MaxEntries, rootNodesCount);
+            Assert.AreEqual(MaxEntries, rootNodes.Length);
 #endif
 
             var nonEmptyNodesCount = 0;
-            for (var i = 0; i < rootNodesCount; i++)
+            for (var i = 0; i < MaxEntries; i++)
                 nonEmptyNodesCount += rootNodes[i].Aabb != AABB.Empty ? 1 : 0;
 #if !ENABLE_ASSERTS
-            Assert.AreEqual(nonEmptyNodesCount, rootNodes.ToArray().Take(rootNodesCount).Count(n => n.EntriesCount > 0));
+            Assert.AreEqual(nonEmptyNodesCount, rootNodes.ToArray().Count(n => n.EntriesCount > 0));
 #endif
 
-            var nodeIndex = GetNodeIndexToInsert(rootNodes, GetNodeAabb, rootEntriesStartIndex,
-                rootEntriesStartIndex + nonEmptyNodesCount, nonEmptyNodesCount < RootNodeMinEntries, entry.Aabb);
+            var getFirstEmptyNode = nonEmptyNodesCount < RootNodeMinEntries;
+            var nodeIndex = GetNodeIndexToInsert(rootNodes, GetNodeAabb, 0, nonEmptyNodesCount, getFirstEmptyNode, entry.Aabb);
 #if !ENABLE_ASSERTS
             Assert.IsTrue(nodeIndex > -1);
 #endif
@@ -251,20 +247,20 @@ namespace Game.Systems
 
             var candidateNodeIndex = nodeIndex + 1;
             for (; candidateNodeIndex < MaxEntries; candidateNodeIndex++)
-                if (rootNodes[candidateNodeIndex].Aabb == AABB.Empty)
+                if (rootNodes[candidateNodeIndex].Equals(InvalidEntry<Node>.Entry))
                     break;
 
-            if (candidateNodeIndex != MaxEntries && candidateNodeIndex < rootNodesCount)
+            if (candidateNodeIndex < MaxEntries)
             {
                 rootNodes[candidateNodeIndex] = extraNode.Value;
                 return;
             }
 
 #if !ENABLE_ASSERTS
-            Assert.IsTrue(rootNodes
-                .ToArray()
-                .Take(rootNodesCount)
-                .All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
+            Assert.IsTrue(
+                rootNodes
+                    .ToArray()
+                    .All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
 #endif
 
             GrowTree(extraNode.Value);
@@ -334,7 +330,7 @@ namespace Game.Systems
             if (entriesCount == MaxEntries)
                 return SplitNode(ref node, ref childLevelNodes, newChildNode, GetNodeAabb);
 
-            childLevelNodes[entriesStartIndex + node.EntriesCount] = newChildNode;
+            childLevelNodes[entriesStartIndex + entriesCount] = newChildNode;
 
             node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
             node.EntriesCount++;
@@ -477,10 +473,21 @@ namespace Game.Systems
                 nodeEntries[newNode.EntriesStartIndex + i] = invalidEntry;
 
 #if !ENABLE_ASSERTS
-            Assert.IsTrue(nodeEntries
-                .ToArray()
-                .Take(nodeEntries.Length)
-                .Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries * 2);
+            Assert.IsTrue(
+                nodeEntries
+                    .AsArray()
+                    .GetSubArray(splitNode.EntriesStartIndex, splitNode.EntriesCount)
+                    .ToArray()
+                    .Take(nodeEntries.Length)
+                    .Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries);
+
+            Assert.IsTrue(
+                nodeEntries
+                    .AsArray()
+                    .GetSubArray(newNode.EntriesStartIndex, newNode.EntriesCount)
+                    .ToArray()
+                    .Take(nodeEntries.Length)
+                    .Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries);
 
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
             Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
@@ -489,11 +496,11 @@ namespace Game.Systems
             return newNode;
         }
 
-        private static int GetNodeIndexToInsert<T>(NativeArray<T> nodeEntries, Func<T, AABB> getAabbFunc, int entriesStartIndex,
-            int entriesEndIndex, bool isFillCase, in AABB aabb)
+        public static int GetNodeIndexToInsert<T>(in NativeArray<T> nodeEntries, Func<T, AABB> getAabbFunc,
+            int entriesStartIndex, int entriesEndIndex, bool getFirstEmptyNode, in AABB aabb)
             where T : struct
         {
-            if (isFillCase)
+            if (getFirstEmptyNode)
                 return entriesEndIndex;
 
             var (nodeIndex, minArea) = (-1, fix.MaxValue);
