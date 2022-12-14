@@ -10,9 +10,9 @@ namespace Game.Systems
     public interface IRTree : IDisposable
     {
         int TreeHeight { get; }
-        IEnumerable<Node> RootNodes { get; }
+        IEnumerable<RTreeNode> RootNodes { get; }
 
-        IEnumerable<Node> GetNodes(int levelIndex, IEnumerable<int> indices);
+        IEnumerable<RTreeNode> GetNodes(int levelIndex, IEnumerable<int> indices);
 
         IEnumerable<RTreeLeafEntry> GetLeafEntries(IEnumerable<int> indices);
 

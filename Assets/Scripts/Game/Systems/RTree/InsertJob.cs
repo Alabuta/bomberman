@@ -2,6 +2,7 @@
 using App;
 using Math.FixedPointMath;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 
 namespace Game.Systems.RTree
@@ -33,18 +34,12 @@ namespace Game.Systems.RTree
         private const int RootNodeMinEntries = 2;
 
         [ReadOnly]
-        public int LeafEntriesMaxCount;
-
-        [ReadOnly]
-        public int EntriesCount;
-
-        [ReadOnly]
         public NativeArray<RTreeLeafEntry>.ReadOnly InputEntries;
 
         [ReadOnly]
         public NativeArray<LevelRange>.ReadOnly NodeLevelsRanges;
 
-        public NativeArray<Node> Nodes;
+        public NativeArray<RTreeNode> Nodes;
         public NativeArray<RTreeLeafEntry> LeafEntries;
 
         public NativeArray<int> NodeLevelsLengths; // :TODO: get from GetSubArray()
@@ -52,43 +47,41 @@ namespace Game.Systems.RTree
         [WriteOnly]
         public NativeArray<Result> Result;
 
-        private int _leafEntriesCount;
-        // private UnsafeAtomicCounter32 _leafEntriesCount;
+#if !DONT_USE_ATOMIC
+        [NativeDisableUnsafePtrRestriction]
+        public NativeArray<UnsafeAtomicCounter32> LeafEntriesCounter;
+#else
+        private int LeafEntriesCounter;
+#endif
 
         private int _rootNodesLevelIndex;
 
-        public int TreeHeight => _rootNodesLevelIndex + 1;
+        private int TreeHeight => _rootNodesLevelIndex + 1;
 
-        private static readonly Func<Node, AABB> GetNodeAabb = node => node.Aabb;
+        private static readonly Func<RTreeNode, AABB> GetNodeAabb = node => node.Aabb;
         private static readonly Func<RTreeLeafEntry, AABB> GetLeafEntryAabb = leafEntry => leafEntry.Aabb;
 
         public void Execute()
         {
             _rootNodesLevelIndex = 0;
-            _leafEntriesCount = 0;
 
             NodeLevelsLengths[_rootNodesLevelIndex] = MaxEntries;
             for (var i = 1; i < NodeLevelsLengths.Length; i++)
                 NodeLevelsLengths[i] = 0;
 
-#if ENABLE_ASSERTS
-            Assert.IsTrue(EntriesCount <= LeafEntriesMaxCount);
-#endif
-
             for (var i = 0; i < MaxEntries; i++)
-                Nodes[i] = InvalidEntry<Node>.Entry;
+                Nodes[i] = InvalidEntry<RTreeNode>.Entry;
 
             Profiling.RTreeInsert.Begin();
 
-            for (var i = 0; i < EntriesCount; i++)
+            for (var i = 0; i < InputEntries.Length; i++)
                 Insert(i);
 
             Profiling.RTreeInsert.End();
 
             Result[0] = new Result
             {
-                TreeHeight = TreeHeight,
-                LeafEntriesCount = _leafEntriesCount
+                TreeHeight = TreeHeight
             };
         }
 
@@ -130,7 +123,7 @@ namespace Game.Systems.RTree
 
             Nodes[nodeIndex] = targetNode;
 
-            if (extraNode.Aabb == InvalidEntry<Node>.Entry.Aabb)
+            if (extraNode.Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
                 return;
 
 #if ENABLE_ASSERTS
@@ -141,7 +134,7 @@ namespace Game.Systems.RTree
 
             var candidateNodeIndex = nodeIndex + 1;
             for (; candidateNodeIndex < startIndex + rootNodesCount; candidateNodeIndex++)
-                if (Nodes[candidateNodeIndex].Aabb == InvalidEntry<Node>.Entry.Aabb)
+                if (Nodes[candidateNodeIndex].Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
                     break;
 
             if (candidateNodeIndex < startIndex + rootNodesCount)
@@ -161,7 +154,7 @@ namespace Game.Systems.RTree
             GrowTree(in extraNode);
         }
 
-        private Node ChooseLeaf(ref Node node, int nodeLevelIndex, in RTreeLeafEntry entry)
+        private RTreeNode ChooseLeaf(ref RTreeNode node, int nodeLevelIndex, in RTreeLeafEntry entry)
         {
             var isLeafLevel = nodeLevelIndex == 0;
             if (isLeafLevel)
@@ -169,15 +162,26 @@ namespace Game.Systems.RTree
                 using var _ = Profiling.RTreeLeafNodesUpdate.Auto();
 
                 if (node.EntriesCount == MaxEntries)
-                    return SplitNode(ref node, ref LeafEntries, ref _leafEntriesCount, entry, GetLeafEntryAabb);
+                {
+#if !DONT_USE_ATOMIC
+                    var endIndex = LeafEntriesCounter[0].Add(MaxEntries);
+                    return SplitNode(ref node, ref LeafEntries, ref endIndex, entry, GetLeafEntryAabb);
+#else
+                    return SplitNode(ref node, ref LeafEntries, ref LeafEntriesCounter, entry, GetLeafEntryAabb);
+#endif
+                }
 
                 if (node.EntriesStartIndex == -1)
                 {
-                    node.EntriesStartIndex = _leafEntriesCount;
-                    _leafEntriesCount += MaxEntries;
+#if !DONT_USE_ATOMIC
+                    node.EntriesStartIndex = LeafEntriesCounter[0].Add(MaxEntries);
+#else
+                    node.EntriesStartIndex = LeafEntriesCounter;
+                    LeafEntriesCounter += MaxEntries;
+#endif
 
-                    for (var i = node.EntriesStartIndex; i < _leafEntriesCount; i++)
-                        LeafEntries[i] = InvalidEntry<RTreeLeafEntry>.Entry;
+                    for (var i = 0; i < MaxEntries; i++)
+                        LeafEntries[node.EntriesStartIndex + i] = InvalidEntry<RTreeLeafEntry>.Entry;
                 }
 
                 LeafEntries[node.EntriesStartIndex + node.EntriesCount] = entry;
@@ -185,7 +189,7 @@ namespace Game.Systems.RTree
                 node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
                 node.EntriesCount++;
 
-                return InvalidEntry<Node>.Entry;
+                return InvalidEntry<RTreeNode>.Entry;
             }
 
             using var __ = Profiling.RTreeNodesUpdate.Auto();
@@ -219,10 +223,10 @@ namespace Game.Systems.RTree
 
             Nodes[childNodeIndex] = targetChildNode;
 
-            if (extraChildNode.Aabb == InvalidEntry<Node>.Entry.Aabb)
+            if (extraChildNode.Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
             {
                 node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
-                return InvalidEntry<Node>.Entry;
+                return InvalidEntry<RTreeNode>.Entry;
             }
 
             if (entriesCount == MaxEntries)
@@ -245,10 +249,10 @@ namespace Game.Systems.RTree
             Assert.IsTrue(node.EntriesCount is >= MinEntries and <= MaxEntries || IsLevelRoot(nodeLevelIndex) &&
                 node.EntriesCount is >= RootNodeMinEntries and <= MaxEntries);
 #endif
-            return InvalidEntry<Node>.Entry;
+            return InvalidEntry<RTreeNode>.Entry;
         }
 
-        private void GrowTree(in Node newEntry)
+        private void GrowTree(in RTreeNode newEntry)
         {
             using var _ = Profiling.RTreeGrow.Auto();
 
@@ -260,7 +264,7 @@ namespace Game.Systems.RTree
             Assert.IsFalse(rootNodesCount + MaxEntries > NodeLevelsRanges[_rootNodesLevelIndex].Capacity);
 #endif
 
-            var newRootNodeA = new Node
+            var newRootNodeA = new RTreeNode
             {
                 Aabb = AABB.Empty,
                 EntriesStartIndex = rootNodesStartIndex,
@@ -286,7 +290,7 @@ namespace Game.Systems.RTree
             Nodes[newRootNodesStartIndex + 1] = newRootNodeB;
 
             for (var i = 2; i < MaxEntries; i++)
-                Nodes[newRootNodesStartIndex + i] = InvalidEntry<Node>.Entry;
+                Nodes[newRootNodesStartIndex + i] = InvalidEntry<RTreeNode>.Entry;
 
 #if ENABLE_ASSERTS
             var newRootNodes = Nodes.GetSubArray(newRootNodesStartIndex, MaxEntries);
@@ -302,7 +306,8 @@ namespace Game.Systems.RTree
 #endif
         }
 
-        private static Node SplitNode<T>(ref Node splitNode, ref NativeArray<T> nodeEntries, ref int nodeEntriesEndIndex,
+        private static RTreeNode SplitNode<T>(ref RTreeNode splitNode, ref NativeArray<T> nodeEntries,
+            ref int nodeEntriesEndIndex,
             in T newEntry, Func<T, AABB> getAabbFunc)
             where T : unmanaged
         {
@@ -330,7 +335,7 @@ namespace Game.Systems.RTree
 
             var newNodeStartEntry = indexB != endIndex ? nodeEntries[indexB] : newEntry;
             var newEntriesStartIndex = nodeEntriesEndIndex;
-            var newNode = new Node
+            var newNode = new RTreeNode
             {
                 Aabb = getAabbFunc.Invoke(newNodeStartEntry),
 
@@ -432,8 +437,8 @@ namespace Game.Systems.RTree
             return nodeIndex;
         }
 
-        private static void FillNodes<T>(ref NativeArray<T> nodeEntries, Func<T, AABB> getAabbFunc, ref Node splitNode,
-            ref Node newNode)
+        private static void FillNodes<T>(ref NativeArray<T> nodeEntries, Func<T, AABB> getAabbFunc, ref RTreeNode splitNode,
+            ref RTreeNode newNode)
             where T : struct
         {
             ref var sourceNode = ref splitNode.EntriesCount < MinEntries ? ref newNode : ref splitNode;
