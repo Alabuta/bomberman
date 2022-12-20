@@ -30,8 +30,8 @@ namespace Gizmos
 
         public AabbEntitiesTreeDrawer()
         {
-            const int count = 64;
-            const int hueStep = 41;
+            const int count = 128;
+            const int hueStep = 37;
             var hue = -hueStep;
 
             _colors = Enumerable
@@ -109,7 +109,7 @@ namespace Gizmos
 
                     case true when !isPreLeafsLevel:
                         DrawParentNodeRect(node, color);
-                        DrawNodeEntries(node, color * new Color(1, 1, 1, 0.99f), subTreeIndex, levelIndex);
+                        DrawNodeEntries(node, color * new Color(1, 1, 1, 0.25f), subTreeIndex, levelIndex);
                         break;
 
                     default:

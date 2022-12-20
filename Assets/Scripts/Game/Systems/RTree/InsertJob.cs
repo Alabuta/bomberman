@@ -36,6 +36,12 @@ namespace Game.Systems.RTree
         // private const int JobsMaxCount = 4;
 
         [ReadOnly]
+        public int BatchSize;
+
+        [ReadOnly]
+        public int WorkersCount;
+
+        [ReadOnly]
         public int MaxTreeHeight;
 
         [ReadOnly]
@@ -153,19 +159,36 @@ namespace Game.Systems.RTree
                 nonEmptyNodesCount += rootNodes[i].Aabb != AABB.Empty ? 1 : 0;
 
 #if ENABLE_ASSERTS
-            Assert.AreEqual(nonEmptyNodesCount, rootNodes.ToArray().Count(n => n.EntriesCount > 0));
+            Assert.AreEqual(nonEmptyNodesCount, rootNodes.Count(n => n.Aabb != AABB.Empty));
+            Assert.AreEqual(nonEmptyNodesCount, rootNodes.Count(n => n.EntriesStartIndex > -1));
+            Assert.AreEqual(nonEmptyNodesCount, rootNodes.Count(n => n.EntriesCount is > 0 and <= MaxEntries));
 #endif
             var entry = Entries[entryIndex];
 
-            var getFirstEmptyNode = nonEmptyNodesCount < RootNodeMinEntries;
-            var nodeIndex = GetNodeIndexToInsert(in _currentThreadNodes, GetNodeAabb, startIndex,
-                startIndex + nonEmptyNodesCount,
-                getFirstEmptyNode, in entry.Aabb);
+            var targetNodeIndex = -1;
+
+            if (nonEmptyNodesCount < RootNodeMinEntries)
+            {
+                targetNodeIndex = startIndex + nonEmptyNodesCount;
+                /*for (var i = 0; i < MaxEntries; i++)
+                {
+                    if (rootNodes[i].EntriesCount >= MinEntries)
+                        continue;
+
+                    targetNodeIndex = i;
+                    break;
+                }*/
+            }
+            else
+                targetNodeIndex = GetNodeIndexToInsert(in _currentThreadNodes, startIndex, startIndex + nonEmptyNodesCount,
+                    in entry.Aabb);
+
+            // nodeIndex = math.max(nodeIndex, 0);
 #if ENABLE_ASSERTS
             Assert.IsTrue(nodeIndex > -1);
 #endif
 
-            var targetNode = _currentThreadNodes[nodeIndex];
+            var targetNode = _currentThreadNodes[targetNodeIndex];
             var extraNode = ChooseLeaf(ref targetNode, RootNodesLevelIndex, in entry);
 #if ENABLE_ASSERTS
             Assert.AreNotEqual(targetNode.Aabb, AABB.Empty);
@@ -173,7 +196,7 @@ namespace Game.Systems.RTree
             Assert.AreNotEqual(targetNode.EntriesStartIndex, -1);
 #endif
 
-            _currentThreadNodes[nodeIndex] = targetNode;
+            _currentThreadNodes[targetNodeIndex] = targetNode;
 
             if (extraNode.Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
                 return;
@@ -184,7 +207,7 @@ namespace Game.Systems.RTree
             Assert.AreNotEqual(extraNode.EntriesStartIndex, -1);
 #endif
 
-            var candidateNodeIndex = nodeIndex + 1;
+            var candidateNodeIndex = targetNodeIndex + 1;
             for (; candidateNodeIndex < startIndex + rootNodesCount; candidateNodeIndex++)
                 if (_currentThreadNodes[candidateNodeIndex].Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
                     break;
@@ -199,7 +222,6 @@ namespace Game.Systems.RTree
             Assert.IsTrue(
                 _currentThreadNodes
                     .GetSubArray(startIndex, math.max(rootNodesCount, nodeIndex - startIndex + 1))
-                    .ToArray()
                     .All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
 #endif
 
@@ -264,15 +286,14 @@ namespace Game.Systems.RTree
 
             var childNodeLevelIndex = nodeLevelIndex - 1;
             var childNodeIndex =
-                GetNodeIndexToInsert(in _currentThreadNodes, GetNodeAabb, entriesStartIndex, entriesEndIndex, false,
-                    entry.Aabb);
+                GetNodeIndexToInsert(in _currentThreadNodes, entriesStartIndex, entriesEndIndex, in entry.Aabb);
 #if ENABLE_ASSERTS
             Assert.IsTrue(childNodeIndex >= entriesStartIndex);
             Assert.IsTrue(childNodeIndex < entriesEndIndex);
 #endif
 
             var targetChildNode = _currentThreadNodes[childNodeIndex];
-            var extraChildNode = ChooseLeaf(ref targetChildNode, childNodeLevelIndex, entry);
+            var extraChildNode = ChooseLeaf(ref targetChildNode, childNodeLevelIndex, in entry);
 
             _currentThreadNodes[childNodeIndex] = targetChildNode;
 
@@ -351,7 +372,6 @@ namespace Game.Systems.RTree
             var newRootNodes = _currentThreadNodes.GetSubArray(newRootNodesStartIndex, MaxEntries);
 
             var nodes = newRootNodes
-                .ToArray()
                 // .Take(rootNodesCount)
                 .ToArray();
 
@@ -362,8 +382,7 @@ namespace Game.Systems.RTree
         }
 
         private static RTreeNode SplitNode<T>(ref RTreeNode splitNode, ref NativeArray<T> nodeEntries,
-            ref int nodeEntriesEndIndex,
-            in T newEntry, Func<T, AABB> getAabbFunc)
+            ref int nodeEntriesEndIndex, in T newEntry, Func<T, AABB> getAabbFunc)
             where T : unmanaged
         {
             using var _ = Profiling.RTreeSplitNode.Auto();
@@ -383,7 +402,7 @@ namespace Game.Systems.RTree
             // Assign entry to the node with smaller AABB area increase
             // Repeat until all entries are assigned between two new nodes
 
-            var (indexA, indexB) = FindLargestEntriesPair(nodeEntries, newEntry, startIndex, endIndex, getAabbFunc);
+            var (indexA, indexB) = FindLargestEntriesPair(in nodeEntries, newEntry, startIndex, endIndex, getAabbFunc);
 #if ENABLE_ASSERTS
             Assert.IsTrue(indexA > -1 && indexB > -1);
 #endif
@@ -426,7 +445,7 @@ namespace Game.Systems.RTree
                 var conjugatedAabbB = fix.AABBs_conjugate(newNodeAabb, entityAabb);
 
                 var isNewNodeTarget =
-                    IsSecondNodeTarget(splitNodeAabb, newNodeAabb, conjugatedAabbA, conjugatedAabbB);
+                    IsSecondNodeTarget(in splitNodeAabb, in newNodeAabb, in conjugatedAabbA, in conjugatedAabbB);
                 ref var targetNode = ref isNewNodeTarget ? ref newNode : ref splitNode;
 
                 if (isNewNodeTarget || targetNode.EntriesCount != i)
@@ -449,13 +468,11 @@ namespace Game.Systems.RTree
             Assert.IsTrue(
                 nodeEntries
                     .GetSubArray(splitNode.EntriesStartIndex, splitNode.EntriesCount)
-                    .ToArray()
                     .Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries);
 
             Assert.IsTrue(
                 nodeEntries
                     .GetSubArray(newNode.EntriesStartIndex, newNode.EntriesCount)
-                    .ToArray()
                     .Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries);
 
             Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
@@ -468,21 +485,22 @@ namespace Game.Systems.RTree
         private bool IsLevelRoot(int nodeLevelIndex) =>
             nodeLevelIndex == RootNodesLevelIndex;
 
-        private static int GetNodeIndexToInsert<T>(in NativeArray<T> nodeEntries, Func<T, AABB> getAabbFunc,
-            int entriesStartIndex, int entriesEndIndex, bool getFirstEmptyNode, in AABB aabb)
-            where T : struct
+        private static int GetNodeIndexToInsert(in NativeArray<RTreeNode> nodeEntries, int entriesStartIndex,
+            int entriesEndIndex, in AABB aabb)
         {
-            if (getFirstEmptyNode)
-                return entriesEndIndex;
-
             var (nodeIndex, minArea) = (-1, fix.MaxValue);
             for (var i = entriesStartIndex; i < entriesStartIndex + MaxEntries; i++)
             {
                 if (i >= entriesEndIndex)
                     break;
 
-                var nodeAabb = getAabbFunc(nodeEntries[i]);
-                var conjugatedArea = GetConjugatedArea(nodeAabb, aabb);
+                var entry = nodeEntries[i];
+
+#if ENABLE_ASSERTS
+                Assert.AreNotEqual(AABB.Empty, entry.Aabb);
+#endif
+
+                var conjugatedArea = GetConjugatedArea(in entry.Aabb, in aabb);
                 if (conjugatedArea >= minArea)
                     continue;
 
@@ -512,7 +530,7 @@ namespace Game.Systems.RTree
                 var entry = nodeEntries[i];
                 var entryAabb = getAabbFunc.Invoke(entry);
 
-                var conjugatedArea = GetConjugatedArea(targetNodeAabb, entryAabb);
+                var conjugatedArea = GetConjugatedArea(in targetNodeAabb, in entryAabb);
                 if (conjugatedArea > minArena)
                 {
                     sourceNodeAabb = fix.AABBs_conjugate(sourceNodeAabb, entryAabb);
@@ -561,7 +579,7 @@ namespace Game.Systems.RTree
                     if (aabbB == AABB.Empty)
                         continue;
 
-                    conjugatedArea = GetConjugatedArea(aabbA, aabbB);
+                    conjugatedArea = GetConjugatedArea(in aabbA, in aabbB);
                     if (conjugatedArea <= maxArena)
                         continue;
 
@@ -572,7 +590,7 @@ namespace Game.Systems.RTree
                 if (newEntryAabb == AABB.Empty)
                     continue;
 
-                conjugatedArea = GetConjugatedArea(aabbA, newEntryAabb);
+                conjugatedArea = GetConjugatedArea(in aabbA, in newEntryAabb);
                 if (conjugatedArea <= maxArena)
                     continue;
 
@@ -585,8 +603,8 @@ namespace Game.Systems.RTree
         private static bool IsSecondNodeTarget(in AABB nodeAabbA, in AABB nodeAabbB, in AABB conjugatedAabbA,
             in AABB conjugatedAabbB)
         {
-            var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(nodeAabbA, conjugatedAabbA);
-            var (areaIncreaseB, deltaB) = GetAreaAndSizeIncrease(nodeAabbB, conjugatedAabbB);
+            var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(in nodeAabbA, in conjugatedAabbA);
+            var (areaIncreaseB, deltaB) = GetAreaAndSizeIncrease(in nodeAabbB, in conjugatedAabbB);
 
             if (areaIncreaseA > areaIncreaseB == deltaA > deltaB)
                 return areaIncreaseA > areaIncreaseB;
