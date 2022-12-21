@@ -185,7 +185,7 @@ namespace Game.Systems.RTree
 
             // nodeIndex = math.max(nodeIndex, 0);
 #if ENABLE_ASSERTS
-            Assert.IsTrue(nodeIndex > -1);
+            Assert.IsTrue(targetNodeIndex > -1);
 #endif
 
             var targetNode = _currentThreadNodes[targetNodeIndex];
@@ -221,7 +221,7 @@ namespace Game.Systems.RTree
 #if ENABLE_ASSERTS
             Assert.IsTrue(
                 _currentThreadNodes
-                    .GetSubArray(startIndex, math.max(rootNodesCount, nodeIndex - startIndex + 1))
+                    .GetSubArray(startIndex, math.max(rootNodesCount, targetNodeIndex - startIndex + 1))
                     .All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
 #endif
 
@@ -285,8 +285,7 @@ namespace Game.Systems.RTree
 #endif
 
             var childNodeLevelIndex = nodeLevelIndex - 1;
-            var childNodeIndex =
-                GetNodeIndexToInsert(in _currentThreadNodes, entriesStartIndex, entriesEndIndex, in entry.Aabb);
+            var childNodeIndex = GetNodeIndexToInsert(in _currentThreadNodes, in node, in entry.Aabb);
 #if ENABLE_ASSERTS
             Assert.IsTrue(childNodeIndex >= entriesStartIndex);
             Assert.IsTrue(childNodeIndex < entriesEndIndex);
@@ -485,8 +484,17 @@ namespace Game.Systems.RTree
         private bool IsLevelRoot(int nodeLevelIndex) =>
             nodeLevelIndex == RootNodesLevelIndex;
 
+        private static int GetNodeIndexToInsert(in NativeArray<RTreeNode> nodeEntries, in RTreeNode parentNode,
+            in AABB newEntryAabb)
+        {
+            var entriesStartIndex = parentNode.EntriesStartIndex;
+            var entriesEndIndex = entriesStartIndex + parentNode.EntriesCount;
+
+            return GetNodeIndexToInsert(in nodeEntries, entriesStartIndex, entriesEndIndex, in newEntryAabb);
+        }
+
         private static int GetNodeIndexToInsert(in NativeArray<RTreeNode> nodeEntries, int entriesStartIndex,
-            int entriesEndIndex, in AABB aabb)
+            int entriesEndIndex, in AABB newEntryAabb)
         {
             var (nodeIndex, minArea) = (-1, fix.MaxValue);
             for (var i = entriesStartIndex; i < entriesStartIndex + MaxEntries; i++)
@@ -495,7 +503,6 @@ namespace Game.Systems.RTree
                     break;
 
                 var entry = nodeEntries[i];
-
 #if ENABLE_ASSERTS
                 Assert.AreNotEqual(AABB.Empty, entry.Aabb);
 #endif
