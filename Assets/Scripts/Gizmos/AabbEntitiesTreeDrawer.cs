@@ -64,59 +64,42 @@ namespace Gizmos
                     if (!aabb.IsValid())
                         continue;
 
-                    DrawChildren(node, subTreeIndex, 1, 17 * 23 + (int) math.pow(subTreeIndex + 1, 2) * i);
+                    var hashCode = 17 * 23 + (int) math.pow(subTreeIndex + 1, 2) * i;
+                    DrawNodeLevel(node, subTreeIndex, 1, hashCode);
                 }
             }
         }
 
-        private void DrawChildren(RTreeNode node, int subTreeIndex, int levelIndex, int hashCode)
+        private void DrawNodeLevel(RTreeNode node, int subTreeIndex, int levelIndex, int hashCode)
         {
-            Assert.IsTrue(levelIndex <= _rTree.GetSubTreeHeight(subTreeIndex));
+            var subTreeHeight = _rTree.GetSubTreeHeight(subTreeIndex);
+            Assert.IsFalse(levelIndex > subTreeHeight);
 
             var isTargetLevel = levelIndex == TargetTreeLevel;
-            var isLeafsLevel = levelIndex == _rTree.GetSubTreeHeight(subTreeIndex);
+            var isPreLeafsLevel = levelIndex == subTreeHeight;
 
             var color = GetDrawColor(hashCode);
 
-            if (isTargetLevel || isLeafsLevel)
+            switch (isTargetLevel, isPreLeafsLevel)
             {
-                if (isTargetLevel)
-                    DrawNodeLevel(node, color, subTreeIndex, levelIndex, hashCode);
-                else
+                case (false, false):
+                    var childNodes = _rTree.GetNodes(subTreeIndex, levelIndex,
+                        Enumerable.Range(node.EntriesStartIndex, node.EntriesCount));
+
+                    foreach (var (childNode, i) in childNodes.Select((n, i) => (n, i)))
+                        DrawNodeLevel(childNode, subTreeIndex, levelIndex + 1, hashCode * 23 + i);
+
+                    break;
+
+                case (true, false):
+                    DrawParentNodeRect(node, color);
+                    DrawNodeEntries(node, color * new Color(1, 1, 1, 0.25f), subTreeIndex, levelIndex);
+                    break;
+
+                default:
+                    DrawParentNodeRect(node, color);
                     DrawLeafEntries(node, color * new Color(1, 1, 1, 0.99f));
-
-                return;
-            }
-
-            DrawNodeLevel(node, color, subTreeIndex, levelIndex, hashCode);
-        }
-
-        private void DrawNodeLevel(RTreeNode node, Color color, int subTreeIndex, int levelIndex, int hashCode)
-        {
-            var childNodes = _rTree.GetNodes(subTreeIndex, levelIndex,
-                Enumerable.Range(node.EntriesStartIndex, node.EntriesCount));
-
-            foreach (var (childNode, i) in childNodes.Select((n, i) => (n, i)))
-            {
-                var isTargetLevel = levelIndex == TargetTreeLevel;
-                var isPreLeafsLevel = levelIndex + 1 == _rTree.GetSubTreeHeight(subTreeIndex);
-
-                switch (isTargetLevel)
-                {
-                    case false when !isPreLeafsLevel:
-                        DrawChildren(childNode, subTreeIndex, levelIndex + 1, hashCode * 23 + i);
-                        continue;
-
-                    case true when !isPreLeafsLevel:
-                        DrawParentNodeRect(node, color);
-                        DrawNodeEntries(node, color * new Color(1, 1, 1, 0.25f), subTreeIndex, levelIndex);
-                        break;
-
-                    default:
-                        DrawParentNodeRect(childNode, color);
-                        DrawLeafEntries(childNode, color * new Color(1, 1, 1, 0.99f));
-                        break;
-                }
+                    break;
             }
         }
 
