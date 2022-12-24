@@ -152,38 +152,11 @@ namespace Game.Systems.RTree
 #if ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, rootNodesCount);
 #endif
-            var rootNodes = _currentThreadNodes.GetSubArray(startIndex, rootNodesCount);
 
-            var nonEmptyNodesCount = 0;
-            for (var i = 0; i < MaxEntries; i++)
-                nonEmptyNodesCount += rootNodes[i].Aabb != AABB.Empty ? 1 : 0;
-
-#if ENABLE_ASSERTS
-            Assert.AreEqual(nonEmptyNodesCount, rootNodes.Count(n => n.Aabb != AABB.Empty));
-            Assert.AreEqual(nonEmptyNodesCount, rootNodes.Count(n => n.EntriesStartIndex > -1));
-            Assert.AreEqual(nonEmptyNodesCount, rootNodes.Count(n => n.EntriesCount is > 0 and <= MaxEntries));
-#endif
             var entry = Entries[entryIndex];
 
-            var targetNodeIndex = -1;
-
-            if (nonEmptyNodesCount < RootNodeMinEntries)
-            {
-                targetNodeIndex = startIndex + nonEmptyNodesCount;
-                /*for (var i = 0; i < MaxEntries; i++)
-                {
-                    if (rootNodes[i].EntriesCount >= MinEntries)
-                        continue;
-
-                    targetNodeIndex = i;
-                    break;
-                }*/
-            }
-            else
-                targetNodeIndex = GetNodeIndexToInsert(in _currentThreadNodes, startIndex, startIndex + nonEmptyNodesCount,
-                    in entry.Aabb);
-
-            // nodeIndex = math.max(nodeIndex, 0);
+            var targetNodeIndex = GetNodeIndexToInsert(in _currentThreadNodes, startIndex, startIndex + MaxEntries,
+                in entry.Aabb);
 #if ENABLE_ASSERTS
             Assert.IsTrue(targetNodeIndex > -1);
 #endif
@@ -299,6 +272,10 @@ namespace Game.Systems.RTree
             if (extraChildNode.Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
             {
                 node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
+#if ENABLE_ASSERTS
+                Assert.IsFalse(targetChildNode.EntriesStartIndex < 0);
+                Assert.IsTrue(targetChildNode.EntriesCount is >= MinEntries and <= MaxEntries);
+#endif
                 return InvalidEntry<RTreeNode>.Entry;
             }
 
@@ -497,17 +474,24 @@ namespace Game.Systems.RTree
             int entriesEndIndex, in AABB newEntryAabb)
         {
             var (nodeIndex, minArea) = (-1, fix.MaxValue);
-            for (var i = entriesStartIndex; i < entriesStartIndex + MaxEntries; i++)
+            for (var i = entriesStartIndex; i < entriesEndIndex; i++)
             {
-                if (i >= entriesEndIndex)
-                    break;
-
                 var entry = nodeEntries[i];
+                if (entry.EntriesCount < MinEntries)
+                {
+                    if (i < MinEntries)
+                        return i;
+
+                    break;
+                }
+
 #if ENABLE_ASSERTS
                 Assert.AreNotEqual(AABB.Empty, entry.Aabb);
+                Assert.AreNotEqual(-1, entry.EntriesStartIndex);
+                Assert.AreNotEqual(0, entry.EntriesCount);
 #endif
 
-                var conjugatedArea = GetConjugatedArea(in entry.Aabb, in aabb);
+                var conjugatedArea = GetConjugatedArea(in entry.Aabb, in newEntryAabb);
                 if (conjugatedArea >= minArea)
                     continue;
 
