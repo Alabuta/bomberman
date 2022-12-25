@@ -33,19 +33,14 @@ namespace Game.Systems.RTree
 
         private const int RootNodeMinEntries = 2;
 
-        // private const int JobsMaxCount = 4;
-
-        [ReadOnly]
-        public int BatchSize;
-
-        [ReadOnly]
-        public int WorkersCount;
-
         [ReadOnly]
         public int MaxTreeHeight;
 
         [ReadOnly]
         public int NodesContainerCapacity;
+
+        [ReadOnly]
+        public int ResultEntriesContainerCapacity;
 
         [ReadOnly]
         public NativeArray<RTreeLeafEntry>.ReadOnly Entries;
@@ -56,27 +51,14 @@ namespace Game.Systems.RTree
         [ReadOnly]
         public NativeArray<TreeLevelNodesRange> NodesRangeContainer;
 
-        [NativeDisableContainerSafetyRestriction]
         public NativeArray<int> RootNodesLevelIndices;
 
-        [NativeDisableParallelForRestriction]
         public NativeArray<RTreeLeafEntry> ResultEntries;
 
-        [NativeDisableContainerSafetyRestriction]
         [WriteOnly]
         public NativeArray<ThreadInsertJobResult> PerThreadJobResults;
 
-#if !DONT_USE_ATOMIC
-        [NativeDisableContainerSafetyRestriction]
-        [NativeDisableUnsafePtrRestriction]
-        public NativeArray<UnsafeAtomicCounter32> LeafEntriesCounter;
-#else
-        private int LeafEntriesCounter;
-#endif
-
-        // public NativeArray<bool> ThreadsInitFlagsContainer;
-
-        // public NativeParallelHashSet<int>.ParallelWriter ThreadIndicesInUse;
+        private int _leafEntriesCounter;
 
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<int> PerThreadWorkerIndices;
@@ -98,6 +80,9 @@ namespace Game.Systems.RTree
         [NativeDisableContainerSafetyRestriction]
         private NativeArray<int> _currentThreadNodesEndIndices;
 
+        [NativeDisableContainerSafetyRestriction]
+        private NativeArray<RTreeLeafEntry> _currentThreadResultEntries;
+
         private int WorkerIndex => PerThreadWorkerIndices[_threadIndex];
         private int RootNodesLevelIndex => RootNodesLevelIndices[WorkerIndex];
         private int TreeHeight => RootNodesLevelIndex + 1;
@@ -117,6 +102,8 @@ namespace Game.Systems.RTree
 
                 RootNodesLevelIndices[workerIndex] = 0;
 
+                _leafEntriesCounter = 0;
+
                 _currentThreadNodes = NodesContainer
                     .GetSubArray(workerIndex * NodesContainerCapacity, NodesContainerCapacity);
 
@@ -132,6 +119,9 @@ namespace Game.Systems.RTree
                 _currentThreadNodesEndIndices[RootNodesLevelIndex] = MaxEntries;
                 for (var i = 1; i < _currentThreadNodesEndIndices.Length; i++)
                     _currentThreadNodesEndIndices[i] = 0;
+
+                _currentThreadResultEntries = ResultEntries.GetSubArray(workerIndex * ResultEntriesContainerCapacity,
+                    ResultEntriesContainerCapacity);
             }
 
             Insert(entryIndex);
@@ -209,29 +199,19 @@ namespace Game.Systems.RTree
                 using var _ = Profiling.RTreeLeafNodesUpdate.Auto();
 
                 if (node.EntriesCount == MaxEntries)
-                {
-#if !DONT_USE_ATOMIC
-                    var endIndex = LeafEntriesCounter[0].Add(MaxEntries);
-                    return SplitNode(ref node, ref ResultEntries, ref endIndex, entry, GetLeafEntryAabb);
-#else
-                    return SplitNode(ref node, ref LeafEntries, ref LeafEntriesCounter, entry, GetLeafEntryAabb);
-#endif
-                }
+                    return SplitNode(ref node, ref _currentThreadResultEntries, ref _leafEntriesCounter, entry,
+                        GetLeafEntryAabb);
 
                 if (node.EntriesStartIndex == -1)
                 {
-#if !DONT_USE_ATOMIC
-                    node.EntriesStartIndex = LeafEntriesCounter[0].Add(MaxEntries);
-#else
-                    node.EntriesStartIndex = LeafEntriesCounter;
-                    LeafEntriesCounter += MaxEntries;
-#endif
+                    node.EntriesStartIndex = _leafEntriesCounter;
+                    _leafEntriesCounter += MaxEntries;
 
                     for (var i = 0; i < MaxEntries; i++)
-                        ResultEntries[node.EntriesStartIndex + i] = InvalidEntry<RTreeLeafEntry>.Entry;
+                        _currentThreadResultEntries[node.EntriesStartIndex + i] = InvalidEntry<RTreeLeafEntry>.Entry;
                 }
 
-                ResultEntries[node.EntriesStartIndex + node.EntriesCount] = entry;
+                _currentThreadResultEntries[node.EntriesStartIndex + node.EntriesCount] = entry;
 
                 node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
                 node.EntriesCount++;

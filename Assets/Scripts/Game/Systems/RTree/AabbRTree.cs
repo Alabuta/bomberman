@@ -51,12 +51,7 @@ namespace Game.Systems.RTree
 
         private int WorkersCount;
 
-        private static readonly Func<RTreeLeafEntry, AABB> GetLeafEntryAabb = leafEntry => leafEntry.Aabb;
-        private static readonly Func<RTreeNode, AABB> GetNodeAabb = node => node.Aabb;
-
         private readonly int _leafEntriesMaxCount;
-
-        private readonly List<NativeList<RTreeNode>> _nodes;
 
         private NativeArray<RTreeNode> _nodesContainer;
         private NativeArray<TreeLevelNodesRange> _nodeLevelsRanges;
@@ -82,26 +77,18 @@ namespace Game.Systems.RTree
         private NativeArray<bool> _threadsInitFlagsContainer;
         private NativeArray<int> _perThreadWorkerIndices;
 
-        private int _rootNodesIndex = -1;
-
         [NativeDisableUnsafePtrRestriction]
         private InsertJob _insertJob;
 
         [NativeDisableUnsafePtrRestriction]
         private JobHandle _jobHandle;
-        private bool _isJobScheduled;
 
-        public int TreeHeight2 => _rootNodesIndex + 1;
+        private bool _isJobScheduled;
 
         public int SubTreesCount { get; private set; }
 
         public int GetSubTreeHeight(int subTreeIndex) =>
             SubTreesCount < 1 ? 0 : _perThreadJobResults[subTreeIndex].TreeHeight;
-
-        public IEnumerable<RTreeNode> RootNodes2 =>
-            TreeHeight2 > 0
-                ? _nodes[_rootNodesIndex].TakeWhile(n => n.Aabb != AABB.Empty)
-                : Enumerable.Empty<RTreeNode>();
 
         public IEnumerable<RTreeNode> GetSubTreeRootNodes(int subTreeIndex)
         {
@@ -111,7 +98,7 @@ namespace Game.Systems.RTree
 
             var rootRange = _nodeLevelsRanges[subTreeHeight - 1];
             return _nodesContainer
-                .GetSubArray(rootRange.StartIndex, rootRange.Capacity)
+                .GetSubArray(rootRange.StartIndex, MaxEntries)
                 .TakeWhile(n => n.Aabb != AABB.Empty);
         }
 
@@ -122,9 +109,6 @@ namespace Game.Systems.RTree
 
             return Enumerable.Empty<RTreeNode>();
         }
-
-        public IEnumerable<RTreeLeafEntry> GetLeafEntries2(IEnumerable<int> indices) =>
-            _leafEntries.Length != 0 ? indices.Select(i => _leafEntries[i]) : Enumerable.Empty<RTreeLeafEntry>();
 
         public IEnumerable<RTreeLeafEntry> GetLeafEntries(IEnumerable<int> indices) =>
             _resultEntries.Length != 0 ? indices.Select(i => _resultEntries[i]) : Enumerable.Empty<RTreeLeafEntry>();
@@ -261,6 +245,7 @@ namespace Game.Systems.RTree
             {
                 MaxTreeHeight = maxTreeHeight,
                 NodesContainerCapacity = nodesCapacity,
+                ResultEntriesContainerCapacity = _resultEntries.Length, // :TODO: use correct size per worker
                 Entries = _entries.AsReadOnly(),
                 NodesContainer = _nodesContainer,
                 NodesEndIndicesContainer = _nodesEndIndicesContainer,
@@ -268,7 +253,6 @@ namespace Game.Systems.RTree
                 RootNodesLevelIndices = _rootNodesLevelIndices,
                 ResultEntries = _resultEntries,
                 PerThreadJobResults = _perThreadJobResults,
-                LeafEntriesCounter = _leafEntriesCounterContainer,
                 PerThreadWorkerIndices = _perThreadWorkerIndices,
                 WorkersInUseCounter = _workersInUseCounterContainer
             };
@@ -287,9 +271,6 @@ namespace Game.Systems.RTree
             _nodesContainer.Dispose();
 
             _resultEntries.Dispose();
-
-            foreach (var nodes in _nodes)
-                nodes.Dispose();
 
             _leafEntries.Dispose();
         }
@@ -313,22 +294,13 @@ namespace Game.Systems.RTree
 
                 _isJobScheduled = false;
             }*/
-            _rootNodesIndex = -1;
             SubTreesCount = 0;
 
             if (filter.IsEmpty())
                 return;
 
-            /*_leafEntries.Clear();
-
-            foreach (var nodes in _nodes)
-                nodes.Clear();*/
-
             var entitiesCount = filter.GetEntitiesCount();
-#if ENABLE_ASSERTS
             Assert.IsTrue(entitiesCount <= _leafEntriesMaxCount);
-            Assert.IsTrue(math.log2((float) entitiesCount / MaxEntries) / math.log2(MaxEntries) <= _nodes.Count);
-#endif
 
             Profiling.RTreeNativeArrayFill.Begin();
             foreach (var index in filter)
