@@ -145,15 +145,24 @@ namespace Game.Systems.RTree
             InitInsertJob();
         }
 
-        private int GetNodesContainerCapacityPerWorker(int workersCount)
+        private int GetNodesContainerCapacityPerWorker(int entriesCount, int workersCount)
         {
-            var maxTreeHeight = (int) math.floor(math.log2((double) (MaxInputEntriesCount + 1) / 2) / math.log2(MinEntries));
+            var maxWorkersCount = (int) math.ceil((double) entriesCount / (MaxEntries * MinEntries * MinEntries));
+            workersCount = math.min(workersCount, maxWorkersCount);
 
-            var entriesCountPerWorker = (double) MaxInputEntriesCount / workersCount;
-            entriesCountPerWorker = math.ceil(math.log2(entriesCountPerWorker) / math.log2(MaxEntries));
-            entriesCountPerWorker = math.pow(MaxEntries, entriesCountPerWorker);
+            var perWorkerEntriesCount = math.ceil((double) MaxInputEntriesCount / workersCount);
 
-            var treeHeight = (int) math.floor(math.log2((entriesCountPerWorker + 1) / 2) / math.log2(MinEntries));
+            // const double repletionRatio = 3.0 * MinEntries / MaxEntries + 1;
+            // const double repletionRatio = (double) MinEntries * (MaxEntries - 1) / MaxEntries;
+            /*const double repletionRatio = MinEntries;
+            var maxTreeHeight = (int) math.floor(math.log(perWorkerEntriesCount / repletionRatio) / math.log(MaxEntries));*/
+            // var maxTreeHeight = (int) math.floor(math.log((perWorkerEntriesCount + 1) / 2.0) / math.log(MinEntries)); // :TODO: derive correct equation
+            var maxTreeHeight = (int) math.ceil(math.log(perWorkerEntriesCount / 2.0) / math.log(MinEntries));
+
+            _leafEntriesMaxCount = (int) math.pow(MaxEntries, maxTreeHeight + 1);
+
+            _inputEntries = new NativeArray<RTreeLeafEntry>(_leafEntriesMaxCount * workersCount, Allocator.Persistent,
+                NativeArrayOptions.UninitializedMemory);
 
             return 0;
         }
