@@ -43,7 +43,7 @@ namespace Game.Systems.RTree
         public int ResultEntriesContainerCapacity;
 
         [ReadOnly]
-        public NativeArray<RTreeLeafEntry>.ReadOnly Entries;
+        public NativeArray<RTreeLeafEntry>.ReadOnly InputEntries;
 
         public NativeArray<RTreeNode> NodesContainer;
         public NativeArray<int> NodesEndIndicesContainer;
@@ -51,11 +51,13 @@ namespace Game.Systems.RTree
         [ReadOnly]
         public NativeArray<TreeLevelNodesRange> NodesRangeContainer;
 
+        [NativeDisableContainerSafetyRestriction] // :TODO: remove
         public NativeArray<int> RootNodesLevelIndices;
 
         public NativeArray<RTreeLeafEntry> ResultEntries;
 
         [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<ThreadInsertJobResult> PerThreadJobResults;
 
         private int _leafEntriesCounter;
@@ -143,7 +145,7 @@ namespace Game.Systems.RTree
             Assert.AreEqual(MaxEntries, rootNodesCount);
 #endif
 
-            var entry = Entries[entryIndex];
+            var entry = InputEntries[entryIndex];
 
             var targetNodeIndex = GetNodeIndexToInsert(in _currentThreadNodes, startIndex, startIndex + MaxEntries,
                 in entry.Aabb);
