@@ -18,6 +18,9 @@ namespace Gizmos
         [Range(1, 10)]
         public int TargetTreeLevel = 1;
 
+        [Range(0, 24)]
+        public int TargetSubTree;
+
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
@@ -57,6 +60,9 @@ namespace Gizmos
 
             for (var subTreeIndex = 0; subTreeIndex < _rTree.SubTreesCount; subTreeIndex++)
             {
+                if (TargetSubTree != 0 && TargetSubTree - 1 != subTreeIndex)
+                    continue;
+
                 var nodes = _rTree.GetSubTreeRootNodes(subTreeIndex);
                 foreach (var (node, i) in nodes.Select((n, i) => (n, i)))
                 {
@@ -98,7 +104,7 @@ namespace Gizmos
 
                 default:
                     DrawParentNodeRect(node, color);
-                    DrawLeafEntries(node, color * new Color(1, 1, 1, 0.99f));
+                    DrawLeafEntries(node, color * new Color(1, 1, 1, 0.99f), subTreeIndex);
                     break;
             }
         }
@@ -141,9 +147,9 @@ namespace Gizmos
             }
         }
 
-        private void DrawLeafEntries(RTreeNode node, Color color)
+        private void DrawLeafEntries(RTreeNode node, Color color, int subTreeIndex)
         {
-            var leafEntries = _rTree.GetLeafEntries(Enumerable.Range(node.EntriesStartIndex, node.EntriesCount));
+            var leafEntries = _rTree.GetLeafEntries(subTreeIndex, Enumerable.Range(node.EntriesStartIndex, node.EntriesCount));
 
             foreach (var entry in leafEntries)
             {
