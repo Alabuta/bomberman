@@ -45,14 +45,9 @@ namespace Game.Systems.RTree
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
 
-        private const double MaxMinEntriesRatio = (double) MaxEntries / MinEntries;
-
         private const int MaxInputEntriesCount = 993;
-        private const int MaxWorkersCount = 1;
 
-        private int WorkersCount;
-
-        private int _leafEntriesMaxCount;
+        private int _workersCount;
 
         private NativeArray<RTreeNode> _nodesContainer;
         private NativeArray<TreeLevelNodesRange> _nodeLevelsRanges;
@@ -74,6 +69,7 @@ namespace Game.Systems.RTree
         private NativeArray<bool> _threadsInitFlagsContainer;
         private NativeArray<int> _perThreadWorkerIndices;
         private int _perWorkerResultEntriesContainerCapacity;
+        private int _perWorkerNodesContainerCapacity;
 
         [NativeDisableUnsafePtrRestriction]
         private InsertJob _insertJob;
@@ -82,9 +78,6 @@ namespace Game.Systems.RTree
         private JobHandle _jobHandle;
 
         private bool _isJobScheduled;
-        private int _maxTreeHeight;
-        private int _perWorkerNodesContainerCapacity;
-        private int frameIndex;
 
         public int SubTreesCount { get; private set; }
 
@@ -220,24 +213,21 @@ namespace Game.Systems.RTree
         {
             Debug.LogWarning(
                 $"JobWorkerCount {JobsUtility.JobWorkerCount}, JobWorkerMaximumCount {JobsUtility.JobWorkerMaximumCount}, MaxJobThreadCount {JobsUtility.MaxJobThreadCount}");
-            WorkersCount = JobsUtility.JobWorkerCount; //math.min(4, JobsUtility.JobWorkerCount);
-            var perWorkerEntriesCount = math.ceil((double) MaxInputEntriesCount / WorkersCount);
+            _workersCount = JobsUtility.JobWorkerCount; //math.min(4, JobsUtility.JobWorkerCount);
+            var perWorkerEntriesCount = math.ceil((double) MaxInputEntriesCount / _workersCount);
 
-            // var maxTreeHeight = (int) math.ceil(math.log2((double) entriesCount / MinEntries) / math.log2(MaxEntries));
-            // var maxTreeHeight = (int) math.floor(math.log2((double) (MaxInputEntriesCount + 1) / 2) / math.log2(MinEntries));
             var maxTreeHeight =
                 (int) math.ceil(math.log((perWorkerEntriesCount * (MinEntries - 1) + MinEntries) / (2 * MinEntries - 1)) /
                                 math.log(MinEntries));
             maxTreeHeight = math.max(maxTreeHeight - 1, 1);
-            _maxTreeHeight = maxTreeHeight;
 
             _inputEntries = new NativeArray<RTreeLeafEntry>(MaxInputEntriesCount, Allocator.Persistent,
                 NativeArrayOptions.UninitializedMemory);
 
             _perWorkerResultEntriesContainerCapacity = (int) math.pow(MinEntries,
-                math.ceil(math.log2(perWorkerEntriesCount * MaxMinEntriesRatio) /
+                math.ceil(math.log2(perWorkerEntriesCount * ((double) MaxEntries / MinEntries)) /
                           math.log2(MinEntries)));
-            _resultEntries = new NativeArray<RTreeLeafEntry>(_perWorkerResultEntriesContainerCapacity * WorkersCount,
+            _resultEntries = new NativeArray<RTreeLeafEntry>(_perWorkerResultEntriesContainerCapacity * _workersCount,
                 Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
             _perWorkerNodesContainerCapacity =
@@ -245,7 +235,7 @@ namespace Game.Systems.RTree
             var prefix = math.pow(MaxEntries, maxTreeHeight + 1) / (MaxEntries - 1);
 
             var nodeLevelsRanges = Enumerable
-                .Range(0, WorkersCount)
+                .Range(0, _workersCount)
                 .SelectMany(subTreeIndex =>
                 {
                     return Enumerable
@@ -263,17 +253,17 @@ namespace Game.Systems.RTree
 
             _nodeLevelsRanges = new NativeArray<TreeLevelNodesRange>(nodeLevelsRanges, Allocator.Persistent);
 
-            var nodesContainerCapacity = _perWorkerNodesContainerCapacity * WorkersCount;
+            var nodesContainerCapacity = _perWorkerNodesContainerCapacity * _workersCount;
             _nodesContainer = new NativeArray<RTreeNode>(nodesContainerCapacity, Allocator.Persistent,
                 NativeArrayOptions.UninitializedMemory);
 
-            _nodesEndIndicesContainer = new NativeArray<int>(maxTreeHeight * WorkersCount, Allocator.Persistent,
+            _nodesEndIndicesContainer = new NativeArray<int>(maxTreeHeight * _workersCount, Allocator.Persistent,
                 NativeArrayOptions.UninitializedMemory);
 
-            _rootNodesLevelIndices = new NativeArray<int>(WorkersCount, Allocator.Persistent,
+            _rootNodesLevelIndices = new NativeArray<int>(_workersCount, Allocator.Persistent,
                 NativeArrayOptions.UninitializedMemory);
 
-            _perThreadJobResults = new NativeArray<ThreadInsertJobResult>(WorkersCount, Allocator.Persistent,
+            _perThreadJobResults = new NativeArray<ThreadInsertJobResult>(_workersCount, Allocator.Persistent,
                 NativeArrayOptions.UninitializedMemory);
 
             unsafe
@@ -377,7 +367,7 @@ namespace Game.Systems.RTree
             /*for (var i = 0; i < _threadsInitFlagsContainer.Length; i++)
                 _threadsInitFlagsContainer[i] = false;*/
 
-            var batchSize = (int) math.ceil((double) entitiesCount / WorkersCount);
+            var batchSize = (int) math.ceil((double) entitiesCount / _workersCount);
             _jobHandle = _insertJob.Schedule(entitiesCount, batchSize); //entitiesCount
             _jobHandle.Complete();
 
