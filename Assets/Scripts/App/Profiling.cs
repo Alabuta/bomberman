@@ -16,7 +16,9 @@ namespace App
         public static readonly ProfilerMarker CollisionsDetection = new(Simulation, nameof(CollisionsDetection));
         public static readonly ProfilerMarker CollisionsResolver = new(Simulation, nameof(CollisionsResolver));
         public static readonly ProfilerMarker RTreeBuild = new(Simulation, nameof(RTreeBuild));
+        public static readonly ProfilerMarker RTreeNativeArrayFill = new(Simulation, nameof(RTreeNativeArrayFill));
         public static readonly ProfilerMarker RTreeInsert = new(Simulation, nameof(RTreeInsert));
+        public static readonly ProfilerMarker RTreeInsertJob = new(Simulation, nameof(RTreeInsertJob));
         public static readonly ProfilerMarker RTreeGrow = new(Simulation, nameof(RTreeGrow));
         public static readonly ProfilerMarker RTreeSplitNode = new(Simulation, nameof(RTreeSplitNode));
         public static readonly ProfilerMarker RTreeLeafNodesUpdate = new(Simulation, nameof(RTreeLeafNodesUpdate));
