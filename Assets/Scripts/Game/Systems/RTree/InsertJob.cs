@@ -14,7 +14,10 @@ namespace Game.Systems.RTree
         public int TreeMaxHeight;
 
         [ReadOnly]
-        public int EntriesCount;
+        public int EntriesTotalCount;
+
+        [ReadOnly]
+        public int PerWorkerEntriesCount;
 
         [ReadOnly]
         public int NodesContainerCapacity;
@@ -88,12 +91,13 @@ namespace Game.Systems.RTree
             for (var i = 0; i < MaxEntries; i++)
                 InsertJobSharedWriteData.NodesContainer[nodesContainerStartIndex + i] = InvalidEntry<RTreeNode>.Entry;
 
-            var entriesStartIndex = subTreeIndex * InsertJobReadOnlyData.EntriesCount;
-            var entriesEndIndex = entriesStartIndex + InsertJobReadOnlyData.EntriesCount;
-            entriesEndIndex = math.min(entriesEndIndex, InsertJobReadOnlyData.InputEntries.Length);
+            var entriesStartIndex = subTreeIndex * InsertJobReadOnlyData.PerWorkerEntriesCount;
+            var entriesEndIndex = entriesStartIndex + InsertJobReadOnlyData.PerWorkerEntriesCount;
+            entriesEndIndex = math.min(entriesEndIndex, InsertJobReadOnlyData.EntriesTotalCount);
 
 #if ENABLE_ASSERTS
-            Assert.IsFalse(entriesEndIndex - entriesStartIndex > InsertJobReadOnlyData.EntriesCount);
+            Assert.IsFalse(entriesEndIndex - entriesStartIndex > InsertJobReadOnlyData.PerWorkerEntriesCount);
+            Assert.IsFalse(entriesEndIndex > InsertJobReadOnlyData.EntriesTotalCount);
             Assert.IsFalse(entriesEndIndex > InsertJobReadOnlyData.InputEntries.Length);
 #endif
 
