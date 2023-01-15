@@ -18,7 +18,7 @@ namespace Game.Systems
 
         IEnumerable<RTreeNode> GetNodes(int subTreeIndex, int levelIndex, IEnumerable<int> indices);
 
-        IEnumerable<RTreeLeafEntry> GetLeafEntries(IEnumerable<int> indices);
+        IEnumerable<RTreeLeafEntry> GetLeafEntries(int subTreeIndex, IEnumerable<int> indices);
 
         void QueryByLine(fix2 p0, fix2 p1, ICollection<RTreeLeafEntry> result);
 
