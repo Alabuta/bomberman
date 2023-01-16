@@ -564,8 +564,8 @@ namespace Game.Systems.RTree
             return (int) index;
         }
 
-        private static int GetNodeLevelCapacity(int nodeLevelIndex) =>
-            (int) math.pow(MaxEntries, MaxEntries - nodeLevelIndex);
+        private static int GetNodeLevelCapacity(int treeMaxHeight, int nodeLevelIndex) =>
+            (int) math.pow(MaxEntries, treeMaxHeight - nodeLevelIndex);
 
         private static (fix areaIncrease, fix sizeIncrease) GetAreaAndSizeIncrease(in AABB nodeAabb, in AABB conjugatedAabb)
         {
