@@ -44,7 +44,9 @@ namespace Game.Systems.RTree
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
 
-        private const int InputEntriesStartCount = 1024;
+        private const int InputEntriesStartCount = 128;
+
+        private long _treeStateHash;
 
         private int _subTreesCount;
         private int _treeMaxHeight;
@@ -111,6 +113,12 @@ namespace Game.Systems.RTree
 
         private void InitInsertJob(int entriesCount, int workersCount)
         {
+            var treeStateHash = GetTreeStateHash(entriesCount, workersCount);
+            if (treeStateHash == _treeStateHash)
+                return;
+
+            _treeStateHash = treeStateHash;
+
             if (!_inputEntries.IsCreated || _inputEntries.Length < entriesCount)
             {
                 if (_inputEntries.IsCreated)
@@ -175,6 +183,9 @@ namespace Game.Systems.RTree
                 _rootNodesLevelIndices = new NativeArray<int>(_subTreesCount, Allocator.Persistent,
                     NativeArrayOptions.UninitializedMemory);
             }
+
+            for (var i = 0; i < _rootNodesLevelIndices.Length; i++)
+                _rootNodesLevelIndices[i] = -1;
 
             _insertJob = new InsertJob
             {
@@ -262,5 +273,8 @@ namespace Game.Systems.RTree
 
             _isJobScheduled = true;
         }
+
+        private static long GetTreeStateHash(int entriesCount, int workersCount) =>
+            ((long) workersCount << 32) | (uint) entriesCount;
     }
 }

@@ -204,7 +204,7 @@ namespace Game.Systems.RTree
             var nodeLevelsRangeStartIndex = GetNodeLevelStartIndex(nodeLevelIndex - 1);
             Assert.IsTrue(entriesStartIndex >= nodeLevelsRangeStartIndex);
 
-            var nodeLevelsRangeCapacity = GetNodeLevelCapacity(nodeLevelIndex - 1);
+            var nodeLevelsRangeCapacity = GetNodeLevelCapacity(InsertJobReadOnlyData.TreeMaxHeight, nodeLevelIndex - 1);
             var entriesEndIndex = entriesStartIndex + entriesCount;
             Assert.IsTrue(entriesEndIndex < nodeLevelsRangeStartIndex + nodeLevelsRangeCapacity);
             Assert.IsTrue(entriesEndIndex <= nodeLevelsRangeStartIndex + _currentThreadNodesEndIndices[nodeLevelIndex - 1]);
@@ -266,7 +266,8 @@ namespace Game.Systems.RTree
 
 #if ENABLE_ASSERTS
             Assert.AreEqual(MaxEntries, rootNodesCount);
-            Assert.IsFalse(rootNodesCount + MaxEntries > GetNodeLevelCapacity(RootNodesLevelIndex));
+            Assert.IsFalse(rootNodesCount + MaxEntries >
+                           GetNodeLevelCapacity(InsertJobReadOnlyData.TreeMaxHeight, RootNodesLevelIndex));
 #endif
 
             var newRootNodeA = new RTreeNode
@@ -564,8 +565,8 @@ namespace Game.Systems.RTree
             return (int) index;
         }
 
-        private static int GetNodeLevelCapacity(int nodeLevelIndex) =>
-            (int) math.pow(MaxEntries, MaxEntries - nodeLevelIndex);
+        private static int GetNodeLevelCapacity(int treeMaxHeight, int nodeLevelIndex) =>
+            (int) math.pow(MaxEntries, treeMaxHeight - nodeLevelIndex);
 
         private static (fix areaIncrease, fix sizeIncrease) GetAreaAndSizeIncrease(in AABB nodeAabb, in AABB conjugatedAabb)
         {
