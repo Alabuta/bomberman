@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using Game.Components;
 using Game.Components.Tags;
-using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 
-namespace Game.Systems
+namespace Game.Systems.RTree
 {
     public interface IRTree : IDisposable
     {
