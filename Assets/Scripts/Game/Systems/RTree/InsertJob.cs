@@ -178,6 +178,9 @@ namespace Game.Systems.RTree
 
                 if (node.EntriesStartIndex == -1)
                 {
+#if ENABLE_ASSERTS
+                    Assert.AreEqual(0, node.EntriesCount);
+#endif
                     node.EntriesStartIndex = _leafEntriesCounter;
                     _leafEntriesCounter += MaxEntries;
 
@@ -260,8 +263,7 @@ namespace Game.Systems.RTree
         {
             using var _ = Profiling.RTreeGrow.Auto();
 
-            var rootNodesStartIndex =
-                GetNodeLevelStartIndex(RootNodesLevelIndex); //_currentThreadNodeRangesByLevel[RootNodesLevelIndex].StartIndex;
+            var rootNodesStartIndex = GetNodeLevelStartIndex(RootNodesLevelIndex);
             var rootNodesCount = _currentThreadNodesEndIndices[RootNodesLevelIndex];
 
 #if ENABLE_ASSERTS
@@ -345,7 +347,7 @@ namespace Game.Systems.RTree
             nodeEntriesEndIndex += MaxEntries;
 
             nodeEntries[newEntriesStartIndex] = newNodeStartEntry;
-            for (var i = newEntriesStartIndex + 1; i < newEntriesStartIndex; i++)
+            for (var i = newEntriesStartIndex + 1; i < nodeEntriesEndIndex; i++)
                 nodeEntries[i] = invalidEntry;
 
             (nodeEntries[startIndex], nodeEntries[indexA]) = (nodeEntries[indexA], nodeEntries[startIndex]);
@@ -426,9 +428,14 @@ namespace Game.Systems.RTree
                 var entry = nodeEntries[i];
                 if (entry.EntriesCount < MinEntries)
                 {
-                    if (i < entriesStartIndex + MinEntries)
+                    if (i == entriesStartIndex)
                         return i;
 
+#if ENABLE_ASSERTS
+                    Assert.AreEqual(AABB.Empty, entry.Aabb);
+                    Assert.AreEqual(-1, entry.EntriesStartIndex);
+                    Assert.AreEqual(0, entry.EntriesCount);
+#endif
                     break;
                 }
 

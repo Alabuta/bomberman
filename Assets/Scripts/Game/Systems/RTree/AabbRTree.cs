@@ -113,7 +113,7 @@ namespace Game.Systems.RTree
 
         private void InitInsertJob(int entriesCount, int workersCount)
         {
-            var treeStateHash = GetTreeStateHash(entriesCount, workersCount);
+            var treeStateHash = CalculateTreeStateHash(entriesCount, workersCount);
             if (treeStateHash == _treeStateHash)
                 return;
 
@@ -274,7 +274,7 @@ namespace Game.Systems.RTree
             _isJobScheduled = true;
         }
 
-        private static long GetTreeStateHash(int entriesCount, int workersCount) =>
+        private static long CalculateTreeStateHash(int entriesCount, int workersCount) =>
             ((long) workersCount << 32) | (uint) entriesCount;
     }
 }
