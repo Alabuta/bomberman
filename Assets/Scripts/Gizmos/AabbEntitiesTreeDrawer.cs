@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Game.Systems;
 using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Level;
@@ -20,6 +19,9 @@ namespace Gizmos
 
         [Range(0, 24)]
         public int TargetSubTree;
+
+        [Range(-1, 8192)]
+        public int EntriesCap = -1;
 
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
@@ -52,6 +54,11 @@ namespace Gizmos
         public void SetRTree(IRTree rTree)
         {
             _rTree = rTree;
+        }
+
+        public void Update()
+        {
+            _rTree.EntriesCap = EntriesCap;
         }
 
         private void OnDrawGizmos()

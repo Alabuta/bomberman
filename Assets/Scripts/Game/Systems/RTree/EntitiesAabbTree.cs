@@ -37,6 +37,8 @@ namespace Game.Systems.RTree
 
         private int RootNodesIndex => _nodesCountByLevel.Count - 1;
 
+        public int EntriesCap { get; set; } = -1;
+
         public int SubTreesCount => 1;
 
         public int GetSubTreeHeight(int _) => _nodesCountByLevel.Count;

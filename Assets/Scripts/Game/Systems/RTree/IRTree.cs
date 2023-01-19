@@ -10,6 +10,7 @@ namespace Game.Systems.RTree
     public interface IRTree : IDisposable
     {
         int SubTreesCount { get; }
+        int EntriesCap { get; set; }
 
         int GetSubTreeHeight(int subTreeIndex);
 
