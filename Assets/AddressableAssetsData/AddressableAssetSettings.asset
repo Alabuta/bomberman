@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 8b515e1ce838cbc499c1b9a3a4c64233
   m_CachedHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: a2f7e0fb434768dee25f40460f9857b9
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
   m_BundleLocalCatalog: 0
@@ -118,7 +118,7 @@ MonoBehaviour:
         m_SerializedData:
         - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
           m_ClassName: System.Int32
-          m_Data: 7488
+          m_Data: 59741
           m_Key: HostingServicePort
         - m_AssemblyName: mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
           m_ClassName: System.Int32
