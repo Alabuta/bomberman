@@ -29,7 +29,8 @@ namespace Infrastructure.States
         public LoadLevelState(GameStateMachine gameStateMachine,
             IGameFactory gameFactory,
             IInputService inputService,
-            IPersistentProgressService progressService, LoadingScreenController loadingScreenController)
+            IPersistentProgressService progressService,
+            LoadingScreenController loadingScreenController)
         {
             _gameStateMachine = gameStateMachine;
             _gameFactory = gameFactory;
@@ -55,12 +56,14 @@ namespace Infrastructure.States
 
             InformProgressReaders();
 
-            _loadingScreenController.Hide(() =>
-            {
+            _loadingScreenController.Hide(OnLoadingScreenHideCallback);
+        }
+
+        private void OnLoadingScreenHideCallback()
+        {
 #pragma warning disable CS4014
-                _gameStateMachine.Enter<GameLoopState>();
+            _gameStateMachine.Enter<GameLoopState>();
 #pragma warning restore CS4014
-            });
         }
 
         public void Exit()
@@ -85,6 +88,7 @@ namespace Infrastructure.States
             Game.World = gameWorld;
         }
 
+        // :TODO: rename to CreateGameUI and support whole game UI set up
         private async Task CreateGameStatsPanel(GameModeConfig gameModeConfig, World world)
         {
             var instantiateTask = _gameFactory.InstantiatePrefabAsync(gameModeConfig.GameStatsViewPrefab, float3.zero);

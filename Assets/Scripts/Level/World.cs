@@ -12,7 +12,7 @@ using Game.Components.Entities;
 using Game.Components.Events;
 using Game.Components.Tags;
 using Game.Systems;
-using Game.Systems.Behaviours;
+using Game.Systems.RTree;
 using Gizmos;
 using Infrastructure.Factory;
 using Infrastructure.Services.Input;
@@ -61,7 +61,8 @@ namespace Level
             _ecsSystems = new EcsSystems(_ecsWorld);
             _ecsFixedSystems = new EcsSystems(_ecsWorld);
 
-            _entitiesAabbTree = new EntitiesAabbTree();
+            // _entitiesAabbTree = new EntitiesAabbTree();
+            _entitiesAabbTree = new AabbRTree();
 
 #if UNITY_EDITOR
             Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create(_ecsWorld);

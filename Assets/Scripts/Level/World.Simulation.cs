@@ -1,5 +1,5 @@
 using App;
-using Game.Systems;
+using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using UnityEngine;

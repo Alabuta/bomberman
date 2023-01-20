@@ -6,7 +6,7 @@ using Unity.Mathematics;
 namespace Math.FixedPointMath
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public readonly struct AABB : IEquatable<AABB>
+    public readonly struct AABB
     {
         [Flags]
         private enum OutCode
@@ -33,14 +33,18 @@ namespace Math.FixedPointMath
         public bool IsValid() => math.all(max - min > fix2.zero);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(AABB x, AABB y) => x.Equals(y);
+        public static bool operator ==(AABB x, AABB y) =>
+            math.all(x.min == y.min) && math.all(x.max == y.max);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(AABB x, AABB y) => !(x == y);
+        public static bool operator !=(AABB x, AABB y) =>
+            !(x == y);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(AABB other) =>
-            math.all(min == other.min) && math.all(max == other.max);
+            this == other;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool Equals(object obj) =>
             obj is AABB other && Equals(other);
 

@@ -5,6 +5,7 @@ using Game.Components;
 using Game.Components.Colliders;
 using Game.Components.Events;
 using Game.Components.Tags;
+using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;

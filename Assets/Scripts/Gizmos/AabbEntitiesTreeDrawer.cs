@@ -20,7 +20,7 @@ namespace Gizmos
         [Range(0, 24)]
         public int TargetSubTree;
 
-        [Range(-1, 8192)]
+        [Range(-1, 10_000)]
         public int EntriesCap = -1;
 
         private readonly EcsWorld _ecsWorld;

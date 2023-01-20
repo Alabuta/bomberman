@@ -18,17 +18,23 @@ namespace Infrastructure.States
 
         public Task Enter()
         {
-            _gameStateMachine.FixedUpdateCallback = () => { Game.World.UpdateWorldModel(); };
-
-            _gameStateMachine.UpdateCallback = () =>
-            {
-                Game.World.UpdateWorldView();
-                Game.GameStatsView.UpdateLevelStageTimer(Game.World.StageTimer);
-            };
+            _gameStateMachine.FixedUpdateCallback = FixedUpdateCallback;
+            _gameStateMachine.UpdateCallback = UpdateCallback;
 
             Game.World.StartSimulation();
 
             return Task.CompletedTask;
+        }
+
+        private static void UpdateCallback()
+        {
+            Game.World.UpdateWorldView();
+            Game.GameStatsView.UpdateLevelStageTimer(Game.World.StageTimer);
+        }
+
+        private static void FixedUpdateCallback()
+        {
+            Game.World.UpdateWorldModel();
         }
     }
 }
