@@ -24,6 +24,6 @@ namespace Game.Systems.RTree
 
         void QueryByAabb(in AABB aabb, ICollection<RTreeLeafEntry> result);
 
-        void Build(EcsFilter<TransformComponent, HasColliderTag> filter, fix simulationSubStep);
+        void Build(EcsFilter<TransformComponent, HasColliderTag> filter);
     }
 }

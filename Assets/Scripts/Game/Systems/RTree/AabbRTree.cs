@@ -15,9 +15,9 @@ using UnityEngine.Assertions;
 
 namespace Game.Systems.RTree
 {
-    internal static class InvalidEntry<T> where T : struct
+    internal static class TreeEntryTraits<T> where T : struct
     {
-        public static T Entry;
+        public static T InvalidEntry;
     }
 
     public readonly struct RTreeLeafEntry
@@ -106,7 +106,7 @@ namespace Game.Systems.RTree
 
         public AabbRTree()
         {
-            InvalidEntry<RTreeNode>.Entry = new RTreeNode
+            TreeEntryTraits<RTreeNode>.InvalidEntry = new RTreeNode
             {
                 Aabb = AABB.Empty,
                 EntriesStartIndex = -1,
@@ -135,7 +135,7 @@ namespace Game.Systems.RTree
         {
         }
 
-        public void Build(EcsFilter<TransformComponent, HasColliderTag> filter, fix simulationSubStep)
+        public void Build(EcsFilter<TransformComponent, HasColliderTag> filter)
         {
             using var _ = Profiling.RTreeBuild.Auto();
 

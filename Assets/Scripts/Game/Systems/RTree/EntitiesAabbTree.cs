@@ -168,7 +168,7 @@ namespace Game.Systems.RTree
                 QueryNodesByAabb(aabb, result, levelIndex - 1, i);
         }
 
-        public void Build(EcsFilter<TransformComponent, HasColliderTag> filter, fix simulationSubStep)
+        public void Build(EcsFilter<TransformComponent, HasColliderTag> filter)
         {
             using var _ = Profiling.RTreeBuild.Auto();
 

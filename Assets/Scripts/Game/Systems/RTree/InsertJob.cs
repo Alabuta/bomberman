@@ -43,7 +43,6 @@ namespace Game.Systems.RTree
 
     public partial class AabbRTree
     {
-        [BurstCompatible]
         public struct InsertJob : IJobParallelFor
         {
             [ReadOnly]
@@ -86,7 +85,7 @@ namespace Game.Systems.RTree
 
                 var nodesContainerStartIndex = jobIndex * ReadOnlyData.NodesContainerCapacity;
                 for (var i = 0; i < MaxEntries; i++)
-                    SharedWriteData.NodesContainer[nodesContainerStartIndex + i] = InvalidEntry<RTreeNode>.Entry;
+                    SharedWriteData.NodesContainer[nodesContainerStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
 
                 var entriesStartIndex = jobIndex * ReadOnlyData.PerWorkerEntriesCount;
                 var entriesEndIndex = entriesStartIndex + ReadOnlyData.PerWorkerEntriesCount;
@@ -132,7 +131,7 @@ namespace Game.Systems.RTree
 
                 nodesContainer[targetNodeIndex] = targetNode;
 
-                if (extraNode.Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
+                if (extraNode.Aabb == TreeEntryTraits<RTreeNode>.InvalidEntry.Aabb)
                     return;
 
 #if ENABLE_ASSERTS
@@ -143,7 +142,7 @@ namespace Game.Systems.RTree
 
                 var candidateNodeIndex = targetNodeIndex + 1;
                 for (; candidateNodeIndex < startIndex + rootNodesCount; candidateNodeIndex++)
-                    if (nodesContainer[candidateNodeIndex].Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
+                    if (nodesContainer[candidateNodeIndex].Aabb == TreeEntryTraits<RTreeNode>.InvalidEntry.Aabb)
                         break;
 
                 if (candidateNodeIndex < startIndex + rootNodesCount)
@@ -182,7 +181,8 @@ namespace Game.Systems.RTree
                         _leafEntriesCounter += MaxEntries;
 
                         for (var i = 1; i < MaxEntries; i++)
-                            _currentThreadResultEntries[node.EntriesStartIndex + i] = InvalidEntry<RTreeLeafEntry>.Entry;
+                            _currentThreadResultEntries[node.EntriesStartIndex + i] =
+                                TreeEntryTraits<RTreeLeafEntry>.InvalidEntry;
                     }
 
                     _currentThreadResultEntries[node.EntriesStartIndex + node.EntriesCount] = entry;
@@ -190,7 +190,7 @@ namespace Game.Systems.RTree
                     node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
                     node.EntriesCount++;
 
-                    return InvalidEntry<RTreeNode>.Entry;
+                    return TreeEntryTraits<RTreeNode>.InvalidEntry;
                 }
 
                 using var __ = Profiling.RTreeNodesUpdate.Auto();
@@ -223,14 +223,14 @@ namespace Game.Systems.RTree
 
                 nodesContainer[childNodeIndex] = targetChildNode;
 
-                if (extraChildNode.Aabb == InvalidEntry<RTreeNode>.Entry.Aabb)
+                if (extraChildNode.Aabb == TreeEntryTraits<RTreeNode>.InvalidEntry.Aabb)
                 {
                     node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
 #if ENABLE_ASSERTS
                     Assert.IsFalse(targetChildNode.EntriesStartIndex < 0);
                     Assert.IsTrue(targetChildNode.EntriesCount is >= MinEntries and <= MaxEntries);
 #endif
-                    return InvalidEntry<RTreeNode>.Entry;
+                    return TreeEntryTraits<RTreeNode>.InvalidEntry;
                 }
 
                 if (entriesCount == MaxEntries)
@@ -254,7 +254,7 @@ namespace Game.Systems.RTree
 #if ENABLE_ASSERTS
                 Assert.IsTrue(node.EntriesCount is >= MinEntries and <= MaxEntries);
 #endif
-                return InvalidEntry<RTreeNode>.Entry;
+                return TreeEntryTraits<RTreeNode>.InvalidEntry;
             }
 
             private void GrowTree(in RTreeNode newEntry)
@@ -294,7 +294,7 @@ namespace Game.Systems.RTree
                 nodesContainer[newRootNodesStartIndex + 1] = newRootNodeB;
 
                 for (var i = 2; i < MaxEntries; i++)
-                    nodesContainer[newRootNodesStartIndex + i] = InvalidEntry<RTreeNode>.Entry;
+                    nodesContainer[newRootNodesStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
 
 #if ENABLE_ASSERTS
                 var newRootNodes = nodesContainer.GetSubArray(newRootNodesStartIndex, MaxEntries).ToArray();
@@ -340,7 +340,7 @@ namespace Game.Systems.RTree
                     EntriesCount = 1
                 };
 
-                var invalidEntry = InvalidEntry<T>.Entry;
+                var invalidEntry = TreeEntryTraits<T>.InvalidEntry;
 
                 nodeEntriesEndIndex += MaxEntries;
 
