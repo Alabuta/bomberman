@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using Unity.Burst;
 using Unity.Mathematics;
 
 namespace Math.FixedPointMath
 {
+    [BurstCompile]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public readonly struct AABB
     {
@@ -20,7 +22,8 @@ namespace Math.FixedPointMath
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsValid() => math.all(max - min > fix2.zero);
+        public bool IsValid() =>
+            math.all(max - min > fix2.zero);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(AABB x, AABB y) =>

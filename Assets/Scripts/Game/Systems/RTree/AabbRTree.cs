@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using App;
 using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -17,7 +17,19 @@ namespace Game.Systems.RTree
 {
     internal static class TreeEntryTraits<T> where T : struct
     {
-        public static T InvalidEntry;
+        public static readonly T InvalidEntry;
+
+        static TreeEntryTraits()
+        {
+            TreeEntryTraits<RTreeNode>.InvalidEntry = new RTreeNode
+            {
+                Aabb = AABB.Empty,
+                EntriesStartIndex = -1,
+                EntriesCount = 0
+            };
+
+            TreeEntryTraits<RTreeLeafEntry>.InvalidEntry = new RTreeLeafEntry(AABB.Empty, 0);
+        }
     }
 
     public readonly struct RTreeLeafEntry
@@ -40,6 +52,7 @@ namespace Game.Systems.RTree
         public int EntriesCount;
     }
 
+    [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
     public partial class AabbRTree : IRTree
     {
         private const int MaxEntries = 4;
@@ -70,9 +83,6 @@ namespace Game.Systems.RTree
         [NativeDisableUnsafePtrRestriction]
         private JobHandle _jobHandle;
 
-        private static readonly Func<RTreeNode, AABB> GetNodeAabb = node => node.Aabb;
-        private static readonly Func<RTreeLeafEntry, AABB> GetLeafEntryAabb = leafEntry => leafEntry.Aabb;
-
         public int EntriesCap { get; set; } = -1;
 
         public int SubTreesCount { get; private set; }
@@ -80,39 +90,8 @@ namespace Game.Systems.RTree
         public int GetSubTreeHeight(int subTreeIndex) =>
             SubTreesCount < 1 ? 0 : _rootNodesLevelIndices[subTreeIndex] + 1;
 
-        public IEnumerable<RTreeNode> GetSubTreeRootNodes(int subTreeIndex)
-        {
-            var subTreeHeight = GetSubTreeHeight(subTreeIndex);
-            if (subTreeHeight < 1)
-                return Enumerable.Empty<RTreeNode>();
-
-            var offset = CalculateSubTreeNodeLevelStartIndex(subTreeIndex, subTreeHeight - 1, _subTreesMaxHeight,
-                _perWorkerNodesContainerCapacity);
-
-            return _nodesContainer
-                .GetSubArray(offset, MaxEntries)
-                .TakeWhile(n => n.Aabb != AABB.Empty);
-        }
-
-        public IEnumerable<RTreeNode> GetNodes(int subTreeIndex, int levelIndex, IEnumerable<int> indices) =>
-            levelIndex < GetSubTreeHeight(subTreeIndex)
-                ? indices.Select(i => _nodesContainer[i])
-                : Enumerable.Empty<RTreeNode>();
-
-        public IEnumerable<RTreeLeafEntry> GetLeafEntries(int subTreeIndex, IEnumerable<int> indices) =>
-            _resultEntries.Length != 0
-                ? indices.Select(i => _resultEntries[subTreeIndex * _perWorkerResultEntriesContainerCapacity + i])
-                : Enumerable.Empty<RTreeLeafEntry>();
-
         public AabbRTree()
         {
-            TreeEntryTraits<RTreeNode>.InvalidEntry = new RTreeNode
-            {
-                Aabb = AABB.Empty,
-                EntriesStartIndex = -1,
-                EntriesCount = 0
-            };
-
             InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount);
         }
 
@@ -125,14 +104,6 @@ namespace Game.Systems.RTree
 
             _nodesEndIndicesContainer.Dispose();
             _rootNodesLevelIndices.Dispose();
-        }
-
-        public void QueryByLine(fix2 p0, fix2 p1, ICollection<RTreeLeafEntry> result)
-        {
-        }
-
-        public void QueryByAabb(in AABB aabb, ICollection<RTreeLeafEntry> result)
-        {
         }
 
         public void Build(EcsFilter<TransformComponent, HasColliderTag> filter)
@@ -178,6 +149,38 @@ namespace Game.Systems.RTree
 
                 ++SubTreesCount;
             }
+        }
+
+        public IEnumerable<RTreeNode> GetSubTreeRootNodes(int subTreeIndex)
+        {
+            var subTreeHeight = GetSubTreeHeight(subTreeIndex);
+            if (subTreeHeight < 1)
+                return Enumerable.Empty<RTreeNode>();
+
+            var offset = CalculateSubTreeNodeLevelStartIndex(MaxEntries, subTreeIndex, subTreeHeight - 1, _subTreesMaxHeight,
+                _perWorkerNodesContainerCapacity);
+
+            return _nodesContainer
+                .GetSubArray(offset, MaxEntries)
+                .TakeWhile(n => n.Aabb != AABB.Empty);
+        }
+
+        public IEnumerable<RTreeNode> GetNodes(int subTreeIndex, int levelIndex, IEnumerable<int> indices) =>
+            levelIndex < GetSubTreeHeight(subTreeIndex)
+                ? indices.Select(i => _nodesContainer[i])
+                : Enumerable.Empty<RTreeNode>();
+
+        public IEnumerable<RTreeLeafEntry> GetLeafEntries(int subTreeIndex, IEnumerable<int> indices) =>
+            _resultEntries.Length != 0
+                ? indices.Select(i => _resultEntries[subTreeIndex * _perWorkerResultEntriesContainerCapacity + i])
+                : Enumerable.Empty<RTreeLeafEntry>();
+
+        public void QueryByLine(fix2 p0, fix2 p1, ICollection<RTreeLeafEntry> result)
+        {
+        }
+
+        public void QueryByAabb(in AABB aabb, ICollection<RTreeLeafEntry> result)
+        {
         }
 
         private void InitInsertJob(int entriesCount, int workersCount)
@@ -277,18 +280,21 @@ namespace Game.Systems.RTree
             };
         }
 
-        private static int CalculateSubTreeNodeLevelStartIndex(int subTreeIndex, int nodeLevelIndex, int treeMaxHeight,
+        [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
+        private static int CalculateSubTreeNodeLevelStartIndex(int maxEntries, int subTreeIndex, int nodeLevelIndex,
+            int treeMaxHeight,
             int perWorkerNodesContainerCapacity)
         {
-            var index = math.pow(MaxEntries, treeMaxHeight + 1) / (MaxEntries - 1);
-            index *= 1f - 1f / math.pow(MaxEntries, nodeLevelIndex);
+            var index = math.pow(maxEntries, treeMaxHeight + 1) / (maxEntries - 1);
+            index *= 1f - 1f / math.pow(maxEntries, nodeLevelIndex);
             index += subTreeIndex * perWorkerNodesContainerCapacity;
 
             return (int) index;
         }
 
-        private static int CalculateNodeLevelCapacity(int treeMaxHeight, int nodeLevelIndex) =>
-            (int) math.pow(MaxEntries, treeMaxHeight - nodeLevelIndex);
+        [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
+        private static int CalculateNodeLevelCapacity(int maxEntries, int treeMaxHeight, int nodeLevelIndex) =>
+            (int) math.pow(maxEntries, treeMaxHeight - nodeLevelIndex);
 
         private static long CalculateTreeStateHash(int entriesCount, int workersCount) =>
             ((long) workersCount << 32) | (uint) entriesCount;

@@ -1,6 +1,5 @@
-﻿using System;
-using App;
-using Math.FixedPointMath;
+﻿using Math.FixedPointMath;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -43,6 +42,7 @@ namespace Game.Systems.RTree
 
     public partial class AabbRTree
     {
+        [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
         public struct InsertJob : IJobParallelFor
         {
             [ReadOnly]
@@ -64,7 +64,9 @@ namespace Game.Systems.RTree
 
             public void Execute(int jobIndex)
             {
+#if ENABLE_PROFILING
                 using var _ = Profiling.RTreeInsertJob.Auto();
+#endif
 
                 _jobIndex = jobIndex;
                 _leafEntriesCounter = 0;
@@ -166,11 +168,13 @@ namespace Game.Systems.RTree
                 var isLeafLevel = nodeLevelIndex == 0;
                 if (isLeafLevel)
                 {
+#if ENABLE_PROFILING
                     using var _ = Profiling.RTreeLeafNodesUpdate.Auto();
+#endif
 
                     if (node.EntriesCount == MaxEntries)
-                        return SplitNode(ref node, ref _currentThreadResultEntries, ref _leafEntriesCounter, entry,
-                            GetLeafEntryAabb);
+                        return SplitNode(ref node, ref _currentThreadResultEntries, ref _leafEntriesCounter, in entry,
+                            in entry.Aabb);
 
                     if (node.EntriesStartIndex == -1)
                     {
@@ -187,13 +191,15 @@ namespace Game.Systems.RTree
 
                     _currentThreadResultEntries[node.EntriesStartIndex + node.EntriesCount] = entry;
 
-                    node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
+                    node.Aabb = fix.AABBs_conjugate(in node.Aabb, in entry.Aabb);
                     node.EntriesCount++;
 
                     return TreeEntryTraits<RTreeNode>.InvalidEntry;
                 }
 
+#if ENABLE_PROFILING
                 using var __ = Profiling.RTreeNodesUpdate.Auto();
+#endif
 
                 var entriesCount = node.EntriesCount;
                 var entriesStartIndex = node.EntriesStartIndex;
@@ -204,7 +210,8 @@ namespace Game.Systems.RTree
                 var nodeLevelsRangeStartIndex = GetNodeLevelStartIndex(nodeLevelIndex - 1);
                 Assert.IsTrue(entriesStartIndex >= nodeLevelsRangeStartIndex);
 
-                var nodeLevelsRangeCapacity = CalculateNodeLevelCapacity(ReadOnlyData.TreeMaxHeight, nodeLevelIndex - 1);
+                var nodeLevelsRangeCapacity =
+ CalculateNodeLevelCapacity(MaxEntries, ReadOnlyData.TreeMaxHeight, nodeLevelIndex - 1);
                 var entriesEndIndex = entriesStartIndex + entriesCount;
                 Assert.IsTrue(entriesEndIndex < nodeLevelsRangeStartIndex + nodeLevelsRangeCapacity);
                 Assert.IsTrue(entriesEndIndex <= nodeLevelsRangeStartIndex + _currentThreadNodesEndIndices[nodeLevelIndex - 1]);
@@ -225,7 +232,7 @@ namespace Game.Systems.RTree
 
                 if (extraChildNode.Aabb == TreeEntryTraits<RTreeNode>.InvalidEntry.Aabb)
                 {
-                    node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
+                    node.Aabb = fix.AABBs_conjugate(in node.Aabb, in entry.Aabb);
 #if ENABLE_ASSERTS
                     Assert.IsFalse(targetChildNode.EntriesStartIndex < 0);
                     Assert.IsTrue(targetChildNode.EntriesCount is >= MinEntries and <= MaxEntries);
@@ -239,8 +246,8 @@ namespace Game.Systems.RTree
                     var childNodesLevelEndIndex =
                         childNodesLevelStartIndex + _currentThreadNodesEndIndices[childNodeLevelIndex];
 
-                    var extraNode = SplitNode(ref node, ref nodesContainer, ref childNodesLevelEndIndex, extraChildNode,
-                        GetNodeAabb);
+                    var extraNode = SplitNode(ref node, ref nodesContainer, ref childNodesLevelEndIndex, in extraChildNode,
+                        in extraChildNode.Aabb);
                     _currentThreadNodesEndIndices[childNodeLevelIndex] = childNodesLevelEndIndex - childNodesLevelStartIndex;
 
                     return extraNode;
@@ -248,7 +255,7 @@ namespace Game.Systems.RTree
 
                 nodesContainer[entriesStartIndex + entriesCount] = extraChildNode;
 
-                node.Aabb = fix.AABBs_conjugate(node.Aabb, entry.Aabb);
+                node.Aabb = fix.AABBs_conjugate(in node.Aabb, in entry.Aabb);
                 node.EntriesCount++;
 
 #if ENABLE_ASSERTS
@@ -259,7 +266,9 @@ namespace Game.Systems.RTree
 
             private void GrowTree(in RTreeNode newEntry)
             {
+#if ENABLE_PROFILING
                 using var _ = Profiling.RTreeGrow.Auto();
+#endif
 
                 var rootNodesStartIndex = GetNodeLevelStartIndex(RootNodesLevelIndex);
                 var rootNodesCount = _currentThreadNodesEndIndices[RootNodesLevelIndex];
@@ -267,7 +276,7 @@ namespace Game.Systems.RTree
 #if ENABLE_ASSERTS
                 Assert.AreEqual(MaxEntries, rootNodesCount);
                 Assert.IsFalse(rootNodesCount + MaxEntries >
-                               CalculateNodeLevelCapacity(ReadOnlyData.TreeMaxHeight, RootNodesLevelIndex));
+                               CalculateNodeLevelCapacity(MaxEntries, ReadOnlyData.TreeMaxHeight, RootNodesLevelIndex));
 #endif
 
                 var newRootNodeA = new RTreeNode
@@ -280,8 +289,8 @@ namespace Game.Systems.RTree
                 ref var nodesContainer = ref SharedWriteData.NodesContainer;
 
                 var rootNodesLevelEndIndex = rootNodesStartIndex + rootNodesCount;
-                var newRootNodeB = SplitNode(ref newRootNodeA, ref nodesContainer, ref rootNodesLevelEndIndex, newEntry,
-                    GetNodeAabb);
+                var newRootNodeB = SplitNode(ref newRootNodeA, ref nodesContainer, ref rootNodesLevelEndIndex, in newEntry,
+                    in newEntry.Aabb);
 
                 _currentThreadNodesEndIndices[RootNodesLevelIndex] = rootNodesLevelEndIndex - rootNodesStartIndex;
                 ++SharedWriteData.RootNodesLevelIndices[_jobIndex];
@@ -304,11 +313,13 @@ namespace Game.Systems.RTree
 #endif
             }
 
-            private static RTreeNode SplitNode<T>(ref RTreeNode splitNode, ref NativeArray<T> nodeEntries,
-                ref int nodeEntriesEndIndex, in T newEntry, Func<T, AABB> getAabbFunc)
-                where T : unmanaged
+            private static RTreeNode SplitNode<T>(ref RTreeNode splitNode, ref NativeArray<T> entries,
+                ref int entriesEndIndex, in T newEntry, in AABB newEntryAabb)
+                where T : struct
             {
+#if ENABLE_PROFILING
                 using var _ = Profiling.RTreeSplitNode.Auto();
+#endif
 
                 var entriesCount = splitNode.EntriesCount;
                 var startIndex = splitNode.EntriesStartIndex;
@@ -325,78 +336,82 @@ namespace Game.Systems.RTree
                 // Assign entry to the node with smaller AABB area increase
                 // Repeat until all entries are assigned between two new nodes
 
-                var (indexA, indexB) = FindLargestEntriesPair(in nodeEntries, newEntry, startIndex, endIndex, getAabbFunc);
+                var (indexA, indexB) = FindLargestEntriesPair(in entries, in newEntryAabb, startIndex, endIndex);
 #if ENABLE_ASSERTS
                 Assert.IsTrue(indexA > -1 && indexB > -1);
 #endif
 
-                var newNodeStartEntry = indexB != endIndex ? nodeEntries[indexB] : newEntry;
-                var newEntriesStartIndex = nodeEntriesEndIndex;
+                // NativeSlice<>
+                // UnsafeUtility.As<T, AABB>(ref newEntry)
+                // UnsafeUtility.AsRef<T, AABB>(ref newEntry)
+                // var nodeEntriesPtr = entries.GetUnsafeReadOnlyPtr();
+                // var aabb = UnsafeUtility.ReadArrayElementWithStride<AABB>(nodeEntriesPtr, 0, UnsafeUtility.SizeOf<T>());
+                // var aabb = entries.ReinterpretLoad<AABB>(0);
+
+                var newNodeEntriesStartIndex = entriesEndIndex;
+                entries[newNodeEntriesStartIndex] = indexB != endIndex ? entries[indexB] : newEntry;
+
                 var newNode = new RTreeNode
                 {
-                    Aabb = getAabbFunc.Invoke(newNodeStartEntry),
+                    Aabb = indexB != endIndex ? GetAabb(entries, indexB) : newEntryAabb,
 
-                    EntriesStartIndex = newEntriesStartIndex,
+                    EntriesStartIndex = entriesEndIndex,
                     EntriesCount = 1
                 };
 
                 var invalidEntry = TreeEntryTraits<T>.InvalidEntry;
+                entriesEndIndex += MaxEntries;
 
-                nodeEntriesEndIndex += MaxEntries;
+                for (var i = newNodeEntriesStartIndex + 1; i < entriesEndIndex; i++)
+                    entries[i] = invalidEntry;
 
-                nodeEntries[newEntriesStartIndex] = newNodeStartEntry;
-                for (var i = newEntriesStartIndex + 1; i < nodeEntriesEndIndex; i++)
-                    nodeEntries[i] = invalidEntry;
-
-                (nodeEntries[startIndex], nodeEntries[indexA]) = (nodeEntries[indexA], nodeEntries[startIndex]);
+                (entries[startIndex], entries[indexA]) = (entries[indexA], entries[startIndex]);
 
                 splitNode.EntriesCount = 1;
-                splitNode.Aabb = getAabbFunc.Invoke(nodeEntries[startIndex]);
+                splitNode.Aabb = GetAabb(in entries, startIndex);
 
                 for (var i = 1; i <= MaxEntries; i++)
                 {
                     if (startIndex + i == indexB)
                         continue;
 
-                    var entry = i == MaxEntries ? newEntry : nodeEntries[startIndex + i];
-                    var entityAabb = getAabbFunc.Invoke(entry);
+                    var isNewEntry = i == MaxEntries;
+                    var entry = isNewEntry ? newEntry : entries[startIndex + i];
+                    var entityAabb = isNewEntry ? newEntryAabb : GetAabb(entries, startIndex + i);
 
-                    var splitNodeAabb = GetNodeAabb(splitNode);
-                    var newNodeAabb = GetNodeAabb(newNode);
-
-                    var conjugatedAabbA = fix.AABBs_conjugate(splitNodeAabb, entityAabb);
-                    var conjugatedAabbB = fix.AABBs_conjugate(newNodeAabb, entityAabb);
+                    var conjugatedAabbA = fix.AABBs_conjugate(in splitNode.Aabb, in entityAabb);
+                    var conjugatedAabbB = fix.AABBs_conjugate(in newNode.Aabb, in entityAabb);
 
                     var isNewNodeTarget =
-                        IsSecondNodeTarget(in splitNodeAabb, in newNodeAabb, in conjugatedAabbA, in conjugatedAabbB);
+                        IsSecondNodeTarget(in splitNode.Aabb, in newNode.Aabb, in conjugatedAabbA, in conjugatedAabbB);
                     ref var targetNode = ref isNewNodeTarget ? ref newNode : ref splitNode;
 
                     if (isNewNodeTarget || targetNode.EntriesCount != i)
-                        nodeEntries[targetNode.EntriesStartIndex + targetNode.EntriesCount] = entry;
+                        entries[targetNode.EntriesStartIndex + targetNode.EntriesCount] = entry;
 
                     targetNode.EntriesCount++;
                     targetNode.Aabb = isNewNodeTarget ? conjugatedAabbB : conjugatedAabbA;
                 }
 
                 while (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
-                    FillNodes(ref nodeEntries, getAabbFunc, ref splitNode, ref newNode);
+                    FillNodes(ref entries, ref splitNode, ref newNode);
 
                 for (var i = splitNode.EntriesCount; i < MaxEntries; i++)
-                    nodeEntries[splitNode.EntriesStartIndex + i] = invalidEntry;
+                    entries[splitNode.EntriesStartIndex + i] = invalidEntry;
 
                 for (var i = newNode.EntriesCount; i < MaxEntries; i++)
-                    nodeEntries[newNode.EntriesStartIndex + i] = invalidEntry;
+                    entries[newNode.EntriesStartIndex + i] = invalidEntry;
 
 #if ENABLE_ASSERTS
-                Assert.IsTrue(
-                    nodeEntries
-                        .GetSubArray(splitNode.EntriesStartIndex, splitNode.EntriesCount)
-                        .Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries);
+                var invalidChildNodesCount = 0;
+                for (var i = 0; i < splitNode.EntriesCount; i++)
+                    invalidChildNodesCount += GetAabb(entries, i) != AABB.Empty ? 1 : 0;
+                Assert.IsFalse(invalidChildNodesCount < MinEntries);
 
-                Assert.IsTrue(
-                    nodeEntries
-                        .GetSubArray(newNode.EntriesStartIndex, newNode.EntriesCount)
-                        .Count(n => getAabbFunc(n) != AABB.Empty) >= MinEntries);
+                invalidChildNodesCount = 0;
+                for (var i = 0; i < newNode.EntriesCount; i++)
+                    invalidChildNodesCount += GetAabb(entries, i) != AABB.Empty ? 1 : 0;
+                Assert.IsFalse(invalidChildNodesCount < MinEntries);
 
                 Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
                 Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
@@ -450,8 +465,7 @@ namespace Game.Systems.RTree
                 return nodeIndex;
             }
 
-            private static void FillNodes<T>(ref NativeArray<T> nodeEntries, Func<T, AABB> getAabbFunc, ref RTreeNode splitNode,
-                ref RTreeNode newNode)
+            private static void FillNodes<T>(ref NativeArray<T> nodeEntries, ref RTreeNode splitNode, ref RTreeNode newNode)
                 where T : struct
             {
                 ref var sourceNode = ref splitNode.EntriesCount < MinEntries ? ref newNode : ref splitNode;
@@ -461,23 +475,20 @@ namespace Game.Systems.RTree
                 var sourceNodeStartIndex = sourceNode.EntriesStartIndex;
                 var sourceNodeEndIndex = sourceNodeStartIndex + sourceNodeEntriesCount;
 
-                var targetNodeAabb = GetNodeAabb(targetNode);
                 var sourceNodeAabb = AABB.Empty;
 
                 var (sourceEntryIndex, sourceEntryAabb, minArena) = (-1, AABB.Empty, fix.MaxValue);
                 for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++)
                 {
-                    var entry = nodeEntries[i];
-                    var entryAabb = getAabbFunc.Invoke(entry);
-
-                    var conjugatedArea = GetConjugatedArea(in targetNodeAabb, in entryAabb);
+                    var entryAabb = GetAabb(nodeEntries, i);
+                    var conjugatedArea = GetConjugatedArea(in targetNode.Aabb, in entryAabb);
                     if (conjugatedArea > minArena)
                     {
-                        sourceNodeAabb = fix.AABBs_conjugate(sourceNodeAabb, entryAabb);
+                        sourceNodeAabb = fix.AABBs_conjugate(in sourceNodeAabb, in entryAabb);
                         continue;
                     }
 
-                    sourceNodeAabb = fix.AABBs_conjugate(sourceNodeAabb, sourceEntryAabb);
+                    sourceNodeAabb = fix.AABBs_conjugate(in sourceNodeAabb, in sourceEntryAabb);
 
                     (sourceEntryIndex, sourceEntryAabb, minArena) = (i, entryAabb, conjugatedArea);
                 }
@@ -489,7 +500,7 @@ namespace Game.Systems.RTree
                 var targetEntryIndex = targetNode.EntriesStartIndex + targetNode.EntriesCount;
                 nodeEntries[targetEntryIndex] = nodeEntries[sourceEntryIndex];
 
-                targetNode.Aabb = fix.AABBs_conjugate(targetNode.Aabb, sourceEntryAabb);
+                targetNode.Aabb = fix.AABBs_conjugate(in targetNode.Aabb, in sourceEntryAabb);
                 targetNode.EntriesCount++;
 
                 if (sourceEntryIndex != sourceNodeEndIndex - 1)
@@ -500,22 +511,21 @@ namespace Game.Systems.RTree
             }
 
             private static (int indexA, int indexB) FindLargestEntriesPair<T>(
-                in NativeArray<T> nodeEntries,
-                T newEntry,
+                in NativeArray<T> entries,
+                in AABB newEntryAabb,
                 int startIndex,
-                int endIndex,
-                Func<T, AABB> getAabbFunc)
+                int endIndex)
                 where T : struct
             {
                 var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
                 for (var i = startIndex; i < endIndex; i++)
                 {
-                    var aabbA = getAabbFunc.Invoke(nodeEntries[i]);
+                    var aabbA = GetAabb(entries, i);
                     fix conjugatedArea;
 
                     for (var j = i + 1; j < endIndex; j++)
                     {
-                        var aabbB = getAabbFunc.Invoke(nodeEntries[j]);
+                        var aabbB = GetAabb(entries, j);
                         if (aabbB == AABB.Empty)
                             continue;
 
@@ -526,7 +536,6 @@ namespace Game.Systems.RTree
                         (indexA, indexB, maxArena) = (i, j, conjugatedArea);
                     }
 
-                    var newEntryAabb = getAabbFunc.Invoke(newEntry);
                     if (newEntryAabb == AABB.Empty)
                         continue;
 
@@ -559,13 +568,13 @@ namespace Game.Systems.RTree
             }
 
             private int GetNodeLevelStartIndex(int nodeLevelIndex) =>
-                CalculateSubTreeNodeLevelStartIndex(_jobIndex, nodeLevelIndex, ReadOnlyData.TreeMaxHeight,
+                CalculateSubTreeNodeLevelStartIndex(MaxEntries, _jobIndex, nodeLevelIndex, ReadOnlyData.TreeMaxHeight,
                     ReadOnlyData.NodesContainerCapacity);
 
             private static (fix areaIncrease, fix sizeIncrease) GetAreaAndSizeIncrease(in AABB nodeAabb, in AABB conjugatedAabb)
             {
-                var conjugatedArea = fix.AABB_area(conjugatedAabb);
-                var areaIncrease = conjugatedArea - fix.AABB_area(nodeAabb);
+                var conjugatedArea = fix.AABB_area(in conjugatedAabb);
+                var areaIncrease = conjugatedArea - fix.AABB_area(in nodeAabb);
 
                 var size = nodeAabb.max - nodeAabb.min;
                 var conjugatedSize = conjugatedAabb.max - conjugatedAabb.min;
@@ -575,7 +584,11 @@ namespace Game.Systems.RTree
             }
 
             private static fix GetConjugatedArea(in AABB aabbA, in AABB aabbB) =>
-                fix.AABB_area(fix.AABBs_conjugate(aabbA, aabbB));
+                fix.AABB_area(fix.AABBs_conjugate(in aabbA, in aabbB));
+
+            private static unsafe AABB GetAabb<T>(in NativeArray<T> entries, int index) where T : struct =>
+                UnsafeUtility.ReadArrayElementWithStride<AABB>(entries.GetUnsafeReadOnlyPtr(), index,
+                    UnsafeUtility.SizeOf<T>());
         }
     }
 }

@@ -332,9 +332,7 @@ namespace Game.Systems.RTree
 
                 if (node.EntriesCount == MaxEntries)
                 {
-                    Profiling.RTreeB.Begin();
                     var splitNode = SplitNode(ref node, _leafEntries, _leafEntriesCount, entry, GetLeafEntryAabb);
-                    Profiling.RTreeB.End();
                     _leafEntriesCount += MaxEntries;
                     return splitNode;
                 }
