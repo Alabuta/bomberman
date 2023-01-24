@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using App;
 using Game.Components;
 using Game.Components.Tags;
@@ -11,6 +12,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Game.Systems.RTree
@@ -92,6 +94,10 @@ namespace Game.Systems.RTree
 
         public AabbRTree()
         {
+            Assert.IsFalse(MaxEntries > byte.MaxValue);
+            Assert.AreEqual(MaxEntries / 2, MinEntries);
+            Assert.AreEqual(MinEntries * 2, MaxEntries);
+
             InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount);
         }
 
@@ -124,7 +130,9 @@ namespace Game.Systems.RTree
             InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount);
             Assert.IsFalse(entitiesCount > _inputEntries.Length);
 
+#if ENABLE_PROFILING
             Profiling.RTreeNativeArrayFill.Begin();
+#endif
             foreach (var index in filter)
             {
                 if (index >= entitiesCount)
@@ -137,7 +145,9 @@ namespace Game.Systems.RTree
                 _inputEntries[index] = new RTreeLeafEntry(aabb, index);
             }
 
+#if ENABLE_PROFILING
             Profiling.RTreeNativeArrayFill.End();
+#endif
 
             _jobHandle = _insertJob.Schedule(_workersCount, 1);
             _jobHandle.Complete();
@@ -282,8 +292,7 @@ namespace Game.Systems.RTree
 
         [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
         private static int CalculateSubTreeNodeLevelStartIndex(int maxEntries, int subTreeIndex, int nodeLevelIndex,
-            int treeMaxHeight,
-            int perWorkerNodesContainerCapacity)
+            int treeMaxHeight, int perWorkerNodesContainerCapacity)
         {
             var index = math.pow(maxEntries, treeMaxHeight + 1) / (maxEntries - 1);
             index *= 1f - 1f / math.pow(maxEntries, nodeLevelIndex);

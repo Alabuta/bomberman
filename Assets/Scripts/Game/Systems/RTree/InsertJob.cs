@@ -1,9 +1,13 @@
-﻿using Math.FixedPointMath;
+﻿using System.Linq;
+using App;
+using Math.FixedPointMath;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Game.Systems.RTree
 {
@@ -105,6 +109,10 @@ namespace Game.Systems.RTree
 
             private void Insert(int entryIndex)
             {
+#if ENABLE_PROFILING
+                using var _ = Profiling.RTreeInsertEntry.Auto();
+#endif
+
 #if ENABLE_ASSERTS
                 Assert.IsTrue(RootNodesLevelIndex > -1);
 #endif
