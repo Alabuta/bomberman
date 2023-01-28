@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Mathematics;
@@ -41,9 +40,15 @@ namespace Math.FixedPointMath
         public override bool Equals(object obj) =>
             obj is AABB other && Equals(other);
 
-        public override int GetHashCode() =>
-            HashCode.Combine(min, max);
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (min.GetHashCode() * 397) ^ max.GetHashCode();
+            }
+        }
 
-        public fix2 GetCenter() => min + (max - min) / new fix2(2);
+        public fix2 GetCenter() =>
+            min + (max - min) / new fix2(2);
     }
 }
