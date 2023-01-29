@@ -6,10 +6,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
-using Unity.Mathematics;
-using UnityEngine.Assertions;
 using UnityEngine.Scripting;
-using Debug = UnityEngine.Debug;
 
 namespace Game.Systems.RTree
 {
@@ -35,6 +32,13 @@ namespace Game.Systems.RTree
             internal static readonly SharedStatic<IntPtr> jobReflectionData =
                 SharedStatic<IntPtr>.GetOrCreate<InsertJobProducer<T>>();
 
+            private delegate void ExecuteJobFunction(
+                ref T jobData,
+                IntPtr additionalPtr,
+                IntPtr bufferRangePatchData,
+                ref JobRanges ranges,
+                int workerThreadIndex);
+
             [Preserve]
             internal static void Initialize()
             {
@@ -44,26 +48,19 @@ namespace Game.Systems.RTree
                 jobReflectionData.Data = JobsUtility.CreateJobReflectionData(typeof(T), (ExecuteJobFunction) Execute);
             }
 
-            internal delegate void ExecuteJobFunction(
+            private static unsafe void Execute(
                 ref T jobData,
-                IntPtr additionalPtr,
-                IntPtr bufferRangePatchData,
-                ref JobRanges ranges,
-                int workerThreadIndex);
-
-            internal static unsafe void Execute(
-                ref T insertJobData,
                 IntPtr additionalPtr,
                 IntPtr bufferRangePatchData,
                 ref JobRanges ranges,
                 int workerThreadIndex)
             {
-                var jobData = UnsafeUtility.As<T, AabbRTree.InsertJob>(ref insertJobData);
+                var insertJobData = UnsafeUtility.As<T, AabbRTree.InsertJob>(ref jobData);
 
-                var readOnlyData = jobData.ReadOnlyData;
-                var sharedWriteData = jobData.SharedWriteData;
+                var readOnlyData = insertJobData.ReadOnlyData;
+                var sharedWriteData = insertJobData.SharedWriteData;
 
-                var jobIndex = sharedWriteData.WorkersInUseCounter[0].Add(1);
+                var jobIndex = sharedWriteData.CountersContainer[0].Add(1);
                 sharedWriteData.PerThreadWorkerIndices[workerThreadIndex] = jobIndex;
 
                 sharedWriteData.RootNodesLevelIndices[jobIndex] = 0;
@@ -92,17 +89,28 @@ namespace Game.Systems.RTree
                     LeafEntriesCounter = 0
                 };
 
-                while (JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out var begin, out var end))
+                var firstBatchIndex = -1;
+
+                while (JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out var startIndex, out var endIndex))
                 {
+                    var batchSize = endIndex - startIndex;
+
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                     JobsUtility.PatchBufferMinMaxRanges(
                         bufferRangePatchData,
                         UnsafeUtility.AddressOf(ref jobData),
-                        begin,
-                        end - begin);
+                        startIndex,
+                        batchSize);
 #endif
+                    if (firstBatchIndex == -1)
+                        firstBatchIndex = startIndex;
 
-                    jobData.Execute(ref perWorkerData, begin, end - begin);
+                    jobData.Execute(ref perWorkerData, startIndex, batchSize);
+
+                    // Preventing work stealing
+                    // :TODO: change to work stealing logic
+                    /*if (endIndex - firstBatchIndex == insertJobData.ReadOnlyData.PerWorkerEntriesCount)
+                        break;*/
                 }
 
                 sharedWriteData.PerThreadWorkerIndices[workerThreadIndex] = -1;
