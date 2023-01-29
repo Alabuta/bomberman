@@ -57,12 +57,14 @@ namespace Game.Systems.RTree
     [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
     public partial class AabbRTree : IRTree
     {
-        private const int MaxEntries = 4;
+        internal const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
 
         private const int EntriesPerWorkerMinCount = MaxEntries * MinEntries;
 
-        private const int InputEntriesStartCount = 128;
+        private const int EntriesScheduleBatch = 4;
+
+        private const int InputEntriesStartCount = 256;
 
         private long _treeStateHash;
 
@@ -79,11 +81,16 @@ namespace Game.Systems.RTree
         private int _perWorkerResultEntriesContainerCapacity;
         private int _perWorkerNodesContainerCapacity;
 
+        private int _workersInUseCount;
         [NativeDisableUnsafePtrRestriction]
-        private InsertJob _insertJob;
+        private UnsafeAtomicCounter32 _workersInUseCounter;
+
+        private NativeArray<UnsafeAtomicCounter32> _countersContainer;
+
+        private NativeArray<int> _perThreadWorkerIndices;
 
         [NativeDisableUnsafePtrRestriction]
-        private JobHandle _jobHandle;
+        private InsertJob _insertJob;
 
         public int EntriesCap { get; set; } = -1;
 
@@ -94,11 +101,11 @@ namespace Game.Systems.RTree
 
         public AabbRTree()
         {
-            Assert.IsFalse(MaxEntries > byte.MaxValue);
+            Assert.IsFalse(MaxEntries < 4);
             Assert.AreEqual(MaxEntries / 2, MinEntries);
             Assert.AreEqual(MinEntries * 2, MaxEntries);
 
-            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount);
+            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount, EntriesScheduleBatch);
         }
 
         public void Dispose()
@@ -110,6 +117,10 @@ namespace Game.Systems.RTree
 
             _nodesEndIndicesContainer.Dispose();
             _rootNodesLevelIndices.Dispose();
+
+            _countersContainer.Dispose();
+
+            _perThreadWorkerIndices.Dispose();
         }
 
         public void Build(EcsFilter<TransformComponent, HasColliderTag> filter)
@@ -127,12 +138,10 @@ namespace Game.Systems.RTree
 
             Assert.IsFalse(entitiesCount < MinEntries);
 
-            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount);
+            InitInsertJob(entitiesCount, JobsUtility.MaxJobThreadCount, EntriesScheduleBatch);
             Assert.IsFalse(entitiesCount > _inputEntries.Length);
 
-#if ENABLE_PROFILING
             Profiling.RTreeNativeArrayFill.Begin();
-#endif
             foreach (var index in filter)
             {
                 if (index >= entitiesCount)
@@ -145,12 +154,21 @@ namespace Game.Systems.RTree
                 _inputEntries[index] = new RTreeLeafEntry(aabb, index);
             }
 
-#if ENABLE_PROFILING
             Profiling.RTreeNativeArrayFill.End();
-#endif
 
-            _jobHandle = _insertJob.Schedule(_workersCount, 1);
-            _jobHandle.Complete();
+            _countersContainer[0].Reset();
+
+            Profiling.RTreeInsertJobComplete.Begin();
+#if !NO_WORK_STEALING_JOBS
+            _insertJob
+                .ScheduleBatch(entitiesCount, EntriesScheduleBatch)
+                .Complete();
+#else
+            _insertJob
+                .Schedule(_workersCount, 1)
+                .Complete();
+#endif
+            Profiling.RTreeInsertJobComplete.End();
 
             for (var i = 0; i < _rootNodesLevelIndices.Length; i++)
             {
@@ -193,11 +211,11 @@ namespace Game.Systems.RTree
         {
         }
 
-        private void InitInsertJob(int entriesCount, int workersCount)
+        private void InitInsertJob(int entriesCount, int workersCount, int batchSize)
         {
             using var _ = Profiling.RTreeInitInsertJob.Auto();
 
-            var treeStateHash = CalculateTreeStateHash(entriesCount, workersCount);
+            var treeStateHash = CalculateTreeStateHash(entriesCount, workersCount, batchSize);
             if (treeStateHash == _treeStateHash)
                 return;
 
@@ -215,7 +233,7 @@ namespace Game.Systems.RTree
             var maxWorkersCount = (int) math.ceil((double) entriesCount / EntriesPerWorkerMinCount);
             _workersCount = math.min(workersCount, maxWorkersCount);
 
-            var perWorkerEntriesCount = math.ceil((double) entriesCount / _workersCount);
+            var perWorkerEntriesCount = math.ceil((double) entriesCount / (_workersCount * batchSize)) * batchSize * 16;
 
             _subTreesMaxHeight =
                 (int) math.ceil(math.log((perWorkerEntriesCount * (MinEntries - 1) + MinEntries) / (2 * MinEntries - 1)) /
@@ -266,8 +284,27 @@ namespace Game.Systems.RTree
                     NativeArrayOptions.UninitializedMemory);
             }
 
-            for (var i = 0; i < _rootNodesLevelIndices.Length; i++)
-                _rootNodesLevelIndices[i] = -1;
+            if (!_countersContainer.IsCreated)
+            {
+                unsafe
+                {
+                    _workersInUseCount = 0;
+                    fixed ( int* count = &_workersInUseCount ) _workersInUseCounter = new UnsafeAtomicCounter32(count);
+                }
+
+                _countersContainer = new NativeArray<UnsafeAtomicCounter32>(1, Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory);
+                _countersContainer[0] = _workersInUseCounter;
+            }
+
+            if (!_perThreadWorkerIndices.IsCreated || _perThreadWorkerIndices.Length < JobsUtility.MaxJobThreadCount)
+            {
+                var perThreadWorkerIndices = Enumerable
+                    .Repeat(-1, JobsUtility.MaxJobThreadCount)
+                    .ToArray();
+
+                _perThreadWorkerIndices = new NativeArray<int>(perThreadWorkerIndices, Allocator.Persistent);
+            }
 
             _insertJob = new InsertJob
             {
@@ -282,6 +319,9 @@ namespace Game.Systems.RTree
                 },
                 SharedWriteData = new InsertJobSharedWriteData
                 {
+                    CountersContainer = _countersContainer,
+                    PerThreadWorkerIndices = _perThreadWorkerIndices,
+
                     ResultEntries = _resultEntries,
                     NodesContainer = _nodesContainer,
                     NodesEndIndicesContainer = _nodesEndIndicesContainer,
@@ -305,7 +345,7 @@ namespace Game.Systems.RTree
         private static int CalculateNodeLevelCapacity(int maxEntries, int treeMaxHeight, int nodeLevelIndex) =>
             (int) math.pow(maxEntries, treeMaxHeight - nodeLevelIndex);
 
-        private static long CalculateTreeStateHash(int entriesCount, int workersCount) =>
-            ((long) workersCount << 32) | (uint) entriesCount;
+        private static long CalculateTreeStateHash(int entriesCount, int workersCount, int batchSize) =>
+            (entriesCount, workersCount, batchSize).GetHashCode();
     }
 }

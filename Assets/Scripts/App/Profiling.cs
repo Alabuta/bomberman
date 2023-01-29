@@ -17,10 +17,14 @@ namespace App
         public static readonly ProfilerMarker RTreeNativeArrayFill = new(nameof(RTreeNativeArrayFill));
         public static readonly ProfilerMarker RTreeInsert = new(nameof(RTreeInsert));
         public static readonly ProfilerMarker RTreeInsertJob = new(nameof(RTreeInsertJob));
+        public static readonly ProfilerMarker RTreeInsertJobInitWorker = new(nameof(RTreeInsertJobInitWorker));
+        public static readonly ProfilerMarker RTreeInsertEntry = new(nameof(RTreeInsertEntry));
         public static readonly ProfilerMarker RTreeInitInsertJob = new(nameof(RTreeInitInsertJob));
+        public static readonly ProfilerMarker RTreeInsertJobComplete = new(nameof(RTreeInsertJobComplete));
         public static readonly ProfilerMarker RTreeGrow = new(nameof(RTreeGrow));
         public static readonly ProfilerMarker RTreeSplitNode = new(nameof(RTreeSplitNode));
         public static readonly ProfilerMarker RTreeLeafNodesUpdate = new(nameof(RTreeLeafNodesUpdate));
         public static readonly ProfilerMarker RTreeNodesUpdate = new(nameof(RTreeNodesUpdate));
+        public static readonly ProfilerMarker RTreeA = new(nameof(RTreeA));
     }
 }
