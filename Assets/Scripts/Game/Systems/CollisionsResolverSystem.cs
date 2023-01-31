@@ -46,7 +46,7 @@ namespace Game.Systems
                     ResolveCollisions(_boxStays, entityIndex);
             }
 
-            _entitiesAabbTree.Build(_colliders, fix.one);
+            _entitiesAabbTree.Build(_colliders);
         }
 
         private static void ResolveCollisions<TCollider, TEvent>(EcsFilter<TransformComponent, TEvent, TCollider> filter,

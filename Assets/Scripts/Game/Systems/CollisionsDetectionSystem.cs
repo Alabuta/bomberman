@@ -8,6 +8,7 @@ using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
+using Unity.Collections;
 using UnityEngine.Pool;
 
 namespace Game.Systems
@@ -19,8 +20,6 @@ namespace Game.Systems
 
     public class CollisionsDetectionSystem : IEcsRunSystem
     {
-        private const int IterationsCount = 1;
-
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
@@ -38,27 +37,24 @@ namespace Game.Systems
 
         private readonly HashSet<int> _collidedEntities = new();
 
+        private NativeArray<RTreeLeafEntry> _entries;
+
         public void Run()
         {
             using var _ = Profiling.CollisionsDetection.Auto();
 
-            for (var iterationIndex = 0; iterationIndex < IterationsCount; iterationIndex++)
-            {
-                var simulationSubStep = (fix) (iterationIndex + 1) / (fix) IterationsCount;
+            _entitiesAabbTree.Build(_colliders);
 
-                _entitiesAabbTree.Build(_colliders, simulationSubStep);
+            foreach (var entityIndex in _circleColliders)
+                DetectCollisions(fix.one, _circleColliders, entityIndex);
 
-                foreach (var entityIndex in _circleColliders)
-                    DetectCollisions(simulationSubStep, _circleColliders, entityIndex);
+            foreach (var entityIndex in _boxColliders)
+                DetectCollisions(fix.one, _boxColliders, entityIndex);
 
-                foreach (var entityIndex in _boxColliders)
-                    DetectCollisions(simulationSubStep, _boxColliders, entityIndex);
+            /*foreach (var entityIndex in _lineCasters)
+                TraceLine(simulationSubStep, filter: _lineCasters, entityIndex);*/
 
-                /*foreach (var entityIndex in _lineCasters)
-                    TraceLine(simulationSubStep, filter: _lineCasters, entityIndex);*/
-
-                _processedPairs.Clear();
-            }
+            _processedPairs.Clear();
 
             _collidedEntities.Clear();
         }
@@ -69,7 +65,7 @@ namespace Game.Systems
 
             var linecastComponent = filter.Get1(entityIndex);
 
-            using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
+            using ( ListPool<RTreeLeafEntry>.Get(out var result) )
             {
                 _entitiesAabbTree.QueryByLine(linecastComponent.Start, linecastComponent.End, result);
 
@@ -77,10 +73,6 @@ namespace Game.Systems
                 {
                     return 0;
                 });*/
-
-                foreach (var (aabb, entity) in result)
-                {
-                }
             }
         }
 
@@ -109,13 +101,14 @@ namespace Game.Systems
 
             var aabbA = entityA.GetEntityColliderAABB(entityPositionA);
 
-            using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
+            using ( ListPool<RTreeLeafEntry>.Get(out var result) )
             {
                 _entitiesAabbTree.QueryByAabb(aabbA, result);
 
                 var hasIntersection = false;
-                foreach (var (aabbB, entityB) in result)
+                foreach (var entry in result)
                 {
+                    ref var entityB = ref _colliders.GetEntity(entry.Index);
                     if (entityA.Equals(entityB))
                         continue;
 
@@ -126,7 +119,7 @@ namespace Game.Systems
                     if (_processedPairs.Contains(hashedPair))
                         continue;
 
-                    if (!fix.is_AABB_overlapped_by_AABB(aabbA, aabbB))
+                    if (!fix.is_AABB_overlapped_by_AABB(aabbA, entry.Aabb))
                     {
                         var isFinalSubStep = simulationSubStep == fix.one;
                         if (isFinalSubStep)
