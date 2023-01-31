@@ -11,7 +11,7 @@ using Unity.Jobs;
 
 namespace Game.Systems.RTree
 {
-    public sealed partial class EntitiesAabbTree : IRTree
+    public sealed class EntitiesAabbTree : IRTree
     {
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
@@ -328,7 +328,9 @@ namespace Game.Systems.RTree
             var isLeafLevel = nodeLevelIndex == 0;
             if (isLeafLevel)
             {
+#if ENABLE_PROFILING
                 using var _ = Profiling.RTreeLeafNodesUpdate.Auto();
+#endif
 
                 if (node.EntriesCount == MaxEntries)
                 {
@@ -354,7 +356,9 @@ namespace Game.Systems.RTree
                 return null;
             }
 
+#if ENABLE_PROFILING
             using var __ = Profiling.RTreeNodesUpdate.Auto();
+#endif
 
             var entriesCount = node.EntriesCount;
 #if ENABLE_ASSERTS
@@ -409,7 +413,9 @@ namespace Game.Systems.RTree
 
         private void GrowTree(in RTreeNode newEntry)
         {
+#if ENABLE_PROFILING
             using var _ = Profiling.RTreeGrow.Auto();
+#endif
 
             var rootNodes = _nodes[RootNodesIndex];
             var rootNodesCount = _nodesCountByLevel[RootNodesIndex];
@@ -467,7 +473,9 @@ namespace Game.Systems.RTree
         private static RTreeNode SplitNode<T>(ref RTreeNode splitNode, List<T> nodeEntries, int nodeEntriesCount,
             in T newEntry, Func<T, AABB> getAabbFunc) where T : struct
         {
+#if ENABLE_PROFILING
             using var _ = Profiling.RTreeSplitNode.Auto();
+#endif
 
             var entriesCount = splitNode.EntriesCount;
             var startIndex = splitNode.EntriesStartIndex;
