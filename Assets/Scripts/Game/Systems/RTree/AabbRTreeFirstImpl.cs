@@ -152,8 +152,6 @@ namespace Game.Systems
                 var aabb = entity.GetEntityColliderAABB(transformComponent.WorldPosition);
                 Insert(index, aabb);
             }
-
-            // 145'728 + 9'600 = 155'328
         }
 
         private void Insert(int index, in AABB aabb)

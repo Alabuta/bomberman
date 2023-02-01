@@ -7,11 +7,11 @@ using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Collections;
-using Unity.Jobs;
+using Unity.Mathematics;
 
 namespace Game.Systems.RTree
 {
-    public sealed class EntitiesAabbTree : IRTree
+    public sealed class AabbTreeNativeContainers : IRTree
     {
         private const int MaxEntries = 4;
         private const int MinEntries = MaxEntries / 2;
@@ -32,8 +32,6 @@ namespace Game.Systems.RTree
 
         private static readonly Func<RTreeLeafEntry, AABB> GetLeafEntryAabb = leafEntry => leafEntry.Aabb;
         private static readonly Func<RTreeNode, AABB> GetNodeAabb = node => node.Aabb;
-
-        private readonly JobHandle[] _jobHandlers;
 
         private int RootNodesIndex => _nodesCountByLevel.Count - 1;
 
@@ -58,7 +56,7 @@ namespace Game.Systems.RTree
         public IEnumerable<RTreeLeafEntry> GetLeafEntries(int _, IEnumerable<int> indices) =>
             _leafEntries.Count != 0 ? indices.Select(i => _leafEntries[i]) : Enumerable.Empty<RTreeLeafEntry>();
 
-        public EntitiesAabbTree()
+        public AabbTreeNativeContainers()
         {
             InvalidEntry<RTreeNode>.Entry = new RTreeNode
             {
@@ -77,12 +75,9 @@ namespace Game.Systems.RTree
             _nodes.Add(Enumerable.Repeat(InvalidEntry<RTreeNode>.Entry, MaxEntries).ToList());
 
             _results = Enumerable
-                // .Repeat(new NativeArray<AABB>(1, Allocator.Persistent), jobsCount)
                 .Range(0, JobsCount)
                 .Select(_ => new NativeArray<AABB>(1, Allocator.Persistent))
                 .ToArray();
-
-            _jobHandlers = Enumerable.Repeat(new JobHandle(), JobsCount).ToArray();
         }
 
         public void Dispose()
@@ -178,7 +173,9 @@ namespace Game.Systems.RTree
             if (filter.IsEmpty())
                 return;
 
-            var entitiesCount = filter.GetEntitiesCount();
+            var entitiesCount = EntriesCap < MinEntries
+                ? filter.GetEntitiesCount()
+                : math.min(filter.GetEntitiesCount(), EntriesCap);
 
             Profiling.RTreeNativeArrayFill.Begin();
             if (_entriesNativeList.Length < entitiesCount)
@@ -193,51 +190,6 @@ namespace Game.Systems.RTree
             }
 
             Profiling.RTreeNativeArrayFill.End();
-
-            /*Profiling.RTreeCalculateAabbJob.Begin();
-            var job = new CalculateTotalAABBJob
-            {
-                Entries = _entriesNativeList,
-                ResultAABB = _resultAabb
-            };
-            var jobHandle = job.Schedule();
-            jobHandle.Complete();
-            Profiling.RTreeCalculateAabbJob.End();
-
-            Profiling.RTreeCalculateAabbJobPar.Begin();
-            Profiling.RTreeAabbCalculate1.Begin();
-            var entriesPerJob = entitiesCount / JobsCount;
-            var extraEntriesCount = entitiesCount % JobsCount;
-
-            for (var jobIndex = 0; jobIndex < _jobHandlers.Length; jobIndex++)
-            {
-                var array = _entriesNativeList.AsArray();
-                var start = jobIndex * entriesPerJob;
-                var length = entriesPerJob + (jobIndex == JobsCount - 1 ? extraEntriesCount : 0);
-                var slice = array.Slice(start, length);
-                var j = new CalculateTotalAABBJobPar
-                {
-                    Entries = slice,
-                    ResultAABB = _results[jobIndex]
-                };
-
-                _jobHandlers[jobIndex] = j.Schedule();
-            }
-            Profiling.RTreeAabbCalculate1.End();
-
-            var totalAabb = AABB.Empty;
-            for (var jobIndex = 0; jobIndex < _jobHandlers.Length; jobIndex++)
-            {
-                ref var handler = ref _jobHandlers[jobIndex];
-                handler.Complete();
-                totalAabb = fix.AABBs_conjugate(totalAabb, _results[jobIndex][0]);
-            }
-            Profiling.RTreeCalculateAabbJobPar.End();
-
-            // var totalAabb = _resultAabb[0];
-            var subSize = (totalAabb.max - totalAabb.min) / new fix2(2);
-
-            var subAabb = new AABB(totalAabb.min / new fix2(2), totalAabb.max / new fix2(2));*/
 
             _nodesCountByLevel.Add(MaxEntries);
 

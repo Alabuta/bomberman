@@ -111,7 +111,7 @@ namespace Gizmos
 
                 default:
                     DrawParentNodeRect(node, color);
-                    DrawLeafEntries(node, color * new Color(1, 1, 1, 0.99f), subTreeIndex);
+                    DrawLeafEntries(node, color * new Color(1, 1, 1, 0.88f), subTreeIndex);
                     break;
             }
         }
