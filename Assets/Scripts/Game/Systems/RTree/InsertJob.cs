@@ -1,4 +1,5 @@
-﻿using Math.FixedPointMath;
+﻿using System.Linq.Expressions;
+using Math.FixedPointMath;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -296,7 +297,7 @@ namespace Game.Systems.RTree
                         node.EntriesStartIndex = _leafEntriesCounter;
                         _leafEntriesCounter += MaxEntries;
 
-                        for (var i = 1; i < MaxEntries; i++)
+                        for (var i = 1; i < MaxEntries; i++) // :TODO: try to make it vectorized
                             _currentThreadResultEntries[node.EntriesStartIndex + i] =
                                 TreeEntryTraits<RTreeLeafEntry>.InvalidEntry;
                     }
@@ -417,7 +418,7 @@ namespace Game.Systems.RTree
                 nodesContainer[newRootNodesStartIndex + 0] = newRootNodeA;
                 nodesContainer[newRootNodesStartIndex + 1] = newRootNodeB;
 
-                for (var i = 2; i < MaxEntries; i++)
+                for (var i = 2; i < MaxEntries; i++) // :TODO: try to make it vectorized
                     nodesContainer[newRootNodesStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
 
 #if ENABLE_ASSERTS
@@ -477,7 +478,7 @@ namespace Game.Systems.RTree
                 var invalidEntry = TreeEntryTraits<T>.InvalidEntry;
                 entriesEndIndex += MaxEntries;
 
-                for (var i = newNodeEntriesStartIndex + 1; i < entriesEndIndex; i++)
+                for (var i = newNodeEntriesStartIndex + 1; i < entriesEndIndex; i++) // :TODO: try to make it vectorized
                     entries[i] = invalidEntry;
 
                 (entries[startIndex], entries[indexA]) = (entries[indexA], entries[startIndex]);
@@ -485,7 +486,7 @@ namespace Game.Systems.RTree
                 splitNode.EntriesCount = 1;
                 splitNode.Aabb = GetAabb(in entries, startIndex);
 
-                for (var i = 1; i <= MaxEntries; i++)
+                for (var i = 1; i <= MaxEntries; i++) // :TODO: try to make it vectorized
                 {
                     if (startIndex + i == indexB)
                         continue;
@@ -511,10 +512,10 @@ namespace Game.Systems.RTree
                 while (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
                     FillNodes(ref entries, ref splitNode, ref newNode);
 
-                for (var i = splitNode.EntriesCount; i < MaxEntries; i++)
+                for (var i = splitNode.EntriesCount; i < MaxEntries; i++) // :TODO: try to make it vectorized
                     entries[splitNode.EntriesStartIndex + i] = invalidEntry;
 
-                for (var i = newNode.EntriesCount; i < MaxEntries; i++)
+                for (var i = newNode.EntriesCount; i < MaxEntries; i++) // :TODO: try to make it vectorized
                     entries[newNode.EntriesStartIndex + i] = invalidEntry;
 
 #if ENABLE_ASSERTS
@@ -548,7 +549,7 @@ namespace Game.Systems.RTree
                 int entriesEndIndex, in AABB newEntryAabb)
             {
                 var (nodeIndex, minArea) = (-1, fix.MaxValue);
-                for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                for (var i = entriesStartIndex; i < entriesEndIndex; i++) // :TODO: try to make it vectorized
                 {
                     var entry = nodeEntries[i];
                     if (entry.EntriesCount < MinEntries)
@@ -580,7 +581,8 @@ namespace Game.Systems.RTree
                 return nodeIndex;
             }
 
-            private static void FillNodes<T>(ref NativeArray<T> nodeEntries, ref RTreeNode splitNode, ref RTreeNode newNode)
+            private static void FillNodes<T>(ref NativeArray<T> nodeEntries, [NoAlias] ref RTreeNode splitNode,
+                [NoAlias] ref RTreeNode newNode)
                 where T : struct
             {
                 ref var sourceNode = ref splitNode.EntriesCount < MinEntries ? ref newNode : ref splitNode;
@@ -593,7 +595,7 @@ namespace Game.Systems.RTree
                 var sourceNodeAabb = AABB.Empty;
 
                 var (sourceEntryIndex, sourceEntryAabb, minArena) = (-1, AABB.Empty, fix.MaxValue);
-                for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++)
+                for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++) // :TODO: try to make it vectorized
                 {
                     var entryAabb = GetAabb(nodeEntries, i);
                     var conjugatedArea = GetConjugatedArea(in targetNode.Aabb, in entryAabb);
@@ -633,7 +635,7 @@ namespace Game.Systems.RTree
                 where T : struct
             {
                 var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
-                for (var i = startIndex; i < endIndex; i++)
+                for (var i = startIndex; i < endIndex; i++) // :TODO: try to make it vectorized
                 {
                     var aabbA = GetAabb(entries, i);
                     fix conjugatedArea;

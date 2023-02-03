@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Configs.Entity;
 using Game;
 using Game.Components;
+using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Tags;
 using Input;
@@ -245,6 +247,57 @@ namespace Level
                     go.SetActive(false);
             };
         }*/
+
+        private void OnEntityHealthChangedEvent(EcsEntity ecsEntity)
+        {
+            if (ecsEntity.Has<HealthComponent>())
+            {
+                ref var healthComponent = ref ecsEntity.Get<HealthComponent>();
+                if (healthComponent.IsAlive()) // :TODO: refactor
+                {
+                    if (ecsEntity.Has<EntityComponent>())
+                    {
+                        ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
+                        entityComponent.Controller.Kill();
+                    }
+
+                    if (ecsEntity.Has<MovementComponent>())
+                    {
+                        ref var transformComponent = ref ecsEntity.Get<MovementComponent>();
+                        transformComponent.Speed = fix.zero;
+                    }
+
+                    if (ecsEntity.Has<HeroTag>())
+                    {
+                        var (playerInput, _) = _playerInputs.FirstOrDefault(pi => pi.Value.HeroEntity == ecsEntity);
+
+                        if (playerInput != null)
+                            playerInput.OnInputActionEvent -= OnPlayerInputAction;
+                    }
+
+                    if (ecsEntity.Has<HasColliderTag>())
+                    {
+                        ecsEntity.Del<CircleColliderComponent>();
+                        ecsEntity.Del<BoxColliderComponent>();
+                        ecsEntity.Del<HasColliderTag>();
+                    }
+
+                    // DeathEvent?.Invoke(this); // :TODO:
+
+                    ecsEntity.Replace(new DeadTag());
+                }
+                else
+                {
+                    if (ecsEntity.Has<EntityComponent>())
+                    {
+                        ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
+                        entityComponent.Controller.TakeDamage();
+                    }
+
+                    // DamageEvent?.Invoke(this, damage); // :TODO:
+                }
+            }
+        }
 
         // :TODO: add an item pick up event handler
         // :TODO: add an entity death event handler

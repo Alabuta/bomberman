@@ -159,50 +159,6 @@ namespace Level
             _enemies.Add(enemy);
         }
 
-        private void OnEntityHealthChangedEvent(EcsEntity ecsEntity)
-        {
-            if (ecsEntity.Has<HealthComponent>())
-            {
-                ref var healthComponent = ref ecsEntity.Get<HealthComponent>();
-                if (healthComponent.IsAlive()) // :TODO: refactor
-                {
-                    if (ecsEntity.Has<EntityComponent>())
-                    {
-                        ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
-                        entityComponent.Controller.Kill();
-                    }
-
-                    if (ecsEntity.Has<MovementComponent>())
-                    {
-                        ref var transformComponent = ref ecsEntity.Get<MovementComponent>();
-                        transformComponent.Speed = fix.zero;
-                    }
-
-                    if (ecsEntity.Has<HeroTag>())
-                    {
-                        var (playerInput, _) = _playerInputs.FirstOrDefault(pi => pi.Value.HeroEntity == ecsEntity);
-
-                        if (playerInput != null)
-                            playerInput.OnInputActionEvent -= OnPlayerInputAction;
-                    }
-
-                    // DeathEvent?.Invoke(this); // :TODO:
-
-                    ecsEntity.Replace(new DeadTag());
-                }
-                else
-                {
-                    if (ecsEntity.Has<EntityComponent>())
-                    {
-                        ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
-                        entityComponent.Controller.TakeDamage();
-                    }
-
-                    // DamageEvent?.Invoke(this, damage); // :TODO:
-                }
-            }
-        }
-
         private void AttachPlayerInput(IPlayer player, IPlayerInput playerInput)
         {
             _playerInputs.Add(playerInput, player);

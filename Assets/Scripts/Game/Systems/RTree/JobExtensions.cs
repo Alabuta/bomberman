@@ -69,7 +69,7 @@ namespace Game.Systems.RTree
                 var resultEntriesContainerCapacity = readOnlyData.ResultEntriesContainerCapacity;
 
                 var nodesContainerStartIndex = jobIndex * readOnlyData.NodesContainerCapacity;
-                for (var i = 0; i < AabbRTree.MaxEntries; i++)
+                for (var i = 0; i < AabbRTree.MaxEntries; i++) // :TODO: try to make it vectorized
                     sharedWriteData.NodesContainer[nodesContainerStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
 
                 var currentThreadNodesEndIndices = sharedWriteData.NodesEndIndicesContainer
