@@ -44,6 +44,7 @@ namespace Game.Systems.RTree
 
         public NativeArray<int> NodesEndIndicesContainer;
 
+        [NativeDisableContainerSafetyRestriction]
         public NativeArray<int> RootNodesLevelIndices;
     }
 
@@ -80,7 +81,7 @@ namespace Game.Systems.RTree
 
                 _currentThreadNodesEndIndices = perWorkerData.CurrentThreadNodesEndIndices;
                 _currentThreadResultEntries = perWorkerData.CurrentThreadResultEntries;
-                _jobIndex = perWorkerData.JobIndex;
+                _jobIndex = perWorkerData.WorkerIndex;
 
                 var entriesEndIndex = entriesStartIndex + count;
                 entriesEndIndex = math.min(entriesEndIndex, ReadOnlyData.EntriesTotalCount);

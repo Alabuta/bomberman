@@ -138,7 +138,11 @@ namespace Game.Systems.RTree
 
             Assert.IsFalse(entitiesCount < MinEntries);
 
-            InitInsertJob(entitiesCount, JobsUtility.MaxJobThreadCount, EntriesScheduleBatch);
+#if !NO_WORK_STEALING_JOBS
+            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
+#else
+            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount, 1);
+#endif
             Assert.IsFalse(entitiesCount > _inputEntries.Length);
 
             Profiling.RTreeNativeArrayFill.Begin();

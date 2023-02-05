@@ -21,7 +21,7 @@ namespace Game.Systems.RTree
         public NativeArray<int> CurrentThreadNodesEndIndices;
         public NativeArray<RTreeLeafEntry> CurrentThreadResultEntries;
 
-        public int JobIndex;
+        public int WorkerIndex;
         public int LeafEntriesCounter;
     }
 
@@ -60,38 +60,38 @@ namespace Game.Systems.RTree
                 var readOnlyData = insertJobData.ReadOnlyData;
                 var sharedWriteData = insertJobData.SharedWriteData;
 
-                var jobIndex = sharedWriteData.CountersContainer[0].Add(1);
-                sharedWriteData.PerThreadWorkerIndices[workerThreadIndex] = jobIndex;
+                var workerIndex = sharedWriteData.CountersContainer[0].Add(1);
+                sharedWriteData.PerThreadWorkerIndices[workerThreadIndex] = workerIndex;
 
-                sharedWriteData.RootNodesLevelIndices[jobIndex] = 0;
+                sharedWriteData.RootNodesLevelIndices[workerIndex] = 0;
 
                 var treeMaxHeight = readOnlyData.TreeMaxHeight;
                 var resultEntriesContainerCapacity = readOnlyData.ResultEntriesContainerCapacity;
 
-                var nodesContainerStartIndex = jobIndex * readOnlyData.NodesContainerCapacity;
+                var nodesContainerStartIndex = workerIndex * readOnlyData.NodesContainerCapacity;
                 for (var i = 0; i < AabbRTree.MaxEntries; i++) // :TODO: try to make it vectorized
                     sharedWriteData.NodesContainer[nodesContainerStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
 
                 var currentThreadNodesEndIndices = sharedWriteData.NodesEndIndicesContainer
-                    .GetSubArray(jobIndex * treeMaxHeight, treeMaxHeight);
+                    .GetSubArray(workerIndex * treeMaxHeight, treeMaxHeight);
 
                 UnsafeUtility.MemClear(currentThreadNodesEndIndices.GetUnsafePtr(), currentThreadNodesEndIndices.Length);
-                currentThreadNodesEndIndices[sharedWriteData.RootNodesLevelIndices[jobIndex]] = AabbRTree.MaxEntries;
+                currentThreadNodesEndIndices[sharedWriteData.RootNodesLevelIndices[workerIndex]] = AabbRTree.MaxEntries;
 
                 var currentThreadResultEntries = sharedWriteData.ResultEntries
-                    .GetSubArray(jobIndex * resultEntriesContainerCapacity, resultEntriesContainerCapacity);
+                    .GetSubArray(workerIndex * resultEntriesContainerCapacity, resultEntriesContainerCapacity);
 
                 var perWorkerData = new PerWorkerData
                 {
                     CurrentThreadNodesEndIndices = currentThreadNodesEndIndices,
                     CurrentThreadResultEntries = currentThreadResultEntries,
-                    JobIndex = jobIndex,
+                    WorkerIndex = workerIndex,
                     LeafEntriesCounter = 0
                 };
 
                 var firstBatchIndex = -1;
 
-                while (JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out var startIndex, out var endIndex))
+                while (JobsUtility.GetWorkStealingRange(ref ranges, workerIndex, out var startIndex, out var endIndex))
                 {
                     var batchSize = endIndex - startIndex;
 
