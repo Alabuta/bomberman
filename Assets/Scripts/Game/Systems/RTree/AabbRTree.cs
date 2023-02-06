@@ -6,10 +6,8 @@ using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
-using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
@@ -54,7 +52,6 @@ namespace Game.Systems.RTree
         public int EntriesCount;
     }
 
-    [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
     public partial class AabbRTree : IRTree
     {
         internal const int MaxEntries = 4;
@@ -334,7 +331,6 @@ namespace Game.Systems.RTree
             };
         }
 
-        [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
         private static int CalculateSubTreeNodeLevelStartIndex(int maxEntries, int subTreeIndex, int nodeLevelIndex,
             int treeMaxHeight, int perWorkerNodesContainerCapacity)
         {
@@ -345,7 +341,6 @@ namespace Game.Systems.RTree
             return (int) index;
         }
 
-        [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
         private static int CalculateNodeLevelCapacity(int maxEntries, int treeMaxHeight, int nodeLevelIndex) =>
             (int) math.pow(maxEntries, treeMaxHeight - nodeLevelIndex);
 

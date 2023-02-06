@@ -1,9 +1,12 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq;
+using System.Linq.Expressions;
 using Math.FixedPointMath;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine.Assertions;
 
 namespace Game.Systems.RTree
 {
@@ -470,7 +473,7 @@ namespace Game.Systems.RTree
 
                 var newNode = new RTreeNode
                 {
-                    Aabb = indexB != endIndex ? GetAabb(entries, indexB) : newEntryAabb,
+                    Aabb = indexB != endIndex ? GetAabbUnsafe(in entries, indexB) : newEntryAabb,
 
                     EntriesStartIndex = entriesEndIndex,
                     EntriesCount = 1
@@ -485,7 +488,7 @@ namespace Game.Systems.RTree
                 (entries[startIndex], entries[indexA]) = (entries[indexA], entries[startIndex]);
 
                 splitNode.EntriesCount = 1;
-                splitNode.Aabb = GetAabb(in entries, startIndex);
+                splitNode.Aabb = GetAabbUnsafe(in entries, startIndex);
 
                 for (var i = 1; i <= MaxEntries; i++) // :TODO: try to make it vectorized
                 {
@@ -494,7 +497,7 @@ namespace Game.Systems.RTree
 
                     var isNewEntry = i == MaxEntries;
                     var entry = isNewEntry ? newEntry : entries[startIndex + i];
-                    var entityAabb = isNewEntry ? newEntryAabb : GetAabb(entries, startIndex + i);
+                    var entityAabb = isNewEntry ? newEntryAabb : GetAabbUnsafe(in entries, startIndex + i);
 
                     var conjugatedAabbA = fix.AABBs_conjugate(in splitNode.Aabb, in entityAabb);
                     var conjugatedAabbB = fix.AABBs_conjugate(in newNode.Aabb, in entityAabb);
@@ -582,7 +585,9 @@ namespace Game.Systems.RTree
                 return nodeIndex;
             }
 
-            private static void FillNodes<T>(ref NativeArray<T> nodeEntries, [NoAlias] ref RTreeNode splitNode,
+            private static void FillNodes<T>(
+                ref NativeArray<T> nodeEntries,
+                [NoAlias] ref RTreeNode splitNode,
                 [NoAlias] ref RTreeNode newNode)
                 where T : struct
             {
@@ -598,7 +603,7 @@ namespace Game.Systems.RTree
                 var (sourceEntryIndex, sourceEntryAabb, minArena) = (-1, AABB.Empty, fix.MaxValue);
                 for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++) // :TODO: try to make it vectorized
                 {
-                    var entryAabb = GetAabb(nodeEntries, i);
+                    var entryAabb = GetAabbUnsafe(in nodeEntries, i);
                     var conjugatedArea = GetConjugatedArea(in targetNode.Aabb, in entryAabb);
                     if (conjugatedArea > minArena)
                     {
@@ -638,12 +643,12 @@ namespace Game.Systems.RTree
                 var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
                 for (var i = startIndex; i < endIndex; i++) // :TODO: try to make it vectorized
                 {
-                    var aabbA = GetAabb(entries, i);
+                    var aabbA = GetAabbUnsafe(in entries, i);
                     fix conjugatedArea;
 
                     for (var j = i + 1; j < endIndex; j++)
                     {
-                        var aabbB = GetAabb(entries, j);
+                        var aabbB = GetAabbUnsafe(in entries, j);
                         if (aabbB == AABB.Empty)
                             continue;
 
@@ -704,7 +709,7 @@ namespace Game.Systems.RTree
             private static fix GetConjugatedArea(in AABB aabbA, in AABB aabbB) =>
                 fix.AABB_area(fix.AABBs_conjugate(in aabbA, in aabbB));
 
-            private static unsafe AABB GetAabb<T>(in NativeArray<T> entries, int index) where T : struct =>
+            private static unsafe AABB GetAabbUnsafe<T>(in NativeArray<T> entries, int index) where T : struct =>
                 UnsafeUtility.ReadArrayElementWithStride<AABB>(entries.GetUnsafeReadOnlyPtr(), index,
                     UnsafeUtility.SizeOf<T>());
         }
