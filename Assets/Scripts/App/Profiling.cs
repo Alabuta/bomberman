@@ -25,6 +25,9 @@ namespace App
         public static readonly ProfilerMarker RTreeSplitNode = new(nameof(RTreeSplitNode));
         public static readonly ProfilerMarker RTreeLeafNodesUpdate = new(nameof(RTreeLeafNodesUpdate));
         public static readonly ProfilerMarker RTreeNodesUpdate = new(nameof(RTreeNodesUpdate));
-        public static readonly ProfilerMarker RTreeA = new(nameof(RTreeA));
+        public static readonly ProfilerMarker RTreeGetNodeIndexToInsert = new(nameof(RTreeGetNodeIndexToInsert));
+        public static readonly ProfilerMarker RTreeFindLargestPair = new(nameof(RTreeFindLargestPair));
+        public static readonly ProfilerMarker RTreeFillNodes = new(nameof(RTreeFillNodes));
+        public static readonly ProfilerMarker RTreeIsSecondNodeTarget = new(nameof(RTreeIsSecondNodeTarget));
     }
 }

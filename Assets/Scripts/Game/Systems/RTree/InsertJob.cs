@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Linq.Expressions;
+using App;
 using Math.FixedPointMath;
 using Unity.Burst;
 using Unity.Collections;
@@ -433,8 +434,14 @@ namespace Game.Systems.RTree
 #endif
             }
 
-            private static RTreeNode SplitNode<T>(ref RTreeNode splitNode, ref NativeArray<T> entries,
-                ref int entriesEndIndex, in T newEntry, in AABB newEntryAabb, bool isRootLevel)
+            private static RTreeNode SplitNode<T>(
+                ref RTreeNode splitNode,
+                ref NativeArray<T> entries,
+                ref int entriesEndIndex,
+                in T newEntry,
+                in AABB newEntryAabb,
+                bool isRootLevel
+            )
                 where T : struct
             {
 #if ENABLE_PROFILING
@@ -540,7 +547,9 @@ namespace Game.Systems.RTree
                 return newNode;
             }
 
-            private static int GetNodeIndexToInsert(in NativeArray<RTreeNode> nodeEntries, in RTreeNode parentNode,
+            private static int GetNodeIndexToInsert(
+                in NativeArray<RTreeNode> nodeEntries,
+                in RTreeNode parentNode,
                 in AABB newEntryAabb)
             {
                 var entriesStartIndex = parentNode.EntriesStartIndex;
@@ -549,9 +558,15 @@ namespace Game.Systems.RTree
                 return GetNodeIndexToInsert(in nodeEntries, entriesStartIndex, entriesEndIndex, in newEntryAabb);
             }
 
-            private static int GetNodeIndexToInsert(in NativeArray<RTreeNode> nodeEntries, int entriesStartIndex,
-                int entriesEndIndex, in AABB newEntryAabb)
+            private static int GetNodeIndexToInsert(
+                in NativeArray<RTreeNode> nodeEntries,
+                int entriesStartIndex,
+                int entriesEndIndex,
+                in AABB newEntryAabb)
             {
+#if ENABLE_PROFILING
+                using var _ = Profiling.RTreeGetNodeIndexToInsert.Auto();
+#endif
                 var (nodeIndex, minArea) = (-1, fix.MaxValue);
                 for (var i = entriesStartIndex; i < entriesEndIndex; i++) // :TODO: try to make it vectorized
                 {
@@ -591,6 +606,9 @@ namespace Game.Systems.RTree
                 [NoAlias] ref RTreeNode newNode)
                 where T : struct
             {
+#if ENABLE_PROFILING
+                using var _ = Profiling.RTreeFillNodes.Auto();
+#endif
                 ref var sourceNode = ref splitNode.EntriesCount < MinEntries ? ref newNode : ref splitNode;
                 ref var targetNode = ref splitNode.EntriesCount < MinEntries ? ref splitNode : ref newNode;
 
@@ -640,6 +658,9 @@ namespace Game.Systems.RTree
                 int endIndex)
                 where T : struct
             {
+#if ENABLE_PROFILING
+                using var _ = Profiling.RTreeFindLargestPair.Auto();
+#endif
                 var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
                 for (var i = startIndex; i < endIndex; i++) // :TODO: try to make it vectorized
                 {
@@ -675,6 +696,9 @@ namespace Game.Systems.RTree
             private static bool IsSecondNodeTarget(in AABB nodeAabbA, in AABB nodeAabbB, in AABB conjugatedAabbA,
                 in AABB conjugatedAabbB)
             {
+#if ENABLE_PROFILING
+                using var _ = Profiling.RTreeIsSecondNodeTarget.Auto();
+#endif
                 var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(in nodeAabbA, in conjugatedAabbA);
                 var (areaIncreaseB, deltaB) = GetAreaAndSizeIncrease(in nodeAabbB, in conjugatedAabbB);
 
