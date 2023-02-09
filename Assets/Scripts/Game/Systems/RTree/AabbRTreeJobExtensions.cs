@@ -10,7 +10,7 @@ using UnityEngine.Scripting;
 
 namespace Game.Systems.RTree
 {
-    [JobProducerType(typeof(JobExtensions.InsertJobProducer<>))]
+    [JobProducerType(typeof(AabbRTreeJobExtensions.InsertJobProducer<>))]
     public interface IInsertJob
     {
         void Execute(ref PerWorkerData perWorkerData, int startIndex, int count);
@@ -25,7 +25,7 @@ namespace Game.Systems.RTree
         public int LeafEntriesCounter;
     }
 
-    public static class JobExtensions
+    public static class AabbRTreeJobExtensions
     {
         internal struct InsertJobProducer<T> where T : struct, IInsertJob
         {

@@ -714,6 +714,7 @@ namespace Game.Systems.RTree
                 return true;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private int GetNodeLevelStartIndex(int nodeLevelIndex) =>
                 CalculateSubTreeNodeLevelStartIndex(MaxEntries, _jobIndex, nodeLevelIndex, ReadOnlyData.TreeMaxHeight,
                     ReadOnlyData.NodesContainerCapacity);
