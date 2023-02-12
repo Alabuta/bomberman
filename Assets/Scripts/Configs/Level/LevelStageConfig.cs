@@ -14,9 +14,9 @@ namespace Configs.Level
 
         public int LevelStageTimer = 4 * 60;
 
-        [Range(13, 65)]
+        [Range(13, 99)]
         public int ColumnsNumber = 13;
-        [Range(11, 63)]
+        [Range(11, 99)]
         public int RowsNumber = 11;
 
         [Range(0, 100)]

@@ -8,6 +8,7 @@ using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
@@ -102,7 +103,11 @@ namespace Game.Systems.RTree
             Assert.AreEqual(MaxEntries / 2, MinEntries);
             Assert.AreEqual(MinEntries * 2, MaxEntries);
 
-            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount, EntriesScheduleBatch);
+#if NO_WORK_STEALING_JOBS
+            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
+#else
+            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount, 1);
+#endif
         }
 
         public void Dispose()

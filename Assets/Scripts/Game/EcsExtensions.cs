@@ -146,7 +146,7 @@ namespace Game
                             entityPositionB, colliderComponentB.Offset, colliderComponentB.Extent,
                             out intersectionPoint),
 
-                    BoxColliderComponent _ =>
+                    BoxColliderComponent =>
                         throw new NotImplementedException(), // :TODO: implement
 
                     _ => false

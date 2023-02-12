@@ -4,11 +4,10 @@ using System.Linq;
 using App;
 using Game.Components;
 using Game.Components.Tags;
-using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 
-namespace Game.Systems
+namespace Game.Systems.RTree
 {
     public sealed class AabbRTreeFirstImpl : IRTree
     {

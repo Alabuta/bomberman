@@ -1,6 +1,5 @@
 ﻿using System.Linq;
-using System.Linq.Expressions;
-using App;
+using System.Runtime.CompilerServices;
 using Math.FixedPointMath;
 using Unity.Burst;
 using Unity.Collections;
@@ -124,11 +123,6 @@ namespace Game.Systems.RTree
                     Profiling.RTreeInsertJobInitWorker.End();
 #endif
                 }
-
-/*#if ENABLE_ASSERTS
-                Assert.IsFalse(count > EntriesScheduleBatch);
-                Assert.IsFalse(jobIndex > WorkersCount);
-#endif*/
 
                 var treeMaxHeight = ReadOnlyData.TreeMaxHeight;
                 var resultEntriesContainerCapacity = ReadOnlyData.ResultEntriesContainerCapacity;
@@ -266,14 +260,23 @@ namespace Game.Systems.RTree
                 }
 
 #if ENABLE_ASSERTS
-                Assert.IsTrue(
-                    nodesContainer
-                        .GetSubArray(startIndex, math.max(rootNodesCount, targetNodeIndex - startIndex + 1))
-                        .All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
+                CheckInsert(nodesContainer, startIndex, rootNodesCount, targetNodeIndex);
 #endif
 
                 GrowTree(in extraNode);
             }
+
+#if ENABLE_ASSERTS
+            [BurstDiscard]
+            private static void CheckInsert(NativeArray<RTreeNode> nodesContainer, int startIndex, int rootNodesCount,
+                int targetNodeIndex)
+            {
+                Assert.IsTrue(
+                    nodesContainer
+                        .GetSubArray(startIndex, math.max(rootNodesCount, targetNodeIndex - startIndex + 1))
+                        .All(n => n.Aabb != AABB.Empty && n.EntriesStartIndex != -1 && n.EntriesCount > 0));
+            }
+#endif
 
             private RTreeNode ChooseLeaf(ref RTreeNode node, int nodeLevelIndex, in RTreeLeafEntry entry)
             {
@@ -290,8 +293,13 @@ namespace Game.Systems.RTree
                         Assert.IsFalse(_leafEntriesCounter > _currentThreadResultEntries.Length);
 #endif
 
-                        return SplitNode(ref node, ref _currentThreadResultEntries, ref _leafEntriesCounter, in entry,
-                            in entry.Aabb, false);
+                        return SplitNode(
+                            ref node,
+                            ref _currentThreadResultEntries,
+                            ref _leafEntriesCounter,
+                            in entry,
+                            in entry.Aabb,
+                            false);
                     }
 
                     if (node.EntriesStartIndex == -1)
@@ -302,7 +310,7 @@ namespace Game.Systems.RTree
                         node.EntriesStartIndex = _leafEntriesCounter;
                         _leafEntriesCounter += MaxEntries;
 
-                        for (var i = 1; i < MaxEntries; i++) // :TODO: try to make it vectorized
+                        for (var i = 1; i < MaxEntries; i++)
                             _currentThreadResultEntries[node.EntriesStartIndex + i] =
                                 TreeEntryTraits<RTreeLeafEntry>.InvalidEntry;
                     }
@@ -329,7 +337,7 @@ namespace Game.Systems.RTree
                 Assert.IsTrue(entriesStartIndex >= nodeLevelsRangeStartIndex);
 
                 var nodeLevelsRangeCapacity =
- CalculateNodeLevelCapacity(MaxEntries, ReadOnlyData.TreeMaxHeight, nodeLevelIndex - 1);
+                    CalculateNodeLevelCapacity(MaxEntries, ReadOnlyData.TreeMaxHeight, nodeLevelIndex - 1);
                 var entriesEndIndex = entriesStartIndex + entriesCount;
                 Assert.IsTrue(entriesEndIndex < nodeLevelsRangeStartIndex + nodeLevelsRangeCapacity);
                 Assert.IsTrue(entriesEndIndex <= nodeLevelsRangeStartIndex + _currentThreadNodesEndIndices[nodeLevelIndex - 1]);
@@ -367,8 +375,13 @@ namespace Game.Systems.RTree
                     Assert.IsFalse(_leafEntriesCounter > _currentThreadResultEntries.Length);
 #endif
 
-                    var extraNode = SplitNode(ref node, ref nodesContainer, ref childNodesLevelEndIndex, in extraChildNode,
-                        in extraChildNode.Aabb, nodeLevelIndex == RootNodesLevelIndex);
+                    var extraNode = SplitNode(
+                        ref node,
+                        ref nodesContainer,
+                        ref childNodesLevelEndIndex,
+                        in extraChildNode,
+                        in extraChildNode.Aabb,
+                        nodeLevelIndex == RootNodesLevelIndex);
                     _currentThreadNodesEndIndices[childNodeLevelIndex] = childNodesLevelEndIndex - childNodesLevelStartIndex;
 
                     return extraNode;
@@ -410,8 +423,13 @@ namespace Game.Systems.RTree
                 ref var nodesContainer = ref SharedWriteData.NodesContainer;
 
                 var rootNodesLevelEndIndex = rootNodesStartIndex + rootNodesCount;
-                var newRootNodeB = SplitNode(ref newRootNodeA, ref nodesContainer, ref rootNodesLevelEndIndex, in newEntry,
-                    in newEntry.Aabb, true);
+                var newRootNodeB = SplitNode(
+                    ref newRootNodeA,
+                    ref nodesContainer,
+                    ref rootNodesLevelEndIndex,
+                    in newEntry,
+                    in newEntry.Aabb,
+                    true);
 
                 _currentThreadNodesEndIndices[RootNodesLevelIndex] = rootNodesLevelEndIndex - rootNodesStartIndex;
                 ++SharedWriteData.RootNodesLevelIndices[_jobIndex];
@@ -423,14 +441,23 @@ namespace Game.Systems.RTree
                 nodesContainer[newRootNodesStartIndex + 0] = newRootNodeA;
                 nodesContainer[newRootNodesStartIndex + 1] = newRootNodeB;
 
-                for (var i = 2; i < MaxEntries; i++) // :TODO: try to make it vectorized
+                for (var i = 2; i < MaxEntries; i++)
                     nodesContainer[newRootNodesStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
 
 #if ENABLE_ASSERTS
+                CheckGrowTree(nodesContainer, newRootNodesStartIndex);
+#endif
+            }
+
+#if ENABLE_ASSERTS
+            [BurstDiscard]
+            private static void CheckGrowTree(NativeArray<RTreeNode> nodesContainer, int newRootNodesStartIndex)
+            {
                 var newRootNodes = nodesContainer.GetSubArray(newRootNodesStartIndex, MaxEntries).ToArray();
                 Assert.IsTrue(newRootNodes.Count(n => n.Aabb != AABB.Empty) > 0);
                 Assert.IsTrue(newRootNodes.Count(n => n.EntriesStartIndex != -1) > 0);
                 Assert.IsTrue(newRootNodes.Count(n => n.EntriesCount > 0) > 0);
+            }
 #endif
             }
 
@@ -467,14 +494,6 @@ namespace Game.Systems.RTree
 #if ENABLE_ASSERTS
                 Assert.IsTrue(indexA > -1 && indexB > -1);
 #endif
-
-                // NativeSlice<>
-                // UnsafeUtility.As<T, AABB>(ref newEntry)
-                // UnsafeUtility.AsRef<T, AABB>(ref newEntry)
-                // var nodeEntriesPtr = entries.GetUnsafeReadOnlyPtr();
-                // var aabb = UnsafeUtility.ReadArrayElementWithStride<AABB>(nodeEntriesPtr, 0, UnsafeUtility.SizeOf<T>());
-                // var aabb = entries.ReinterpretLoad<AABB>(0);
-
                 var newNodeEntriesStartIndex = entriesEndIndex;
                 entries[newNodeEntriesStartIndex] = indexB != endIndex ? entries[indexB] : newEntry;
 
@@ -489,7 +508,7 @@ namespace Game.Systems.RTree
                 var invalidEntry = TreeEntryTraits<T>.InvalidEntry;
                 entriesEndIndex += MaxEntries;
 
-                for (var i = newNodeEntriesStartIndex + 1; i < entriesEndIndex; i++) // :TODO: try to make it vectorized
+                for (var i = newNodeEntriesStartIndex + 1; i < entriesEndIndex; i++)
                     entries[i] = invalidEntry;
 
                 (entries[startIndex], entries[indexA]) = (entries[indexA], entries[startIndex]);
@@ -497,7 +516,7 @@ namespace Game.Systems.RTree
                 splitNode.EntriesCount = 1;
                 splitNode.Aabb = GetAabbUnsafe(in entries, startIndex);
 
-                for (var i = 1; i <= MaxEntries; i++) // :TODO: try to make it vectorized
+                for (var i = 1; i <= MaxEntries; i++)
                 {
                     if (startIndex + i == indexB)
                         continue;
@@ -506,8 +525,8 @@ namespace Game.Systems.RTree
                     var entry = isNewEntry ? newEntry : entries[startIndex + i];
                     var entityAabb = isNewEntry ? newEntryAabb : GetAabbUnsafe(in entries, startIndex + i);
 
-                    var conjugatedAabbA = fix.AABBs_conjugate(in splitNode.Aabb, in entityAabb);
-                    var conjugatedAabbB = fix.AABBs_conjugate(in newNode.Aabb, in entityAabb);
+                    var conjugatedAabbA = fix.AABBs_conjugate(in entityAabb, in splitNode.Aabb);
+                    var conjugatedAabbB = fix.AABBs_conjugate(in entityAabb, in newNode.Aabb);
 
                     var isNewNodeTarget =
                         IsSecondNodeTarget(in splitNode.Aabb, in newNode.Aabb, in conjugatedAabbA, in conjugatedAabbB);
@@ -523,23 +542,13 @@ namespace Game.Systems.RTree
                 while (splitNode.EntriesCount < MinEntries || newNode.EntriesCount < MinEntries)
                     FillNodes(ref entries, ref splitNode, ref newNode);
 
-                for (var i = splitNode.EntriesCount; i < MaxEntries; i++) // :TODO: try to make it vectorized
+                for (var i = splitNode.EntriesCount; i < MaxEntries; i++)
                     entries[splitNode.EntriesStartIndex + i] = invalidEntry;
 
-                for (var i = newNode.EntriesCount; i < MaxEntries; i++) // :TODO: try to make it vectorized
+                for (var i = newNode.EntriesCount; i < MaxEntries; i++)
                     entries[newNode.EntriesStartIndex + i] = invalidEntry;
 
 #if ENABLE_ASSERTS
-                /*var invalidChildNodesCount = 0;
-                for (var i = 0; i < splitNode.EntriesCount; i++)
-                    invalidChildNodesCount += GetAabb(entries, i) != AABB.Empty ? 1 : 0;
-                Assert.IsTrue(isRootLevel || invalidChildNodesCount >= MinEntries);
-
-                invalidChildNodesCount = 0;
-                for (var i = 0; i < newNode.EntriesCount; i++)
-                    invalidChildNodesCount += GetAabb(entries, i) != AABB.Empty ? 1 : 0;
-                Assert.IsTrue(isRootLevel || invalidChildNodesCount >= MinEntries);*/
-
                 Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
                 Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
 #endif
@@ -568,7 +577,7 @@ namespace Game.Systems.RTree
                 using var _ = Profiling.RTreeGetNodeIndexToInsert.Auto();
 #endif
                 var (nodeIndex, minArea) = (-1, fix.MaxValue);
-                for (var i = entriesStartIndex; i < entriesEndIndex; i++) // :TODO: try to make it vectorized
+                for (var i = entriesStartIndex; i < entriesEndIndex; i++)
                 {
                     var entry = nodeEntries[i];
                     if (entry.EntriesCount < MinEntries)
@@ -619,7 +628,7 @@ namespace Game.Systems.RTree
                 var sourceNodeAabb = AABB.Empty;
 
                 var (sourceEntryIndex, sourceEntryAabb, minArena) = (-1, AABB.Empty, fix.MaxValue);
-                for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++) // :TODO: try to make it vectorized
+                for (var i = sourceNodeStartIndex; i < sourceNodeEndIndex; i++)
                 {
                     var entryAabb = GetAabbUnsafe(in nodeEntries, i);
                     var conjugatedArea = GetConjugatedArea(in targetNode.Aabb, in entryAabb);
@@ -662,7 +671,7 @@ namespace Game.Systems.RTree
                 using var _ = Profiling.RTreeFindLargestPair.Auto();
 #endif
                 var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
-                for (var i = startIndex; i < endIndex; i++) // :TODO: try to make it vectorized
+                for (var i = startIndex; i < endIndex; i++)
                 {
                     var aabbA = GetAabbUnsafe(in entries, i);
                     fix conjugatedArea;
@@ -693,7 +702,10 @@ namespace Game.Systems.RTree
                 return (indexA, indexB);
             }
 
-            private static bool IsSecondNodeTarget(in AABB nodeAabbA, in AABB nodeAabbB, in AABB conjugatedAabbA,
+            private static bool IsSecondNodeTarget(
+                in AABB nodeAabbA,
+                in AABB nodeAabbB,
+                in AABB conjugatedAabbA,
                 in AABB conjugatedAabbB)
             {
 #if ENABLE_PROFILING
