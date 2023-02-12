@@ -8,6 +8,7 @@ using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using UnityEngine.Scripting;
 
+#if !NO_WORK_STEALING_JOBS
 namespace Game.Systems.RTree
 {
     [JobProducerType(typeof(AabbRTreeJobExtensions.InsertJobProducer<>))]
@@ -18,11 +19,9 @@ namespace Game.Systems.RTree
 
     public struct PerWorkerData
     {
+        public int WorkerIndex;
         public NativeArray<int> CurrentThreadNodesEndIndices;
         public NativeArray<RTreeLeafEntry> CurrentThreadResultEntries;
-
-        public int WorkerIndex;
-        public int LeafEntriesCounter;
     }
 
     public static class AabbRTreeJobExtensions
@@ -69,7 +68,7 @@ namespace Game.Systems.RTree
                 var resultEntriesContainerCapacity = readOnlyData.ResultEntriesContainerCapacity;
 
                 var nodesContainerStartIndex = workerIndex * readOnlyData.NodesContainerCapacity;
-                for (var i = 0; i < AabbRTree.MaxEntries; i++) // :TODO: try to make it vectorized
+                for (var i = 0; i < AabbRTree.MaxEntries; i++)
                     sharedWriteData.NodesContainer[nodesContainerStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
 
                 var currentThreadNodesEndIndices = sharedWriteData.NodesEndIndicesContainer
@@ -83,10 +82,9 @@ namespace Game.Systems.RTree
 
                 var perWorkerData = new PerWorkerData
                 {
-                    CurrentThreadNodesEndIndices = currentThreadNodesEndIndices,
-                    CurrentThreadResultEntries = currentThreadResultEntries,
                     WorkerIndex = workerIndex,
-                    LeafEntriesCounter = 0
+                    CurrentThreadNodesEndIndices = currentThreadNodesEndIndices,
+                    CurrentThreadResultEntries = currentThreadResultEntries
                 };
 
                 var firstBatchIndex = -1;
@@ -108,9 +106,8 @@ namespace Game.Systems.RTree
                     jobData.Execute(ref perWorkerData, startIndex, batchSize);
 
                     // Preventing work stealing
-                    // :TODO: change to work stealing logic
-                    /*if (endIndex - firstBatchIndex == insertJobData.ReadOnlyData.PerWorkerEntriesCount)
-                        break;*/
+                    if (endIndex - firstBatchIndex >= insertJobData.ReadOnlyData.PerWorkerEntriesCount)
+                        break;
                 }
 
                 sharedWriteData.PerThreadWorkerIndices[workerThreadIndex] = -1;
@@ -161,3 +158,4 @@ namespace Game.Systems.RTree
         }
     }
 }
+#endif

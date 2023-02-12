@@ -1,12 +1,15 @@
-﻿using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Math.FixedPointMath;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
+
+#if ENABLE_RTREE_ASSERTS
+using System.Linq;
 using UnityEngine.Assertions;
+#endif
 
 namespace Game.Systems.RTree
 {
@@ -33,12 +36,14 @@ namespace Game.Systems.RTree
 
     public struct InsertJobSharedWriteData
     {
+#if !NO_WORK_STEALING_JOBS
         [NativeDisableContainerSafetyRestriction]
         [NativeDisableUnsafePtrRestriction]
         public NativeArray<UnsafeAtomicCounter32> CountersContainer;
 
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<int> PerThreadWorkerIndices;
+#endif
 
         public NativeArray<RTreeLeafEntry> ResultEntries;
 
@@ -53,8 +58,15 @@ namespace Game.Systems.RTree
 
     public partial class AabbRTree
     {
+#if USE_BURST_FOR_RTREE_JOBS
         [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
-        public struct InsertJob : IInsertJob
+#endif
+        public struct InsertJob :
+#if NO_WORK_STEALING_JOBS
+            IJobParallelFor
+#else
+            IInsertJob
+#endif
         {
             [ReadOnly]
             public InsertJobReadOnlyData ReadOnlyData;
@@ -76,9 +88,51 @@ namespace Game.Systems.RTree
 
             private int RootNodesLevelIndex => SharedWriteData.RootNodesLevelIndices[_jobIndex];
 
+#if NO_WORK_STEALING_JOBS
+            public void Execute(int jobIndex)
+            {
+#if ENABLE_RTREE_PROFILING
+                using var _ = Profiling.RTreeInsertJob.Auto();
+#endif
+
+                _jobIndex = jobIndex;
+                _leafEntriesCounter = 0;
+                SharedWriteData.RootNodesLevelIndices[jobIndex] = 0;
+
+                var treeMaxHeight = ReadOnlyData.TreeMaxHeight;
+                var resultEntriesContainerCapacity = ReadOnlyData.ResultEntriesContainerCapacity;
+
+                _currentThreadNodesEndIndices = SharedWriteData.NodesEndIndicesContainer
+                    .GetSubArray(jobIndex * treeMaxHeight, treeMaxHeight);
+
+                _currentThreadNodesEndIndices[RootNodesLevelIndex] = MaxEntries;
+                for (var i = 1; i < _currentThreadNodesEndIndices.Length; i++)
+                    _currentThreadNodesEndIndices[i] = 0;
+
+                _currentThreadResultEntries = SharedWriteData.ResultEntries
+                    .GetSubArray(jobIndex * resultEntriesContainerCapacity, resultEntriesContainerCapacity);
+
+                var nodesContainerStartIndex = jobIndex * ReadOnlyData.NodesContainerCapacity;
+                for (var i = 0; i < MaxEntries; i++)
+                    SharedWriteData.NodesContainer[nodesContainerStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
+
+                var entriesStartIndex = jobIndex * ReadOnlyData.PerWorkerEntriesCount;
+                var entriesEndIndex = entriesStartIndex + ReadOnlyData.PerWorkerEntriesCount;
+                entriesEndIndex = math.min(entriesEndIndex, ReadOnlyData.EntriesTotalCount);
+
+#if ENABLE_RTREE_ASSERTS
+                Assert.IsFalse(entriesEndIndex - entriesStartIndex > ReadOnlyData.PerWorkerEntriesCount);
+                Assert.IsFalse(entriesEndIndex > ReadOnlyData.EntriesTotalCount);
+                Assert.IsFalse(entriesEndIndex > ReadOnlyData.InputEntries.Length);
+#endif
+
+                for (var entryIndex = entriesStartIndex; entryIndex < entriesEndIndex; entryIndex++)
+                    Insert(entryIndex);
+            }
+#else
             public void Execute(ref PerWorkerData perWorkerData, int entriesStartIndex, int count)
             {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var _ = Profiling.RTreeInsertJob.Auto();
 #endif
 
@@ -89,7 +143,7 @@ namespace Game.Systems.RTree
                 var entriesEndIndex = entriesStartIndex + count;
                 entriesEndIndex = math.min(entriesEndIndex, ReadOnlyData.EntriesTotalCount);
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsFalse(entriesEndIndex - entriesStartIndex > ReadOnlyData.PerWorkerEntriesCount);
                 Assert.IsFalse(entriesEndIndex > ReadOnlyData.EntriesTotalCount);
                 Assert.IsFalse(entriesEndIndex > ReadOnlyData.InputEntries.Length);
@@ -97,21 +151,7 @@ namespace Game.Systems.RTree
 
                 for (var entryIndex = entriesStartIndex; entryIndex < entriesEndIndex; entryIndex++)
                     Insert(entryIndex);
-
-                perWorkerData.LeafEntriesCounter += _leafEntriesCounter;
             }
-
-            public void Execute(int entriesStartIndex, int count)
-            {
-#if ENABLE_PROFILING
-                using var _ = Profiling.RTreeInsertJob.Auto();
-#endif
-                var jobIndex = SharedWriteData.PerThreadWorkerIndices[_workerThreadIndex];
-                var isWorkerInitialized = jobIndex != -1;
-                if (!isWorkerInitialized)
-                {
-#if ENABLE_PROFILING
-                    Profiling.RTreeInsertJobInitWorker.Begin();
 #endif
 
                     jobIndex = SharedWriteData.CountersContainer[0].Add(1);
@@ -207,16 +247,16 @@ namespace Game.Systems.RTree
 
             private void Insert(int entryIndex)
             {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var _ = Profiling.RTreeInsertEntry.Auto();
 #endif
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsTrue(RootNodesLevelIndex > -1);
 #endif
                 var startIndex = GetNodeLevelStartIndex(RootNodesLevelIndex);
                 var rootNodesCount = _currentThreadNodesEndIndices[RootNodesLevelIndex];
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.AreEqual(MaxEntries, rootNodesCount);
 #endif
 
@@ -225,13 +265,13 @@ namespace Game.Systems.RTree
                 ref var nodesContainer = ref SharedWriteData.NodesContainer;
                 var targetNodeIndex = GetNodeIndexToInsert(in nodesContainer, startIndex, startIndex + MaxEntries,
                     in entry.Aabb);
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsTrue(targetNodeIndex > -1);
 #endif
 
                 var targetNode = nodesContainer[targetNodeIndex];
                 var extraNode = ChooseLeaf(ref targetNode, RootNodesLevelIndex, in entry);
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.AreNotEqual(targetNode.Aabb, AABB.Empty);
                 Assert.AreNotEqual(targetNode.EntriesCount, 0);
                 Assert.AreNotEqual(targetNode.EntriesStartIndex, -1);
@@ -242,7 +282,7 @@ namespace Game.Systems.RTree
                 if (extraNode.Aabb == TreeEntryTraits<RTreeNode>.InvalidEntry.Aabb)
                     return;
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.AreNotEqual(extraNode.Aabb, AABB.Empty);
                 Assert.AreNotEqual(extraNode.EntriesCount, 0);
                 Assert.AreNotEqual(extraNode.EntriesStartIndex, -1);
@@ -259,14 +299,14 @@ namespace Game.Systems.RTree
                     return;
                 }
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 CheckInsert(nodesContainer, startIndex, rootNodesCount, targetNodeIndex);
 #endif
 
                 GrowTree(in extraNode);
             }
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
             [BurstDiscard]
             private static void CheckInsert(NativeArray<RTreeNode> nodesContainer, int startIndex, int rootNodesCount,
                 int targetNodeIndex)
@@ -283,13 +323,13 @@ namespace Game.Systems.RTree
                 var isLeafLevel = nodeLevelIndex == 0;
                 if (isLeafLevel)
                 {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                     using var _ = Profiling.RTreeLeafNodesUpdate.Auto();
 #endif
 
                     if (node.EntriesCount == MaxEntries)
                     {
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                         Assert.IsFalse(_leafEntriesCounter > _currentThreadResultEntries.Length);
 #endif
 
@@ -304,7 +344,7 @@ namespace Game.Systems.RTree
 
                     if (node.EntriesStartIndex == -1)
                     {
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                         Assert.AreEqual(0, node.EntriesCount);
 #endif
                         node.EntriesStartIndex = _leafEntriesCounter;
@@ -323,13 +363,13 @@ namespace Game.Systems.RTree
                     return TreeEntryTraits<RTreeNode>.InvalidEntry;
                 }
 
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var __ = Profiling.RTreeNodesUpdate.Auto();
 #endif
 
                 var entriesCount = node.EntriesCount;
                 var entriesStartIndex = node.EntriesStartIndex;
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsTrue(entriesCount is >= MinEntries and <= MaxEntries);
                 Assert.IsTrue(entriesStartIndex > -1);
 
@@ -346,7 +386,7 @@ namespace Game.Systems.RTree
 
                 var childNodeLevelIndex = nodeLevelIndex - 1;
                 var childNodeIndex = GetNodeIndexToInsert(in nodesContainer, in node, in entry.Aabb);
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsTrue(childNodeIndex >= entriesStartIndex);
                 Assert.IsTrue(childNodeIndex < entriesStartIndex + entriesCount);
 #endif
@@ -359,7 +399,7 @@ namespace Game.Systems.RTree
                 if (extraChildNode.Aabb == TreeEntryTraits<RTreeNode>.InvalidEntry.Aabb)
                 {
                     node.Aabb = fix.AABBs_conjugate(in node.Aabb, in entry.Aabb);
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                     Assert.IsFalse(targetChildNode.EntriesStartIndex < 0);
                     Assert.IsTrue(targetChildNode.EntriesCount is >= MinEntries and <= MaxEntries);
 #endif
@@ -371,7 +411,7 @@ namespace Game.Systems.RTree
                     var childNodesLevelStartIndex = GetNodeLevelStartIndex(nodeLevelIndex - 1);
                     var childNodesLevelEndIndex =
                         childNodesLevelStartIndex + _currentThreadNodesEndIndices[childNodeLevelIndex];
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                     Assert.IsFalse(_leafEntriesCounter > _currentThreadResultEntries.Length);
 #endif
 
@@ -392,7 +432,7 @@ namespace Game.Systems.RTree
                 node.Aabb = fix.AABBs_conjugate(in node.Aabb, in entry.Aabb);
                 node.EntriesCount++;
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsTrue(node.EntriesCount is >= MinEntries and <= MaxEntries);
 #endif
                 return TreeEntryTraits<RTreeNode>.InvalidEntry;
@@ -400,14 +440,14 @@ namespace Game.Systems.RTree
 
             private void GrowTree(in RTreeNode newEntry)
             {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var _ = Profiling.RTreeGrow.Auto();
 #endif
 
                 var rootNodesStartIndex = GetNodeLevelStartIndex(RootNodesLevelIndex);
                 var rootNodesCount = _currentThreadNodesEndIndices[RootNodesLevelIndex];
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.AreEqual(MaxEntries, rootNodesCount);
                 Assert.IsFalse(rootNodesCount + MaxEntries >
                                CalculateNodeLevelCapacity(MaxEntries, ReadOnlyData.TreeMaxHeight, RootNodesLevelIndex));
@@ -444,12 +484,12 @@ namespace Game.Systems.RTree
                 for (var i = 2; i < MaxEntries; i++)
                     nodesContainer[newRootNodesStartIndex + i] = TreeEntryTraits<RTreeNode>.InvalidEntry;
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 CheckGrowTree(nodesContainer, newRootNodesStartIndex);
 #endif
             }
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
             [BurstDiscard]
             private static void CheckGrowTree(NativeArray<RTreeNode> nodesContainer, int newRootNodesStartIndex)
             {
@@ -459,7 +499,6 @@ namespace Game.Systems.RTree
                 Assert.IsTrue(newRootNodes.Count(n => n.EntriesCount > 0) > 0);
             }
 #endif
-            }
 
             private static RTreeNode SplitNode<T>(
                 ref RTreeNode splitNode,
@@ -471,7 +510,7 @@ namespace Game.Systems.RTree
             )
                 where T : struct
             {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var _ = Profiling.RTreeSplitNode.Auto();
 #endif
 
@@ -479,7 +518,7 @@ namespace Game.Systems.RTree
                 var startIndex = splitNode.EntriesStartIndex;
                 var endIndex = startIndex + entriesCount;
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.AreEqual(MaxEntries, entriesCount);
 #endif
 
@@ -491,7 +530,7 @@ namespace Game.Systems.RTree
                 // Repeat until all entries are assigned between two new nodes
 
                 var (indexA, indexB) = FindLargestEntriesPair(in entries, in newEntryAabb, startIndex, endIndex);
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsTrue(indexA > -1 && indexB > -1);
 #endif
                 var newNodeEntriesStartIndex = entriesEndIndex;
@@ -548,7 +587,7 @@ namespace Game.Systems.RTree
                 for (var i = newNode.EntriesCount; i < MaxEntries; i++)
                     entries[newNode.EntriesStartIndex + i] = invalidEntry;
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsTrue(splitNode.EntriesCount is >= MinEntries and <= MaxEntries);
                 Assert.IsTrue(newNode.EntriesCount is >= MinEntries and <= MaxEntries);
 #endif
@@ -573,7 +612,7 @@ namespace Game.Systems.RTree
                 int entriesEndIndex,
                 in AABB newEntryAabb)
             {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var _ = Profiling.RTreeGetNodeIndexToInsert.Auto();
 #endif
                 var (nodeIndex, minArea) = (-1, fix.MaxValue);
@@ -585,7 +624,7 @@ namespace Game.Systems.RTree
                         if (i == entriesStartIndex)
                             return i;
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                         Assert.AreEqual(AABB.Empty, entry.Aabb);
                         Assert.AreEqual(-1, entry.EntriesStartIndex);
                         Assert.AreEqual(0, entry.EntriesCount);
@@ -593,7 +632,7 @@ namespace Game.Systems.RTree
                         break;
                     }
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                     Assert.AreNotEqual(AABB.Empty, entry.Aabb);
                     Assert.AreNotEqual(-1, entry.EntriesStartIndex);
                     Assert.AreNotEqual(0, entry.EntriesCount);
@@ -615,7 +654,7 @@ namespace Game.Systems.RTree
                 [NoAlias] ref RTreeNode newNode)
                 where T : struct
             {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var _ = Profiling.RTreeFillNodes.Auto();
 #endif
                 ref var sourceNode = ref splitNode.EntriesCount < MinEntries ? ref newNode : ref splitNode;
@@ -643,7 +682,7 @@ namespace Game.Systems.RTree
                     (sourceEntryIndex, sourceEntryAabb, minArena) = (i, entryAabb, conjugatedArea);
                 }
 
-#if ENABLE_ASSERTS
+#if ENABLE_RTREE_ASSERTS
                 Assert.IsTrue(sourceEntryIndex > -1);
 #endif
 
@@ -667,7 +706,7 @@ namespace Game.Systems.RTree
                 int endIndex)
                 where T : struct
             {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var _ = Profiling.RTreeFindLargestPair.Auto();
 #endif
                 var (indexA, indexB, maxArena) = (-1, -1, fix.MinValue);
@@ -708,7 +747,7 @@ namespace Game.Systems.RTree
                 in AABB conjugatedAabbA,
                 in AABB conjugatedAabbB)
             {
-#if ENABLE_PROFILING
+#if ENABLE_RTREE_PROFILING
                 using var _ = Profiling.RTreeIsSecondNodeTarget.Auto();
 #endif
                 var (areaIncreaseA, deltaA) = GetAreaAndSizeIncrease(in nodeAabbA, in conjugatedAabbA);

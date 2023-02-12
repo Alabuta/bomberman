@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using App;
 using Game.Components;
 using Game.Components.Tags;
@@ -11,7 +10,6 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
-using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Game.Systems.RTree
@@ -60,7 +58,9 @@ namespace Game.Systems.RTree
 
         private const int EntriesPerWorkerMinCount = MaxEntries * MinEntries;
 
+#if !NO_WORK_STEALING_JOBS
         private const int EntriesScheduleBatch = 4;
+#endif
 
         private const int InputEntriesStartCount = 256;
 
@@ -104,9 +104,9 @@ namespace Game.Systems.RTree
             Assert.AreEqual(MinEntries * 2, MaxEntries);
 
 #if NO_WORK_STEALING_JOBS
-            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
+            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount + 1, 1);
 #else
-            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount, 1);
+            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
 #endif
         }
 
@@ -140,10 +140,10 @@ namespace Game.Systems.RTree
 
             Assert.IsFalse(entitiesCount < MinEntries);
 
-#if !NO_WORK_STEALING_JOBS
-            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
+#if NO_WORK_STEALING_JOBS
+            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, 1);
 #else
-            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount, 1);
+            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
 #endif
             Assert.IsFalse(entitiesCount > _inputEntries.Length);
 
@@ -162,16 +162,16 @@ namespace Game.Systems.RTree
 
             Profiling.RTreeNativeArrayFill.End();
 
-            _countersContainer[0].Reset();
-
             Profiling.RTreeInsertJobComplete.Begin();
-#if !NO_WORK_STEALING_JOBS
-            _insertJob
-                .ScheduleBatch(entitiesCount, EntriesScheduleBatch)
-                .Complete();
-#else
+#if NO_WORK_STEALING_JOBS
             _insertJob
                 .Schedule(_workersCount, 1)
+                .Complete();
+#else
+            _countersContainer[0].Reset();
+
+            _insertJob
+                .ScheduleBatch(entitiesCount, EntriesScheduleBatch)
                 .Complete();
 #endif
             Profiling.RTreeInsertJobComplete.End();
@@ -239,7 +239,10 @@ namespace Game.Systems.RTree
             var maxWorkersCount = (int) math.ceil((double) entriesCount / EntriesPerWorkerMinCount);
             _workersCount = math.min(workersCount, maxWorkersCount);
 
-            var perWorkerEntriesCount = math.ceil((double) entriesCount / (_workersCount * batchSize)) * batchSize * 16;
+            var perWorkerEntriesCount = math.ceil((double) entriesCount / (_workersCount * batchSize)) * batchSize;
+#if !NO_WORK_STEALING_JOBS
+            // perWorkerEntriesCount *= 16; // :TODO: try to restrict memory usage inside InsertJobProducer.Execute()
+#endif
 
             _subTreesMaxHeight =
                 (int) math.ceil(math.log((perWorkerEntriesCount * (MinEntries - 1) + MinEntries) / (2 * MinEntries - 1)) /
@@ -290,6 +293,7 @@ namespace Game.Systems.RTree
                     NativeArrayOptions.UninitializedMemory);
             }
 
+#if !NO_WORK_STEALING_JOBS
             if (!_countersContainer.IsCreated)
             {
                 unsafe
@@ -311,6 +315,7 @@ namespace Game.Systems.RTree
 
                 _perThreadWorkerIndices = new NativeArray<int>(perThreadWorkerIndices, Allocator.Persistent);
             }
+#endif
 
             _insertJob = new InsertJob
             {
@@ -325,8 +330,10 @@ namespace Game.Systems.RTree
                 },
                 SharedWriteData = new InsertJobSharedWriteData
                 {
+#if !NO_WORK_STEALING_JOBS
                     CountersContainer = _countersContainer,
                     PerThreadWorkerIndices = _perThreadWorkerIndices,
+#endif
 
                     ResultEntries = _resultEntries,
                     NodesContainer = _nodesContainer,
