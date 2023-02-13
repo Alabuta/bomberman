@@ -104,7 +104,7 @@ namespace Game.Systems.RTree
             Assert.AreEqual(MinEntries * 2, MaxEntries);
 
 #if NO_WORK_STEALING_JOBS
-            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount + 1, 1);
+            InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount, 1);
 #else
             InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
 #endif
@@ -141,7 +141,7 @@ namespace Game.Systems.RTree
             Assert.IsFalse(entitiesCount < MinEntries);
 
 #if NO_WORK_STEALING_JOBS
-            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, 1);
+            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount, 1);
 #else
             InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
 #endif
@@ -176,9 +176,9 @@ namespace Game.Systems.RTree
 #endif
             Profiling.RTreeInsertJobComplete.End();
 
-            for (var i = 0; i < _rootNodesLevelIndices.Length; i++)
+            foreach (var index in _rootNodesLevelIndices)
             {
-                if (_rootNodesLevelIndices[i] < 0)
+                if (index < 0)
                     break;
 
                 ++SubTreesCount;

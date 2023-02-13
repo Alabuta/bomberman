@@ -511,12 +511,15 @@ namespace Math.FixedPointMath
             return !math.any(a.min > b.max);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fix AABB_area(in AABB aabb) =>
             box_area(aabb.max - aabb.min);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fix box_area(fix2 size) =>
             size.x * size.y;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AABB AABBs_conjugate(in AABB a, in AABB b) =>
             new(fix2.min(a.min, b.min), fix2.max(a.max, b.max));
     }
