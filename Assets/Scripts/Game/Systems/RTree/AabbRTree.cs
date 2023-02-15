@@ -131,8 +131,12 @@ namespace Game.Systems.RTree
 
             SubTreesCount = 0;
 
+            for (var i = 0; i < _rootNodesLevelIndices.Length; i++)
+                _rootNodesLevelIndices[i] = -1;
+
             if (filter.IsEmpty())
-                return;
+                if (inputEntries.Length == 0)
+                    return;
 
             var entitiesCount = EntriesCap < MinEntries
                 ? filter.GetEntitiesCount()
@@ -289,8 +293,7 @@ namespace Game.Systems.RTree
                 if (_rootNodesLevelIndices.IsCreated)
                     _rootNodesLevelIndices.Dispose();
 
-                _rootNodesLevelIndices = new NativeArray<int>(_workersCount, Allocator.Persistent,
-                    NativeArrayOptions.UninitializedMemory);
+                _rootNodesLevelIndices = new NativeArray<int>(_workersCount, Allocator.Persistent);
             }
 
 #if !NO_WORK_STEALING_JOBS
