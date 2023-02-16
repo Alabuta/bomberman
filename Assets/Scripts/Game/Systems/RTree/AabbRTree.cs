@@ -58,7 +58,7 @@ namespace Game.Systems.RTree
 
         private const int EntriesPerWorkerMinCount = MaxEntries * MinEntries;
 
-#if !NO_WORK_STEALING_JOBS
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
         private const int EntriesScheduleBatch = 4;
 #endif
 
@@ -103,7 +103,7 @@ namespace Game.Systems.RTree
             Assert.AreEqual(MaxEntries / 2, MinEntries);
             Assert.AreEqual(MinEntries * 2, MaxEntries);
 
-#if NO_WORK_STEALING_JOBS
+#if NO_WORK_STEALING_RTREE_INSERT_JOB
             InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount, 1);
 #else
             InitInsertJob(InputEntriesStartCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
@@ -144,7 +144,7 @@ namespace Game.Systems.RTree
 
             Assert.IsFalse(entitiesCount < MinEntries);
 
-#if NO_WORK_STEALING_JOBS
+#if NO_WORK_STEALING_RTREE_INSERT_JOB
             InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount, 1);
 #else
             InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
@@ -167,7 +167,7 @@ namespace Game.Systems.RTree
             Profiling.RTreeNativeArrayFill.End();
 
             Profiling.RTreeInsertJobComplete.Begin();
-#if NO_WORK_STEALING_JOBS
+#if NO_WORK_STEALING_RTREE_INSERT_JOB
             _insertJob
                 .Schedule(_workersCount, 1)
                 .Complete();
@@ -244,7 +244,7 @@ namespace Game.Systems.RTree
             _workersCount = math.min(workersCount, maxWorkersCount);
 
             var perWorkerEntriesCount = math.ceil((double) entriesCount / (_workersCount * batchSize)) * batchSize;
-#if !NO_WORK_STEALING_JOBS
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
             // perWorkerEntriesCount *= 16; // :TODO: try to restrict memory usage inside InsertJobProducer.Execute()
 #endif
 
@@ -296,7 +296,7 @@ namespace Game.Systems.RTree
                 _rootNodesLevelIndices = new NativeArray<int>(_workersCount, Allocator.Persistent);
             }
 
-#if !NO_WORK_STEALING_JOBS
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
             if (!_countersContainer.IsCreated)
             {
                 unsafe

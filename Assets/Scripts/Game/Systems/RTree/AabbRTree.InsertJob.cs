@@ -36,7 +36,7 @@ namespace Game.Systems.RTree
 
     public struct InsertJobSharedWriteData
     {
-#if !NO_WORK_STEALING_JOBS
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
         [NativeDisableContainerSafetyRestriction]
         [NativeDisableUnsafePtrRestriction]
         public NativeArray<UnsafeAtomicCounter32> CountersContainer;
@@ -62,10 +62,10 @@ namespace Game.Systems.RTree
         [BurstCompile(DisableSafetyChecks = true, CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance)]
 #endif
         public struct InsertJob :
-#if NO_WORK_STEALING_JOBS
+#if NO_WORK_STEALING_RTREE_INSERT_JOB
             IJobParallelFor
 #else
-            IInsertJob
+            IWorkStealingJob
 #endif
         {
             [ReadOnly]
@@ -84,7 +84,7 @@ namespace Game.Systems.RTree
 
             private int RootNodesLevelIndex => SharedWriteData.RootNodesLevelIndices[_jobIndex];
 
-#if NO_WORK_STEALING_JOBS
+#if NO_WORK_STEALING_RTREE_INSERT_JOB
             public void Execute(int jobIndex)
             {
 #if ENABLE_RTREE_PROFILING

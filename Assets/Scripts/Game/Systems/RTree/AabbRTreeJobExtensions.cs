@@ -8,11 +8,11 @@ using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using UnityEngine.Scripting;
 
-#if !NO_WORK_STEALING_JOBS
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
 namespace Game.Systems.RTree
 {
-    [JobProducerType(typeof(AabbRTreeJobExtensions.InsertJobProducer<>))]
-    public interface IInsertJob
+    [JobProducerType(typeof(AabbRTreeJobExtensions.WorkStealingJobProducer<>))]
+    public interface IWorkStealingJob
     {
         void Execute(ref PerWorkerData perWorkerData, int startIndex, int count);
     }
@@ -26,10 +26,10 @@ namespace Game.Systems.RTree
 
     public static class AabbRTreeJobExtensions
     {
-        internal struct InsertJobProducer<T> where T : struct, IInsertJob
+        internal struct WorkStealingJobProducer<T> where T : struct, IWorkStealingJob
         {
             internal static readonly SharedStatic<IntPtr> jobReflectionData =
-                SharedStatic<IntPtr>.GetOrCreate<InsertJobProducer<T>>();
+                SharedStatic<IntPtr>.GetOrCreate<WorkStealingJobProducer<T>>();
 
             private delegate void ExecuteJobFunction(
                 ref T jobData,
@@ -116,9 +116,9 @@ namespace Game.Systems.RTree
 
         [UsedImplicitly]
         public static void EarlyJobInit<T>()
-            where T : struct, IInsertJob
+            where T : struct, IWorkStealingJob
         {
-            InsertJobProducer<T>.Initialize();
+            WorkStealingJobProducer<T>.Initialize();
         }
 
         public static JobHandle ScheduleBatch<T>(
@@ -126,22 +126,22 @@ namespace Game.Systems.RTree
             int arrayLength,
             int minIndicesPerJobCount,
             JobHandle dependsOn = new())
-            where T : struct, IInsertJob
+            where T : struct, IWorkStealingJob
         {
             return Schedule(jobData, arrayLength, minIndicesPerJobCount, dependsOn, ScheduleMode.Parallel);
         }
 
         public static void RunBatch<T>(this T jobData, int arrayLength)
-            where T : struct, IInsertJob
+            where T : struct, IWorkStealingJob
         {
             Schedule(jobData, arrayLength, arrayLength, new JobHandle(), ScheduleMode.Parallel);
         }
 
         private static unsafe JobHandle Schedule<T>(T jobData, int arrayLength, int minIndicesPerJobCount,
             JobHandle dependsOn, ScheduleMode scheduleMode)
-            where T : struct, IInsertJob
+            where T : struct, IWorkStealingJob
         {
-            var reflectionData = InsertJobProducer<T>.jobReflectionData.Data;
+            var reflectionData = WorkStealingJobProducer<T>.jobReflectionData.Data;
             CheckReflectionDataCorrect(reflectionData);
 
             var scheduleParams = new JobsUtility.JobScheduleParameters(UnsafeUtility.AddressOf(ref jobData), reflectionData,
