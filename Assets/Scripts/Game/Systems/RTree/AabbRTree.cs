@@ -219,6 +219,48 @@ namespace Game.Systems.RTree
 
         public void QueryByAabb(in AABB aabb, ICollection<RTreeLeafEntry> result)
         {
+            for (var subTreeIndex = 0; subTreeIndex < SubTreesCount; subTreeIndex++)
+            {
+                var subTreeHeight = GetSubTreeHeight(subTreeIndex);
+                if (subTreeHeight < 1)
+                    continue;
+
+                var subTreeNodeLevelStartIndex = CalculateSubTreeNodeLevelStartIndex(
+                    MaxEntries,
+                    subTreeIndex,
+                    subTreeHeight - 1,
+                    _subTreesMaxHeight,
+                    _perWorkerNodesContainerCapacity);
+
+                var rootNodesEndIndex = subTreeNodeLevelStartIndex + _rootNodesCounts[subTreeIndex];
+                for (var nodeIndex = subTreeNodeLevelStartIndex; nodeIndex < rootNodesEndIndex; nodeIndex++)
+                    QueryNodesByAabb(aabb, result, subTreeIndex, _rootNodesLevelIndices[subTreeIndex], nodeIndex);
+            }
+        }
+
+        private void QueryNodesByAabb(in AABB aabb, ICollection<RTreeLeafEntry> result, int subTreeIndex, int levelIndex,
+            int nodeIndex)
+        {
+            var node = _nodesContainer[nodeIndex];
+#if ENABLE_RTREE_ASSERTS
+            Assert.AreNotEqual(AABB.Empty, node.Aabb);
+#endif
+            if (!fix.is_AABB_overlapped_by_AABB(in aabb, in node.Aabb))
+                return;
+
+            var entriesStartIndex = node.EntriesStartIndex;
+            var entriesEndIndex = node.EntriesStartIndex + node.EntriesCount;
+
+            if (levelIndex == 0)
+            {
+                for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                    result.Add(_resultEntries[subTreeIndex * _perWorkerResultEntriesContainerCapacity + i]);
+
+                return;
+            }
+
+            for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                QueryNodesByAabb(aabb, result, subTreeIndex, levelIndex - 1, i);
         }
 
         private void InitInsertJob(int entriesCount, int workersCount, int batchSize)
