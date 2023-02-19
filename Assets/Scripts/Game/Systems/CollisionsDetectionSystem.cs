@@ -9,6 +9,7 @@ using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
 using Unity.Collections;
+using UnityEngine;
 using UnityEngine.Pool;
 
 namespace Game.Systems
@@ -18,8 +19,10 @@ namespace Game.Systems
         public fix2 LastWorldPosition;
     }
 
-    public class CollisionsDetectionSystem : IEcsRunSystem
+    public class CollisionsDetectionSystem : IEcsInitSystem, IEcsRunSystem, IEcsDestroySystem
     {
+        private const int InputEntriesStartCount = 256;
+
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
@@ -37,46 +40,60 @@ namespace Game.Systems
 
         private readonly HashSet<int> _collidedEntities = new();
 
-        private NativeArray<RTreeLeafEntry> _entries;
+        private NativeList<RTreeLeafEntry> _entries;
+
+        public void Init()
+        {
+            _entries = new NativeList<RTreeLeafEntry>(InputEntriesStartCount, Allocator.Persistent);
+        }
 
         public void Run()
         {
             using var _ = Profiling.CollisionsDetection.Auto();
 
-            _entitiesAabbTree.Build(_colliders);
+            Profiling.RTreeNativeArrayFill.Begin();
+
+            var entitiesCount = _colliders.GetEntitiesCount();
+            if (!_entries.IsCreated || _entries.Length < entitiesCount)
+            {
+                if (_entries.IsCreated)
+                    _entries.Dispose();
+
+                _entries = new NativeList<RTreeLeafEntry>(entitiesCount, Allocator.Persistent);
+            }
+
+            else
+                _entries.Clear();
+
+            foreach (var index in _colliders)
+            {
+                ref var entity = ref _colliders.GetEntity(index);
+                ref var transformComponent = ref _colliders.Get1(index);
+
+                var aabb = entity.GetEntityColliderAABB(transformComponent.WorldPosition);
+                _entries.Add(new RTreeLeafEntry(aabb, index));
+            }
+
+            Profiling.RTreeNativeArrayFill.End();
+
+            _entitiesAabbTree.Build(_entries.AsArray());
 
             foreach (var entityIndex in _circleColliders)
-                DetectCollisions(fix.one, _circleColliders, entityIndex);
+                DetectCollisions(_circleColliders, entityIndex);
 
             foreach (var entityIndex in _boxColliders)
-                DetectCollisions(fix.one, _boxColliders, entityIndex);
-
-            /*foreach (var entityIndex in _lineCasters)
-                TraceLine(simulationSubStep, filter: _lineCasters, entityIndex);*/
+                DetectCollisions(_boxColliders, entityIndex);
 
             _processedPairs.Clear();
-
             _collidedEntities.Clear();
         }
 
-        private void TraceLine(fix simulationSubStep, EcsFilter<CollidersLinecastComponent> filter, int entityIndex)
+        public void Destroy()
         {
-            var entityA = filter.GetEntity(entityIndex);
-
-            var linecastComponent = filter.Get1(entityIndex);
-
-            using ( ListPool<RTreeLeafEntry>.Get(out var result) )
-            {
-                _entitiesAabbTree.QueryByLine(linecastComponent.Start, linecastComponent.End, result);
-
-                /*result.Sort((a, b) =>
-                {
-                    return 0;
-                });*/
-            }
+            _entries.Dispose();
         }
 
-        private void DetectCollisions<T>(fix simulationSubStep, EcsFilter<TransformComponent, LayerMaskComponent, T> filter,
+        private void DetectCollisions<T>(EcsFilter<TransformComponent, LayerMaskComponent, T> filter,
             int entityIndex)
             where T : struct
         {
@@ -89,15 +106,7 @@ namespace Game.Systems
             var entityLayerMaskA = filter.Get2(entityIndex).Value;
             ref var colliderComponentA = ref filter.Get3(entityIndex);
 
-            var hasPrevFrameDataComponentA = entityA.Has<PrevFrameDataComponent>();
-            ref var prevFrameDataComponentA = ref entityA.Get<PrevFrameDataComponent>();
-
-            if (!hasPrevFrameDataComponentA)
-                prevFrameDataComponentA.LastWorldPosition = transformComponentA.WorldPosition;
-
-            var entityLastPositionA = prevFrameDataComponentA.LastWorldPosition;
-            var entityCurrentPositionA = transformComponentA.WorldPosition;
-            var entityPositionA = entityLastPositionA + (entityCurrentPositionA - entityLastPositionA) * simulationSubStep;
+            var entityPositionA = transformComponentA.WorldPosition;
 
             var aabbA = entityA.GetEntityColliderAABB(entityPositionA);
 
@@ -119,31 +128,18 @@ namespace Game.Systems
                     if (_processedPairs.Contains(hashedPair))
                         continue;
 
-                    if (!fix.is_AABB_overlapped_by_AABB(aabbA, entry.Aabb))
+                    ref var transformComponentB = ref entityB.Get<TransformComponent>();
+                    var aabbB = entityB.GetEntityColliderAABB(transformComponentB.WorldPosition);
+
+                    if (!fix.is_AABB_overlapped_by_AABB(in aabbA, in aabbB))
                     {
-                        var isFinalSubStep = simulationSubStep == fix.one;
-                        if (isFinalSubStep)
-                        {
-                            DispatchCollisionEvents(entityA, entityB, hashedPair, hasIntersection);
-                            _collidedPairs.Remove(hashedPair);
-                        }
+                        DispatchCollisionEvents(entityA, entityB, hashedPair, hasIntersection);
+                        _collidedPairs.Remove(hashedPair);
 
                         continue;
                     }
 
-                    ref var transformComponentB = ref entityB.Get<TransformComponent>();
-
-                    var hasPrevFrameDataComponentB = entityB.Has<PrevFrameDataComponent>();
-                    ref var prevFrameDataComponentB = ref entityB.Get<PrevFrameDataComponent>();
-
-                    if (!hasPrevFrameDataComponentB)
-                        prevFrameDataComponentB.LastWorldPosition = transformComponentB.WorldPosition;
-
-                    var entityLastPositionB = prevFrameDataComponentB.LastWorldPosition;
-                    var entityCurrentPositionB = transformComponentB.WorldPosition;
-
-                    var positionIterationsStepB = (entityCurrentPositionB - entityLastPositionB) * simulationSubStep;
-                    var entityPositionB = entityLastPositionB + positionIterationsStepB;
+                    var entityPositionB = transformComponentB.WorldPosition;
 
                     hasIntersection = EcsExtensions.CheckEntitiesIntersection(colliderComponentA, entityPositionA,
                         entityB, entityPositionB, out _);

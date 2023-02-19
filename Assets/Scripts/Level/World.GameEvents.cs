@@ -7,6 +7,8 @@ using Game.Components;
 using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Tags;
+using Game.Systems;
+using Game.Systems.RTree;
 using Input;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
@@ -93,9 +95,9 @@ namespace Level
             var line = end - start;
             var direction = fix2.normalize_safe(line, fix2.zero);
 
-            using ( ListPool<(AABB Aabb, EcsEntity Entity)>.Get(out var result) )
+            using ( ListPool<RTreeLeafEntry>.Get(out var result) )
             {
-                TraceLine(start, end, result);
+                _entitiesAabbTree.QueryByLine(start, end, result);
 
                 result.Sort((a, b) =>
                 {
@@ -108,16 +110,17 @@ namespace Level
                     return distanceA.CompareTo(distanceB);
                 });
 
-                var wallIndex = result.FindIndex(p =>
+                /*var wallIndex = result.FindIndex(p =>
                 {
-                    if (p.Entity.Has<LevelTileComponent>() &&
-                        p.Entity.Get<LevelTileComponent>().Type == LevelTileType.HardBlock)
+                    if (p.Index.Has<LevelTileComponent>() &&
+                        p.Index.Get<LevelTileComponent>().Type == LevelTileType.HardBlock)
                         return true;
 
-                    return p.Entity.Has<WallTag>();
-                });
+                    return p.Index.Has<WallTag>();
+                });*/
 
-                Debug.LogWarning(result);
+                foreach (var entry in result)
+                    Debug.LogWarning(entry.Index);
             }
 
             // var blastLines = GetBombBlastAabbs(blastDirections, bombBlastRadius, bombPosition);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using App;
 using Game.Components;
@@ -10,6 +11,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace Game.Systems.RTree
@@ -69,16 +71,17 @@ namespace Game.Systems.RTree
         private int _workersCount;
         private int _subTreesMaxHeight;
 
-        private NativeArray<RTreeLeafEntry> _inputEntries;
         private NativeArray<RTreeLeafEntry> _resultEntries;
 
         private NativeArray<RTreeNode> _nodesContainer;
         private NativeArray<int> _nodesEndIndicesContainer;
         private NativeArray<int> _rootNodesLevelIndices;
+        private NativeArray<int> _rootNodesCounts;
 
         private int _perWorkerResultEntriesContainerCapacity;
         private int _perWorkerNodesContainerCapacity;
 
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
         private int _workersInUseCount;
         [NativeDisableUnsafePtrRestriction]
         private UnsafeAtomicCounter32 _workersInUseCounter;
@@ -86,6 +89,7 @@ namespace Game.Systems.RTree
         private NativeArray<UnsafeAtomicCounter32> _countersContainer;
 
         private NativeArray<int> _perThreadWorkerIndices;
+#endif
 
         [NativeDisableUnsafePtrRestriction]
         private InsertJob _insertJob;
@@ -112,20 +116,22 @@ namespace Game.Systems.RTree
 
         public void Dispose()
         {
-            _inputEntries.Dispose();
             _resultEntries.Dispose();
 
             _nodesContainer.Dispose();
 
             _nodesEndIndicesContainer.Dispose();
             _rootNodesLevelIndices.Dispose();
+            _rootNodesCounts.Dispose();
 
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
+            _workersInUseCounter.Reset();
             _countersContainer.Dispose();
-
             _perThreadWorkerIndices.Dispose();
+#endif
         }
 
-        public void Build(EcsFilter<TransformComponent, HasColliderTag> filter)
+        public void Build(NativeArray<RTreeLeafEntry> inputEntries)
         {
             using var _ = Profiling.RTreeBuild.Auto();
 
@@ -134,37 +140,23 @@ namespace Game.Systems.RTree
             for (var i = 0; i < _rootNodesLevelIndices.Length; i++)
                 _rootNodesLevelIndices[i] = -1;
 
-            if (filter.IsEmpty())
-                if (inputEntries.Length == 0)
-                    return;
+            if (inputEntries.Length == 0)
+                return;
 
             var entitiesCount = EntriesCap < MinEntries
-                ? filter.GetEntitiesCount()
-                : math.min(filter.GetEntitiesCount(), EntriesCap);
+                ? inputEntries.Length
+                : math.min(inputEntries.Length, EntriesCap);
 
             Assert.IsFalse(entitiesCount < MinEntries);
 
 #if NO_WORK_STEALING_RTREE_INSERT_JOB
-            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount, 1);
+            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, 1);
 #else
             InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
 #endif
-            Assert.IsFalse(entitiesCount > _inputEntries.Length);
-
-            Profiling.RTreeNativeArrayFill.Begin();
-            foreach (var index in filter)
-            {
-                if (index >= entitiesCount)
-                    break;
-
-                ref var entity = ref filter.GetEntity(index);
-                ref var transformComponent = ref filter.Get1(index);
-
-                var aabb = entity.GetEntityColliderAABB(transformComponent.WorldPosition);
-                _inputEntries[index] = new RTreeLeafEntry(aabb, index);
-            }
-
-            Profiling.RTreeNativeArrayFill.End();
+            _insertJob.ReadOnlyData.InputEntries = inputEntries.GetSubArray(0, entitiesCount).AsReadOnly();
+            Assert.IsFalse(entitiesCount > _insertJob.ReadOnlyData.InputEntries.Length);
+            Assert.IsFalse(entitiesCount > inputEntries.Length);
 
             Profiling.RTreeInsertJobComplete.Begin();
 #if NO_WORK_STEALING_RTREE_INSERT_JOB
@@ -172,7 +164,7 @@ namespace Game.Systems.RTree
                 .Schedule(_workersCount, 1)
                 .Complete();
 #else
-            _countersContainer[0].Reset();
+            _workersInUseCounter.Reset();
 
             _insertJob
                 .ScheduleBatch(entitiesCount, EntriesScheduleBatch)
@@ -189,32 +181,77 @@ namespace Game.Systems.RTree
             }
         }
 
-        public IEnumerable<RTreeNode> GetSubTreeRootNodes(int subTreeIndex)
-        {
-            var subTreeHeight = GetSubTreeHeight(subTreeIndex);
-            if (subTreeHeight < 1)
-                return Enumerable.Empty<RTreeNode>();
-
-            var offset = CalculateSubTreeNodeLevelStartIndex(MaxEntries, subTreeIndex, subTreeHeight - 1, _subTreesMaxHeight,
-                _perWorkerNodesContainerCapacity);
-
-            return _nodesContainer
-                .GetSubArray(offset, MaxEntries)
-                .TakeWhile(n => n.Aabb != AABB.Empty);
-        }
+        public IReadOnlyList<RTreeNode> GetSubTreeRootNodes(int subTreeIndex) =>
+            GetSubTreeRootNodesImpl(subTreeIndex).ToArray();
 
         public IEnumerable<RTreeNode> GetNodes(int subTreeIndex, int levelIndex, IEnumerable<int> indices) =>
             levelIndex < GetSubTreeHeight(subTreeIndex)
                 ? indices.Select(i => _nodesContainer[i])
                 : Enumerable.Empty<RTreeNode>();
 
-        public IEnumerable<RTreeLeafEntry> GetLeafEntries(int subTreeIndex, IEnumerable<int> indices) =>
-            _resultEntries.Length != 0
-                ? indices.Select(i => _resultEntries[subTreeIndex * _perWorkerResultEntriesContainerCapacity + i])
+        public IEnumerable<RTreeLeafEntry> GetLeafEntries(int subTreeIndex, IEnumerable<int> indices)
+        {
+            var subTreeStartIndexOffset = subTreeIndex * _perWorkerResultEntriesContainerCapacity;
+            return _resultEntries.Length != 0
+                ? indices.Select(i => _resultEntries[subTreeStartIndexOffset + i])
                 : Enumerable.Empty<RTreeLeafEntry>();
+        }
 
         public void QueryByLine(fix2 p0, fix2 p1, ICollection<RTreeLeafEntry> result)
         {
+            for (var subTreeIndex = 0; subTreeIndex < SubTreesCount; subTreeIndex++)
+            {
+                var subTreeHeight = GetSubTreeHeight(subTreeIndex);
+                if (subTreeHeight < 1)
+                    continue;
+
+                var subTreeNodeLevelStartIndex = CalculateSubTreeNodeLevelStartIndex(
+                    MaxEntries,
+                    subTreeIndex,
+                    subTreeHeight - 1,
+                    _subTreesMaxHeight,
+                    _perWorkerNodesContainerCapacity);
+
+                var rootNodesEndIndex = subTreeNodeLevelStartIndex + _rootNodesCounts[subTreeIndex];
+                for (var nodeIndex = subTreeNodeLevelStartIndex; nodeIndex < rootNodesEndIndex; nodeIndex++)
+                    QueryNodesByLine(p0, p1, result, subTreeIndex, _rootNodesLevelIndices[subTreeIndex], nodeIndex);
+            }
+        }
+
+        private void QueryNodesByLine(fix2 p0, fix2 p1,
+            ICollection<RTreeLeafEntry> result,
+            int subTreeIndex,
+            int levelIndex, int nodeIndex)
+        {
+            var node = _nodesContainer[nodeIndex];
+#if ENABLE_RTREE_ASSERTS
+            Assert.AreNotEqual(AABB.Empty, node.Aabb);
+#endif
+            if (!node.Aabb.CohenSutherlandLineClip(ref p0, ref p1))
+                return;
+
+            var entriesStartIndex = node.EntriesStartIndex;
+            var entriesEndIndex = node.EntriesStartIndex + node.EntriesCount;
+
+            if (levelIndex == 0)
+            {
+                for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                {
+                    var leafEntry = _resultEntries[subTreeIndex * _perWorkerResultEntriesContainerCapacity + i];
+                    if (!IntersectedByLine(p0, p1, in leafEntry.Aabb))
+                        continue;
+
+                    result.Add(leafEntry);
+                }
+
+                return;
+            }
+
+            for (var i = entriesStartIndex; i < entriesEndIndex; i++)
+                QueryNodesByLine(p0, p1, result, subTreeIndex, levelIndex - 1, i);
+
+            bool IntersectedByLine(fix2 a, fix2 b, in AABB aabb) =>
+                aabb.CohenSutherlandLineClip(ref a, ref b);
         }
 
         public void QueryByAabb(in AABB aabb, ICollection<RTreeLeafEntry> result)
@@ -273,22 +310,10 @@ namespace Game.Systems.RTree
 
             _treeStateHash = treeStateHash;
 
-            if (!_inputEntries.IsCreated || _inputEntries.Length < entriesCount)
-            {
-                if (_inputEntries.IsCreated)
-                    _inputEntries.Dispose();
-
-                _inputEntries = new NativeArray<RTreeLeafEntry>(entriesCount, Allocator.Persistent,
-                    NativeArrayOptions.UninitializedMemory);
-            }
-
             var maxWorkersCount = (int) math.ceil((double) entriesCount / EntriesPerWorkerMinCount);
             _workersCount = math.min(workersCount, maxWorkersCount);
 
             var perWorkerEntriesCount = math.ceil((double) entriesCount / (_workersCount * batchSize)) * batchSize;
-#if !NO_WORK_STEALING_RTREE_INSERT_JOB
-            // perWorkerEntriesCount *= 16; // :TODO: try to restrict memory usage inside InsertJobProducer.Execute()
-#endif
 
             _subTreesMaxHeight =
                 (int) math.ceil(math.log((perWorkerEntriesCount * (MinEntries - 1) + MinEntries) / (2 * MinEntries - 1)) /
@@ -338,6 +363,14 @@ namespace Game.Systems.RTree
                 _rootNodesLevelIndices = new NativeArray<int>(_workersCount, Allocator.Persistent);
             }
 
+            if (!_rootNodesCounts.IsCreated || _rootNodesCounts.Length < _workersCount)
+            {
+                if (_rootNodesCounts.IsCreated)
+                    _rootNodesCounts.Dispose();
+
+                _rootNodesCounts = new NativeArray<int>(_workersCount, Allocator.Persistent);
+            }
+
 #if !NO_WORK_STEALING_RTREE_INSERT_JOB
             if (!_countersContainer.IsCreated)
             {
@@ -370,22 +403,36 @@ namespace Game.Systems.RTree
                     PerWorkerEntriesCount = (int) perWorkerEntriesCount,
                     NodesContainerCapacity = _perWorkerNodesContainerCapacity,
                     ResultEntriesContainerCapacity = _perWorkerResultEntriesContainerCapacity,
-                    EntriesTotalCount = entriesCount,
-                    InputEntries = _inputEntries.AsReadOnly()
+#if NO_WORK_STEALING_RTREE_INSERT_JOB
+                    SubTreesCount = _workersCount,
+#endif
+                    EntriesTotalCount = entriesCount
                 },
                 SharedWriteData = new InsertJobSharedWriteData
                 {
-#if !NO_WORK_STEALING_JOBS
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
                     CountersContainer = _countersContainer,
                     PerThreadWorkerIndices = _perThreadWorkerIndices,
 #endif
-
                     ResultEntries = _resultEntries,
                     NodesContainer = _nodesContainer,
                     NodesEndIndicesContainer = _nodesEndIndicesContainer,
-                    RootNodesLevelIndices = _rootNodesLevelIndices
+                    RootNodesLevelIndices = _rootNodesLevelIndices,
+                    RootNodesCounts = _rootNodesCounts
                 }
             };
+        }
+
+        private NativeArray<RTreeNode>.ReadOnly GetSubTreeRootNodesImpl(int subTreeIndex)
+        {
+            var subTreeHeight = GetSubTreeHeight(subTreeIndex);
+            if (subTreeHeight < 1)
+                return new NativeArray<RTreeNode>(Array.Empty<RTreeNode>(), Allocator.TempJob).AsReadOnly();
+
+            var offset = CalculateSubTreeNodeLevelStartIndex(MaxEntries, subTreeIndex, subTreeHeight - 1, _subTreesMaxHeight,
+                _perWorkerNodesContainerCapacity);
+
+            return _nodesContainer.GetSubArray(offset, _rootNodesCounts[subTreeIndex]).AsReadOnly();
         }
 
         private static int CalculateSubTreeNodeLevelStartIndex(int maxEntries, int subTreeIndex, int nodeLevelIndex,

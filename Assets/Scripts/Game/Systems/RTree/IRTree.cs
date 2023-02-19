@@ -4,6 +4,7 @@ using Game.Components;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
+using Unity.Collections;
 
 namespace Game.Systems.RTree
 {
@@ -14,7 +15,7 @@ namespace Game.Systems.RTree
 
         int GetSubTreeHeight(int subTreeIndex);
 
-        IEnumerable<RTreeNode> GetSubTreeRootNodes(int subTreeIndex);
+        IReadOnlyList<RTreeNode> GetSubTreeRootNodes(int subTreeIndex);
 
         IEnumerable<RTreeNode> GetNodes(int subTreeIndex, int levelIndex, IEnumerable<int> indices);
 
@@ -24,6 +25,6 @@ namespace Game.Systems.RTree
 
         void QueryByAabb(in AABB aabb, ICollection<RTreeLeafEntry> result);
 
-        void Build(EcsFilter<TransformComponent, HasColliderTag> filter);
+        void Build(NativeArray<RTreeLeafEntry> inputEntries);
     }
 }

@@ -8,10 +8,12 @@ using Configs.Singletons;
 using Data;
 using Game;
 using Game.Components;
+using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Events;
 using Game.Components.Tags;
 using Game.Systems;
+using Game.Systems.Behaviours;
 using Game.Systems.RTree;
 using Gizmos;
 using Infrastructure.Factory;
@@ -20,6 +22,7 @@ using Input;
 using Leopotam.Ecs;
 using Math;
 using Math.FixedPointMath;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -31,7 +34,6 @@ namespace Level
         private readonly IGameFactory _gameFactory;
 
         private readonly Dictionary<IPlayerInput, IPlayer> _playerInputs = new();
-
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
 
         private readonly HashSet<EcsEntity> _enemies = new();
@@ -61,7 +63,6 @@ namespace Level
             _ecsSystems = new EcsSystems(_ecsWorld);
             _ecsFixedSystems = new EcsSystems(_ecsWorld);
 
-            // _entitiesAabbTree = new EntitiesAabbTree();
             _entitiesAabbTree = new AabbRTree();
 
 #if UNITY_EDITOR
@@ -69,21 +70,14 @@ namespace Level
             Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_ecsSystems);
             Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_ecsFixedSystems);
 
-            var collidersDrawerGo = new GameObject("CollidersBoundsDrawer");
-            Assert.IsNotNull(collidersDrawerGo);
-            var colliderBoundsDrawer = collidersDrawerGo.AddComponent<CollidersBoundsDrawer>();
-
-            var rTreeDrawerGo = new GameObject("RTreeDrawer");
-            Assert.IsNotNull(rTreeDrawerGo);
-            var rTreeDrawer = rTreeDrawerGo.AddComponent<AabbEntitiesTreeDrawer>();
+            var rTreeDrawerGameObject = new GameObject("RTreeDrawer");
+            Assert.IsNotNull(rTreeDrawerGameObject);
+            var rTreeDrawer = rTreeDrawerGameObject.AddComponent<AabbEntitiesTreeDrawer>();
             rTreeDrawer.SetRTree(_entitiesAabbTree);
 #endif
 
             _ecsSystems
                 .Add(new WorldViewUpdateSystem())
-#if UNITY_EDITOR
-                .Add(colliderBoundsDrawer)
-#endif
                 .Inject(this)
                 .Init();
 
@@ -108,11 +102,6 @@ namespace Level
                 .Inject(this)
                 .Inject(_entitiesAabbTree)
                 .Init();
-        }
-
-        public void TraceLine(fix2 start, fix2 end, ICollection<(AABB Aabb, EcsEntity Entity)> result)
-        {
-            _entitiesAabbTree.QueryByLine(start, end, result);
         }
 
         public async Task InitWorld(IInputService inputService, LevelStage levelStage)

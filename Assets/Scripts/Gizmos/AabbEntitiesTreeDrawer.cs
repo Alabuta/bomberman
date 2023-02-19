@@ -73,9 +73,7 @@ namespace Gizmos
                 var nodes = _rTree.GetSubTreeRootNodes(subTreeIndex);
                 foreach (var (node, i) in nodes.Select((n, i) => (n, i)))
                 {
-                    var aabb = node.Aabb;
-                    if (!aabb.IsValid())
-                        continue;
+                    Assert.AreNotEqual(AABB.Empty, node.Aabb);
 
                     var hashCode = 17 * 23 + (int) math.pow(subTreeIndex + 1, 2) * i;
                     DrawNodeLevel(node, subTreeIndex, 1, hashCode);

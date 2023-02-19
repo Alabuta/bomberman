@@ -9,6 +9,7 @@ using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
+using UnityEngine;
 
 namespace Game.Systems
 {
@@ -27,26 +28,23 @@ namespace Game.Systems
         private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, BoxColliderComponent> _boxEnters;
         private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, BoxColliderComponent> _boxStays;
 
-        private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders; // :TODO: use AABBComponent
-
         public void Run()
         {
-            using ( Profiling.CollisionsResolver.Auto() )
-            {
-                foreach (var entityIndex in _circleEnters)
-                    ResolveCollisions(_circleEnters, entityIndex);
+            using var _ = Profiling.CollisionsResolver.Auto();
 
-                foreach (var entityIndex in _boxEnters)
-                    ResolveCollisions(_boxEnters, entityIndex);
+            foreach (var entityIndex in _circleEnters)
+                ResolveCollisions(_circleEnters, entityIndex);
 
-                foreach (var entityIndex in _circleStays)
-                    ResolveCollisions(_circleStays, entityIndex);
+            foreach (var entityIndex in _boxEnters)
+                ResolveCollisions(_boxEnters, entityIndex);
 
-                foreach (var entityIndex in _boxStays)
-                    ResolveCollisions(_boxStays, entityIndex);
-            }
+            foreach (var entityIndex in _circleStays)
+                ResolveCollisions(_circleStays, entityIndex);
 
-            _entitiesAabbTree.Build(_colliders);
+            foreach (var entityIndex in _boxStays)
+                ResolveCollisions(_boxStays, entityIndex);
+
+            // _entitiesAabbTree.Update(); :TODO: implement IRtree.Update() method
         }
 
         private static void ResolveCollisions<TCollider, TEvent>(EcsFilter<TransformComponent, TEvent, TCollider> filter,

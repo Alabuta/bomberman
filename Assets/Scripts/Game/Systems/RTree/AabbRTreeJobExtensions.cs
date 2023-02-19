@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
+using UnityEngine.Assertions;
 using UnityEngine.Scripting;
 
 #if !NO_WORK_STEALING_RTREE_INSERT_JOB
@@ -54,7 +55,7 @@ namespace Game.Systems.RTree
                 ref JobRanges ranges,
                 int workerThreadIndex)
             {
-                var insertJobData = UnsafeUtility.As<T, AabbRTree.InsertJob>(ref jobData);
+                ref var insertJobData = ref UnsafeUtility.As<T, AabbRTree.InsertJob>(ref jobData);
 
                 var readOnlyData = insertJobData.ReadOnlyData;
                 var sharedWriteData = insertJobData.SharedWriteData;
@@ -62,7 +63,15 @@ namespace Game.Systems.RTree
                 var workerIndex = sharedWriteData.CountersContainer[0].Add(1);
                 sharedWriteData.PerThreadWorkerIndices[workerThreadIndex] = workerIndex;
 
+                if (workerIndex >= insertJobData.ReadOnlyData.SubTreesCount)
+                    return;
+
+#if ENABLE_RTREE_ASSERTS
+                Assert.IsTrue(workerIndex < insertJobData.ReadOnlyData.SubTreesCount);
+#endif
+
                 sharedWriteData.RootNodesLevelIndices[workerIndex] = 0;
+                sharedWriteData.RootNodesCounts[workerIndex] = 0;
 
                 var treeMaxHeight = readOnlyData.TreeMaxHeight;
                 var resultEntriesContainerCapacity = readOnlyData.ResultEntriesContainerCapacity;
@@ -104,10 +113,6 @@ namespace Game.Systems.RTree
                         firstBatchIndex = startIndex;
 
                     jobData.Execute(ref perWorkerData, startIndex, batchSize);
-
-                    // Preventing work stealing
-                    if (endIndex - firstBatchIndex >= insertJobData.ReadOnlyData.PerWorkerEntriesCount)
-                        break;
                 }
 
                 sharedWriteData.PerThreadWorkerIndices[workerThreadIndex] = -1;

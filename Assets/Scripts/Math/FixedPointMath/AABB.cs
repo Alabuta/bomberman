@@ -21,10 +21,6 @@ namespace Math.FixedPointMath
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsValid() =>
-            math.all(max - min > fix2.zero);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(AABB x, AABB y) =>
             math.all(x.min == y.min) && math.all(x.max == y.max);
 
