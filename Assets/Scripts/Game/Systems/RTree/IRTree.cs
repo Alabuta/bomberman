@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Game.Components;
-using Game.Components.Tags;
-using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Collections;
 
@@ -26,5 +23,7 @@ namespace Game.Systems.RTree
         void QueryByAabb(in AABB aabb, ICollection<RTreeLeafEntry> result);
 
         void Build(NativeArray<RTreeLeafEntry> inputEntries);
+
+        void Update();
     }
 }

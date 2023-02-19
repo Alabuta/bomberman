@@ -1,9 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
+using App;
 using Math.FixedPointMath;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
+using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
 
 #if ENABLE_RTREE_ASSERTS
@@ -30,7 +32,7 @@ namespace Game.Systems.RTree
         [ReadOnly]
         public int ResultEntriesContainerCapacity;
 
-#if NO_WORK_STEALING_RTREE_INSERT_JOB
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
         [ReadOnly]
         public int SubTreesCount;
 #endif
@@ -41,15 +43,6 @@ namespace Game.Systems.RTree
 
     public struct InsertJobSharedWriteData
     {
-#if !NO_WORK_STEALING_RTREE_INSERT_JOB
-        [NativeDisableContainerSafetyRestriction]
-        [NativeDisableUnsafePtrRestriction]
-        public NativeArray<UnsafeAtomicCounter32> CountersContainer;
-
-        [NativeDisableContainerSafetyRestriction]
-        public NativeArray<int> PerThreadWorkerIndices;
-#endif
-
         public NativeArray<RTreeLeafEntry> ResultEntries;
 
         [NativeDisableContainerSafetyRestriction]
@@ -62,14 +55,196 @@ namespace Game.Systems.RTree
 
         [NativeDisableContainerSafetyRestriction]
         public NativeArray<int> RootNodesCounts;
+
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
+        [NativeDisableContainerSafetyRestriction]
+        [NativeDisableUnsafePtrRestriction]
+        public NativeArray<UnsafeAtomicCounter32> CountersContainer;
+
+        [NativeDisableContainerSafetyRestriction]
+        public NativeArray<int> PerThreadWorkerIndices;
+#endif
     }
 
     public partial class AabbRTree
     {
+        public void Build(NativeArray<RTreeLeafEntry> inputEntries)
+        {
+            using var _ = Profiling.RTreeBuild.Auto();
+
+            SubTreesCount = 0;
+
+            for (var i = 0; i < _rootNodesLevelIndices.Length; i++)
+                _rootNodesLevelIndices[i] = -1;
+
+            if (inputEntries.Length == 0)
+                return;
+
+            var entitiesCount = EntriesCap < MinEntries
+                ? inputEntries.Length
+                : math.min(inputEntries.Length, EntriesCap);
+
+            Assert.IsFalse(entitiesCount < MinEntries);
+
+#if NO_WORK_STEALING_RTREE_INSERT_JOB
+            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, 1);
+#else
+            InitInsertJob(entitiesCount, JobsUtility.JobWorkerCount + 1, EntriesScheduleBatch);
+#endif
+            _insertJob.ReadOnlyData.InputEntries = inputEntries.GetSubArray(0, entitiesCount).AsReadOnly();
+            Assert.IsFalse(entitiesCount > _insertJob.ReadOnlyData.InputEntries.Length);
+            Assert.IsFalse(entitiesCount > inputEntries.Length);
+
+            Profiling.RTreeInsertJobComplete.Begin();
+#if NO_WORK_STEALING_RTREE_INSERT_JOB
+            _insertJob
+                .Schedule(_workersCount, 1)
+                .Complete();
+#else
+            _workersInUseCounter.Reset();
+
+            _insertJob
+                .ScheduleBatch(entitiesCount, EntriesScheduleBatch)
+                .Complete();
+#endif
+            Profiling.RTreeInsertJobComplete.End();
+
+            foreach (var index in _rootNodesLevelIndices)
+            {
+                if (index < 0)
+                    break;
+
+                ++SubTreesCount;
+            }
+        }
+
+        private void InitInsertJob(int entriesCount, int workersCount, int batchSize)
+        {
+            using var _ = Profiling.RTreeInitInsertJob.Auto();
+
+            var treeStateHash = CalculateTreeStateHash(entriesCount, workersCount, batchSize);
+            if (treeStateHash == _treeStateHash)
+                return;
+
+            _treeStateHash = treeStateHash;
+
+            var maxWorkersCount = (int) math.ceil((double) entriesCount / EntriesPerWorkerMinCount);
+            _workersCount = math.min(workersCount, maxWorkersCount);
+
+            var perWorkerEntriesCount = math.ceil((double) entriesCount / (_workersCount * batchSize)) * batchSize;
+
+            _subTreesMaxHeight =
+                (int) math.ceil(math.log((perWorkerEntriesCount * (MinEntries - 1) + MinEntries) / (2 * MinEntries - 1)) /
+                                math.log(MinEntries));
+            _subTreesMaxHeight = math.max(_subTreesMaxHeight - 1, 1);
+
+            _perWorkerResultEntriesContainerCapacity = (int) math.ceil(perWorkerEntriesCount / MinEntries) * MaxEntries;
+            var resultEntriesCount = _perWorkerResultEntriesContainerCapacity * _workersCount;
+
+            if (!_resultEntries.IsCreated || _resultEntries.Length < resultEntriesCount)
+            {
+                if (_resultEntries.IsCreated)
+                    _resultEntries.Dispose();
+
+                _resultEntries = new NativeArray<RTreeLeafEntry>(resultEntriesCount, Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory);
+            }
+
+            _perWorkerNodesContainerCapacity =
+                (int) (MaxEntries * (math.pow(MaxEntries, _subTreesMaxHeight) - 1) / (MaxEntries - 1));
+
+            var nodesContainerCapacity = _perWorkerNodesContainerCapacity * _workersCount;
+            if (!_nodesContainer.IsCreated || _nodesContainer.Length < nodesContainerCapacity)
+            {
+                if (_nodesContainer.IsCreated)
+                    _nodesContainer.Dispose();
+
+                _nodesContainer = new NativeArray<RTreeNode>(nodesContainerCapacity, Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory);
+            }
+
+            var nodesEndIndicesContainerCapacity = _subTreesMaxHeight * _workersCount;
+            if (!_nodesEndIndicesContainer.IsCreated || _nodesEndIndicesContainer.Length < nodesEndIndicesContainerCapacity)
+            {
+                if (_nodesEndIndicesContainer.IsCreated)
+                    _nodesEndIndicesContainer.Dispose();
+
+                _nodesEndIndicesContainer = new NativeArray<int>(nodesEndIndicesContainerCapacity, Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory);
+            }
+
+            if (!_rootNodesLevelIndices.IsCreated || _rootNodesLevelIndices.Length < _workersCount)
+            {
+                if (_rootNodesLevelIndices.IsCreated)
+                    _rootNodesLevelIndices.Dispose();
+
+                _rootNodesLevelIndices = new NativeArray<int>(_workersCount, Allocator.Persistent);
+            }
+
+            if (!_rootNodesCounts.IsCreated || _rootNodesCounts.Length < _workersCount)
+            {
+                if (_rootNodesCounts.IsCreated)
+                    _rootNodesCounts.Dispose();
+
+                _rootNodesCounts = new NativeArray<int>(_workersCount, Allocator.Persistent);
+            }
+
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
+            if (!_countersContainer.IsCreated)
+            {
+                unsafe
+                {
+                    _workersInUseCount = 0;
+                    fixed ( int* count = &_workersInUseCount ) _workersInUseCounter = new UnsafeAtomicCounter32(count);
+                }
+
+                _countersContainer = new NativeArray<UnsafeAtomicCounter32>(1, Allocator.Persistent,
+                    NativeArrayOptions.UninitializedMemory);
+                _countersContainer[0] = _workersInUseCounter;
+            }
+
+            if (!_perThreadWorkerIndices.IsCreated || _perThreadWorkerIndices.Length < JobsUtility.MaxJobThreadCount)
+            {
+                var perThreadWorkerIndices = Enumerable
+                    .Repeat(-1, JobsUtility.MaxJobThreadCount)
+                    .ToArray();
+
+                _perThreadWorkerIndices = new NativeArray<int>(perThreadWorkerIndices, Allocator.Persistent);
+            }
+#endif
+
+            _insertJob = new InsertJob
+            {
+                ReadOnlyData = new InsertJobReadOnlyData
+                {
+                    TreeMaxHeight = _subTreesMaxHeight,
+                    PerWorkerEntriesCount = (int) perWorkerEntriesCount,
+                    NodesContainerCapacity = _perWorkerNodesContainerCapacity,
+                    ResultEntriesContainerCapacity = _perWorkerResultEntriesContainerCapacity,
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
+                    SubTreesCount = _workersCount,
+#endif
+                    EntriesTotalCount = entriesCount
+                },
+                SharedWriteData = new InsertJobSharedWriteData
+                {
+                    ResultEntries = _resultEntries,
+                    NodesContainer = _nodesContainer,
+                    NodesEndIndicesContainer = _nodesEndIndicesContainer,
+                    RootNodesLevelIndices = _rootNodesLevelIndices,
+                    RootNodesCounts = _rootNodesCounts,
+#if !NO_WORK_STEALING_RTREE_INSERT_JOB
+                    CountersContainer = _countersContainer,
+                    PerThreadWorkerIndices = _perThreadWorkerIndices
+#endif
+                }
+            };
+        }
+
 #if USE_BURST_FOR_RTREE_JOBS
         [BurstCompile(CompileSynchronously = true, OptimizeFor = OptimizeFor.Performance, DisableSafetyChecks = true)]
 #endif
-        public struct InsertJob :
+        internal struct InsertJob :
 #if NO_WORK_STEALING_RTREE_INSERT_JOB
             IJobParallelFor
 #else

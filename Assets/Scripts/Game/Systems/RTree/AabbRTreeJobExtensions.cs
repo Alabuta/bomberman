@@ -1,15 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using JetBrains.Annotations;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Jobs;
-using Unity.Jobs.LowLevel.Unsafe;
-using UnityEngine.Assertions;
-using UnityEngine.Scripting;
-
-#if !NO_WORK_STEALING_RTREE_INSERT_JOB
+﻿#if !NO_WORK_STEALING_RTREE_INSERT_JOB
 namespace Game.Systems.RTree
 {
     [JobProducerType(typeof(AabbRTreeJobExtensions.WorkStealingJobProducer<>))]

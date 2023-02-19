@@ -14,6 +14,7 @@ namespace App
         public static readonly ProfilerMarker CollisionsDetection = new(nameof(CollisionsDetection));
         public static readonly ProfilerMarker CollisionsResolver = new(nameof(CollisionsResolver));
         public static readonly ProfilerMarker RTreeBuild = new(nameof(RTreeBuild));
+        public static readonly ProfilerMarker RTreeUpdate = new(nameof(RTreeUpdate));
         public static readonly ProfilerMarker RTreeNativeArrayFill = new(nameof(RTreeNativeArrayFill));
         public static readonly ProfilerMarker RTreeInsert = new(nameof(RTreeInsert));
         public static readonly ProfilerMarker RTreeInsertJob = new(nameof(RTreeInsertJob));
