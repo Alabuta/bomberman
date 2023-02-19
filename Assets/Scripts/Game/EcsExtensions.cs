@@ -57,20 +57,20 @@ namespace Game
             {
                 case BoxColliderConfig config:
                     entity.Replace(new BoxColliderComponent
-                    {
-                        InteractionLayerMask = config.InteractionLayerMask,
-                        Offset = (fix2) config.Offset,
-                        Extent = (fix2) (config.Size / 2.0)
-                    });
+                    (
+                        interactionLayerMask: config.InteractionLayerMask,
+                        offset: (fix2) config.Offset,
+                        extent: (fix2) (config.Size / 2.0)
+                    ));
                     entity.Replace(new HasColliderTag());
                     break;
 
                 case CircleColliderConfig config:
                     entity.Replace(new CircleColliderComponent
-                    {
-                        InteractionLayerMask = config.InteractionLayerMask,
-                        Radius = (fix) config.Radius
-                    });
+                    (
+                        interactionLayerMask: config.InteractionLayerMask,
+                        radius: (fix) config.Radius
+                    ));
                     entity.Replace(new HasColliderTag());
                     break;
 

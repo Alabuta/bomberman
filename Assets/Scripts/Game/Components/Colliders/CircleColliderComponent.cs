@@ -3,9 +3,15 @@ using UnityEngine;
 
 namespace Game.Components.Colliders
 {
-    public struct CircleColliderComponent
+    public readonly struct CircleColliderComponent
     {
-        public LayerMask InteractionLayerMask;
-        public fix Radius;
+        public readonly LayerMask InteractionLayerMask;
+        public readonly fix Radius;
+
+        public CircleColliderComponent(LayerMask interactionLayerMask, fix radius)
+        {
+            InteractionLayerMask = interactionLayerMask;
+            Radius = radius;
+        }
     }
 }

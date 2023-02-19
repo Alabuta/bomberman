@@ -71,14 +71,14 @@ namespace Level
                     IsStatic = true
                 });
 
-                entity.Replace(new BoxColliderComponent
-                {
-                    InteractionLayerMask = 0xFFFFFFF,
-                    Offset = fix2.zero,
-                    Extent = extent
-                });
+                /*entity.Replace(new BoxColliderComponent
+                (
+                    interactionLayerMask: 0xFFFFFFF,
+                    offset: fix2.zero,
+                    extent: extent
+                ));
 
-                entity.Replace(new HasColliderTag());
+                entity.Replace(new HasColliderTag());*/
                 entity.Replace(new WallTag());
             }
         }
@@ -136,8 +136,7 @@ namespace Level
 
         private async Task CreateAndSpawnEnemies(LevelStageConfig levelStageConfig)
         {
-            var enemySpawnElements = levelStageConfig.Enemies;
-            var enemyConfigs = enemySpawnElements
+            var enemyConfigs = levelStageConfig.Enemies
                 .SelectMany(e => Enumerable.Range(0, e.Count).Select(_ => e.EnemyConfig))
                 .ToArray();
 
@@ -217,13 +216,12 @@ namespace Level
             Assert.IsNotNull(enemyController);
 
             entity.Replace(new EntityComponent
-            {
-                Config = enemyConfig,
-                Controller = enemyController,
-
-                InitialSpeed = (fix) enemyConfig.MovementParameters.Speed,
-                SpeedMultiplier = fix.one
-            });
+            (
+                config: enemyConfig,
+                controller: enemyController,
+                initialSpeed: (fix) enemyConfig.MovementParameters.Speed,
+                speedMultiplier: fix.one
+            ));
 
             return entity;
         }
@@ -306,13 +304,12 @@ namespace Level
             Assert.IsNotNull(heroController);
 
             entity.Replace(new EntityComponent
-            {
-                Config = heroConfig,
-                Controller = heroController,
-
-                InitialSpeed = (fix) heroConfig.MovementParameters.Speed,
-                SpeedMultiplier = fix.one
-            });
+            (
+                config: heroConfig,
+                controller: heroController,
+                initialSpeed: (fix) heroConfig.MovementParameters.Speed,
+                speedMultiplier: fix.one
+            ));
 
             player.AttachHero(entity);
             AddPlayer(playerConfig.PlayerTagConfig, player);
@@ -355,13 +352,12 @@ namespace Level
             Assert.IsNotNull(itemController);
 
             entity.Replace(new EntityComponent
-            {
-                Config = bombConfig,
-                Controller = itemController,
-
-                InitialSpeed = fix.zero,
-                SpeedMultiplier = fix.zero
-            });
+            (
+                config: bombConfig,
+                controller: itemController,
+                initialSpeed: fix.zero,
+                speedMultiplier: fix.zero
+            ));
 
             return entity;
         }

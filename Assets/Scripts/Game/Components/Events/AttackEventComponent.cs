@@ -1,7 +1,12 @@
 ﻿namespace Game.Components.Events
 {
-    public struct AttackEventComponent
+    public readonly struct AttackEventComponent
     {
-        public int DamageValue;
+        public readonly int DamageValue;
+
+        public AttackEventComponent(int damageValue)
+        {
+            DamageValue = damageValue;
+        }
     }
 }
