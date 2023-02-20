@@ -30,12 +30,12 @@ namespace Infrastructure.Factory
             _assetProvider = assetProvider;
         }
 
-        public IPlayerInput CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex)
+        public IPlayerInputProvider CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex)
         {
             var playerInput =
                 PlayerInput.Instantiate(playerConfig.PlayerInputHolder, playerIndex, InputService.ControlScheme, -1,
                     _inputDevices);
-            return playerInput.GetComponent<IPlayerInput>();
+            return playerInput.GetComponent<IPlayerInputProvider>();
         }
 
         public IPlayer CreatePlayer(PlayerConfig playerConfig)

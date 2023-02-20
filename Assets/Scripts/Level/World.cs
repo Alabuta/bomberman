@@ -29,7 +29,7 @@ namespace Level
     {
         private readonly IGameFactory _gameFactory;
 
-        private readonly Dictionary<IPlayerInput, IPlayer> _playerInputs = new();
+        private readonly Dictionary<IPlayerInputProvider, IPlayer> _playerInputs = new();
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
 
         private readonly HashSet<EcsEntity> _enemies = new();
@@ -45,7 +45,11 @@ namespace Level
         public fix StageTimer =>
             fix.max(fix.zero, _stageTimer - _simulationCurrentTime + _simulationStartTime);
 
-        public World(ApplicationConfig applicationConfig, IGameFactory gameFactory, LevelStage levelStage)
+        public World(
+            ApplicationConfig applicationConfig,
+            IGameFactory gameFactory,
+            IInputService inputService,
+            LevelStage levelStage)
         {
             TickRate = applicationConfig.TickRate;
             FixedDeltaTime = fix.one / (fix) TickRate;
@@ -88,14 +92,17 @@ namespace Level
                 .OneFrame<OnBombBlastEventComponent>()
                 .OneFrame<PrevFrameDataComponent>()
                 .Add(new BeforeSimulationStepSystem())
+                .Add(new PlayersInputProcessSystem(), PlayersInputProcessSystemName)
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsDetectionSystem())
                 .Add(new CollisionsResolverSystem())
                 .Add(new BombsProcessSystem())
+                .Add(new BombBlastEventsHandlerSystem())
                 .Add(new LevelEntitiesTreeSystem())
                 .Add(new AttackBehaviourSystem())
                 .Add(healthSystem)
                 .Inject(this)
+                .Inject(inputService)
                 .Inject(_entitiesAabbTree)
                 .Init();
         }
@@ -144,11 +151,15 @@ namespace Level
             _enemies.Add(enemy);
         }
 
-        private void AttachPlayerInput(IPlayer player, IPlayerInput playerInput)
+        private void AttachPlayerInput(IPlayer player, IPlayerInputProvider playerInputProvider)
         {
-            _playerInputs.Add(playerInput, player);
+            var playersInputProcessSystemIndex = _ecsFixedSystems.GetNamedRunSystem(PlayersInputProcessSystemName);
+            var systemsList = _ecsFixedSystems.GetAllSystems();
 
-            playerInput.OnInputActionEvent += OnPlayerInputAction;
+            if (systemsList.Items[playersInputProcessSystemIndex] is not PlayersInputProcessSystem playersInputProcessSystem)
+                return;
+
+            playersInputProcessSystem.RegisterPlayerInputProvider(player, playerInputProvider);
         }
 
         private IEnumerable<EcsEntity> GetEnemiesByCoordinate(int2 coordinate)

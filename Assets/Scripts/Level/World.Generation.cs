@@ -258,7 +258,7 @@ namespace Level
             var player = _gameFactory.CreatePlayer(playerConfig);
             Assert.IsNotNull(player);
 
-            var playerInput = inputService.RegisterPlayerInput(player);
+            var playerInput = inputService.RegisterPlayerInputProvider(player);
             AttachPlayerInput(player, playerInput);
 
             var entity = _ecsWorld.NewEntity();

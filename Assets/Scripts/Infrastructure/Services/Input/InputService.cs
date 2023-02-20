@@ -13,15 +13,14 @@ namespace Infrastructure.Services.Input
 
         private readonly IGameFactory _gameFactory;
 
-        private readonly Dictionary<PlayerTagConfig, IPlayerInput> _playerInputs = new();
-
+        private readonly Dictionary<PlayerTagConfig, IPlayerInputProvider> _playerInputs = new();
 
         public InputService(IGameFactory gameFactory)
         {
             _gameFactory = gameFactory;
         }
 
-        public IPlayerInput RegisterPlayerInput(IPlayer player)
+        public IPlayerInputProvider RegisterPlayerInputProvider(IPlayer player)
         {
             var playerIndex = _playerInputs.Count;
             var playerConfig = player.PlayerConfig;
@@ -38,7 +37,7 @@ namespace Infrastructure.Services.Input
             return component;
         }
 
-        public IPlayerInput GetPlayerInput(PlayerTagConfig playerTag)
+        public IPlayerInputProvider GetPlayerInputProvider(PlayerTagConfig playerTag)
         {
             return _playerInputs.TryGetValue(playerTag, out var inputService) ? inputService : null;
         }

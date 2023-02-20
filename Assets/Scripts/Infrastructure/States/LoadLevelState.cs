@@ -76,7 +76,7 @@ namespace Infrastructure.States
 
             Game.World?.Dispose();
 
-            var gameWorld = new World(applicationConfig, _gameFactory, levelStage); // :TODO: move to DI
+            var gameWorld = new World(applicationConfig, _gameFactory, _inputService, levelStage); // :TODO: move to DI
             await gameWorld.InitWorld(_inputService, levelStage);
 
             var defaultPlayer = gameWorld.Players.Values.FirstOrDefault(); // :TODO: use DefaultPlayerTag

@@ -19,7 +19,7 @@ namespace Infrastructure.Factory
         Task<T> LoadAssetAsync<T>(AssetReference reference);
 
         [CanBeNull]
-        IPlayerInput CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex);
+        IPlayerInputProvider CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex);
 
         [CanBeNull]
         IPlayer CreatePlayer(PlayerConfig playerConfig);

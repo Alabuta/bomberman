@@ -2,7 +2,7 @@
 
 namespace Input
 {
-    public interface IPlayerInput
+    public interface IPlayerInputProvider
     {
         event Action<PlayerInputAction> OnInputActionEvent;
     }

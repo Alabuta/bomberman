@@ -8,6 +8,8 @@ namespace Level
 {
     public partial class World
     {
+        private const string PlayersInputProcessSystemName = "PlayersInputProcessSystem";
+
         private readonly EcsWorld _ecsWorld;
         private readonly EcsSystems _ecsSystems;
         private readonly EcsSystems _ecsFixedSystems;
@@ -22,6 +24,8 @@ namespace Level
         public ulong Tick { get; private set; }
         public int TickRate { get; }
         public fix FixedDeltaTime { get; }
+
+        public IRTree EntitiesAabbTree => _entitiesAabbTree;
 
         public void StartSimulation()
         {
@@ -46,9 +50,6 @@ namespace Level
             var tickCounts = targetTick - Tick;
             while (Tick < targetTick)
             {
-                using ( Profiling.PlayersInputProcess.Auto() )
-                    ProcessPlayersInput();
-
                 using ( Profiling.EcsFixedSystemsUpdate.Auto() )
                     _ecsFixedSystems.Run();
 
@@ -58,20 +59,6 @@ namespace Level
             _timeRemainder = fix.max(fix.zero, deltaTime - (fix) tickCounts / (fix) TickRate);
 
             _simulationCurrentTime += deltaTime - _timeRemainder;
-        }
-
-        private void ProcessPlayersInput()
-        {
-            if (_playersInputActions.TryGetValue(Tick, out var playerInputActions))
-            {
-                foreach (var inputAction in playerInputActions)
-                {
-                    var player = _playerInputs[inputAction.PlayerInput];
-                    player.ApplyInputAction(this, inputAction);
-                }
-            }
-
-            _playersInputActions.Remove(Tick);
         }
     }
 }
