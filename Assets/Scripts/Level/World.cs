@@ -36,6 +36,8 @@ namespace Level
 
         private readonly fix _stageTimer;
 
+        private readonly PlayersInputQueueSystem _playersInputQueueSystem;
+
         public RandomGenerator RandomGenerator { get; }
 
         public LevelTiles LevelTiles { get; private set; }
@@ -63,6 +65,8 @@ namespace Level
             _ecsSystems = new EcsSystems(_ecsWorld);
             _ecsFixedSystems = new EcsSystems(_ecsWorld);
 
+            _playersInputQueueSystem = new PlayersInputQueueSystem();
+
             _entitiesAabbTree = new AabbRTree();
 
 #if UNITY_EDITOR
@@ -77,6 +81,7 @@ namespace Level
 #endif
 
             _ecsSystems
+                .Add(_playersInputQueueSystem)
                 .Add(new WorldViewUpdateSystem())
                 .Inject(this)
                 .Init();
@@ -92,7 +97,6 @@ namespace Level
                 .OneFrame<OnBombBlastEventComponent>()
                 .OneFrame<PrevFrameDataComponent>()
                 .Add(new BeforeSimulationStepSystem())
-                .Add(new PlayersInputProcessSystem(), PlayersInputProcessSystemName)
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsDetectionSystem())
                 .Add(new CollisionsResolverSystem())
@@ -153,13 +157,7 @@ namespace Level
 
         private void AttachPlayerInput(IPlayer player, IPlayerInputProvider playerInputProvider)
         {
-            var playersInputProcessSystemIndex = _ecsFixedSystems.GetNamedRunSystem(PlayersInputProcessSystemName);
-            var systemsList = _ecsFixedSystems.GetAllSystems();
-
-            if (systemsList.Items[playersInputProcessSystemIndex] is not PlayersInputProcessSystem playersInputProcessSystem)
-                return;
-
-            playersInputProcessSystem.RegisterPlayerInputProvider(player, playerInputProvider);
+            _playersInputQueueSystem.RegisterPlayerInputProvider(player, playerInputProvider);
         }
 
         private IEnumerable<EcsEntity> GetEnemiesByCoordinate(int2 coordinate)

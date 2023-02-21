@@ -17,7 +17,6 @@ namespace Game
     {
         public PlayerConfig PlayerConfig { get; }
 
-        // public Hero.Hero Hero { get; private set; }
         public EcsEntity HeroEntity { get; private set; }
         private Score _score;
 

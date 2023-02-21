@@ -8,8 +8,6 @@ namespace Level
 {
     public partial class World
     {
-        private const string PlayersInputProcessSystemName = "PlayersInputProcessSystem";
-
         private readonly EcsWorld _ecsWorld;
         private readonly EcsSystems _ecsSystems;
         private readonly EcsSystems _ecsFixedSystems;

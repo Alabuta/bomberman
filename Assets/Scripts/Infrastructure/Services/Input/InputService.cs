@@ -20,10 +20,9 @@ namespace Infrastructure.Services.Input
             _gameFactory = gameFactory;
         }
 
-        public IPlayerInputProvider RegisterPlayerInputProvider(IPlayer player)
+        public IPlayerInputProvider RegisterPlayerInputProvider(PlayerConfig playerConfig)
         {
             var playerIndex = _playerInputs.Count;
-            var playerConfig = player.PlayerConfig;
 
             var component = _gameFactory.CreatePlayerInputHolder(playerConfig, playerIndex);
             Assert.IsNotNull(component);

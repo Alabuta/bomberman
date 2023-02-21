@@ -8,23 +8,9 @@ namespace Input
 {
     public struct PlayerInputAction
     {
-        public IPlayerInputProvider PlayerInputProvider;
         public float2 MovementVector;
         public bool BombPlant;
         public bool BombBlast;
-    }
-
-    public readonly struct MovePlayerInputAction
-    {
-        public readonly float2 MovementVector;
-    }
-
-    public readonly struct BombPlantInputAction
-    {
-    }
-
-    public readonly struct BombBlastInputAction
-    {
     }
 
     [RequireComponent(typeof(PlayerInput))]
@@ -42,21 +28,19 @@ namespace Input
             _moveVector = value.Get<Vector2>();
             _moveVector *= math.select(_horizontalMovementMask, _verticalMovementMask, _moveVector.y != 0);
 
-            OnInputActionEvent?.Invoke(new PlayerInputAction { PlayerInputProvider = this, MovementVector = _moveVector });
+            OnInputActionEvent?.Invoke(new PlayerInputAction { MovementVector = _moveVector });
         }
 
         [UsedImplicitly]
         public void OnBombPlant(InputValue value)
         {
-            OnInputActionEvent?.Invoke(new PlayerInputAction
-                { PlayerInputProvider = this, MovementVector = _moveVector, BombPlant = true });
+            OnInputActionEvent?.Invoke(new PlayerInputAction { MovementVector = _moveVector, BombPlant = true });
         }
 
         [UsedImplicitly]
         public void OnBombBlast(InputValue value)
         {
-            OnInputActionEvent?.Invoke(new PlayerInputAction
-                { PlayerInputProvider = this, MovementVector = _moveVector, BombBlast = true });
+            OnInputActionEvent?.Invoke(new PlayerInputAction { MovementVector = _moveVector, BombBlast = true });
         }
     }
 }

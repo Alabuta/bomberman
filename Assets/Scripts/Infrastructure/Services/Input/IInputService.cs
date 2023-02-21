@@ -9,7 +9,7 @@ namespace Infrastructure.Services.Input
         // get specific player input
         // send event when a player connects to the game
 
-        IPlayerInputProvider RegisterPlayerInputProvider(IPlayer playerConfig);
+        IPlayerInputProvider RegisterPlayerInputProvider(PlayerConfig playerConfig);
 
         IPlayerInputProvider GetPlayerInputProvider(PlayerTagConfig playerTag);
     }
