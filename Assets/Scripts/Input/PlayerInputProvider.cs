@@ -8,6 +8,7 @@ namespace Input
 {
     public struct PlayerInputAction
     {
+        public IPlayerInputProvider PlayerInputProvider;
         public float2 MovementVector;
         public bool BombPlant;
         public bool BombBlast;
@@ -16,31 +17,38 @@ namespace Input
     [RequireComponent(typeof(PlayerInput))]
     public class PlayerInputProvider : MonoBehaviour, IPlayerInputProvider
     {
-        private readonly float2 _horizontalMovementMask = new(1, 0);
-        private readonly float2 _verticalMovementMask = new(0, 1);
-        private float2 _moveVector;
-
         public event Action<PlayerInputAction> OnInputActionEvent;
 
         [UsedImplicitly]
         public void OnMove(InputValue value)
         {
-            _moveVector = value.Get<Vector2>();
-            _moveVector *= math.select(_horizontalMovementMask, _verticalMovementMask, _moveVector.y != 0);
-
-            OnInputActionEvent?.Invoke(new PlayerInputAction { MovementVector = _moveVector });
+            OnInputActionEvent?.Invoke(new PlayerInputAction
+            {
+                PlayerInputProvider = this,
+                MovementVector = value.Get<Vector2>()
+            });
         }
 
         [UsedImplicitly]
         public void OnBombPlant(InputValue value)
         {
-            OnInputActionEvent?.Invoke(new PlayerInputAction { MovementVector = _moveVector, BombPlant = true });
+            OnInputActionEvent?.Invoke(new PlayerInputAction
+            {
+                PlayerInputProvider = this,
+                MovementVector = value.Get<Vector2>(),
+                BombPlant = true
+            });
         }
 
         [UsedImplicitly]
         public void OnBombBlast(InputValue value)
         {
-            OnInputActionEvent?.Invoke(new PlayerInputAction { MovementVector = _moveVector, BombBlast = true });
+            OnInputActionEvent?.Invoke(new PlayerInputAction
+            {
+                PlayerInputProvider = this,
+                MovementVector = value.Get<Vector2>(),
+                BombBlast = true
+            });
         }
     }
 }
