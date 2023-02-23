@@ -8,7 +8,6 @@ using Configs.Level;
 using Data;
 using Game;
 using Game.Components;
-using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Tags;
 using Game.Enemies;
@@ -259,7 +258,7 @@ namespace Level
             Assert.IsNotNull(player);
 
             var playerInput = inputService.RegisterPlayerInputProvider(player.PlayerConfig);
-            AttachPlayerInput(player, playerInput);
+            _playersInputQueueSystem.RegisterPlayerInputProvider(playerInput);
 
             var entity = _ecsWorld.NewEntity();
 

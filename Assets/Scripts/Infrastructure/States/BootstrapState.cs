@@ -44,7 +44,7 @@ namespace Infrastructure.States
         {
             _serviceLocator.RegisterSingle<IAssetProvider>(new AssetProvider());
             _serviceLocator.RegisterSingle<IGameFactory>(new GameFactory(_serviceLocator.Single<IAssetProvider>()));
-            _serviceLocator.RegisterSingle<IInputService>(new InputService(_serviceLocator.Single<IGameFactory>()));
+            _serviceLocator.RegisterSingle<IInputService>(new InputService());
             _serviceLocator.RegisterSingle<IPersistentProgressService>(new PersistentProgressService());
             _serviceLocator.RegisterSingle<ISaveLoadService>(
                 new SaveLoadService(_serviceLocator.Single<IPersistentProgressService>(),

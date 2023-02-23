@@ -81,7 +81,6 @@ namespace Level
 #endif
 
             _ecsSystems
-                .Add(_playersInputQueueSystem)
                 .Add(new WorldViewUpdateSystem())
                 .Inject(this)
                 .Init();
@@ -96,6 +95,7 @@ namespace Level
                 .OneFrame<OnCollisionStayEventComponent>()
                 .OneFrame<OnBombBlastEventComponent>()
                 .OneFrame<PrevFrameDataComponent>()
+                .Add(_playersInputQueueSystem)
                 .Add(new BeforeSimulationStepSystem())
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsDetectionSystem())
@@ -153,11 +153,6 @@ namespace Level
         private void AddEnemy(EcsEntity enemy)
         {
             _enemies.Add(enemy);
-        }
-
-        private void AttachPlayerInput(IPlayer player, IPlayerInputProvider playerInputProvider)
-        {
-            _playersInputQueueSystem.RegisterPlayerInputProvider(player, playerInputProvider);
         }
 
         private IEnumerable<EcsEntity> GetEnemiesByCoordinate(int2 coordinate)

@@ -1,6 +1,6 @@
 ﻿using Configs.Game;
-using Game;
 using Input;
+using JetBrains.Annotations;
 
 namespace Infrastructure.Services.Input
 {
@@ -9,8 +9,9 @@ namespace Infrastructure.Services.Input
         // get specific player input
         // send event when a player connects to the game
 
+        [CanBeNull]
         IPlayerInputProvider RegisterPlayerInputProvider(PlayerConfig playerConfig);
 
-        IPlayerInputProvider GetPlayerInputProvider(PlayerTagConfig playerTag);
+        bool TryGetRegisteredPlayerTag(IPlayerInputProvider playerInputProvider, out PlayerTagConfig playerTag);
     }
 }

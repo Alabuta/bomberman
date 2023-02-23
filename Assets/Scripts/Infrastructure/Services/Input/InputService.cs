@@ -1,44 +1,50 @@
 using System.Collections.Generic;
 using Configs.Game;
-using Game;
-using Infrastructure.Factory;
 using Input;
-using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
+using UnityEngine.Scripting;
 
 namespace Infrastructure.Services.Input
 {
     public class InputService : IInputService
     {
-        public const string ControlScheme = "Keyboard";
+        private readonly InputDevice[] _inputDevices = { Keyboard.current }; // :TODO: make it configurable
 
-        private readonly IGameFactory _gameFactory;
+        private const string ControlScheme = "Keyboard";
 
-        private readonly Dictionary<PlayerTagConfig, IPlayerInputProvider> _playerInputs = new();
+        private readonly Dictionary<IPlayerInputProvider, PlayerTagConfig> _playerInputProviders = new();
 
-        public InputService(IGameFactory gameFactory)
+        [Preserve]
+        public InputService()
         {
-            _gameFactory = gameFactory;
         }
 
         public IPlayerInputProvider RegisterPlayerInputProvider(PlayerConfig playerConfig)
         {
-            var playerIndex = _playerInputs.Count;
+            var playerIndex = _playerInputProviders.Count;
 
-            var component = _gameFactory.CreatePlayerInputHolder(playerConfig, playerIndex);
-            Assert.IsNotNull(component);
+            var playerInputProvider = CreatePlayerInputProvider(playerConfig, playerIndex);
+            if (playerInputProvider == null)
+                return null;
 
-            if (_playerInputs.ContainsKey(playerConfig.PlayerTagConfig))
-                _playerInputs[playerConfig.PlayerTagConfig] = component;
+            _playerInputProviders[playerInputProvider] = playerConfig.PlayerTagConfig;
 
-            else
-                _playerInputs.Add(playerConfig.PlayerTagConfig, component);
-
-            return component;
+            return playerInputProvider;
         }
 
-        public IPlayerInputProvider GetPlayerInputProvider(PlayerTagConfig playerTag)
+        public bool TryGetRegisteredPlayerTag(IPlayerInputProvider playerInputProvider, out PlayerTagConfig playerTag) =>
+            _playerInputProviders.TryGetValue(playerInputProvider, out playerTag);
+
+        private IPlayerInputProvider CreatePlayerInputProvider(PlayerConfig playerConfig, int playerIndex)
         {
-            return _playerInputs.TryGetValue(playerTag, out var inputService) ? inputService : null;
+            var playerInput = PlayerInput.Instantiate(
+                playerConfig.PlayerInputHolder,
+                playerIndex,
+                ControlScheme,
+                -1,
+                _inputDevices);
+
+            return playerInput != null ? playerInput.GetComponent<IPlayerInputProvider>() : null;
         }
     }
 }

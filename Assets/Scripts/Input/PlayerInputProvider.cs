@@ -35,7 +35,7 @@ namespace Input
             OnInputActionEvent?.Invoke(new PlayerInputAction
             {
                 PlayerInputProvider = this,
-                MovementVector = value.Get<Vector2>(),
+                MovementVector = float2.zero,
                 BombPlant = true
             });
         }
@@ -46,7 +46,7 @@ namespace Input
             OnInputActionEvent?.Invoke(new PlayerInputAction
             {
                 PlayerInputProvider = this,
-                MovementVector = value.Get<Vector2>(),
+                MovementVector = float2.zero,
                 BombBlast = true
             });
         }

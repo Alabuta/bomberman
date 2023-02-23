@@ -18,8 +18,6 @@ namespace Infrastructure.Factory
 {
     public class GameFactory : IGameFactory
     {
-        private readonly InputDevice[] _inputDevices = { Keyboard.current }; // :TODO: make it configurable
-
         private readonly IAssetProvider _assetProvider;
 
         public List<ISavedProgressReader> ProgressReaders { get; } = new();
@@ -28,14 +26,6 @@ namespace Infrastructure.Factory
         public GameFactory(IAssetProvider assetProvider)
         {
             _assetProvider = assetProvider;
-        }
-
-        public IPlayerInputProvider CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex)
-        {
-            var playerInput =
-                PlayerInput.Instantiate(playerConfig.PlayerInputHolder, playerIndex, InputService.ControlScheme, -1,
-                    _inputDevices);
-            return playerInput.GetComponent<IPlayerInputProvider>();
         }
 
         public IPlayer CreatePlayer(PlayerConfig playerConfig)

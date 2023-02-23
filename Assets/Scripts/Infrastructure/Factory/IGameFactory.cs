@@ -19,9 +19,6 @@ namespace Infrastructure.Factory
         Task<T> LoadAssetAsync<T>(AssetReference reference);
 
         [CanBeNull]
-        IPlayerInputProvider CreatePlayerInputHolder(PlayerConfig playerConfig, int playerIndex);
-
-        [CanBeNull]
         IPlayer CreatePlayer(PlayerConfig playerConfig);
 
         GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null);
