@@ -258,7 +258,7 @@ namespace Level
             Assert.IsNotNull(player);
 
             var playerInput = inputService.RegisterPlayerInputProvider(player.PlayerConfig);
-            _playersInputQueueSystem.RegisterPlayerInputProvider(playerInput);
+            _playersInputQueueSystem.SubscribeToPlayerInputActions(playerInput);
 
             var entity = _ecsWorld.NewEntity();
 
