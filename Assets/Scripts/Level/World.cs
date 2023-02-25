@@ -29,7 +29,7 @@ namespace Level
     {
         private readonly IGameFactory _gameFactory;
 
-        private readonly Dictionary<IPlayerInputProvider, IPlayer> _playerInputs = new();
+        private readonly Dictionary<IPlayerInputProvider, IPlayer> _playerInputProviders = new();
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
 
         private readonly HashSet<EcsEntity> _enemies = new();
@@ -133,11 +133,6 @@ namespace Level
             }
 
             await CreateAndSpawnEnemies(levelStageConfig);
-        }
-
-        public IPlayer GetPlayer(PlayerTagConfig playerTagConfig)
-        {
-            return _players.TryGetValue(playerTagConfig, out var player) ? player : null; // :TODO: refactor
         }
 
         public EcsEntity NewEntity()

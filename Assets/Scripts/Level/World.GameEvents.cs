@@ -208,10 +208,11 @@ namespace Level
                     if (ecsEntity.Has<HeroTag>())
                     {
                         // :TODO: refactor
-                        /*var (playerInput, _) = _playerInputs.FirstOrDefault(pi => pi.Value.HeroEntity == ecsEntity);
+                        var (playerInputProvider, _) =
+                            _playerInputProviders.FirstOrDefault(pi => pi.Value.HeroEntity == ecsEntity);
 
-                        if (playerInput != null)
-                            playerInput.OnInputActionEvent -= OnPlayerInputAction;*/
+                        if (playerInputProvider != null)
+                            _playersInputQueueSystem.UnsubscribePlayerInputProvider(playerInputProvider);
                     }
 
                     if (ecsEntity.Has<HasColliderTag>())

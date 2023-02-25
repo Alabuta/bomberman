@@ -3,16 +3,12 @@ using System.Threading.Tasks;
 using Configs.Game;
 using Game;
 using Infrastructure.AssetManagement;
-using Infrastructure.Services.Input;
 using Infrastructure.Services.PersistentProgress;
-using Input;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Assertions;
-using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using PlayerInput = UnityEngine.InputSystem.PlayerInput;
 
 namespace Infrastructure.Factory
 {

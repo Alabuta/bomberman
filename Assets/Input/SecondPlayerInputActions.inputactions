@@ -10,7 +10,7 @@
                     "type": "PassThrough",
                     "id": "9c93942b-cde1-41be-8eb4-964760443a7a",
                     "expectedControlType": "Vector2",
-                    "processors": "",
+                    "processors": "VerticalAxisMaskInput",
                     "interactions": "",
                     "initialStateCheck": false
                 },
@@ -27,6 +27,15 @@
                     "name": "BombBlast",
                     "type": "Button",
                     "id": "6637c3cb-4cec-489d-b552-1105368195e4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "d2098de8-d0c9-4588-9adf-56749c27e3fe",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -108,6 +117,17 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "BombBlast",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "16151e7a-4fee-4149-8a42-78f5f3273f93",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

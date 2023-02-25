@@ -1,7 +1,6 @@
 ﻿using Configs.Game;
 using Input;
 using Leopotam.Ecs;
-using Level;
 
 namespace Game
 {
@@ -12,7 +11,5 @@ namespace Game
         EcsEntity HeroEntity { get; }
 
         void AttachHero(EcsEntity entity);
-
-        void ApplyInputAction(World world, PlayerInputAction inputAction);
     }
 }

@@ -4,7 +4,6 @@ using Configs.Game;
 using Game;
 using Infrastructure.Services;
 using Infrastructure.Services.PersistentProgress;
-using Input;
 using JetBrains.Annotations;
 using Unity.Mathematics;
 using UnityEngine;
