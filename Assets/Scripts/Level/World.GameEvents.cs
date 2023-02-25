@@ -212,7 +212,7 @@ namespace Level
                             _playerInputProviders.FirstOrDefault(pi => pi.Value.HeroEntity == ecsEntity);
 
                         if (playerInputProvider != null)
-                            _playersInputQueueSystem.UnsubscribePlayerInputProvider(playerInputProvider);
+                            _playersInputHandlerSystem.UnsubscribePlayerInputProvider(playerInputProvider);
                     }
 
                     if (ecsEntity.Has<HasColliderTag>())

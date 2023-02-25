@@ -36,7 +36,7 @@ namespace Level
 
         private readonly fix _stageTimer;
 
-        private readonly PlayersInputQueueSystem _playersInputQueueSystem;
+        private readonly PlayersInputHandlerSystem _playersInputHandlerSystem;
 
         public RandomGenerator RandomGenerator { get; }
 
@@ -65,7 +65,7 @@ namespace Level
             _ecsSystems = new EcsSystems(_ecsWorld);
             _ecsFixedSystems = new EcsSystems(_ecsWorld);
 
-            _playersInputQueueSystem = new PlayersInputQueueSystem();
+            _playersInputHandlerSystem = new PlayersInputHandlerSystem();
 
             _entitiesAabbTree = new AabbRTree();
 
@@ -95,7 +95,7 @@ namespace Level
                 .OneFrame<OnCollisionStayEventComponent>()
                 .OneFrame<OnBombBlastEventComponent>()
                 .OneFrame<PrevFrameDataComponent>()
-                .Add(_playersInputQueueSystem)
+                .Add(_playersInputHandlerSystem)
                 .Add(new BeforeSimulationStepSystem())
                 .Add(new MovementBehaviourSystem())
                 .Add(new CollisionsDetectionSystem())
