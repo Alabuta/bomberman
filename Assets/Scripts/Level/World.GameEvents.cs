@@ -8,14 +8,10 @@ using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Events;
 using Game.Components.Tags;
-using Game.Systems;
-using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
 using Unity.Mathematics;
-using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Pool;
 
 namespace Level
 {
@@ -35,13 +31,21 @@ namespace Level
             var coordinate = LevelTiles.ToTileCoordinate(worldPosition);
             var position = LevelTiles.ToWorldPosition(coordinate);
 
-            var task = CreateAndSpawnBomb(heroConfig.BombConfig, position);
+            var task = CreateAndSpawnBomb(heroConfig.BombConfig, position); // :TODO: use object pools
             var entity = await task;
 
             if (!_playerBombs.ContainsKey(player))
                 _playerBombs.Add(player, new Queue<EcsEntity>());
 
             _playerBombs[player].Enqueue(entity);
+
+            /*var eventEntity = _ecsWorld.NewEntity();
+            eventEntity.Replace(new OnBombPlantEventComponent(
+                position: bombPosition,
+                bombBlastDamage: bombBlastDamage,
+                bombBlastRadius: bombBlastRadius,
+                bombBlastDirections: blastDirections
+            ));*/
         }
 
         public void OnPlayerBombBlast(IPlayer player)
@@ -202,7 +206,7 @@ namespace Level
                     if (ecsEntity.Has<MovementComponent>())
                     {
                         ref var transformComponent = ref ecsEntity.Get<MovementComponent>();
-                        transformComponent.Speed = fix.zero;
+                        transformComponent.Speed = fix.zero; // :TODO: refactor
                     }
 
                     if (ecsEntity.Has<HeroTag>())

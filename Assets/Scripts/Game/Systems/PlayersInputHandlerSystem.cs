@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using App;
 using Game.Components;
 using Game.Components.Entities;
@@ -84,7 +85,8 @@ namespace Game.Systems
             if (inputAction.BombPlant)
             {
                 ref var transformComponent = ref player.HeroEntity.Get<TransformComponent>();
-                var _ = world.OnPlayerBombPlant(player, transformComponent.WorldPosition); // :TODO: fix?
+                var task = world.OnPlayerBombPlant(player, transformComponent.WorldPosition);
+                Task.WhenAll(task); // :TODO: refactor
             }
             else if (inputAction.BombBlast)
                 world.OnPlayerBombBlast(player);
@@ -95,18 +97,23 @@ namespace Game.Systems
         private static void ApplyMoveAction(World world, IPlayer player, float2 value)
         {
             var heroEntity = player.HeroEntity;
+            Assert.IsTrue(heroEntity.Has<EntityComponent>());
+            Assert.IsTrue(heroEntity.Has<TransformComponent>());
+            Assert.IsTrue(heroEntity.Has<MovementComponent>());
 
+            // :TODO: refactor - replace by MovementComponent
             ref var transformComponent = ref heroEntity.Get<TransformComponent>();
-            ref var movementComponent = ref heroEntity.Get<MovementComponent>();
+            // ref var movementComponent = ref heroEntity.Get<MovementComponent>();
             ref var entityComponent = ref heroEntity.Get<EntityComponent>();
 
-            if (math.lengthsq(value) > 0)
-            {
+            var hasMovement = math.lengthsq(value) > 0;
+            if (hasMovement)
                 transformComponent.Direction = (int2) math.round(value);
-                movementComponent.Speed = entityComponent.InitialSpeed * entityComponent.SpeedMultiplier;
-            }
-            else
-                movementComponent.Speed = fix.zero;
+
+            heroEntity.Replace(new MovementComponent
+            {
+                Speed = fix.select(fix.zero, entityComponent.InitialSpeed * entityComponent.SpeedMultiplier, hasMovement)
+            });
         }
     }
 }
