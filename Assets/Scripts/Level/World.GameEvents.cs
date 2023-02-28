@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Configs.Entity;
@@ -17,75 +16,41 @@ namespace Level
 {
     public partial class World
     {
-        private readonly Dictionary<IPlayer, Queue<EcsEntity>> _playerBombs = new();
-
-        public async Task OnPlayerBombPlant(IPlayer player, fix2 worldPosition)
+        public void CreatePlayerBombPlantAction(IPlayer player)
         {
             var heroEntity = player.HeroEntity;
             Assert.IsTrue(heroEntity.Has<HeroTag>());
+            Assert.IsTrue(heroEntity.Has<TransformComponent>());
 
             var heroComponent = heroEntity.Get<EntityComponent>();
             var heroConfig = heroComponent.Config as HeroConfig;
             Assert.IsNotNull(heroConfig);
 
-            var coordinate = LevelTiles.ToTileCoordinate(worldPosition);
+            // :TODO: use player current parameters instead of static data
+            var bombBlastDamage = (fix) heroConfig.BombBlastDamage;
+            var bombBlastRadius = heroConfig.BombBlastRadius;
+            var bombBlastDelay = (fix) heroConfig.BombBlastDelay;
+
+            ref var transformComponent = ref heroEntity.Get<TransformComponent>();
+
+            var coordinate = LevelTiles.ToTileCoordinate(transformComponent.WorldPosition);
             var position = LevelTiles.ToWorldPosition(coordinate);
 
-            var task = CreateAndSpawnBomb(heroConfig.BombConfig, position); // :TODO: use object pools
-            var entity = await task;
-
-            if (!_playerBombs.ContainsKey(player))
-                _playerBombs.Add(player, new Queue<EcsEntity>());
-
-            _playerBombs[player].Enqueue(entity);
-
-            /*var eventEntity = _ecsWorld.NewEntity();
-            eventEntity.Replace(new OnBombPlantEventComponent(
-                position: bombPosition,
+            var eventEntity = _ecsWorld.NewEntity();
+            eventEntity.Replace(new OnBombPlantActionComponent(
+                playerTag: player.PlayerTag,
+                position: position,
+                bombConfig: heroConfig.BombConfig,
+                blastDelay: bombBlastDelay,
                 bombBlastDamage: bombBlastDamage,
-                bombBlastRadius: bombBlastRadius,
-                bombBlastDirections: blastDirections
-            ));*/
+                bombBlastRadius: bombBlastRadius
+            ));
         }
 
-        public void OnPlayerBombBlast(IPlayer player)
+        public void CreatePlayerBombBlastAction(IPlayer player)
         {
-            if (!_playerBombs.TryGetValue(player, out var bombsQueue))
-                return;
-
-            if (!bombsQueue.TryDequeue(out var bombEntity))
-                return;
-
-            Assert.IsTrue(bombEntity.Has<BombTag>());
-            Assert.IsTrue(bombEntity.Has<EntityComponent>());
-            Assert.IsTrue(bombEntity.Has<TransformComponent>());
-
-            ref var transformComponent = ref bombEntity.Get<TransformComponent>();
-            var bombPosition = transformComponent.WorldPosition;
-
-            var heroEntity = player.HeroEntity;
-            Assert.IsTrue(heroEntity.Has<HeroTag>());
-            Assert.IsTrue(heroEntity.Has<EntityComponent>());
-
-            ref var heroComponent = ref heroEntity.Get<EntityComponent>();
-            var heroConfig = (HeroConfig) heroComponent.Config;
-
-            var bombBlastDamage = (fix) heroConfig.BombBlastDamage; // :TODO: use hero current parameters instead of static data
-            var bombBlastRadius = heroConfig.BombBlastRadius; // :TODO: use hero current parameters instead of static data
-            var blastDirections = heroConfig.BombBlastDirections;
-
             var eventEntity = _ecsWorld.NewEntity();
-            eventEntity.Replace(new OnBombBlastEventComponent(
-                position: bombPosition,
-                bombBlastDamage: bombBlastDamage,
-                bombBlastRadius: bombBlastRadius,
-                bombBlastDirections: blastDirections
-            ));
-
-            ref var entityComponent = ref bombEntity.Get<EntityComponent>();
-            entityComponent.Controller.Kill();
-
-            // bombEntity.Destroy(); :TODO: destroy right here
+            eventEntity.Replace(new OnBombBlastActionComponent(playerTag: player.PlayerTag));
         }
 
         private void ApplyDamageToBlocks(int2[][] blastLines)

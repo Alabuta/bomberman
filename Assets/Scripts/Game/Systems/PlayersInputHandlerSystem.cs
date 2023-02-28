@@ -83,13 +83,9 @@ namespace Game.Systems
         private static void ApplyInputAction(World world, IPlayer player, in PlayerInputAction inputAction)
         {
             if (inputAction.BombPlant)
-            {
-                ref var transformComponent = ref player.HeroEntity.Get<TransformComponent>();
-                var task = world.OnPlayerBombPlant(player, transformComponent.WorldPosition);
-                Task.WhenAll(task); // :TODO: refactor
-            }
+                world.CreatePlayerBombPlantAction(player);
             else if (inputAction.BombBlast)
-                world.OnPlayerBombBlast(player);
+                world.CreatePlayerBombBlastAction(player);
             else
                 ApplyMoveAction(world, player, inputAction.MovementVector);
         }

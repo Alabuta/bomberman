@@ -1,5 +1,4 @@
 ﻿using Configs.Game;
-using Input;
 using Leopotam.Ecs;
 
 namespace Game
@@ -8,8 +7,10 @@ namespace Game
     {
         PlayerConfig PlayerConfig { get; }
 
+        PlayerTagConfig PlayerTag { get; }
+
         EcsEntity HeroEntity { get; }
 
-        void AttachHero(EcsEntity entity);
+        void AttachHeroEntity(EcsEntity entity);
     }
 }

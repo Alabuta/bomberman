@@ -12,6 +12,7 @@ namespace Game
     public class Player : IPlayer, ISavedProgressWriter
     {
         public PlayerConfig PlayerConfig { get; }
+        public PlayerTagConfig PlayerTag => PlayerConfig.PlayerTagConfig;
 
         public EcsEntity HeroEntity { get; private set; }
 
@@ -22,7 +23,7 @@ namespace Game
             PlayerConfig = playerConfig;
         }
 
-        public void AttachHero(EcsEntity entity)
+        public void AttachHeroEntity(EcsEntity entity)
         {
             Assert.IsTrue(entity.Has<TransformComponent>());
             Assert.IsTrue(entity.Has<HealthComponent>());

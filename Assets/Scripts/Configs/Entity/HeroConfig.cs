@@ -21,13 +21,6 @@ namespace Configs.Entity
 
         public int BombBlastDamage = 1;
         public int BombBlastRadius = 1;
-
-        public int2[] BombBlastDirections =
-        {
-            new(1, 0),
-            new(-1, 0),
-            new(0, 1),
-            new(0, -1)
-        };
+        public float BombBlastDelay = 2;
     }
 }

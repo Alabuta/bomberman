@@ -33,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Pause",
+                    "name": "GamePause",
                     "type": "Button",
                     "id": "d2098de8-d0c9-4588-9adf-56749c27e3fe",
                     "expectedControlType": "Button",
@@ -127,7 +127,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
-                    "action": "Pause",
+                    "action": "GamePause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -82,8 +82,7 @@ namespace Level
             }
         }
 
-        private async Task SpawnBlocks(LevelConfig levelConfig, LevelTiles levelTiles,
-            IGameFactory gameFactory)
+        private async Task SpawnBlocks(LevelConfig levelConfig, LevelTiles levelTiles, IGameFactory gameFactory)
         {
             // :TODO: refactor
             (LevelTileType type, AssetReferenceGameObject prefab)[] blocks =
@@ -313,13 +312,13 @@ namespace Level
                 speedMultiplier: fix.one
             ));
 
-            player.AttachHero(entity);
+            player.AttachHeroEntity(entity);
             AddPlayer(playerConfig.PlayerTagConfig, player);
 
             return entity;
         }
 
-        private async Task<EcsEntity> CreateAndSpawnBomb(BombConfig bombConfig, fix2 position)
+        public async Task<EcsEntity> CreateAndSpawnBomb(BombConfig bombConfig, fix2 position)
         {
             var task = _gameFactory.InstantiatePrefabAsync(bombConfig.Prefab, fix2.ToXY(position));
 

@@ -8,5 +8,6 @@ namespace Input
         event Action<IPlayerInputProvider, float2> OnMoveActionEvent;
         event Action<IPlayerInputProvider> OnBombPlantActionEvent;
         event Action<IPlayerInputProvider> OnBombBlastActionEvent;
+        event Action<IPlayerInputProvider> OnGamePauseActionEvent;
     }
 }

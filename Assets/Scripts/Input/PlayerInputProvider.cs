@@ -12,6 +12,7 @@ namespace Input
         public event Action<IPlayerInputProvider, float2> OnMoveActionEvent;
         public event Action<IPlayerInputProvider> OnBombPlantActionEvent;
         public event Action<IPlayerInputProvider> OnBombBlastActionEvent;
+        public event Action<IPlayerInputProvider> OnGamePauseActionEvent;
 
         [UsedImplicitly]
         public void OnMove(InputValue value)
@@ -29,6 +30,12 @@ namespace Input
         public void OnBombBlast(InputValue value)
         {
             OnBombBlastActionEvent?.Invoke(this);
+        }
+
+        [UsedImplicitly]
+        public void OnGamePause(InputValue value)
+        {
+            OnGamePauseActionEvent?.Invoke(this);
         }
     }
 }
