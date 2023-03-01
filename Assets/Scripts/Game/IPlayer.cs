@@ -11,6 +11,8 @@ namespace Game
 
         EcsEntity HeroEntity { get; }
 
+        bool HasRemoConBomb { get; } // :TODO: refactor
+
         void AttachHeroEntity(EcsEntity entity);
     }
 }

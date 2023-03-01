@@ -31,6 +31,7 @@ namespace Infrastructure.Factory
 
         public GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null)
         {
+            // :TODO: use object pools
             var gameObject = _assetProvider.Instantiate(prefab, position, parent);
 
             RegisterProgressWatchers(gameObject);
@@ -38,10 +39,12 @@ namespace Infrastructure.Factory
             return gameObject;
         }
 
-        public async Task<GameObject> InstantiatePrefabAsync(AssetReferenceGameObject reference,
+        public async Task<GameObject> InstantiatePrefabAsync(
+            AssetReferenceGameObject reference,
             float3 position,
             Transform parent = null)
         {
+            // :TODO: use object pools
             var handle = Addressables.InstantiateAsync(reference, position, Quaternion.identity, parent);
             Assert.IsTrue(handle.IsValid(),
                 $"invalid async operation handle {reference.SubObjectName}: {handle.Status} {handle.OperationException}");

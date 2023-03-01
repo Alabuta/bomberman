@@ -46,103 +46,110 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly SortedDictionary<fix, List<BombData>> _plantedTimeBombs = new();
         private readonly Dictionary<PlayerTagConfig, Queue<BombData>> _plantedRemoteBombs = new();
 
-        private readonly EcsFilter<OnBombPlantActionComponent> _bombPlantActions;
-        private readonly EcsFilter<OnBombBlastActionComponent> _bomBlastActions;
+        private readonly EcsFilter<OnBombPlantActionEventComponent> _bombPlantEvents;
+        private readonly EcsFilter<OnBombBlastActionEventComponent> _bomBlastEvents;
+
+        private readonly EcsFilter<TimeBomb, TransformComponent, EntityComponent> _plantedTimeBombs;
 
         public void Run()
         {
             ProcessPlantActions();
             ProcessBlastActions();
+            ProcessPlantedTimeBombs();
+        }
+
+        private void ProcessPlantedTimeBombs()
+        {
+            if (_plantedTimeBombs.IsEmpty())
+                return;
+
+            foreach (var index in _plantedTimeBombs)
+            {
+                ref var timeBomb = ref _plantedTimeBombs.Get1(index);
+
+                var blastWorldTick = timeBomb.BlastWorldTick;
+                if (blastWorldTick > _world.Tick)
+                    continue;
+
+                ref var transformComponent = ref _plantedTimeBombs.Get2(index);
+                ref var entityComponent = ref _plantedTimeBombs.Get3(index);
+
+                BlastBomb(transformComponent, in entityComponent, timeBomb.BlastRadius, timeBomb.BlastDamage);
+            }
         }
 
         private void ProcessPlantActions()
         {
-            if (_bombPlantActions.IsEmpty())
+            if (_bombPlantEvents.IsEmpty())
                 return;
 
             using var pool = ListPool<Task<EcsEntity>>.Get(out var tasks);
 
-            foreach (var index in _bombPlantActions)
+            foreach (var index in _bombPlantEvents)
             {
-                ref var eventComponent = ref _bombPlantActions.Get1(index);
+                ref var eventComponent = ref _bombPlantEvents.Get1(index);
 
-                var task = _world.CreateAndSpawnBomb(eventComponent.BombConfig,
-                    eventComponent.Position); // :TODO: use object pools
+                var task = _world.CreateAndSpawnBomb(
+                    eventComponent.Position,
+                    eventComponent.BombConfig,
+                    eventComponent.BlastDelay,
+                    eventComponent.BombBlastDamage,
+                    eventComponent.BombBlastRadius
+                );
                 tasks.Add(task);
             }
 
             Task.WhenAll(tasks);
-
-            foreach (var task in tasks)
-            {
-                var bombEntity = task.Result;
-
-                var playerTag = eventComponent.PlayerTag;
-
-                var blastDelay = eventComponent.BlastDelay * (fix) _world.TickRate;
-                var blastWorldTick = blastDelay + (fix) _world.Tick;
-
-                if (!_plantedTimeBombs.TryGetValue(blastWorldTick, out var queue))
-                {
-                    queue = new List<BombData>();
-                    _plantedTimeBombs.Add(blastWorldTick, queue);
-                }
-
-                queue.Add(new BombData(
-                    playerTag: playerTag,
-                    BombEntity: bombEntity,
-                    bombBlastDamage: eventComponent.BombBlastDamage,
-                    bombBlastRadius: eventComponent.BombBlastRadius
-                ));
-            }
         }
 
         private void ProcessBlastActions()
         {
-            if (_bomBlastActions.IsEmpty())
+            if (_bomBlastEvents.IsEmpty())
                 return;
 
-            using var pool = ListPool<RTreeLeafEntry>.Get(out var entries);
-
-            foreach (var index in _bomBlastActions)
+            foreach (var index in _bomBlastEvents)
             {
-                ref var eventComponent = ref _bomBlastActions.Get1(index);
+                ref var eventComponent = ref _bomBlastEvents.Get1(index);
 
-                var playerTag = eventComponent.PlayerTag;
-                if (!_plantedRemoteBombs.TryGetValue(playerTag, out var bombsQueue))
-                    return;
+                if (!_plantedRemoteBombs.TryGetValue(eventComponent.PlayerTag, out var bombsQueue))
+                    continue;
 
                 if (!bombsQueue.TryDequeue(out var bombData))
-                    return;
+                    continue;
 
                 var bombEntity = bombData.BombEntity;
-
                 Assert.IsTrue(bombEntity.Has<BombTag>());
                 Assert.IsTrue(bombEntity.Has<EntityComponent>());
                 Assert.IsTrue(bombEntity.Has<TransformComponent>());
 
                 ref var transformComponent = ref bombEntity.Get<TransformComponent>();
-                var startPoint = transformComponent.WorldPosition;
-
-                foreach (var blastDirection in BlastDirections)
-                {
-                    entries.Clear();
-
-                    var blastSize = blastDirection * bombData.BombBlastRadius;
-                    var endPoint = startPoint + (fix2) blastSize;
-
-                    _world.EntitiesAabbTree.QueryByLine(startPoint, endPoint, entries);
-                    Debug.LogWarning($"direction {blastDirection} {entries.Count}");
-                }
-
                 ref var entityComponent = ref bombEntity.Get<EntityComponent>();
-                entityComponent.Controller.Kill();
 
-                // bombEntity.Destroy(); :TODO: destroy right here
+                BlastBomb(transformComponent, in entityComponent, bombData.BombBlastRadius, bombData.BombBlastDamage);
             }
+        }
+
+        private void BlastBomb(TransformComponent transformComponent, in EntityComponent entityComponent, int blastRadius,
+            fix blastDamage)
+        {
+            var startPoint = transformComponent.WorldPosition;
+
+            using var pool = ListPool<RTreeLeafEntry>.Get(out var entries);
+
+            foreach (var blastDirection in BlastDirections)
+            {
+                entries.Clear();
+
+                var blastSize = blastDirection * blastRadius;
+                var endPoint = startPoint + (fix2) blastSize;
+
+                _world.EntitiesAabbTree.QueryByLine(startPoint, endPoint, entries);
+                Debug.LogWarning($"direction {blastDirection} {entries.Count}");
+            }
+
+            entityComponent.Controller.Kill();
         }
 
 #if false

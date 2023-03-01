@@ -318,7 +318,12 @@ namespace Level
             return entity;
         }
 
-        public async Task<EcsEntity> CreateAndSpawnBomb(BombConfig bombConfig, fix2 position)
+        public async Task<EcsEntity> CreateAndSpawnBomb(
+            fix2 position,
+            BombConfig bombConfig,
+            fix blastDelay,
+            fix bombBlastDamage,
+            int bombBlastRadius)
         {
             var task = _gameFactory.InstantiatePrefabAsync(bombConfig.Prefab, fix2.ToXY(position));
 
@@ -345,6 +350,19 @@ namespace Level
             {
                 Value = bombConfig.LayerMask
             });
+
+            var blastWorldTick = (ulong) (blastDelay * (fix) TickRate) + Tick;
+            if (blastWorldTick > 0)
+                entity.Replace(new TimeBomb(
+                    blastWorldTick,
+                    bombBlastDamage,
+                    bombBlastRadius
+                ));
+            else
+                entity.Replace(new RemoConBomb(
+                    bombBlastDamage,
+                    bombBlastRadius
+                ));
 
             var go = await task;
             Assert.IsNotNull(go);

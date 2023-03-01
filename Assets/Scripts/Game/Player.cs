@@ -16,6 +16,8 @@ namespace Game
 
         public EcsEntity HeroEntity { get; private set; }
 
+        public bool HasRemoConBomb => true;
+
         public Score Score { get; private set; }
 
         public Player(PlayerConfig playerConfig)

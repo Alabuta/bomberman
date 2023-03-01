@@ -29,7 +29,7 @@ namespace Level
             // :TODO: use player current parameters instead of static data
             var bombBlastDamage = (fix) heroConfig.BombBlastDamage;
             var bombBlastRadius = heroConfig.BombBlastRadius;
-            var bombBlastDelay = (fix) heroConfig.BombBlastDelay;
+            var bombBlastDelay = player.HasRemoConBomb ? new fix(-1) : (fix) heroConfig.BombBlastDelay;
 
             ref var transformComponent = ref heroEntity.Get<TransformComponent>();
 
@@ -37,7 +37,7 @@ namespace Level
             var position = LevelTiles.ToWorldPosition(coordinate);
 
             var eventEntity = _ecsWorld.NewEntity();
-            eventEntity.Replace(new OnBombPlantActionComponent(
+            eventEntity.Replace(new OnBombPlantActionEventComponent(
                 playerTag: player.PlayerTag,
                 position: position,
                 bombConfig: heroConfig.BombConfig,
@@ -50,7 +50,7 @@ namespace Level
         public void CreatePlayerBombBlastAction(IPlayer player)
         {
             var eventEntity = _ecsWorld.NewEntity();
-            eventEntity.Replace(new OnBombBlastActionComponent(playerTag: player.PlayerTag));
+            eventEntity.Replace(new OnBombBlastActionEventComponent(playerTag: player.PlayerTag));
         }
 
         private void ApplyDamageToBlocks(int2[][] blastLines)

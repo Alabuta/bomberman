@@ -4,7 +4,7 @@ using Math.FixedPointMath;
 
 namespace Game.Components.Events
 {
-    public readonly struct OnBombPlantActionComponent
+    public readonly struct OnBombPlantActionEventComponent
     {
         public readonly PlayerTagConfig PlayerTag;
 
@@ -15,7 +15,7 @@ namespace Game.Components.Events
         public readonly fix BombBlastDamage;
         public readonly int BombBlastRadius;
 
-        public OnBombPlantActionComponent(
+        public OnBombPlantActionEventComponent(
             PlayerTagConfig playerTag,
             fix2 position,
             BombConfig bombConfig,
