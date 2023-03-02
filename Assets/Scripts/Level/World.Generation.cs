@@ -329,7 +329,6 @@ namespace Level
 
             var entity = _ecsWorld.NewEntity();
 
-            entity.Replace(new BombTag());
             entity.Replace(new IsKinematicTag());
 
             entity.Replace(new TransformComponent
@@ -351,18 +350,11 @@ namespace Level
                 Value = bombConfig.LayerMask
             });
 
-            var blastWorldTick = (ulong) (blastDelay * (fix) TickRate) + Tick;
-            if (blastWorldTick > 0)
-                entity.Replace(new TimeBomb(
-                    blastWorldTick,
-                    bombBlastDamage,
-                    bombBlastRadius
-                ));
-            else
-                entity.Replace(new RemoConBomb(
-                    bombBlastDamage,
-                    bombBlastRadius
-                ));
+            entity.Replace(new BombComponent(
+                (ulong) (blastDelay * (fix) TickRate) + Tick,
+                bombBlastDamage,
+                bombBlastRadius
+            ));
 
             var go = await task;
             Assert.IsNotNull(go);

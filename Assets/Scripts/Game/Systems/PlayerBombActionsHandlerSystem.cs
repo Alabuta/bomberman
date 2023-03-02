@@ -16,22 +16,6 @@ using UnityEngine.Pool;
 
 namespace Game.Systems
 {
-    internal readonly struct BombData
-    {
-        public readonly PlayerTagConfig PlayerTag;
-        public readonly EcsEntity BombEntity;
-        public readonly fix BombBlastDamage;
-        public readonly int BombBlastRadius;
-
-        public BombData(PlayerTagConfig playerTag, EcsEntity bombEntity, fix bombBlastDamage, int bombBlastRadius)
-        {
-            PlayerTag = playerTag;
-            BombEntity = bombEntity;
-            BombBlastDamage = bombBlastDamage;
-            BombBlastRadius = bombBlastRadius;
-        }
-    }
-
     public class PlayerBombActionsHandlerSystem : IEcsRunSystem
     {
         private static readonly int2[] BlastDirections =
@@ -46,12 +30,12 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly Dictionary<PlayerTagConfig, Queue<BombData>> _plantedRemoteBombs = new();
+        private readonly Dictionary<PlayerTagConfig, Queue<EcsEntity>> _plantedBombsQueue = new();
 
         private readonly EcsFilter<OnBombPlantActionEventComponent> _bombPlantEvents;
         private readonly EcsFilter<OnBombBlastActionEventComponent> _bomBlastEvents;
 
-        private readonly EcsFilter<TimeBomb, TransformComponent, EntityComponent> _plantedTimeBombs;
+        private readonly EcsFilter<BombComponent, TransformComponent, EntityComponent> _plantedBombs;
 
         public void Run()
         {
@@ -60,36 +44,16 @@ namespace Game.Systems
             ProcessPlantedTimeBombs();
         }
 
-        private void ProcessPlantedTimeBombs()
-        {
-            if (_plantedTimeBombs.IsEmpty())
-                return;
-
-            foreach (var index in _plantedTimeBombs)
-            {
-                ref var timeBomb = ref _plantedTimeBombs.Get1(index);
-
-                var blastWorldTick = timeBomb.BlastWorldTick;
-                if (blastWorldTick > _world.Tick)
-                    continue;
-
-                ref var transformComponent = ref _plantedTimeBombs.Get2(index);
-                ref var entityComponent = ref _plantedTimeBombs.Get3(index);
-
-                BlastBomb(transformComponent, in entityComponent, timeBomb.BlastRadius, timeBomb.BlastDamage);
-            }
-        }
-
         private void ProcessPlantActions()
         {
             if (_bombPlantEvents.IsEmpty())
                 return;
 
-            using var pool = ListPool<Task<EcsEntity>>.Get(out var tasks);
+            using var _ = ListPool<Task<EcsEntity>>.Get(out var tasks);
 
             foreach (var index in _bombPlantEvents)
             {
-                ref var eventComponent = ref _bombPlantEvents.Get1(index);
+                var eventComponent = _bombPlantEvents.Get1(index);
 
                 var task = _world.CreateAndSpawnBomb(
                     eventComponent.Position,
@@ -98,6 +62,17 @@ namespace Game.Systems
                     eventComponent.BombBlastDamage,
                     eventComponent.BombBlastRadius
                 );
+                task.ContinueWith(t => // :TODO: refactor
+                {
+                    var playerTag = eventComponent.PlayerTag;
+                    if (!_plantedBombsQueue.TryGetValue(playerTag, out var queue))
+                    {
+                        queue = new Queue<EcsEntity>();
+                        _plantedBombsQueue.Add(playerTag, queue);
+                    }
+
+                    queue.Enqueue(t.Result);
+                });
                 tasks.Add(task);
             }
 
@@ -113,25 +88,46 @@ namespace Game.Systems
             {
                 ref var eventComponent = ref _bomBlastEvents.Get1(index);
 
-                if (!_plantedRemoteBombs.TryGetValue(eventComponent.PlayerTag, out var bombsQueue))
+                if (!_plantedBombsQueue.TryGetValue(eventComponent.PlayerTag, out var bombsQueue))
                     continue;
 
-                if (!bombsQueue.TryDequeue(out var bombData))
+                if (!bombsQueue.TryDequeue(out var bombEntity))
                     continue;
 
-                var bombEntity = bombData.BombEntity;
-                Assert.IsTrue(bombEntity.Has<BombTag>());
+                Assert.IsTrue(bombEntity.Has<BombComponent>());
                 Assert.IsTrue(bombEntity.Has<EntityComponent>());
                 Assert.IsTrue(bombEntity.Has<TransformComponent>());
 
-                ref var transformComponent = ref bombEntity.Get<TransformComponent>();
+                ref var bombComponent = ref bombEntity.Get<BombComponent>();
                 ref var entityComponent = ref bombEntity.Get<EntityComponent>();
+                ref var transformComponent = ref bombEntity.Get<TransformComponent>();
 
-                BlastBomb(transformComponent, in entityComponent, bombData.BombBlastRadius, bombData.BombBlastDamage);
+                BlastBomb(transformComponent, in entityComponent, bombComponent.BlastRadius, bombComponent.BlastDamage);
             }
         }
 
-        private void BlastBomb(TransformComponent transformComponent, in EntityComponent entityComponent, int blastRadius,
+        private void ProcessPlantedTimeBombs()
+        {
+            if (_plantedBombs.IsEmpty())
+                return;
+
+            foreach (var index in _plantedBombs)
+            {
+                ref var timeBomb = ref _plantedBombs.Get1(index);
+                if (timeBomb.BlastWorldTick > _world.Tick)
+                    continue;
+
+                ref var transformComponent = ref _plantedBombs.Get2(index);
+                ref var entityComponent = ref _plantedBombs.Get3(index);
+
+                BlastBomb(transformComponent, in entityComponent, timeBomb.BlastRadius, timeBomb.BlastDamage);
+            }
+        }
+
+        private void BlastBomb(
+            TransformComponent transformComponent,
+            in EntityComponent entityComponent,
+            int blastRadius,
             fix blastDamage)
         {
             var startPoint = transformComponent.WorldPosition;
