@@ -11,7 +11,7 @@ using Math.FixedPointMath;
 using Unity.Collections;
 using UnityEngine.Pool;
 
-namespace Game.Systems
+namespace Game.Systems.Collisions
 {
     public struct PrevFrameDataComponent
     {

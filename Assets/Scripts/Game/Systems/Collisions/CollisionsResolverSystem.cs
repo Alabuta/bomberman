@@ -9,9 +9,8 @@ using Game.Systems.RTree;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
-using UnityEngine;
 
-namespace Game.Systems
+namespace Game.Systems.Collisions
 {
     public class CollisionsResolverSystem : IEcsRunSystem
     {
@@ -44,7 +43,7 @@ namespace Game.Systems
             foreach (var entityIndex in _boxStays)
                 ResolveCollisions(_boxStays, entityIndex);
 
-            // _entitiesAabbTree.Update(); :TODO: implement IRtree.Update() method
+            _entitiesAabbTree.Update();
         }
 
         private static void ResolveCollisions<TCollider, TEvent>(EcsFilter<TransformComponent, TEvent, TCollider> filter,

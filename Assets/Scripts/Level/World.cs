@@ -11,6 +11,7 @@ using Game.Components;
 using Game.Components.Events;
 using Game.Systems;
 using Game.Systems.Behaviours;
+using Game.Systems.Collisions;
 using Game.Systems.RTree;
 using Gizmos;
 using Infrastructure.Factory;
@@ -85,14 +86,13 @@ namespace Level
                 .Inject(this)
                 .Init();
 
-            var healthSystem = new HealthSystem();
-            healthSystem.HealthChangedEvent += OnEntityHealthChangedEvent;
-
             _ecsFixedSystems
-                .OneFrame<AttackEventComponent>()
                 .OneFrame<OnCollisionEnterEventComponent>()
                 .OneFrame<OnCollisionExitEventComponent>()
                 .OneFrame<OnCollisionStayEventComponent>()
+                .OneFrame<AttackEventComponent>()
+                .OneFrame<HealthChangedEventComponent>()
+                .OneFrame<KillEventComponent>()
                 .OneFrame<OnBombPlantActionEventComponent>()
                 .OneFrame<OnBombBlastActionEventComponent>()
                 .OneFrame<PrevFrameDataComponent>()
@@ -105,7 +105,8 @@ namespace Level
                 .Add(new PlayerBombActionsHandlerSystem())
                 .Add(new LevelEntitiesTreeSystem())
                 .Add(new AttackBehaviourSystem())
-                .Add(healthSystem)
+                .Add(new AttackEventsHandlerSystem())
+                .Add(new HealthChangedEventsHandlerSystem())
                 .Inject(this)
                 .Inject(inputService)
                 .Inject(_entitiesAabbTree)

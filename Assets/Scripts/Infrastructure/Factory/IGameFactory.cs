@@ -22,7 +22,8 @@ namespace Infrastructure.Factory
 
         GameObject InstantiatePrefab(GameObject prefab, float3 position, Transform parent = null);
 
-        Task<GameObject> InstantiatePrefabAsync(AssetReferenceGameObject reference,
+        Task<GameObject> InstantiatePrefabAsync(
+            AssetReferenceGameObject reference,
             float3 position,
             Transform parent = null);
 

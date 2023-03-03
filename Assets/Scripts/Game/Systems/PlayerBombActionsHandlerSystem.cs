@@ -18,13 +18,13 @@ namespace Game.Systems
 {
     public class PlayerBombActionsHandlerSystem : IEcsRunSystem
     {
-        private static readonly int2[] BlastDirections =
+        private static readonly fix2[] BlastDirections =
         {
-            // :TODO: might be useful to get it from a config
+            // :TODO: might be better to get it from a config
             new(1, 0),
-            new(0, 1),
+            new(0, 1) /*,
             new(-1, 0),
-            new(0, -1)
+            new(0, -1)*/
         };
 
         private readonly EcsWorld _ecsWorld;
@@ -103,6 +103,8 @@ namespace Game.Systems
                 ref var transformComponent = ref bombEntity.Get<TransformComponent>();
 
                 BlastBomb(transformComponent, in entityComponent, bombComponent.BlastRadius, bombComponent.BlastDamage);
+
+                bombEntity.Destroy(); // :TODO: remove
             }
         }
 
@@ -113,14 +115,18 @@ namespace Game.Systems
 
             foreach (var index in _plantedBombs)
             {
-                ref var timeBomb = ref _plantedBombs.Get1(index);
-                if (timeBomb.BlastWorldTick > _world.Tick)
+                ref var bombComponent = ref _plantedBombs.Get1(index);
+                if (bombComponent.BlastWorldTick > _world.Tick)
                     continue;
+
+                var bombEntity = _plantedBombs.GetEntity(index);
 
                 ref var transformComponent = ref _plantedBombs.Get2(index);
                 ref var entityComponent = ref _plantedBombs.Get3(index);
 
-                BlastBomb(transformComponent, in entityComponent, timeBomb.BlastRadius, timeBomb.BlastDamage);
+                BlastBomb(transformComponent, in entityComponent, bombComponent.BlastRadius, bombComponent.BlastDamage);
+
+                bombEntity.Destroy(); // :TODO: remove
             }
         }
 
@@ -130,20 +136,36 @@ namespace Game.Systems
             int blastRadius,
             fix blastDamage)
         {
-            var startPoint = transformComponent.WorldPosition;
-
             using var pool = ListPool<RTreeLeafEntry>.Get(out var entries);
+
+            var center = transformComponent.WorldPosition;
+            var radius = (fix2) blastRadius;
 
             foreach (var blastDirection in BlastDirections)
             {
                 entries.Clear();
 
-                var blastSize = blastDirection * blastRadius;
-                var endPoint = startPoint + (fix2) blastSize;
+                var blastSize = blastDirection * radius;
+                var startPoint = center - blastSize;
+                var endPoint = center + blastSize;
 
                 _world.EntitiesAabbTree.QueryByLine(startPoint, endPoint, entries);
                 Debug.LogWarning($"direction {blastDirection} {entries.Count}");
+
+                entries.Sort((a, b) =>
+                {
+                    var vectorA = a.Aabb.GetCenter() - center;
+                    var vectorB = b.Aabb.GetCenter() - center;
+
+                    var distanceA = fix2.dot(vectorA, blastDirection);
+                    var distanceB = fix2.dot(vectorB, blastDirection);
+
+                    return distanceA.CompareTo(distanceB);
+                });
             }
+
+            /*var blastLines = GetBombBlastAabbs(blastDirections, bombBlastRadius, bombPosition);
+            InstantiateBlastEffect(blastLines, bombBlastRadius, bombPosition, bombEntity);*/
 
             entityComponent.Controller.Kill();
         }

@@ -94,7 +94,7 @@ namespace Game
 
         public static bool IsAlive(this ref HealthComponent healthComponent)
         {
-            return healthComponent.CurrentHealth < 1;
+            return healthComponent.CurrentHealth > 0;
         }
 
         public static long GetEntitiesPairHash(EcsEntity entityA, EcsEntity entityB)

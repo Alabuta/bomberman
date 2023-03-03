@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Configs.Effects;
 using Configs.Entity;
 using Game;
 using Game.Components;
@@ -121,9 +122,10 @@ namespace Level
                 entity.Health.ApplyDamage(bombBlastDamage);*/
         }
 
-        /*private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, fix2 position, BombItem bombItem)
+        private void InstantiateBlastEffect(int2[][] blastLines, int blastRadius, fix2 position,
+            BlastEffectConfig blastEffectConfig)
         {
-            var go = _gameFactory.InstantiatePrefab(bombItem.Config.BlastEffectConfig.Prefab, fix2.ToXY(position));
+            var go = _gameFactory.InstantiatePrefab(blastEffectConfig.Prefab, fix2.ToXY(position));
             Assert.IsNotNull(go);
 
             var effectController = go.GetComponent<BlastEffectController>();
@@ -143,7 +145,7 @@ namespace Level
                         .Count();
                 });
 
-            effectController.Construct(blastRadius, blastRadiusInDirections);#1#
+            effectController.Construct(blastRadius, blastRadiusInDirections);*/
 
             var effectAnimator = go.GetComponent<EffectAnimator>();
             Assert.IsNotNull(effectAnimator);
@@ -153,59 +155,6 @@ namespace Level
                 if (state == AnimatorState.Finish)
                     go.SetActive(false);
             };
-        }*/
-
-        private void OnEntityHealthChangedEvent(EcsEntity ecsEntity) // :TODO: move to event handling system
-        {
-            if (ecsEntity.Has<HealthComponent>())
-            {
-                ref var healthComponent = ref ecsEntity.Get<HealthComponent>();
-                if (healthComponent.IsAlive()) // :TODO: refactor
-                {
-                    if (ecsEntity.Has<EntityComponent>())
-                    {
-                        ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
-                        entityComponent.Controller.Kill();
-                    }
-
-                    if (ecsEntity.Has<MovementComponent>())
-                    {
-                        ref var transformComponent = ref ecsEntity.Get<MovementComponent>();
-                        transformComponent.Speed = fix.zero; // :TODO: refactor
-                    }
-
-                    if (ecsEntity.Has<HeroTag>())
-                    {
-                        // :TODO: refactor
-                        var (playerInputProvider, _) =
-                            _playerInputProviders.FirstOrDefault(pi => pi.Value.HeroEntity == ecsEntity);
-
-                        if (playerInputProvider != null)
-                            _playersInputHandlerSystem.UnsubscribePlayerInputProvider(playerInputProvider);
-                    }
-
-                    if (ecsEntity.Has<HasColliderTag>())
-                    {
-                        ecsEntity.Del<CircleColliderComponent>();
-                        ecsEntity.Del<BoxColliderComponent>();
-                        ecsEntity.Del<HasColliderTag>();
-                    }
-
-                    // DeathEvent?.Invoke(this); // :TODO:
-
-                    ecsEntity.Replace(new DeadTag());
-                }
-                else
-                {
-                    if (ecsEntity.Has<EntityComponent>())
-                    {
-                        ref var entityComponent = ref ecsEntity.Get<EntityComponent>();
-                        entityComponent.Controller.TakeDamage();
-                    }
-
-                    // DamageEvent?.Invoke(this, damage); // :TODO:
-                }
-            }
         }
 
         // :TODO: add an item pick up event handler

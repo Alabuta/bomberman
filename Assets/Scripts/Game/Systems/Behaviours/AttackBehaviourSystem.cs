@@ -50,7 +50,8 @@ namespace Game.Systems.Behaviours
                 if (!areEntitiesOverlapped)
                     continue;
 
-                targetEntity.Replace(new AttackEventComponent(attackerBehaviour.DamageValue));
+                var eventEntity = _ecsWorld.NewEntity();
+                eventEntity.Replace(new AttackEventComponent(targetEntity, attackerBehaviour.DamageValue));
             }
         }
 
