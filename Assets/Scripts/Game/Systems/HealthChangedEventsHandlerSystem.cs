@@ -31,9 +31,9 @@ namespace Game.Systems
 
                 ref var healthComponent = ref targetEntity.Get<HealthComponent>();
                 if (healthComponent.IsAlive()) // :TODO: refactor
-                    Kill(targetEntity);
-                else
                     Damage(targetEntity);
+                else
+                    Kill(targetEntity);
             }
         }
 
@@ -45,34 +45,11 @@ namespace Game.Systems
                 entityComponent.Controller.Kill();
             }
 
-            if (entity.Has<MovementComponent>())
-            {
-                ref var transformComponent = ref entity.Get<MovementComponent>();
-                transformComponent.Speed = fix.zero; // :TODO: refactor
-            }
-
+            // :TODO: refactor
             if (entity.Has<HeroTag>())
-            {
-                // :TODO: refactor
-                /*var (playerInputProvider, _) =
-                    _playerInputProviders.FirstOrDefault(pi => pi.Value.HeroEntity == entity);
+                _world.HeroHasDied(entity);
 
-                if (playerInputProvider != null)
-                    _playersInputHandlerSystem.UnsubscribePlayerInputProvider(playerInputProvider);*/
-
-                _world.UnsubscribePlayerInputProvider(entity);
-            }
-
-            if (entity.Has<HasColliderTag>())
-            {
-                entity.Del<CircleColliderComponent>();
-                entity.Del<BoxColliderComponent>();
-                entity.Del<HasColliderTag>();
-            }
-
-            // DeathEvent?.Invoke(this); // :TODO:
-
-            entity.Replace(new DeadTag());
+            entity.Destroy();
         }
 
         private static void Damage(EcsEntity targetEntity)
@@ -82,8 +59,6 @@ namespace Game.Systems
                 ref var entityComponent = ref targetEntity.Get<EntityComponent>();
                 entityComponent.Controller.TakeDamage();
             }
-
-            // DamageEvent?.Invoke(this, damage); // :TODO:
         }
     }
 }

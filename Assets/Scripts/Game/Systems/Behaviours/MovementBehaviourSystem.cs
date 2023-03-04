@@ -16,9 +16,9 @@ namespace Game.Systems.Behaviours
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<LayerMaskComponent, TransformComponent, MovementComponent, SimpleMovementBehaviourComponent>.
-            Exclude<DeadTag>
+        private readonly EcsFilter<LayerMaskComponent, TransformComponent, MovementComponent, SimpleMovementBehaviourComponent>
             _steeredEntities;
+
         private readonly EcsFilter<PositionControlledByResolverTag, TransformComponent, MovementComponent>
             _playerControlledEntities;
 
@@ -181,6 +181,7 @@ namespace Game.Systems.Behaviours
 
             ref var tileComponent = ref tile.Get<LevelTileComponent>();
             var hasEntities = tileComponent.EntitiesHolder?
+                .Where(e => e.IsAlive())
                 .Select(e => e.GetCollidersInteractionMask())
                 .Any(m => (m & entityLayerMask) != 0);
 

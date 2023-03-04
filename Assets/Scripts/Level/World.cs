@@ -92,7 +92,7 @@ namespace Level
                 .OneFrame<OnCollisionStayEventComponent>()
                 .OneFrame<AttackEventComponent>()
                 .OneFrame<HealthChangedEventComponent>()
-                .OneFrame<KillEventComponent>()
+                .OneFrame<DeathEventComponent>()
                 .OneFrame<OnBombPlantActionEventComponent>()
                 .OneFrame<OnBombBlastActionEventComponent>()
                 .OneFrame<PrevFrameDataComponent>()

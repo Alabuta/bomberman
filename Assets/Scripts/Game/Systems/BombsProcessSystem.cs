@@ -7,6 +7,7 @@ using UnityEngine.Assertions;
 
 namespace Game.Systems
 {
+    // :TODO: rename
     public sealed class BombsProcessSystem : IEcsRunSystem
     {
         private readonly EcsWorld _ecsWorld;

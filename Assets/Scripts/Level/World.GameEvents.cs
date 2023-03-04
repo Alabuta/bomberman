@@ -1,10 +1,8 @@
 using System.Linq;
-using System.Threading.Tasks;
 using Configs.Effects;
 using Configs.Entity;
 using Game;
 using Game.Components;
-using Game.Components.Colliders;
 using Game.Components.Entities;
 using Game.Components.Events;
 using Game.Components.Tags;
@@ -17,6 +15,15 @@ namespace Level
 {
     public partial class World
     {
+        public void HeroHasDied(EcsEntity entity)
+        {
+            var (playerInputProvider, _) =
+                _playerInputProviders.FirstOrDefault(pi => pi.Value.HeroEntity == entity);
+
+            if (playerInputProvider != null)
+                _playersInputHandlerSystem.UnsubscribePlayerInputProvider(playerInputProvider);
+        }
+
         public void CreatePlayerBombPlantAction(IPlayer player)
         {
             var heroEntity = player.HeroEntity;

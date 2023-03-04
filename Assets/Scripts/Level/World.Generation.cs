@@ -329,6 +329,7 @@ namespace Level
 
             var entity = _ecsWorld.NewEntity();
 
+            entity.Replace(new BombTag());
             entity.Replace(new IsKinematicTag());
 
             entity.Replace(new TransformComponent
