@@ -18,6 +18,36 @@ namespace Game.Systems.Collisions
         public fix2 LastWorldPosition;
     }
 
+    /*public class CollidersAabbUpdateSystem : IEcsInitSystem, IEcsRunSystem, IEcsDestroySystem
+    {
+        private readonly EcsWorld _ecsWorld;
+        private readonly World _world;
+
+        private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders;
+
+        public void Init()
+        {
+        }
+
+        public void Run()
+        {
+            using var _ = Profiling.CollidersAabbsUpdate.Auto();
+
+            foreach (var index in _colliders)
+            {
+                ref var entity = ref _colliders.GetEntity(index);
+                ref var transformComponent = ref _colliders.Get1(index);
+
+                var aabb = entity.GetEntityColliderAABB(transformComponent.WorldPosition);
+                entity.Replace(new AabbComponent(aabb, index));
+            }
+        }
+
+        public void Destroy()
+        {
+        }
+    }*/
+
     public class CollisionsDetectionSystem : IEcsInitSystem, IEcsRunSystem, IEcsDestroySystem
     {
         private const int InputEntriesStartCount = 256;
@@ -39,11 +69,11 @@ namespace Game.Systems.Collisions
 
         private readonly HashSet<int> _collidedEntities = new();
 
-        private NativeList<RTreeLeafEntry> _entries;
+        private NativeList<RTreeLeafEntry> _treeLeafEntries;
 
         public void Init()
         {
-            _entries = new NativeList<RTreeLeafEntry>(InputEntriesStartCount, Allocator.Persistent);
+            _treeLeafEntries = new NativeList<RTreeLeafEntry>(InputEntriesStartCount, Allocator.Persistent);
         }
 
         public void Run()
@@ -53,16 +83,16 @@ namespace Game.Systems.Collisions
             Profiling.RTreeNativeArrayFill.Begin();
 
             var entitiesCount = _colliders.GetEntitiesCount();
-            if (!_entries.IsCreated || _entries.Length < entitiesCount)
+            if (!_treeLeafEntries.IsCreated || _treeLeafEntries.Length < entitiesCount)
             {
-                if (_entries.IsCreated)
-                    _entries.Dispose();
+                if (_treeLeafEntries.IsCreated)
+                    _treeLeafEntries.Dispose();
 
-                _entries = new NativeList<RTreeLeafEntry>(entitiesCount, Allocator.Persistent);
+                _treeLeafEntries = new NativeList<RTreeLeafEntry>(entitiesCount, Allocator.Persistent);
             }
 
             else
-                _entries.Clear();
+                _treeLeafEntries.Clear();
 
             foreach (var index in _colliders)
             {
@@ -70,12 +100,12 @@ namespace Game.Systems.Collisions
                 ref var transformComponent = ref _colliders.Get1(index);
 
                 var aabb = entity.GetEntityColliderAABB(transformComponent.WorldPosition);
-                _entries.Add(new RTreeLeafEntry(aabb, index));
+                _treeLeafEntries.Add(new RTreeLeafEntry(aabb, index));
             }
 
             Profiling.RTreeNativeArrayFill.End();
 
-            _entitiesAabbTree.Build(_entries.AsArray());
+            _entitiesAabbTree.Build(_treeLeafEntries.AsArray());
 
             foreach (var entityIndex in _circleColliders)
                 DetectCollisions(_circleColliders, entityIndex);
@@ -89,11 +119,10 @@ namespace Game.Systems.Collisions
 
         public void Destroy()
         {
-            _entries.Dispose();
+            _treeLeafEntries.Dispose();
         }
 
-        private void DetectCollisions<T>(EcsFilter<TransformComponent, LayerMaskComponent, T> filter,
-            int entityIndex)
+        private void DetectCollisions<T>(EcsFilter<TransformComponent, LayerMaskComponent, T> filter, int entityIndex)
             where T : struct
         {
             if (_collidedEntities.Contains(entityIndex))
