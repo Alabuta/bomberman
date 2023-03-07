@@ -1,10 +1,14 @@
 ﻿using System;
 using Game.Components;
+using Game.Components.Entities;
 using Game.Components.Events;
+using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Game.Systems
 {
@@ -25,6 +29,7 @@ namespace Game.Systems
                 ref var eventComponent = ref _attackEvents.Get1(index);
 
                 var targetEntity = eventComponent.Target;
+                Assert.IsTrue(targetEntity.IsAlive());
                 if (!targetEntity.Has<HealthComponent>())
                     continue;
 

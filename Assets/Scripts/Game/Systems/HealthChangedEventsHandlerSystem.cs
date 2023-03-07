@@ -5,7 +5,6 @@ using Game.Components.Events;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
-using Math.FixedPointMath;
 using UnityEngine.Assertions;
 
 namespace Game.Systems
@@ -27,6 +26,7 @@ namespace Game.Systems
                 ref var eventComponent = ref _healthChangedEvents.Get1(index);
 
                 var targetEntity = eventComponent.Target;
+                Assert.IsTrue(targetEntity.IsAlive());
                 Assert.IsTrue(targetEntity.Has<HealthComponent>());
 
                 ref var healthComponent = ref targetEntity.Get<HealthComponent>();

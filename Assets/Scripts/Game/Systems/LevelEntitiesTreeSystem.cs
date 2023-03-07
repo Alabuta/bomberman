@@ -32,6 +32,9 @@ namespace Game.Systems
                     continue;
 
                 var levelTileEntity = levelTiles[tileCoordinate];
+                if (!levelTileEntity.IsAlive()) // :TODO: refactor
+                    continue;
+
                 ref var levelTileComponent = ref levelTileEntity.Get<LevelTileComponent>();
 
                 if (!_clearedTiles.Contains(levelTileEntity))

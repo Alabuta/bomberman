@@ -9,6 +9,7 @@ using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
 using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine.Pool;
 
 namespace Game.Systems.Collisions
@@ -56,6 +57,7 @@ namespace Game.Systems.Collisions
         private readonly World _world;
 
         private readonly IRTree _entitiesAabbTree;
+        private readonly List<EcsEntity> _entitiesMap;
 
         private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders; // :TODO: use AABBComponent
 
@@ -94,10 +96,17 @@ namespace Game.Systems.Collisions
             else
                 _treeLeafEntries.Clear();
 
-            foreach (var index in _colliders)
+            _entitiesMap.Clear();
+            if (entitiesCount > _entitiesMap.Capacity)
+                _entitiesMap.Capacity = entitiesCount;
+
+            foreach (var entityIndex in _colliders)
             {
-                ref var entity = ref _colliders.GetEntity(index);
-                ref var transformComponent = ref _colliders.Get1(index);
+                ref var entity = ref _colliders.GetEntity(entityIndex);
+                ref var transformComponent = ref _colliders.Get1(entityIndex);
+
+                var index = _entitiesMap.Count;
+                _entitiesMap.Add(entity);
 
                 var aabb = entity.GetEntityColliderAABB(transformComponent.WorldPosition);
                 _treeLeafEntries.Add(new RTreeLeafEntry(aabb, index));

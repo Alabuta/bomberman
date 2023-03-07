@@ -20,6 +20,7 @@ using Input;
 using Leopotam.Ecs;
 using Math;
 using Math.FixedPointMath;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -33,7 +34,8 @@ namespace Level
         private readonly Dictionary<IPlayerInputProvider, IPlayer> _playerInputProviders = new();
         private readonly Dictionary<PlayerTagConfig, IPlayer> _players = new();
 
-        private readonly HashSet<EcsEntity> _enemies = new();
+        private readonly HashSet<EcsEntity> _enemies = new(); // :TODO: remove
+        public readonly List<EcsEntity> EntitiesMap = new(); // :TODO: refactor
 
         private readonly fix _stageTimer;
 
@@ -110,6 +112,7 @@ namespace Level
                 .Inject(this)
                 .Inject(inputService)
                 .Inject(_entitiesAabbTree)
+                .Inject(EntitiesMap)
                 .Init();
         }
 

@@ -177,6 +177,9 @@ namespace Game.Systems.Behaviours
 
         private static bool IsTileCanBeAsMovementTarget(EcsEntity tile, int entityLayerMask)
         {
+            if (!tile.IsAlive())
+                return true;
+
             var tileInteractionMask = tile.GetCollidersInteractionMask();
 
             ref var tileComponent = ref tile.Get<LevelTileComponent>();

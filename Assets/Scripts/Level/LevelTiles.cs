@@ -84,7 +84,7 @@ namespace Level
             var index = GetFlattenTileCoordinate(coordinate);
             var worldPosition = ToWorldPosition(coordinate);
 
-            var ecsEntity = _tiles[index];
+            var ecsEntity = _tiles[index]; // :TODO: refactor
 
             ecsEntity.Replace(new LevelTileComponent
             {
@@ -191,7 +191,15 @@ namespace Level
                         });
 
                         if (tileType == LevelTileType.SoftBlock)
+                        {
                             ecsEntity.AddCollider(softBlockConfig.Collider);
+
+                            ecsEntity.Replace(new HealthComponent
+                            {
+                                CurrentHealth = fix.one,
+                                MaxHealth = fix.one
+                            });
+                        }
 
                         --tileTypeCount[typeIndex];
 

@@ -104,7 +104,7 @@ namespace Game.Systems
 
                 BlastBomb(transformComponent, in entityComponent, bombComponent.BlastRadius, bombComponent.BlastDamage);
 
-                bombEntity.Destroy(); // :TODO: remove
+                // bombEntity.Destroy(); // :TODO: remove
             }
         }
 
@@ -126,7 +126,7 @@ namespace Game.Systems
 
                 BlastBomb(transformComponent, in entityComponent, bombComponent.BlastRadius, bombComponent.BlastDamage);
 
-                bombEntity.Destroy(); // :TODO: remove
+                // bombEntity.Destroy(); // :TODO: remove
             }
         }
 
@@ -136,10 +136,11 @@ namespace Game.Systems
             int blastRadius,
             fix blastDamage)
         {
-            using var pool = ListPool<RTreeLeafEntry>.Get(out var entries);
+            var entries = ListPool<RTreeLeafEntry>.Get();
+            var processedEntries = HashSetPool<int>.Get();
 
             var center = transformComponent.WorldPosition;
-            var radius = (fix2) blastRadius;
+            var radius = (fix2) 1; //blastRadius;
 
             foreach (var blastDirection in BlastDirections)
             {
@@ -150,8 +151,6 @@ namespace Game.Systems
                 var endPoint = center + blastSize;
 
                 _world.EntitiesAabbTree.QueryByLine(startPoint, endPoint, entries);
-                Debug.LogWarning($"direction {blastDirection} {entries.Count}");
-
                 entries.Sort((a, b) =>
                 {
                     var vectorA = a.Aabb.GetCenter() - center;
@@ -162,12 +161,39 @@ namespace Game.Systems
 
                     return distanceA.CompareTo(distanceB);
                 });
+
+                foreach (var entry in entries)
+                {
+                    var entryIndex = entry.Index;
+                    if (processedEntries.Contains(entryIndex))
+                        continue;
+
+                    processedEntries.Add(entryIndex);
+
+                    var targetEntity = _world.EntitiesMap[entryIndex];
+                    Assert.IsTrue(targetEntity.IsAlive());
+
+                    var eventEntity = _ecsWorld.NewEntity();
+                    eventEntity.Replace(new AttackEventComponent(targetEntity, blastDamage));
+                }
+
+                /*var wallIndex = entries.FindIndex(p =>
+                {
+                    if (p.Index.Has<LevelTileComponent>() &&
+                        p.Index.Get<LevelTileComponent>().Type == LevelTileType.HardBlock)
+                        return true;
+
+                    return p.Index.Has<WallTag>();
+                });*/
             }
 
             /*var blastLines = GetBombBlastAabbs(blastDirections, bombBlastRadius, bombPosition);
             InstantiateBlastEffect(blastLines, bombBlastRadius, bombPosition, bombEntity);*/
 
             entityComponent.Controller.Kill();
+
+            ListPool<RTreeLeafEntry>.Release(entries);
+            HashSetPool<int>.Release(processedEntries);
         }
 
 #if false
