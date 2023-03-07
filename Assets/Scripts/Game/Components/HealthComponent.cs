@@ -1,8 +1,10 @@
-﻿namespace Game.Components
+﻿using Math.FixedPointMath;
+
+namespace Game.Components
 {
     public struct HealthComponent
     {
-        public int CurrentHealth;
-        public int MaxHealth;
+        public fix CurrentHealth;
+        public fix MaxHealth;
     }
 }

@@ -3,6 +3,7 @@ using Game.Components;
 using Game.Components.Events;
 using Leopotam.Ecs;
 using Level;
+using Math.FixedPointMath;
 using Unity.Mathematics;
 
 namespace Game.Systems
@@ -27,11 +28,11 @@ namespace Game.Systems
                 if (!targetEntity.Has<HealthComponent>())
                     continue;
 
-                if (eventComponent.DamageValue == 0)
+                if (eventComponent.DamageValue == fix.zero)
                     continue;
 
                 ref var healthComponent = ref targetEntity.Get<HealthComponent>();
-                healthComponent.CurrentHealth = math.max(0, healthComponent.CurrentHealth - eventComponent.DamageValue);
+                healthComponent.CurrentHealth = fix.max(fix.zero, healthComponent.CurrentHealth - eventComponent.DamageValue);
 
                 var eventEntity = _ecsWorld.NewEntity();
                 eventEntity.Replace(new HealthChangedEventComponent(

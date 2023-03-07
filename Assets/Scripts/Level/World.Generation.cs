@@ -190,8 +190,8 @@ namespace Level
 
             entity.Replace(new HealthComponent
             {
-                CurrentHealth = enemyConfig.HealthParameters.Health,
-                MaxHealth = enemyConfig.HealthParameters.Health
+                CurrentHealth = (fix) enemyConfig.HealthParameters.Health,
+                MaxHealth = (fix) enemyConfig.HealthParameters.Health
             });
 
             entity.Replace(new DamageableComponent
@@ -281,8 +281,8 @@ namespace Level
 
             entity.Replace(new HealthComponent
             {
-                CurrentHealth = heroConfig.HealthParameters.Health,
-                MaxHealth = heroConfig.HealthParameters.Health
+                CurrentHealth = (fix) heroConfig.HealthParameters.Health,
+                MaxHealth = (fix) heroConfig.HealthParameters.Health
             });
             // RegisterProgressReader(hero.HeroHealth); :TODO:
 
@@ -344,6 +344,12 @@ namespace Level
             entity.Replace(new DamageableComponent
             {
                 HurtRadius = (fix) bombConfig.DamageParameters.HurtRadius
+            });
+
+            entity.Replace(new HealthComponent
+            {
+                CurrentHealth = (fix) bombConfig.HealthParameters.Health,
+                MaxHealth = (fix) bombConfig.HealthParameters.Health
             });
 
             entity.Replace(new LayerMaskComponent

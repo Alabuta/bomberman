@@ -1,13 +1,14 @@
 ﻿using Leopotam.Ecs;
+using Math.FixedPointMath;
 
 namespace Game.Components.Events
 {
     public readonly struct HealthChangedEventComponent
     {
         public readonly EcsEntity Target;
-        public readonly int ChangeValue;
+        public readonly fix ChangeValue;
 
-        public HealthChangedEventComponent(EcsEntity target, int changeValue)
+        public HealthChangedEventComponent(EcsEntity target, fix changeValue)
         {
             Target = target;
             ChangeValue = changeValue;

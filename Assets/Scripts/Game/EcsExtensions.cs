@@ -43,7 +43,7 @@ namespace Game
                         ecsEntity.Replace(new SimpleAttackBehaviourComponent
                         {
                             InteractionLayerMask = config.InteractionLayerMask,
-                            DamageValue = config.DamageValue,
+                            DamageValue = (fix) config.DamageValue,
                             HitRadius = (fix) enemyConfig.DamageParameters.HitRadius // :TODO: refactor
                         });
                         break;
@@ -94,7 +94,7 @@ namespace Game
 
         public static bool IsAlive(this ref HealthComponent healthComponent)
         {
-            return healthComponent.CurrentHealth > 0;
+            return healthComponent.CurrentHealth > fix.zero;
         }
 
         public static long GetEntitiesPairHash(EcsEntity entityA, EcsEntity entityB)
