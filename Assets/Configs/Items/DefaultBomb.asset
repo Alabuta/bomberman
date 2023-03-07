@@ -9,31 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 541a6c15b61d4f5babe10e3f500fb1cb, type: 3}
+  m_Script: {fileID: 11500000, guid: f03206db190e43f1b03abef305a76c3a, type: 3}
   m_Name: DefaultBomb
   m_EditorClassIdentifier: 
-  Name: TimeBomb
+  Name: DefaultBomb
   Layer: 9
   Prefab:
     m_AssetGUID: 3b1548050419d0f49a7da257cb5fdc9d
     m_SubObjectName: 
     m_SubObjectType: 
-    m_EditorAssetChanged: 0
-  Speed: 0
+    m_EditorAssetChanged: 1
   StartDirection:
     x: 0
     y: 0
-  Health: 0
-  HitRadius: 0.1
-  HurtRadius: 0.1
   Collider: {fileID: 11400000, guid: 35b9b66de5a5fea4cb4074966e989ed0, type: 2}
-  BombBlastDirections:
-  - x: 1
-    y: 0
-  - x: -1
-    y: 0
-  - x: 0
-    y: 1
-  - x: 0
-    y: -1
-  LifetimeSec: 3
+  DamageParameters:
+    HitRadius: 0.1
+    HurtRadius: 0.1
+  HealthParameters:
+    Health: 1
