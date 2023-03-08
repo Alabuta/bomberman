@@ -140,7 +140,7 @@ namespace Game.Systems
             var processedEntries = HashSetPool<int>.Get();
 
             var center = transformComponent.WorldPosition;
-            var radius = (fix2) 1; //blastRadius;
+            var radius = (fix2) 4; //blastRadius;
 
             foreach (var blastDirection in BlastDirections)
             {
@@ -161,6 +161,24 @@ namespace Game.Systems
 
                     return distanceA.CompareTo(distanceB);
                 });
+
+                var leftWallEntityIndex = -1;
+                for (var i = 0; i < entries.Count; i++)
+                {
+                    var leafEntry = entries[i];
+                    var entity = _world.EntitiesMap[leafEntry.Index];
+                    if (entity.Has<LevelTileComponent>())
+                    {
+                        ref var levelTileComponent = ref entity.Get<LevelTileComponent>();
+                        if (levelTileComponent.Type != LevelTileType.HardBlock)
+                            continue;
+
+                        leftWallEntityIndex = i;
+                    }
+
+                    if (math.all(leafEntry.Aabb.GetCenter() > center))
+                        break;
+                }
 
                 foreach (var entry in entries)
                 {
