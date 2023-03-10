@@ -26,9 +26,9 @@ namespace Game
         [SerializeField]
         private EffectSettings[] Settings;
 
-        public void Construct(int blastRadius, IEnumerable<int> sizes)
+        public void Construct(int blastRadius, IEnumerable<int> restrictedSizes)
         {
-            foreach (var (settings, size) in Settings.Zip(sizes, (settings, size) => (settings, size)))
+            foreach (var (settings, size) in Settings.Zip(restrictedSizes, (settings, size) => (settings, size)))
             {
                 var isBlastRadiusRestricted = size != 0 && size != blastRadius;
 
@@ -61,10 +61,13 @@ namespace Game
 
                 settings.OffsetVectors = new[]
                 {
-                    new Vector2(Mathf.Abs(settings.PositionOffset.normalized.x),
-                        Mathf.Abs(settings.PositionOffset.normalized.y)),
-                    new Vector2(Mathf.Abs(settings.PositionOffset.normalized.y),
-                        Mathf.Abs(settings.PositionOffset.normalized.x))
+                    new Vector2(
+                        math.abs(settings.PositionOffset.normalized.x),
+                        math.abs(settings.PositionOffset.normalized.y)),
+
+                    new Vector2(
+                        math.abs(settings.PositionOffset.normalized.y),
+                        math.abs(settings.PositionOffset.normalized.x))
                 };
             }
         }

@@ -8,6 +8,7 @@ using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Game.Systems.Behaviours
 {
@@ -126,7 +127,7 @@ namespace Game.Systems.Behaviours
                     entityIndex);
             }
 
-            if (targetTile == EcsEntity.Null)
+            if (targetTile == EcsEntity.Null || !targetTile.IsAlive()) // :TODO: refactor
             {
                 transformComponent.Direction = int2.zero;
                 movementComponent.Speed = fix.zero;
@@ -218,11 +219,17 @@ namespace Game.Systems.Behaviours
                 tileCoordinates = tileCoordinates
                     .Where(c =>
                     {
+                        if (!c.IsAlive())
+                            return false;
+
                         var coordinate = levelTiles.ToTileCoordinate(c.Get<TransformComponent>().WorldPosition);
                         return math.all(coordinate != tileCoordinate - entityDirection);
                     })
                     .ToArray();
             }
+
+            if (tileCoordinates.Length == 0)
+                return EcsEntity.Null;
 
             var index = world.RandomGenerator.Range(0, tileCoordinates.Length, (int) world.Tick, entityIndex);
             return tileCoordinates[index];

@@ -26,7 +26,9 @@ namespace Game.Systems
                 ref var eventComponent = ref _healthChangedEvents.Get1(index);
 
                 var targetEntity = eventComponent.Target;
-                Assert.IsTrue(targetEntity.IsAlive());
+                if (!targetEntity.IsAlive()) // :TODO: refactor?
+                    continue;
+
                 Assert.IsTrue(targetEntity.Has<HealthComponent>());
 
                 ref var healthComponent = ref targetEntity.Get<HealthComponent>();

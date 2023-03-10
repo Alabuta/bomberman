@@ -28,3 +28,4 @@ MonoBehaviour:
     HurtRadius: 0.1
   HealthParameters:
     Health: 1
+  BlastEffect: {fileID: 11400000, guid: b92f23978af6e78438477fb1ce9139f7, type: 2}

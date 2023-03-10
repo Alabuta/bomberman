@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Configs.Game;
 using Game.Components;
@@ -91,20 +92,26 @@ namespace Game.Systems
                 if (!_plantedBombsQueue.TryGetValue(eventComponent.PlayerTag, out var bombsQueue))
                     continue;
 
-                if (!bombsQueue.TryDequeue(out var bombEntity))
-                    continue;
+                while (bombsQueue.Count > 0)
+                {
+                    if (!bombsQueue.TryDequeue(out var bombEntity))
+                        continue;
 
-                Assert.IsTrue(bombEntity.Has<BombComponent>());
-                Assert.IsTrue(bombEntity.Has<EntityComponent>());
-                Assert.IsTrue(bombEntity.Has<TransformComponent>());
+                    if (!bombEntity.IsAlive())
+                        break;
 
-                ref var bombComponent = ref bombEntity.Get<BombComponent>();
-                ref var entityComponent = ref bombEntity.Get<EntityComponent>();
-                ref var transformComponent = ref bombEntity.Get<TransformComponent>();
+                    Assert.IsTrue(bombEntity.Has<BombComponent>());
+                    Assert.IsTrue(bombEntity.Has<EntityComponent>());
+                    Assert.IsTrue(bombEntity.Has<TransformComponent>());
 
-                BlastBomb(transformComponent, in entityComponent, bombComponent.BlastRadius, bombComponent.BlastDamage);
+                    ref var bombComponent = ref bombEntity.Get<BombComponent>();
+                    ref var entityComponent = ref bombEntity.Get<EntityComponent>();
+                    ref var transformComponent = ref bombEntity.Get<TransformComponent>();
 
-                // bombEntity.Destroy(); // :TODO: remove
+                    BlastBomb(transformComponent, in entityComponent, in bombComponent);
+
+                    // bombEntity.Destroy(); // :TODO: remove
+                }
             }
         }
 
@@ -124,7 +131,7 @@ namespace Game.Systems
                 ref var transformComponent = ref _plantedBombs.Get2(index);
                 ref var entityComponent = ref _plantedBombs.Get3(index);
 
-                BlastBomb(transformComponent, in entityComponent, bombComponent.BlastRadius, bombComponent.BlastDamage);
+                BlastBomb(transformComponent, in entityComponent, in bombComponent);
 
                 // bombEntity.Destroy(); // :TODO: remove
             }
@@ -133,28 +140,31 @@ namespace Game.Systems
         private void BlastBomb(
             TransformComponent transformComponent,
             in EntityComponent entityComponent,
-            int blastRadius,
-            fix blastDamage)
+            in BombComponent bombComponent)
         {
             var entries = ListPool<RTreeLeafEntry>.Get();
             var processedEntries = HashSetPool<int>.Get();
 
-            var center = transformComponent.WorldPosition;
-            var radius = (fix2) 4; //blastRadius;
+            var blastRadius = 1; //bombComponent.BlastRadius;
+
+            var bombPosition = transformComponent.WorldPosition;
+            var radius = (fix) blastRadius;
+
+            var blastRadiusInDirections = ListPool<int>.Get();
 
             foreach (var blastDirection in BlastDirections)
             {
                 entries.Clear();
 
                 var blastSize = blastDirection * radius;
-                var startPoint = center - blastSize;
-                var endPoint = center + blastSize;
+                var startPoint = bombPosition - blastSize;
+                var endPoint = bombPosition + blastSize;
 
                 _world.EntitiesAabbTree.QueryByLine(startPoint, endPoint, entries);
                 entries.Sort((a, b) =>
                 {
-                    var vectorA = a.Aabb.GetCenter() - center;
-                    var vectorB = b.Aabb.GetCenter() - center;
+                    var vectorA = a.Aabb.GetCenter() - bombPosition;
+                    var vectorB = b.Aabb.GetCenter() - bombPosition;
 
                     var distanceA = fix2.dot(vectorA, blastDirection);
                     var distanceB = fix2.dot(vectorB, blastDirection);
@@ -162,22 +172,26 @@ namespace Game.Systems
                     return distanceA.CompareTo(distanceB);
                 });
 
+                var mask = blastDirection != fix2.zero;
+
                 var leftWallEntityIndex = -1;
+                var rightWallEntityIndex = -1;
                 for (var i = 0; i < entries.Count; i++)
                 {
                     var leafEntry = entries[i];
                     var entity = _world.EntitiesMap[leafEntry.Index];
-                    if (entity.Has<LevelTileComponent>())
-                    {
-                        ref var levelTileComponent = ref entity.Get<LevelTileComponent>();
-                        if (levelTileComponent.Type != LevelTileType.HardBlock)
-                            continue;
+                    if (!entity.Has<HardBlockComponent>())
+                        continue;
 
+                    var aabbCenter = leafEntry.Aabb.GetCenter();
+                    if (math.any((aabbCenter < bombPosition) & mask))
+                    {
                         leftWallEntityIndex = i;
+                        continue;
                     }
 
-                    if (math.all(leafEntry.Aabb.GetCenter() > center))
-                        break;
+                    rightWallEntityIndex = i;
+                    break;
                 }
 
                 foreach (var entry in entries)
@@ -189,10 +203,11 @@ namespace Game.Systems
                     processedEntries.Add(entryIndex);
 
                     var targetEntity = _world.EntitiesMap[entryIndex];
-                    Assert.IsTrue(targetEntity.IsAlive());
+                    if (!targetEntity.IsAlive())
+                        continue;
 
                     var eventEntity = _ecsWorld.NewEntity();
-                    eventEntity.Replace(new AttackEventComponent(targetEntity, blastDamage));
+                    eventEntity.Replace(new AttackEventComponent(targetEntity, bombComponent.BlastDamage));
                 }
 
                 /*var wallIndex = entries.FindIndex(p =>
@@ -205,11 +220,12 @@ namespace Game.Systems
                 });*/
             }
 
-            /*var blastLines = GetBombBlastAabbs(blastDirections, bombBlastRadius, bombPosition);
-            InstantiateBlastEffect(blastLines, bombBlastRadius, bombPosition, bombEntity);*/
+            // :TODO: refactor as an action apply operation
+            _world.InstantiateBlastEffect(blastRadiusInDirections, blastRadius, bombPosition, bombComponent.BlastEffect);
 
             entityComponent.Controller.Kill();
 
+            ListPool<int>.Release(blastRadiusInDirections);
             ListPool<RTreeLeafEntry>.Release(entries);
             HashSetPool<int>.Release(processedEntries);
         }

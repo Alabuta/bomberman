@@ -5,6 +5,7 @@ using Configs.Level;
 using Game;
 using Game.Components;
 using Game.Components.Entities;
+using Game.Components.Tags;
 using JetBrains.Annotations;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
@@ -171,6 +172,8 @@ namespace Level
                                 Type = LevelTileType.HardBlock
                             });
 
+                            ecsEntity.Replace(new BlockTag());
+                            ecsEntity.Replace(new HardBlockComponent());
                             ecsEntity.AddCollider(hardBlockConfig.Collider);
                             return ecsEntity;
                         }
@@ -192,6 +195,13 @@ namespace Level
 
                         if (tileType == LevelTileType.SoftBlock)
                         {
+                            ecsEntity.Replace(new BlockTag());
+                            ecsEntity.Replace(new SoftBlockComponent());
+                            ecsEntity.Replace(new DamageableComponent
+                            {
+                                HurtRadius = (fix) (levelConfig.TileSizeWorldUnits / 2)
+                            });
+
                             ecsEntity.AddCollider(softBlockConfig.Collider);
 
                             ecsEntity.Replace(new HealthComponent

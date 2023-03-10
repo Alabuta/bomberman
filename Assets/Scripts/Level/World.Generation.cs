@@ -247,6 +247,12 @@ namespace Level
             await CreatePlayerAndSpawnHero(inputService, gameMode.PlayerConfig, spawnCoordinate);
         }
 
+        private struct X
+        {
+            public double2 D;
+            public bool2x4 B;
+        }
+
         private async Task<EcsEntity> CreatePlayerAndSpawnHero(IInputService inputService, PlayerConfig playerConfig,
             fix2 position)
         {
@@ -360,7 +366,8 @@ namespace Level
             entity.Replace(new BombComponent(
                 (ulong) (blastDelay * (fix) TickRate) + Tick,
                 bombBlastDamage,
-                bombBlastRadius
+                bombBlastRadius,
+                bombConfig.BlastEffect
             ));
 
             var go = await task;

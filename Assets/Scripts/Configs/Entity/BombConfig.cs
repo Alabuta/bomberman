@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using Configs.Effects;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Configs.Entity
@@ -10,5 +11,7 @@ namespace Configs.Entity
         public DamageParameters DamageParameters;
         [Space]
         public HealthParameters HealthParameters;
+
+        public BlastEffectConfig BlastEffect;
     }
 }
