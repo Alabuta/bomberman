@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Configs.Game;
@@ -17,15 +18,13 @@ using UnityEngine.Pool;
 
 namespace Game.Systems
 {
-    public class PlayerBombActionsHandlerSystem : IEcsRunSystem
+    public class BombsHandlerSystem : IEcsRunSystem
     {
         private static readonly fix2[] BlastDirections =
         {
             // :TODO: might be better to get it from a config
             new(1, 0),
-            new(0, 1) /*,
-            new(-1, 0),
-            new(0, -1)*/
+            new(0, 1)
         };
 
         private readonly EcsWorld _ecsWorld;
@@ -36,6 +35,8 @@ namespace Game.Systems
         private readonly EcsFilter<OnBombPlantActionEventComponent> _bombPlantEvents;
         private readonly EcsFilter<OnBombBlastActionEventComponent> _bomBlastEvents;
 
+        private readonly EcsFilter<DamageApplyEventComponent, BombTag> _attackingBombEvents;
+
         private readonly EcsFilter<BombComponent, TransformComponent, EntityComponent> _plantedBombs;
 
         public void Run()
@@ -43,6 +44,7 @@ namespace Game.Systems
             ProcessPlantActions();
             ProcessBlastActions();
             ProcessPlantedTimeBombs();
+            ProcessAttackEvents();
         }
 
         private void ProcessPlantActions()
@@ -108,9 +110,7 @@ namespace Game.Systems
                     ref var entityComponent = ref bombEntity.Get<EntityComponent>();
                     ref var transformComponent = ref bombEntity.Get<TransformComponent>();
 
-                    BlastBomb(transformComponent, in entityComponent, in bombComponent);
-
-                    // bombEntity.Destroy(); // :TODO: remove
+                    BlastBomb(transformComponent, in bombComponent);
                 }
             }
         }
@@ -126,76 +126,89 @@ namespace Game.Systems
                 if (bombComponent.BlastWorldTick > _world.Tick)
                     continue;
 
-                var bombEntity = _plantedBombs.GetEntity(index);
-
                 ref var transformComponent = ref _plantedBombs.Get2(index);
                 ref var entityComponent = ref _plantedBombs.Get3(index);
 
-                BlastBomb(transformComponent, in entityComponent, in bombComponent);
-
-                // bombEntity.Destroy(); // :TODO: remove
+                BlastBomb(transformComponent, in bombComponent);
             }
         }
 
-        private void BlastBomb(
-            TransformComponent transformComponent,
-            in EntityComponent entityComponent,
-            in BombComponent bombComponent)
+        private void ProcessAttackEvents()
+        {
+            if (_attackingBombEvents.IsEmpty())
+                return;
+
+            foreach (var index in _attackingBombEvents)
+            {
+                ref var eventComponent = ref _attackingBombEvents.Get1(index);
+
+                var targetEntity = eventComponent.Target;
+                if (!targetEntity.IsAlive())
+                    continue;
+
+                ref var transformComponent = ref targetEntity.Get<TransformComponent>();
+                ref var bombComponent = ref targetEntity.Get<BombComponent>();
+
+                BlastBomb(transformComponent, in bombComponent);
+            }
+        }
+
+        private void BlastBomb(TransformComponent transformComponent, in BombComponent bombComponent)
         {
             var entries = ListPool<RTreeLeafEntry>.Get();
             var processedEntries = HashSetPool<int>.Get();
 
-            var blastRadius = 1; //bombComponent.BlastRadius;
+            var blastRadius = bombComponent.BlastRadius;
 
-            var bombPosition = transformComponent.WorldPosition;
+            var blastOrigin = transformComponent.WorldPosition;
             var radius = (fix) blastRadius;
 
             var blastRadiusInDirections = ListPool<int>.Get();
+            var blastTileSize = new fix2(_world.LevelTiles.TileSize * new fix(.5f));
 
             foreach (var blastDirection in BlastDirections)
             {
                 entries.Clear();
 
                 var blastSize = blastDirection * radius;
-                var startPoint = bombPosition - blastSize;
-                var endPoint = bombPosition + blastSize;
+                var startPoint = blastOrigin - blastSize;
+                var endPoint = blastOrigin + blastSize;
 
                 _world.EntitiesAabbTree.QueryByLine(startPoint, endPoint, entries);
-                entries.Sort((a, b) =>
-                {
-                    var vectorA = a.Aabb.GetCenter() - bombPosition;
-                    var vectorB = b.Aabb.GetCenter() - bombPosition;
 
-                    var distanceA = fix2.dot(vectorA, blastDirection);
-                    var distanceB = fix2.dot(vectorB, blastDirection);
+                var min = startPoint;
+                var max = endPoint;
 
-                    return distanceA.CompareTo(distanceB);
-                });
-
-                var mask = blastDirection != fix2.zero;
-
-                var leftWallEntityIndex = -1;
-                var rightWallEntityIndex = -1;
                 for (var i = 0; i < entries.Count; i++)
                 {
                     var leafEntry = entries[i];
+
                     var entity = _world.EntitiesMap[leafEntry.Index];
-                    if (!entity.Has<HardBlockComponent>())
+                    if (!entity.Has<BombBlastStopEntityTag>())
                         continue;
 
                     var aabbCenter = leafEntry.Aabb.GetCenter();
-                    if (math.any((aabbCenter < bombPosition) & mask))
+
+                    if (math.any(aabbCenter < blastOrigin))
                     {
-                        leftWallEntityIndex = i;
+                        min = fix2.max(min, aabbCenter);
                         continue;
                     }
 
-                    rightWallEntityIndex = i;
-                    break;
+                    max = fix2.min(max, aabbCenter);
                 }
+
+                blastRadiusInDirections.Add((int) fix2.distance(blastOrigin, max));
+                blastRadiusInDirections.Add((int) fix2.distance(blastOrigin, min));
+
+                var size = blastDirection * blastTileSize;
+                var blastAabb = new AABB(min + size, max + size);
 
                 foreach (var entry in entries)
                 {
+                    if (!fix.is_AABB_overlapped_by_AABB(blastAabb, entry.Aabb))
+                        continue;
+
                     var entryIndex = entry.Index;
                     if (processedEntries.Contains(entryIndex))
                         continue;
@@ -207,92 +220,18 @@ namespace Game.Systems
                         continue;
 
                     var eventEntity = _ecsWorld.NewEntity();
-                    eventEntity.Replace(new AttackEventComponent(targetEntity, bombComponent.BlastDamage));
+                    eventEntity.Replace(new DamageApplyEventComponent(targetEntity, bombComponent.BlastDamage));
                 }
-
-                /*var wallIndex = entries.FindIndex(p =>
-                {
-                    if (p.Index.Has<LevelTileComponent>() &&
-                        p.Index.Get<LevelTileComponent>().Type == LevelTileType.HardBlock)
-                        return true;
-
-                    return p.Index.Has<WallTag>();
-                });*/
             }
 
             // :TODO: refactor as an action apply operation
-            _world.InstantiateBlastEffect(blastRadiusInDirections, blastRadius, bombPosition, bombComponent.BlastEffect);
+            _world.InstantiateBlastEffect(blastRadiusInDirections, blastRadius, blastOrigin, bombComponent.BlastEffect);
 
-            entityComponent.Controller.Kill();
+            // entityComponent.Controller.Kill(); // :TODO: refactor
 
             ListPool<int>.Release(blastRadiusInDirections);
             ListPool<RTreeLeafEntry>.Release(entries);
             HashSetPool<int>.Release(processedEntries);
         }
-
-#if false
-            ref var entityComponent = ref bombEntity.Get<EntityComponent>();
-            entityComponent.Controller.Kill();
-            /*var bombCoordinate = LevelModel.ToTileCoordinate(bombEntity.Controller.WorldPosition);
-            LevelModel.RemoveItem(bombCoordinate);*/
-
-            var start = bombPosition;
-            var end = bombPosition - new fix2(bombBlastRadius, 0);
-            var line = end - start;
-            var direction = fix2.normalize_safe(line, fix2.zero);
-
-            using ( ListPool<RTreeLeafEntry>.Get(out var result) )
-            {
-                _entitiesAabbTree.QueryByLine(start, end, result);
-
-                result.Sort((a, b) =>
-                {
-                    var vectorA = a.Aabb.GetCenter() - start;
-                    var vectorB = b.Aabb.GetCenter() - start;
-
-                    var distanceA = fix2.dot(vectorA, direction);
-                    var distanceB = fix2.dot(vectorB, direction);
-
-                    return distanceA.CompareTo(distanceB);
-                });
-
-                /*var wallIndex = result.FindIndex(p =>
-                {
-                    if (p.Index.Has<LevelTileComponent>() &&
-                        p.Index.Get<LevelTileComponent>().Type == LevelTileType.HardBlock)
-                        return true;
-
-                    return p.Index.Has<WallTag>();
-                });*/
-
-                foreach (var entry in result)
-                    Debug.LogWarning(entry.Index);
-            }
-
-            // var blastLines = GetBombBlastAabbs(blastDirections, bombBlastRadius, bombPosition);
-
-            // InstantiateBlastEffect(blastLines, bombBlastRadius, bombPosition, bombEntity);
-
-            /*ApplyDamageToEntities(blastLines, bombBlastDamage);
-
-            ApplyDamageToBlocks(blastLines);*/
-
-            bombEntity.Destroy(); // :TODO: remove
-#endif
-
-        /*private IEnumerable<AABB> GetBombBlastAabbs(IReadOnlyList<int2> blastDirections, int blastRadius, fix2 blastPosition)
-        {
-            return blastDirections
-                .Select(blastDirection =>
-                {
-                    var size = (fix2) (blastDirection * blastRadius) * LevelTiles.TileSize;
-                    AABBExtensions.CreateFromPositionAndSize(blastPosition, size);
-                    return Enumerable
-                        .Range(1, blastRadius)
-                        .Select(offset => blastPosition + blastDirection * offset)
-                        .ToArray();
-                })
-                .Append(new[] { blastCoordinate });
-        }*/
     }
 }

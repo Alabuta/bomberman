@@ -37,7 +37,7 @@ namespace Game
                 sprite.flipX = isBlastRadiusRestricted ? !settings.Flip.x : settings.Flip.x;
                 sprite.flipY = isBlastRadiusRestricted ? !settings.Flip.y : settings.Flip.y;
 
-                sprite.size = sprite.size * settings.OffsetVectors[1] + size * settings.OffsetVectors[0];
+                sprite.size = sprite.size * settings.OffsetVectors[1] + (size - 1) * settings.OffsetVectors[0];
 
                 var spriteTransform = sprite.gameObject.transform;
                 spriteTransform.position = transform.position + settings.PositionOffset;
@@ -46,7 +46,7 @@ namespace Game
                     continue;
 
                 sprite.size += settings.OffsetVectors[0];
-                spriteTransform.position += settings.PositionOffset.normalized * size;
+                spriteTransform.position += settings.PositionOffset.normalized * (size - 1);
             }
         }
 

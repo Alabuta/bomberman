@@ -51,7 +51,7 @@ namespace Game.Systems.Behaviours
                     continue;
 
                 var eventEntity = _ecsWorld.NewEntity();
-                eventEntity.Replace(new AttackEventComponent(targetEntity, attackerBehaviour.DamageValue));
+                eventEntity.Replace(new DamageApplyEventComponent(targetEntity, attackerBehaviour.DamageValue));
             }
         }
 

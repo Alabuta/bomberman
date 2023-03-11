@@ -174,6 +174,7 @@ namespace Level
 
                             ecsEntity.Replace(new BlockTag());
                             ecsEntity.Replace(new HardBlockComponent());
+                            ecsEntity.Replace(new BombBlastStopEntityTag());
                             ecsEntity.AddCollider(hardBlockConfig.Collider);
                             return ecsEntity;
                         }
@@ -197,10 +198,7 @@ namespace Level
                         {
                             ecsEntity.Replace(new BlockTag());
                             ecsEntity.Replace(new SoftBlockComponent());
-                            ecsEntity.Replace(new DamageableComponent
-                            {
-                                HurtRadius = (fix) (levelConfig.TileSizeWorldUnits / 2)
-                            });
+                            ecsEntity.Replace(new BombBlastStopEntityTag());
 
                             ecsEntity.AddCollider(softBlockConfig.Collider);
 
@@ -209,6 +207,19 @@ namespace Level
                                 CurrentHealth = fix.one,
                                 MaxHealth = fix.one
                             });
+
+                            ecsEntity.Replace(new DamageableComponent
+                            {
+                                HurtRadius = (fix) (levelConfig.TileSizeWorldUnits / 2)
+                            });
+
+                            /*ecsEntity.Replace(new EntityComponent
+                            (
+                                config: softBlockConfig,
+                                controller: itemController,
+                                initialSpeed: fix.zero,
+                                speedMultiplier: fix.zero
+                            ));*/
                         }
 
                         --tileTypeCount[typeIndex];

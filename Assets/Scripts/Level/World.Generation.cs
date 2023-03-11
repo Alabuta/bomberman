@@ -347,15 +347,15 @@ namespace Level
 
             entity.AddCollider(bombConfig.Collider);
 
-            entity.Replace(new DamageableComponent
-            {
-                HurtRadius = (fix) bombConfig.DamageParameters.HurtRadius
-            });
-
             entity.Replace(new HealthComponent
             {
                 CurrentHealth = (fix) bombConfig.HealthParameters.Health,
                 MaxHealth = (fix) bombConfig.HealthParameters.Health
+            });
+
+            entity.Replace(new DamageableComponent
+            {
+                HurtRadius = (fix) bombConfig.DamageParameters.HurtRadius
             });
 
             entity.Replace(new LayerMaskComponent

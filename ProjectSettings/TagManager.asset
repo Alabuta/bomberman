@@ -62,11 +62,11 @@ TagManager:
   - name: PowerUpItem
     uniqueID: 1083287439
     locked: 0
-  - name: Explosive
-    uniqueID: 3014520589
-    locked: 0
   - name: Block
     uniqueID: 1350269783
+    locked: 0
+  - name: BlastEffect
+    uniqueID: 3014520589
     locked: 0
   - name: Effect
     uniqueID: 2390526125
