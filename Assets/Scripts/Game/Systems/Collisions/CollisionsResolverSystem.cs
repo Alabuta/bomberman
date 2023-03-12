@@ -21,11 +21,11 @@ namespace Game.Systems.Collisions
 
         private readonly IRTree _entitiesAabbTree;
 
-        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, CircleColliderComponent> _circleEnters;
-        private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, CircleColliderComponent> _circleStays;
+        private readonly EcsFilter<TransformComponent, CollisionEnterEventComponent, CircleColliderComponent> _circleEnters;
+        private readonly EcsFilter<TransformComponent, CollisionStayEventComponent, CircleColliderComponent> _circleStays;
 
-        private readonly EcsFilter<TransformComponent, OnCollisionEnterEventComponent, BoxColliderComponent> _boxEnters;
-        private readonly EcsFilter<TransformComponent, OnCollisionStayEventComponent, BoxColliderComponent> _boxStays;
+        private readonly EcsFilter<TransformComponent, CollisionEnterEventComponent, BoxColliderComponent> _boxEnters;
+        private readonly EcsFilter<TransformComponent, CollisionStayEventComponent, BoxColliderComponent> _boxStays;
 
         public void Run()
         {
@@ -68,8 +68,8 @@ namespace Game.Systems.Collisions
 
             var entities = collisionEventComponent switch
             {
-                OnCollisionEnterEventComponent eventComponent => eventComponent.Entities,
-                OnCollisionStayEventComponent eventComponent => eventComponent.Entities,
+                CollisionEnterEventComponent eventComponent => eventComponent.Entities,
+                CollisionStayEventComponent eventComponent => eventComponent.Entities,
                 _ => new HashSet<EcsEntity>()
             };
 

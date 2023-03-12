@@ -14,30 +14,29 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<DamageApplyEventComponent>.Exclude<BombTag> _attackEvents;
+        private readonly EcsFilter<DamageApplyEventComponent, DamageableOnCollisionEnterTag, HealthComponent>.Exclude<BombTag>
+            _attackEvents;
 
         public void Run()
         {
             if (_attackEvents.IsEmpty())
                 return;
 
+            /*
+             * Например, вместо того, чтобы менять HealthComponent в каждой системе, где есть урон, лучше создать одну DamageSystem,
+             * цель которой - наносить урон сущностям с HealthComponent.
+             */
+
             foreach (var index in _attackEvents)
             {
                 ref var eventComponent = ref _attackEvents.Get1(index);
-
-                var targetEntity = eventComponent.Target;
                 Assert.AreNotEqual(eventComponent.DamageValue, fix.zero);
 
+                var targetEntity = _attackEvents.GetEntity(index);
                 if (!targetEntity.IsAlive()) // :TODO: refactor?
                     continue;
 
-                if (!targetEntity.Has<DamageableComponent>())
-                    continue;
-
-                if (!targetEntity.Has<HealthComponent>())
-                    continue;
-
-                ref var healthComponent = ref targetEntity.Get<HealthComponent>();
+                ref var healthComponent = ref _attackEvents.Get3(index);
                 Assert.IsTrue(healthComponent.IsAlive());
 
                 if (healthComponent.CurrentHealth - eventComponent.DamageValue <= fix.zero) // :TODO: refactor
@@ -76,11 +75,13 @@ namespace Game.Systems
                 entityComponent.Controller.Kill();
             }
 
-            // :TODO: refactor
+            // :TODO: refactor, listen DeadTag instead in world simulation
             if (entity.Has<HeroTag>())
                 _world.HeroHasDied(entity);
 
-            entity.Destroy();
+            entity.Replace(new DeadTag());
+
+            entity.Destroy(); // :TODO: destroy entity at the end of tick
         }
     }
 }

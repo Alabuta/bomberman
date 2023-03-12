@@ -3,31 +3,31 @@ using Leopotam.Ecs;
 
 namespace Game.Components.Events
 {
-    public readonly struct OnCollisionEnterEventComponent
+    public readonly struct CollisionEnterEventComponent
     {
         public readonly HashSet<EcsEntity> Entities;
 
-        public OnCollisionEnterEventComponent(HashSet<EcsEntity> entities)
+        public CollisionEnterEventComponent(HashSet<EcsEntity> entities)
         {
             Entities = entities;
         }
     }
 
-    public readonly struct OnCollisionExitEventComponent
+    public readonly struct CollisionExitEventComponent
     {
         public readonly HashSet<EcsEntity> Entities;
 
-        public OnCollisionExitEventComponent(HashSet<EcsEntity> entities)
+        public CollisionExitEventComponent(HashSet<EcsEntity> entities)
         {
             Entities = entities;
         }
     }
 
-    public readonly struct OnCollisionStayEventComponent
+    public readonly struct CollisionStayEventComponent
     {
         public readonly HashSet<EcsEntity> Entities;
 
-        public OnCollisionStayEventComponent(HashSet<EcsEntity> entities)
+        public CollisionStayEventComponent(HashSet<EcsEntity> entities)
         {
             Entities = entities;
         }

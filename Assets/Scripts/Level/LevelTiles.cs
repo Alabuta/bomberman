@@ -208,11 +208,6 @@ namespace Level
                                 MaxHealth = fix.one
                             });
 
-                            ecsEntity.Replace(new DamageableComponent
-                            {
-                                HurtRadius = (fix) (levelConfig.TileSizeWorldUnits / 2)
-                            });
-
                             /*ecsEntity.Replace(new EntityComponent
                             (
                                 config: softBlockConfig,

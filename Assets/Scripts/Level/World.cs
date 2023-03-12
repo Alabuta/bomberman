@@ -9,6 +9,7 @@ using Data;
 using Game;
 using Game.Components;
 using Game.Components.Events;
+using Game.Components.Tags;
 using Game.Systems;
 using Game.Systems.Behaviours;
 using Game.Systems.Collisions;
@@ -89,15 +90,15 @@ namespace Level
                 .Init();
 
             _ecsFixedSystems
-                .OneFrame<OnCollisionEnterEventComponent>()
-                .OneFrame<OnCollisionExitEventComponent>()
-                .OneFrame<OnCollisionStayEventComponent>()
+                .OneFrame<CollisionEnterEventComponent>()
+                .OneFrame<CollisionStayEventComponent>()
+                .OneFrame<CollisionExitEventComponent>()
                 .OneFrame<DamageApplyEventComponent>()
                 .OneFrame<HealthChangedEventComponent>()
-                .OneFrame<DeathEventComponent>()
                 .OneFrame<OnBombPlantActionEventComponent>()
                 .OneFrame<OnBombBlastActionEventComponent>()
                 .OneFrame<PrevFrameDataComponent>()
+                .OneFrame<DamagedTag>()
                 .Add(_playersInputHandlerSystem)
                 .Add(new BeforeSimulationStepSystem())
                 .Add(new MovementBehaviourSystem())
@@ -106,7 +107,7 @@ namespace Level
                 .Add(new BombsProcessSystem())
                 .Add(new BombsHandlerSystem())
                 .Add(new LevelEntitiesTreeSystem())
-                .Add(new AttackBehaviourSystem())
+                .Add(new DamageOnCollisionEnterSystem())
                 .Add(new DamageApplySystem())
                 .Inject(this)
                 .Inject(inputService)

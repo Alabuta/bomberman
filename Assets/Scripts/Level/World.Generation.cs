@@ -194,10 +194,10 @@ namespace Level
                 MaxHealth = (fix) enemyConfig.HealthParameters.Health
             });
 
-            entity.Replace(new DamageableComponent
+            /*entity.Replace(new DamageableComponent
             {
                 HurtRadius = (fix) enemyConfig.DamageParameters.HurtRadius
-            });
+            });*/
 
             entity.Replace(new LayerMaskComponent
             {
@@ -270,6 +270,7 @@ namespace Level
 
             var entity = _ecsWorld.NewEntity();
 
+            // entity.Replace(new PlayerHeroTag()); :TODO:
             entity.Replace(new HeroTag());
             entity.Replace(new PositionControlledByResolverTag());
 
@@ -292,10 +293,7 @@ namespace Level
             });
             // RegisterProgressReader(hero.HeroHealth); :TODO:
 
-            entity.Replace(new DamageableComponent
-            {
-                HurtRadius = (fix) heroConfig.DamageParameters.HurtRadius
-            });
+            entity.Replace(new DamageableOnCollisionEnterTag());
 
             entity.Replace(new LayerMaskComponent
             {
@@ -353,10 +351,10 @@ namespace Level
                 MaxHealth = (fix) bombConfig.HealthParameters.Health
             });
 
-            entity.Replace(new DamageableComponent
+            /*entity.Replace(new DamageableComponent
             {
                 HurtRadius = (fix) bombConfig.DamageParameters.HurtRadius
-            });
+            });*/
 
             entity.Replace(new LayerMaskComponent
             {

@@ -205,7 +205,6 @@ namespace Game.Systems.Collisions
                 {
                     UpdateCollisionStayEventComponent(entityA, entityB);
                     UpdateCollisionStayEventComponent(entityB, entityA);
-
                     break;
                 }
 
@@ -213,7 +212,6 @@ namespace Game.Systems.Collisions
                 {
                     UpdateCollisionEnterEventComponent(entityA, entityB);
                     UpdateCollisionEnterEventComponent(entityB, entityA);
-
                     break;
                 }
 
@@ -221,7 +219,6 @@ namespace Game.Systems.Collisions
                 {
                     UpdateCollisionExitEventComponent(entityA, entityB);
                     UpdateCollisionExitEventComponent(entityB, entityA);
-
                     break;
                 }
             }
@@ -229,35 +226,35 @@ namespace Game.Systems.Collisions
 
         private static void UpdateCollisionEnterEventComponent(EcsEntity entityA, EcsEntity entityB)
         {
-            if (entityA.Has<OnCollisionEnterEventComponent>())
+            if (entityA.Has<CollisionEnterEventComponent>())
             {
-                ref var eventComponent = ref entityA.Get<OnCollisionEnterEventComponent>();
+                ref var eventComponent = ref entityA.Get<CollisionEnterEventComponent>();
                 eventComponent.Entities.Add(entityB);
             }
             else
-                entityA.Replace(new OnCollisionEnterEventComponent(new HashSet<EcsEntity> { entityB }));
+                entityA.Replace(new CollisionEnterEventComponent(new HashSet<EcsEntity> { entityB }));
         }
 
         private static void UpdateCollisionExitEventComponent(EcsEntity entityA, EcsEntity entityB)
         {
-            if (entityA.Has<OnCollisionExitEventComponent>())
+            if (entityA.Has<CollisionExitEventComponent>())
             {
-                ref var eventComponent = ref entityA.Get<OnCollisionExitEventComponent>();
+                ref var eventComponent = ref entityA.Get<CollisionExitEventComponent>();
                 eventComponent.Entities.Add(entityB);
             }
             else
-                entityA.Replace(new OnCollisionExitEventComponent(new HashSet<EcsEntity> { entityB }));
+                entityA.Replace(new CollisionExitEventComponent(new HashSet<EcsEntity> { entityB }));
         }
 
         private static void UpdateCollisionStayEventComponent(EcsEntity entityA, EcsEntity entityB)
         {
-            if (entityA.Has<OnCollisionStayEventComponent>())
+            if (entityA.Has<CollisionStayEventComponent>())
             {
-                ref var eventComponent = ref entityA.Get<OnCollisionStayEventComponent>();
+                ref var eventComponent = ref entityA.Get<CollisionStayEventComponent>();
                 eventComponent.Entities.Add(entityB);
             }
             else
-                entityA.Replace(new OnCollisionStayEventComponent(new HashSet<EcsEntity> { entityB }));
+                entityA.Replace(new CollisionStayEventComponent(new HashSet<EcsEntity> { entityB }));
         }
     }
 }

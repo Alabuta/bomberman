@@ -40,11 +40,11 @@ namespace Game
                         break;
 
                     case SimpleAttackBehaviourConfig config:
-                        ecsEntity.Replace(new SimpleAttackBehaviourComponent
+                        ecsEntity.Replace(new DamageOnCollisionEnterComponent
                         {
                             InteractionLayerMask = config.InteractionLayerMask,
-                            DamageValue = (fix) config.DamageValue,
-                            HitRadius = (fix) enemyConfig.DamageParameters.HitRadius // :TODO: refactor
+                            DamageValue = (fix) config.DamageValue
+                            // HitRadius = (fix) enemyConfig.DamageParameters.HitRadius // :TODO: refactor
                         });
                         break;
                 }

@@ -13,8 +13,8 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<BombTag, IsKinematicTag, OnCollisionEnterEventComponent> _onEnterFilter;
-        private readonly EcsFilter<BombTag, IsKinematicTag, OnCollisionExitEventComponent> _onExitFilter;
+        private readonly EcsFilter<BombTag, IsKinematicTag, CollisionEnterEventComponent> _onEnterFilter;
+        private readonly EcsFilter<BombTag, IsKinematicTag, CollisionExitEventComponent> _onExitFilter;
 
         private readonly Dictionary<EcsEntity, int> _collisionsCountPerBomb = new();
 
