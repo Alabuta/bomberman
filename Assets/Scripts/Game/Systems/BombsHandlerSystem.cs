@@ -35,7 +35,7 @@ namespace Game.Systems
         private readonly EcsFilter<OnBombPlantActionEventComponent> _bombPlantEvents;
         private readonly EcsFilter<OnBombBlastActionEventComponent> _bomBlastEvents;
 
-        private readonly EcsFilter<DamageApplyEventComponent, BombTag> _attackingBombEvents;
+        private readonly EcsFilter<DamageApplyEventComponent, TransformComponent, BombComponent> _attackingBombEvents;
 
         private readonly EcsFilter<BombComponent, TransformComponent, EntityComponent> _plantedBombs;
 
@@ -140,14 +140,12 @@ namespace Game.Systems
 
             foreach (var index in _attackingBombEvents)
             {
-                ref var eventComponent = ref _attackingBombEvents.Get1(index);
-
-                var targetEntity = eventComponent.Target;
-                if (!targetEntity.IsAlive())
+                var bombEntity = _attackingBombEvents.GetEntity(index);
+                if (!bombEntity.IsAlive())
                     continue;
 
-                ref var transformComponent = ref targetEntity.Get<TransformComponent>();
-                ref var bombComponent = ref targetEntity.Get<BombComponent>();
+                ref var transformComponent = ref _attackingBombEvents.Get2(index);
+                ref var bombComponent = ref _attackingBombEvents.Get3(index);
 
                 BlastBomb(transformComponent, in bombComponent);
             }
@@ -219,8 +217,7 @@ namespace Game.Systems
                     if (!targetEntity.IsAlive())
                         continue;
 
-                    var eventEntity = _ecsWorld.NewEntity();
-                    eventEntity.Replace(new DamageApplyEventComponent(targetEntity, bombComponent.BlastDamage));
+                    targetEntity.Replace(new DamageApplyEventComponent(bombComponent.BlastDamage));
                 }
             }
 

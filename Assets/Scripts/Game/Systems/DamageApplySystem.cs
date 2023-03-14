@@ -1,4 +1,6 @@
-﻿using Game.Components;
+﻿using System;
+using System.Collections.Generic;
+using Game.Components;
 using Game.Components.Entities;
 using Game.Components.Events;
 using Game.Components.Tags;
@@ -14,7 +16,8 @@ namespace Game.Systems
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        private readonly EcsFilter<DamageApplyEventComponent, DamageableOnCollisionEnterTag, HealthComponent>.Exclude<BombTag>
+        private readonly EcsFilter<DamageApplyEventComponent, DamageableOnCollisionEnterComponent, HealthComponent>.Exclude<
+                BombTag>
             _attackEvents;
 
         public void Run()

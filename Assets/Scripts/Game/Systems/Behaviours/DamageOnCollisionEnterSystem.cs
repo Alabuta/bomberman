@@ -7,6 +7,7 @@ using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
+using UnityEngine;
 
 namespace Game.Systems.Behaviours
 {
@@ -16,8 +17,10 @@ namespace Game.Systems.Behaviours
         private readonly World _world;
 
         // :TODO: use register of collisions
-        private readonly EcsFilter<DamageOnCollisionEnterComponent, CollisionEnterEventComponent>.Exclude<DeadTag> _attackers;
-        private readonly EcsFilter<DamageableOnCollisionEnterTag, LayerMaskComponent>.Exclude<DeadTag> _targets;
+        private readonly EcsFilter<TransformComponent, DamageOnCollisionEnterComponent, CollisionEnterEventComponent>.Exclude<
+            DeadTag> _attackers;
+        private readonly EcsFilter<TransformComponent, DamageableOnCollisionEnterComponent, LayerMaskComponent>.Exclude<DeadTag>
+            _targets;
 
         public void Run()
         {
@@ -28,8 +31,9 @@ namespace Game.Systems.Behaviours
 
             foreach (var attackerIndex in _attackers)
             {
-                ref var damageOnCollision = ref _attackers.Get1(attackerIndex);
-                ref var collisionEnterEvent = ref _attackers.Get2(attackerIndex);
+                ref var transformComponentA = ref _attackers.Get1(attackerIndex);
+                ref var damageOnCollision = ref _attackers.Get2(attackerIndex);
+                ref var collisionEnterEvent = ref _attackers.Get3(attackerIndex);
 
                 foreach (var targetIndex in _targets)
                 {
@@ -37,9 +41,24 @@ namespace Game.Systems.Behaviours
                     if (!collisionEnterEvent.Entities.Contains(targetEntity))
                         continue;
 
-                    var layerMaskComponent = _targets.Get2(targetIndex);
+                    var layerMaskComponent = _targets.Get3(targetIndex);
                     if ((layerMaskComponent.Value & damageOnCollision.InteractionLayerMask.value) == 0)
                         continue;
+
+                    /*ref var transformComponentB = ref _targets.Get1(targetIndex);
+                    var damageableOnCollision = _targets.Get2(targetIndex);
+
+                    var hitRadius = damageOnCollision.HitRadius;
+                    var hurtRadius = damageableOnCollision.HurtRadius;
+
+                    var areEntitiesOverlapped = AreEntitiesOverlapped(
+                        transformComponentA.WorldPosition,
+                        transformComponentB.WorldPosition,
+                        hitRadius,
+                        hurtRadius);
+
+                    if (!areEntitiesOverlapped)
+                        continue;*/
 
                     targetEntity.Replace(new DamageApplyEventComponent(damageOnCollision.DamageValue));
                 }
@@ -72,10 +91,7 @@ namespace Game.Systems.Behaviours
             }*/
         }
 
-        private static bool AreEntitiesOverlapped(ref TransformComponent transformComponentA, fix hitRadius,
-            ref TransformComponent transformComponentB, fix hurtRadius)
-        {
-            return fix2.distance(transformComponentA.WorldPosition, transformComponentB.WorldPosition) < hitRadius + hurtRadius;
-        }
+        private static bool AreEntitiesOverlapped(fix2 positionA, fix2 positionB, fix hitRadius, fix hurtRadius) =>
+            fix2.distance(positionA, positionB) <= hitRadius + hurtRadius;
     }
 }

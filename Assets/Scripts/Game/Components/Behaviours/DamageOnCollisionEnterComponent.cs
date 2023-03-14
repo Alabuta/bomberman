@@ -7,5 +7,6 @@ namespace Game.Components.Behaviours
     {
         public LayerMask InteractionLayerMask;
         public fix DamageValue; // :TODO: get damage value from actual entity parameters
+        public fix HitRadius;
     }
 }

@@ -293,7 +293,10 @@ namespace Level
             });
             // RegisterProgressReader(hero.HeroHealth); :TODO:
 
-            entity.Replace(new DamageableOnCollisionEnterTag());
+            entity.Replace(new DamageableOnCollisionEnterComponent
+            (
+                hurtRadius: (fix) heroConfig.DamageParameters.HurtRadius
+            ));
 
             entity.Replace(new LayerMaskComponent
             {
