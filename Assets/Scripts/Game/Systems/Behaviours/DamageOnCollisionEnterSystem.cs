@@ -63,32 +63,6 @@ namespace Game.Systems.Behaviours
                     targetEntity.Replace(new DamageApplyEventComponent(damageOnCollision.DamageValue));
                 }
             }
-
-            /*foreach (var index in _attackers)
-            {
-                ref var attackerTransform = ref _attackersFilter.Get1(index);
-                ref var attackerBehaviour = ref _attackersFilter.Get2(index);
-
-                foreach (var targetEntityIndex in _targetsFilter)
-                {
-                    ref var targetEntity = ref _targetsFilter.GetEntity(targetEntityIndex);
-
-                    ref var layerMaskComponent = ref _targetsFilter.Get2(targetEntityIndex);
-                    if ((layerMaskComponent.Value & attackerBehaviour.InteractionLayerMask.value) == 0)
-                        continue;
-
-                    ref var targetTransform = ref _targetsFilter.Get1(targetEntityIndex);
-                    ref var damageableComponent = ref _targetsFilter.Get3(targetEntityIndex);
-
-                    var areEntitiesOverlapped = AreEntitiesOverlapped(ref attackerTransform, attackerBehaviour.HitRadius,
-                        ref targetTransform, damageableComponent.HurtRadius);
-
-                    if (!areEntitiesOverlapped)
-                        continue;
-
-                    targetEntity.Replace(new DamageApplyEventComponent(attackerBehaviour.DamageValue));
-                }
-            }*/
         }
 
         private static bool AreEntitiesOverlapped(fix2 positionA, fix2 positionB, fix hitRadius, fix hurtRadius) =>
