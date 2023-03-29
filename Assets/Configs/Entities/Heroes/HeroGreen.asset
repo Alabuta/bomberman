@@ -25,7 +25,7 @@ MonoBehaviour:
   Collider: {fileID: 11400000, guid: e911884e32db2ba468e442651285f4f3, type: 2}
   DamageParameters:
     HitRadius: 0.1
-    HurtRadius: 0.5
+    HurtRadius: 0.4
   MovementParameters:
     Speed: 2.4
   HealthParameters:

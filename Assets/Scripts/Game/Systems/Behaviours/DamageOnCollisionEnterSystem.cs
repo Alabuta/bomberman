@@ -7,7 +7,6 @@ using Game.Components.Tags;
 using Leopotam.Ecs;
 using Level;
 using Math.FixedPointMath;
-using UnityEngine;
 
 namespace Game.Systems.Behaviours
 {
@@ -16,11 +15,11 @@ namespace Game.Systems.Behaviours
         private readonly EcsWorld _ecsWorld;
         private readonly World _world;
 
-        // :TODO: use register of collisions
-        private readonly EcsFilter<TransformComponent, DamageOnCollisionEnterComponent, CollisionEnterEventComponent>.Exclude<
-            DeadTag> _attackers;
-        private readonly EcsFilter<TransformComponent, DamageableOnCollisionEnterComponent, LayerMaskComponent>.Exclude<DeadTag>
-            _targets;
+        // :TODO: use register of collisions and CollisionEnterEventComponent event
+        private readonly EcsFilter<TransformComponent, DamageOnCollisionEnterComponent>.Exclude<DeadTag> _attackers;
+
+        private readonly EcsFilter<TransformComponent, DamageableOnCollisionEnterComponent, LayerMaskComponent>
+            .Exclude<DeadTag> _targets;
 
         public void Run()
         {
@@ -29,39 +28,42 @@ namespace Game.Systems.Behaviours
             if (_attackers.IsEmpty() || _targets.IsEmpty())
                 return;
 
-            foreach (var attackerIndex in _attackers)
+            foreach (var index in _attackers)
+                Update(index);
+        }
+
+        private void Update(int attackerIndex)
+        {
+            ref var transformComponentA = ref _attackers.Get1(attackerIndex);
+            ref var damageOnCollisionEnter = ref _attackers.Get2(attackerIndex);
+            // ref var collisionEnterEvent = ref _attackers.Get3(attackerIndex);
+
+            foreach (var targetIndex in _targets)
             {
-                ref var transformComponentA = ref _attackers.Get1(attackerIndex);
-                ref var damageOnCollision = ref _attackers.Get2(attackerIndex);
-                ref var collisionEnterEvent = ref _attackers.Get3(attackerIndex);
+                ref var targetEntity = ref _targets.GetEntity(targetIndex);
+                /*if (!collisionEnterEvent.Entities.Contains(targetEntity))
+                    continue;*/
 
-                foreach (var targetIndex in _targets)
-                {
-                    ref var targetEntity = ref _targets.GetEntity(targetIndex);
-                    if (!collisionEnterEvent.Entities.Contains(targetEntity))
-                        continue;
+                ref var layerMaskComponent = ref _targets.Get3(targetIndex);
+                if ((layerMaskComponent.Value & damageOnCollisionEnter.InteractionLayerMask.value) == 0)
+                    continue;
 
-                    var layerMaskComponent = _targets.Get3(targetIndex);
-                    if ((layerMaskComponent.Value & damageOnCollision.InteractionLayerMask.value) == 0)
-                        continue;
+                ref var transformComponentB = ref _targets.Get1(targetIndex);
+                var damageableOnCollision = _targets.Get2(targetIndex);
 
-                    /*ref var transformComponentB = ref _targets.Get1(targetIndex);
-                    var damageableOnCollision = _targets.Get2(targetIndex);
+                var hitRadius = damageOnCollisionEnter.HitRadius;
+                var hurtRadius = damageableOnCollision.HurtRadius;
 
-                    var hitRadius = damageOnCollision.HitRadius;
-                    var hurtRadius = damageableOnCollision.HurtRadius;
+                var areEntitiesOverlapped = AreEntitiesOverlapped(
+                    transformComponentA.WorldPosition,
+                    transformComponentB.WorldPosition,
+                    hitRadius,
+                    hurtRadius);
 
-                    var areEntitiesOverlapped = AreEntitiesOverlapped(
-                        transformComponentA.WorldPosition,
-                        transformComponentB.WorldPosition,
-                        hitRadius,
-                        hurtRadius);
+                if (!areEntitiesOverlapped)
+                    continue;
 
-                    if (!areEntitiesOverlapped)
-                        continue;*/
-
-                    targetEntity.Replace(new DamageApplyEventComponent(damageOnCollision.DamageValue));
-                }
+                targetEntity.Replace(new DamageApplyEventComponent(damageOnCollisionEnter.DamageValue));
             }
         }
 
