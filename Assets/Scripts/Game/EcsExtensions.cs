@@ -9,6 +9,7 @@ using Game.Components.Colliders;
 using Game.Components.Tags;
 using Leopotam.Ecs;
 using Math.FixedPointMath;
+using UnityEngine;
 
 namespace Game
 {
@@ -90,6 +91,16 @@ namespace Game
                 interactionMask = ecsEntity.Get<BoxColliderComponent>().InteractionLayerMask;
 
             return interactionMask;
+        }
+
+        public static LayerMask GetColliderInteractionLayerMask<T>(T colliderComponent) where T : struct
+        {
+            return colliderComponent switch
+            {
+                CircleColliderComponent component => component.InteractionLayerMask,
+                BoxColliderComponent component => component.InteractionLayerMask,
+                _ => 0
+            };
         }
 
         public static bool IsAlive(this ref HealthComponent healthComponent)
