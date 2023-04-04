@@ -21,36 +21,6 @@ namespace Game.Systems.Collisions
         public fix2 LastWorldPosition;
     }
 
-    /*public class CollidersAabbUpdateSystem : IEcsInitSystem, IEcsRunSystem, IEcsDestroySystem
-    {
-        private readonly EcsWorld _ecsWorld;
-        private readonly World _world;
-
-        private readonly EcsFilter<TransformComponent, HasColliderTag> _colliders;
-
-        public void Init()
-        {
-        }
-
-        public void Run()
-        {
-            using var _ = Profiling.CollidersAabbsUpdate.Auto();
-
-            foreach (var index in _colliders)
-            {
-                ref var entity = ref _colliders.GetEntity(index);
-                ref var transformComponent = ref _colliders.Get1(index);
-
-                var aabb = entity.GetEntityColliderAABB(transformComponent.WorldPosition);
-                entity.Replace(new AabbComponent(aabb, index));
-            }
-        }
-
-        public void Destroy()
-        {
-        }
-    }*/
-
     public class CollisionsDetectionSystem : IEcsInitSystem, IEcsRunSystem, IEcsDestroySystem
     {
         private const int InputEntriesStartCount = 256;
@@ -148,7 +118,7 @@ namespace Game.Systems.Collisions
             var entityLayerMaskA = filter.Get2(entityIndex).Value;
 
             ref var colliderComponentA = ref filter.Get3(entityIndex);
-            var interactionLayerMaskA = EcsExtensions.GetColliderInteractionLayerMask(colliderComponentA);
+            var interactionLayerMaskA = EcsExtensions.GetColliderInteractionLayerMask(in colliderComponentA);
 
             var aabbA = entityA.GetEntityColliderAABB(entityPositionA);
 
@@ -167,8 +137,11 @@ namespace Game.Systems.Collisions
                     if (_processedPairs.Contains(hashedPair))
                         continue;
 
-                    ref var transformComponentB = ref entityB.Get<TransformComponent>();
+                    ref var transformComponentB = ref _colliders.Get1(entityIndex);
                     var aabbB = entityB.GetEntityColliderAABB(transformComponentB.WorldPosition);
+
+                    var entityLayerMaskB = _colliders.Get2(entry.Index).Value;
+                    var interactionLayerMaskB = entityB.GetColliderInteractionLayerMask();
 
                     if (!fix.is_AABB_overlapped_by_AABB(in aabbA, in aabbB))
                     {
@@ -176,10 +149,12 @@ namespace Game.Systems.Collisions
                             entityA,
                             entityB,
                             entityLayerMaskA,
-                            entityLayerMaskB: entityB.GetCollidersInteractionMask(),
+                            entityLayerMaskB,
                             interactionLayerMaskA,
+                            interactionLayerMaskB,
                             hashedPair,
                             hasIntersection);
+
                         _collidedPairs.Remove(hashedPair);
 
                         continue;
@@ -187,17 +162,21 @@ namespace Game.Systems.Collisions
 
                     var entityPositionB = transformComponentB.WorldPosition;
 
-                    hasIntersection = EcsExtensions.CheckEntitiesIntersection(colliderComponentA, entityPositionA,
-                        entityB, entityPositionB, out _);
+                    hasIntersection = EcsExtensions.CheckEntitiesIntersection(
+                        colliderComponentA,
+                        entityPositionA,
+                        entityB,
+                        entityPositionB, out _);
 
                     DispatchCollisionEvents(
                         entityA,
                         entityB,
                         entityLayerMaskA,
-                        entityLayerMaskB: entityB.GetCollidersInteractionMask(),
+                        entityLayerMaskB,
                         interactionLayerMaskA,
-                        hashedPair: hashedPair,
-                        hasIntersection: hasIntersection);
+                        interactionLayerMaskB,
+                        hashedPair,
+                        hasIntersection);
 
                     if (hasIntersection)
                     {
@@ -218,43 +197,49 @@ namespace Game.Systems.Collisions
             int entityLayerMaskA,
             int entityLayerMaskB,
             LayerMask interactionLayerMaskA,
-            long hashedPair,
+            LayerMask interactionLayerMaskB,
+            long hashedPair, // :TODO: use register of collisions
             bool hasIntersection)
         {
             switch (hasIntersection)
             {
                 case true when _collidedPairs.Contains(hashedPair):
                 {
-                    UpdateCollisionStayEventComponent(entityA, entityB, entityLayerMaskA, entityLayerMaskB);
-                    UpdateCollisionStayEventComponent(entityB, entityA, entityLayerMaskB, entityLayerMaskA);
+                    if ((interactionLayerMaskA & entityLayerMaskB) != 0)
+                        UpdateCollisionStayEventComponent(entityA, entityB);
+
+                    if ((interactionLayerMaskB & entityLayerMaskA) != 0)
+                        UpdateCollisionStayEventComponent(entityB, entityA);
+
                     break;
                 }
 
                 case true when !_collidedPairs.Contains(hashedPair):
                 {
-                    UpdateCollisionEnterEventComponent(entityA, entityB, entityLayerMaskA, entityLayerMaskB);
-                    UpdateCollisionEnterEventComponent(entityB, entityA, entityLayerMaskB, entityLayerMaskA);
+                    if ((interactionLayerMaskA & entityLayerMaskB) != 0)
+                        UpdateCollisionEnterEventComponent(entityA, entityB);
+
+                    if ((interactionLayerMaskB & entityLayerMaskA) != 0)
+                        UpdateCollisionEnterEventComponent(entityB, entityA);
+
                     break;
                 }
 
                 case false when _collidedPairs.Contains(hashedPair):
                 {
-                    UpdateCollisionExitEventComponent(entityA, entityB, entityLayerMaskA, entityLayerMaskB);
-                    UpdateCollisionExitEventComponent(entityB, entityA, entityLayerMaskB, entityLayerMaskA);
+                    if ((interactionLayerMaskA & entityLayerMaskB) != 0)
+                        UpdateCollisionExitEventComponent(entityA, entityB);
+
+                    if ((interactionLayerMaskB & entityLayerMaskA) != 0)
+                        UpdateCollisionExitEventComponent(entityB, entityA);
+
                     break;
                 }
             }
         }
 
-        private static void UpdateCollisionEnterEventComponent(
-            EcsEntity entityA,
-            EcsEntity entityB,
-            int entityLayerMaskA,
-            int entityLayerMaskB)
+        private static void UpdateCollisionEnterEventComponent(EcsEntity entityA, EcsEntity entityB)
         {
-            if ((entityLayerMaskA & entityLayerMaskB) == 0)
-                return;
-
             if (entityA.Has<CollisionEnterEventComponent>())
             {
                 ref var eventComponent = ref entityA.Get<CollisionEnterEventComponent>();
@@ -264,11 +249,7 @@ namespace Game.Systems.Collisions
                 entityA.Replace(new CollisionEnterEventComponent(new HashSet<EcsEntity> { entityB }));
         }
 
-        private static void UpdateCollisionExitEventComponent(
-            EcsEntity entityA,
-            EcsEntity entityB,
-            int entityLayerMaskA,
-            int entityLayerMaskB)
+        private static void UpdateCollisionExitEventComponent(EcsEntity entityA, EcsEntity entityB)
         {
             if (entityA.Has<CollisionExitEventComponent>())
             {
@@ -279,11 +260,7 @@ namespace Game.Systems.Collisions
                 entityA.Replace(new CollisionExitEventComponent(new HashSet<EcsEntity> { entityB }));
         }
 
-        private static void UpdateCollisionStayEventComponent(
-            EcsEntity entityA,
-            EcsEntity entityB,
-            int entityLayerMaskA,
-            int entityLayerMaskB)
+        private static void UpdateCollisionStayEventComponent(EcsEntity entityA, EcsEntity entityB)
         {
             if (entityA.Has<CollisionStayEventComponent>())
             {

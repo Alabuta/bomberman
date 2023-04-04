@@ -176,6 +176,10 @@ namespace Level
                             ecsEntity.Replace(new HardBlockComponent());
                             ecsEntity.Replace(new BombBlastStopEntityTag());
                             ecsEntity.AddCollider(hardBlockConfig.Collider);
+                            ecsEntity.Replace(new LayerMaskComponent
+                            {
+                                Value = hardBlockConfig.LayerMask
+                            });
                             return ecsEntity;
                         }
 
@@ -201,6 +205,10 @@ namespace Level
                             ecsEntity.Replace(new BombBlastStopEntityTag());
 
                             ecsEntity.AddCollider(softBlockConfig.Collider);
+                            ecsEntity.Replace(new LayerMaskComponent
+                            {
+                                Value = softBlockConfig.LayerMask
+                            });
 
                             ecsEntity.Replace(new HealthComponent
                             {

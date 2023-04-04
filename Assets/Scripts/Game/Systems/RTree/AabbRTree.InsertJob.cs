@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using App;
 using Math.FixedPointMath;
 using Unity.Burst;
@@ -404,6 +405,7 @@ namespace Game.Systems.RTree
 
 #if ENABLE_RTREE_ASSERTS
             [BurstDiscard]
+            [Conditional("ENABLE_RTREE_ASSERTS")]
             private static void CheckInsert(NativeArray<RTreeNode> nodesContainer, int startIndex, int rootNodesCount,
                 int targetNodeIndex)
             {

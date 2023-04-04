@@ -181,12 +181,12 @@ namespace Game.Systems.Behaviours
             if (!tile.IsAlive())
                 return true;
 
-            var tileInteractionMask = tile.GetCollidersInteractionMask();
+            var tileInteractionMask = tile.GetColliderInteractionLayerMask();
 
             ref var tileComponent = ref tile.Get<LevelTileComponent>();
             var hasEntities = tileComponent.EntitiesHolder?
                 .Where(e => e.IsAlive())
-                .Select(e => e.GetCollidersInteractionMask())
+                .Select(e => e.GetColliderInteractionLayerMask())
                 .Any(m => (m & entityLayerMask) != 0);
 
             return (entityLayerMask & tileInteractionMask) == 0 && !(hasEntities ?? false);

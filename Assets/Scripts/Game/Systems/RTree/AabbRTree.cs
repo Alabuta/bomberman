@@ -130,7 +130,7 @@ namespace Game.Systems.RTree
         {
             using var _ = Profiling.RTreeUpdate.Auto();
 
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         public IReadOnlyList<RTreeNode> GetSubTreeRootNodes(int subTreeIndex) =>
@@ -141,7 +141,8 @@ namespace Game.Systems.RTree
                 ? indices.Select(i => _nodesContainer[i])
                 : Enumerable.Empty<RTreeNode>();
 
-        public IEnumerable<RTreeLeafEntry> GetLeafEntries(int subTreeIndex, IEnumerable<int> indices)
+        public IEnumerable<RTreeLeafEntry> GetLeafEntries(int subTreeIndex,
+            IEnumerable<int> indices /*, ICollection<RTreeLeafEntry> entries*/)
         {
             var subTreeStartIndexOffset = subTreeIndex * _perWorkerResultEntriesContainerCapacity;
             return _resultEntries.Length != 0
