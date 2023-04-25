@@ -80,20 +80,20 @@ namespace Game
             }
         }
 
-        public static int GetCollidersInteractionMask(this EcsEntity ecsEntity)
+        public static LayerMask GetColliderInteractionLayerMask(this EcsEntity ecsEntity)
         {
             var interactionMask = 0;
 
             if (ecsEntity.Has<CircleColliderComponent>())
-                interactionMask = ecsEntity.Get<CircleColliderComponent>().InteractionLayerMask;
+                interactionMask = GetColliderInteractionLayerMask(in ecsEntity.Get<CircleColliderComponent>());
 
             else if (ecsEntity.Has<BoxColliderComponent>())
-                interactionMask = ecsEntity.Get<BoxColliderComponent>().InteractionLayerMask;
+                interactionMask = GetColliderInteractionLayerMask(in ecsEntity.Get<BoxColliderComponent>());
 
             return interactionMask;
         }
 
-        public static LayerMask GetColliderInteractionLayerMask<T>(T colliderComponent) where T : struct
+        public static LayerMask GetColliderInteractionLayerMask<T>(in T colliderComponent) where T : struct
         {
             return colliderComponent switch
             {
@@ -117,8 +117,12 @@ namespace Game
                 : ((long) b << 32) | (uint) a;
         }
 
-        public static bool CheckEntitiesIntersection<T>(T colliderComponentA, fix2 entityPositionA,
-            EcsEntity entityB, fix2 entityPositionB, out fix2 intersectionPoint)
+        public static bool CheckEntitiesIntersection<T>(
+            T colliderComponentA,
+            fix2 entityPositionA,
+            EcsEntity entityB,
+            fix2 entityPositionB,
+            out fix2 intersectionPoint)
             where T : struct
         {
             var hasIntersection = false;
